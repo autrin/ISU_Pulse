@@ -35,8 +35,6 @@ public class Counter extends AppCompatActivity {
                 counter.setText(String.valueOf(count));
             }
         });
-
-
         Button decreament = findViewById(R.id.counter_back);
         decreament.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -46,6 +44,15 @@ public class Counter extends AppCompatActivity {
                 int count = Integer.parseInt(counter.getText().toString());
                 count--;
                 counter.setText(String.valueOf(count));
+            }
+        });
+
+        Button home = findViewById(R.id.button_home);
+        home.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // go to the main activity
+                finish();
             }
         });
     }
