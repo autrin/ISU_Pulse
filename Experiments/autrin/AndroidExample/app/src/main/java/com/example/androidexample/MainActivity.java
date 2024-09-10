@@ -21,6 +21,8 @@ public class MainActivity extends AppCompatActivity {
 
         /* initialize UI elements */
         messageText = findViewById(R.id.main_msg_txt);      // link to message textview in the Main activity XML
-        messageText.setText("Hi! This is Autrin.");
+        messageText.setText("Today");
+        messageText.setTextColor(getResources().getColor(R.color.red));
+        messageText.setTextSize(30);
     }
 }
