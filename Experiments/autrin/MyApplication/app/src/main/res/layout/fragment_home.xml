@@ -30,14 +30,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageView
-        android:id="@+id/profilePic"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        tools:layout_editor_absoluteX="38dp"
-        tools:layout_editor_absoluteY="53dp"
-        tools:src="@tools:sample/avatars" />
-
     <TextView
         android:id="@+id/firstName"
         android:layout_width="wrap_content"
@@ -63,7 +55,7 @@
         app:layout_constraintVertical_bias="0.141" />
 
     <com.google.android.material.textfield.TextInputEditText
-        android:id="@+id/firstNameInput"
+        android:id="@+id/lastNameInput"
         android:layout_width="83dp"
         android:layout_height="19dp"
         android:hint="Last"
@@ -71,14 +63,5 @@
         app:layout_constraintStart_toEndOf="@+id/firstName"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.141" />
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/lastNameInput"
-        android:layout_width="153dp"
-        android:layout_height="wrap_content"
-        tools:layout_editor_absoluteX="257dp"
-        tools:layout_editor_absoluteY="110dp">
-
-    </com.google.android.material.textfield.TextInputLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
