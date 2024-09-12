@@ -12,9 +12,10 @@ class WelcomeController {
             return "Hello and welcome to COMS 309";
     }
 
-    @GetMapping("/ introduce/{name}")
+    @GetMapping("/introduce/{name}")
     public String introduce(@PathVariable String name){
-        return "Hello and welcome to COMS 309, my name is " + name;
+
+        return "My name is " + name + ". Nice to meet you guys!!!";
     }
 
     @GetMapping("/{name}")
@@ -26,4 +27,17 @@ class WelcomeController {
     public String welcome2(){
         return "Hahahahaha";
     }
+
+    @GetMapping("/game/{game1}")
+    public String game(@PathVariable String game1){
+
+        return "My favorite game is " + game1;
+    }
+
+    @GetMapping("/music/{type}")
+    public String music(@PathVariable String type){
+        return "I love " + type;
+    }
+
+
 }

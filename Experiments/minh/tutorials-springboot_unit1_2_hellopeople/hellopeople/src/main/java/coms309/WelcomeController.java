@@ -35,6 +35,24 @@ class WelcomeController {
         return name1 + ", " + name2 + " là 2 thằng đầu buồi giẻ rách";
     }
 
+    @GetMapping("/users/advance")
+    public String introduceNameAndAge(@RequestParam("name") String name, @RequestParam("age") int age){
+        return "My name is " + name + ". I'm " + age + " years old.";
+    }
+
+    @GetMapping("/greet/advance")
+    public String greating(@RequestParam("name") String name){
+        if(name.equals("bach") || name.equals("Bach")){
+             return "Không thích chào thằng nào tên " + name;
+        }
+        else{
+            return "Nice to meet you, " + name;
+        }
+
+    }
+
+
+
 
 
 
