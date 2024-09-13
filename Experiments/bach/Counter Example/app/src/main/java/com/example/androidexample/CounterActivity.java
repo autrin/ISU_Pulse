@@ -22,7 +22,7 @@ public class CounterActivity extends AppCompatActivity {
     private Button decreaseAmountBtn;
     private EditText amountInput;
 
-    private int counter = 0;
+    private long counter = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
