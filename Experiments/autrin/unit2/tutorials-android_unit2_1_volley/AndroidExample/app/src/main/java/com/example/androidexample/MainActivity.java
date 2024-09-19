@@ -29,7 +29,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     @Override
-    public void onClick(View v) {
+    public void onClick(View v) { // You can check the id of the view to determine which button was clicked
+        // then you can compare that id with the id of the button you want to check
         int id = v.getId();
         if (id == R.id.btnStringRequest) {
             startActivity(new Intent(MainActivity.this, StringReqActivity.class));
