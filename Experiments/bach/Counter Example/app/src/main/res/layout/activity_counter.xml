@@ -11,44 +11,75 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginTop="100dp"
+        android:layout_marginTop="50dp"
         android:text="0"
         android:textColor="#E91E63"
         android:textSize="150sp"
-        tools:visibility="visible"></TextView>
+        tools:visibility="visible" />
 
     <Button
         android:id="@+id/counter_multiply_btn"
-        android:layout_width="250dp"
-        android:layout_height="80dp"
+        android:layout_width="150dp"
+        android:layout_height="60dp"
         android:layout_gravity="center"
-        android:layout_marginTop="100dp"
-        android:text="Multiply"></Button>
+        android:layout_marginTop="50dp"
+        android:text="Multiply" />
+
+    <Button
+        android:id="@+id/counter_reset_btn"
+        android:layout_width="150dp"
+        android:layout_height="60dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="10dp"
+        android:text="Reset" />
 
     <Button
         android:id="@+id/counter_increase_btn"
-        android:layout_width="250dp"
-        android:layout_height="80dp"
+        android:layout_width="150dp"
+        android:layout_height="60dp"
         android:layout_gravity="center"
-        android:layout_marginTop="100dp"
-        android:text="Increase"></Button>
+        android:layout_marginTop="10dp"
+        android:text="Increase" />
 
     <Button
         android:id="@+id/counter_decrease_btn"
-        android:layout_width="250dp"
-        android:layout_height="80dp"
+        android:layout_width="150dp"
+        android:layout_height="60dp"
         android:layout_gravity="center"
         android:layout_marginTop="10dp"
-        android:text="Decrease"></Button>
+        android:text="Decrease" />
+
+    <EditText
+        android:id="@+id/amount_input"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="20dp"
+        android:hint="Enter amount"
+        android:inputType="number" />
+
+    <Button
+        android:id="@+id/counter_increase_amount_btn"
+        android:layout_width="150dp"
+        android:layout_height="60dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="10dp"
+        android:text="Increase Amount" />
+
+    <Button
+        android:id="@+id/counter_decrease_amount_btn"
+        android:layout_width="150dp"
+        android:layout_height="60dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="10dp"
+        android:text="Decrease Amount" />
 
     <Button
         android:id="@+id/counter_back_btn"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_gravity="center"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|center_horizontal"
         android:layout_marginTop="50dp"
-        android:text="Back to Main">
-
-    </Button>
+        android:text="Back to Main" />
 
 </androidx.appcompat.widget.LinearLayoutCompat>

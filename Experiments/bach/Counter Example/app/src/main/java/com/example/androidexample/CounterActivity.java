@@ -6,31 +6,41 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class CounterActivity extends AppCompatActivity {
 
-    private TextView numberTxt; // define number textview variable
-    private Button increaseBtn; // define increase button variable
-    private Button decreaseBtn; // define decrease button variable
-    private Button multiplyBtn; // define multiply button variable
-    private Button backBtn;     // define back button variable
+    private TextView numberTxt;
+    private Button increaseBtn;
+    private Button decreaseBtn;
+    private Button multiplyBtn;
+    private Button backBtn;
+    private Button resetBtn;
+    private Button increaseAmountBtn;
+    private Button decreaseAmountBtn;
+    private EditText amountInput;
 
-    private int counter = 0;    // counter variable
+    private long counter = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_counter);
 
-        /* initialize UI elements */
+        // Initialize UI elements
         numberTxt = findViewById(R.id.number);
         increaseBtn = findViewById(R.id.counter_increase_btn);
         decreaseBtn = findViewById(R.id.counter_decrease_btn);
         multiplyBtn = findViewById(R.id.counter_multiply_btn);
         backBtn = findViewById(R.id.counter_back_btn);
+        resetBtn = findViewById(R.id.counter_reset_btn);
+        increaseAmountBtn = findViewById(R.id.counter_increase_amount_btn);
+        decreaseAmountBtn = findViewById(R.id.counter_decrease_amount_btn);
+        amountInput = findViewById(R.id.amount_input);
 
-        /* when increase btn is pressed, counter++, reset number textview */
+        // Increase button
         increaseBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -38,7 +48,7 @@ public class CounterActivity extends AppCompatActivity {
             }
         });
 
-        /* when decrease btn is pressed, counter--, reset number textview */
+        // Decrease button
         decreaseBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -46,24 +56,60 @@ public class CounterActivity extends AppCompatActivity {
             }
         });
 
+        // Multiply button
         multiplyBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 counter *= 2;
                 numberTxt.setText(String.valueOf(counter));
             }
-
         });
 
-        /* when back btn is pressed, switch back to MainActivity */
+        // Reset button
+        resetBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                counter = 0;
+                numberTxt.setText(String.valueOf(counter));
+            }
+        });
+
+        // Increase by amount button
+        increaseAmountBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    int amount = Integer.parseInt(amountInput.getText().toString());
+                    counter += amount;
+                    numberTxt.setText(String.valueOf(counter));
+                } catch (NumberFormatException e) {
+                    Toast.makeText(CounterActivity.this, "Enter a valid number", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        // Decrease by amount button
+        decreaseAmountBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    int amount = Integer.parseInt(amountInput.getText().toString());
+                    counter -= amount;
+                    numberTxt.setText(String.valueOf(counter));
+                } catch (NumberFormatException e) {
+                    Toast.makeText(CounterActivity.this, "Enter a valid number", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        // Back button
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(CounterActivity.this, MainActivity.class);
-                intent.putExtra("NUM", String.valueOf(counter));  // key-value to pass to the MainActivity
+                intent.putExtra("NUM", String.valueOf(counter));
                 startActivity(intent);
             }
         });
-
     }
 }

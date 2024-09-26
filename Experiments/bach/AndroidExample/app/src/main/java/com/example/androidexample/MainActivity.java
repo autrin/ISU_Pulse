@@ -21,6 +21,6 @@ public class MainActivity extends AppCompatActivity {
 
         /* initialize UI elements */
         messageText = findViewById(R.id.main_msg_txt);      // link to message textview in the Main activity XML
-        messageText.setText("Du Ma May Minh");
+        messageText.setText("Welcome class COMS 309, I am Bach Nguyen");
     }
 }

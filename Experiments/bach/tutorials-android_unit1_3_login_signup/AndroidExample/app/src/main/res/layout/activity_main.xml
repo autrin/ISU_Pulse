@@ -47,5 +47,27 @@
         android:textSize="20sp"
         android:textColor="#ffffff" />
 
+    <TextView
+        android:id="@+id/isu_student_txt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="100dp"
+        android:text="I love Iowa State"
+        android:textColor="#F44336"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/ronaldo_fan_txt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="100dp"
+        android:text="I am Ronaldo fan"
+        android:textColor="#F44336"
+        android:textSize="20sp" />
+
 
 </androidx.appcompat.widget.LinearLayoutCompat>
