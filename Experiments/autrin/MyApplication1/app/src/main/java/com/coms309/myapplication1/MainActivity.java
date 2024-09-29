@@ -1,6 +1,7 @@
 package com.coms309.myapplication1;
 
 import android.os.Bundle;
+import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,5 +21,9 @@ public class MainActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+        TextView apiText1 = findViewById(R.id.activity_main_textView1);
+
+        // to communicate with the server
     }
 }
+
