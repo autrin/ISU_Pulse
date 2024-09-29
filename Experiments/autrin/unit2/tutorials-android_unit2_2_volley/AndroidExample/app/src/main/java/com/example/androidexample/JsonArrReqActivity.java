@@ -26,6 +26,7 @@ import java.util.Map;
 public class JsonArrReqActivity extends AppCompatActivity {
 
     private Button btnJsonArrReq;
+    private Button home;
     private ListAdapter adapter;
     private ListView listView;
 
@@ -49,6 +50,8 @@ public class JsonArrReqActivity extends AppCompatActivity {
                 makeJsonArrayReq();
             }
         });
+
+//        home = findViewById(R.id.home);
     }
 
     /**
