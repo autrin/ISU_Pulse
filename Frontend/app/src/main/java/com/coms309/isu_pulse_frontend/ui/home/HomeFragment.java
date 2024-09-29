@@ -10,9 +10,11 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.coms309.isu_pulse_frontend.R;
 import com.coms309.isu_pulse_frontend.databinding.FragmentHomeBinding;
-
+import com.coms309.isu_pulse_frontend.ui.home.HomeViewModel;
 public class HomeFragment extends Fragment {
+    TextView announcements;
 
     private FragmentHomeBinding binding;
 
@@ -26,6 +28,10 @@ public class HomeFragment extends Fragment {
 
         final TextView textView = binding.textHome;
         homeViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
+
+        announcements = root.findViewById(R.id.textAnnouncementTitle);
+        announcements.setText("Announcements");
+
         return root;
     }
 
