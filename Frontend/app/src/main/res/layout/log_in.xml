@@ -39,27 +39,37 @@
         android:inputType="textPassword"
         android:layout_marginBottom="32dp" />
 
-    <TextView
-        android:id="@+id/enter_isu_pulse"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Enter"
-        android:textColor="#FFFFFF"
-        android:layout_marginBottom="16dp" />
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginBottom="16dp">
 
-    <TextView
-        android:id="@+id/sign_up_isu_pulse"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Sign up"
-        android:textColor="#FFFFFF"
-        android:layout_marginBottom="16dp" />
+        <Button
+            android:id="@+id/enter_isu_pulse"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Enter"
+            android:textColor="#FFFFFF"
+            android:backgroundTint="#FF0000"
+            android:layout_marginEnd="16dp" />
 
-    <TextView
+        <Button
+            android:id="@+id/sign_up_isu_pulse"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sign up"
+            android:textColor="#FFFFFF"
+            android:backgroundTint="#FF0000" />
+    </LinearLayout>
+
+    <!-- Uncomment for Forgot Password option -->
+    <!-- <TextView
         android:id="@+id/forgot_password_isu_pulse"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Forgot password"
-        android:textColor="#FFFFFF" />
+        android:textColor="#FFFFFF" /> -->
 
 </LinearLayout>
