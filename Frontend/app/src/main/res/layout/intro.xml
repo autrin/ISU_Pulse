@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="32dp"
+        android:text="ISU PULSE"
+        android:textColor="#E91E63"
+        android:textSize="50sp" />
+
+    <ImageView
+        android:id="@+id/isu_student_img"
+        android:layout_width="237dp"
+        android:layout_height="235dp"
+        android:layout_gravity="center"
+        android:layout_margin="200px"
+        android:src="@drawable/isu_logo"
+        android:visibility="visible"></ImageView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/signInButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:text="Sign In" />
+
+        <Button
+            android:id="@+id/signUpButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:text="Sign Up" />
+
+        <Button
+            android:id="@+id/guestButton_isu_pulse"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Guest" />
+
+    </LinearLayout>
+
+</LinearLayout>

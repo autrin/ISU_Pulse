@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:background="#6699cc"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/sign_up_page_isu_pulse"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sign up"
+        android:textSize="24sp"
+        android:textColor="#FFFFFF"
+        android:layout_marginBottom="32dp" />
+
+    <EditText
+        android:id="@+id/firstname_isu_pulse"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="First name"
+        android:background="@android:drawable/edit_text"
+        android:padding="10dp"
+        android:textColor="#000000"
+        android:textStyle="bold"
+        android:inputType="text"
+        android:layout_marginBottom="16dp" />
+
+    <EditText
+        android:id="@+id/lastname_isu_pulse"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Last name"
+        android:background="@android:drawable/edit_text"
+        android:padding="10dp"
+        android:textColor="#000000"
+        android:textStyle="bold"
+        android:inputType="text"
+        android:layout_marginBottom="16dp" />
+
+    <EditText
+        android:id="@+id/email_isu_pulse"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Email"
+        android:background="@android:drawable/edit_text"
+        android:padding="10dp"
+        android:textColor="#000000"
+        android:textStyle="bold"
+        android:inputType="textEmailAddress"
+        android:layout_marginBottom="16dp" />
+
+    <EditText
+        android:id="@+id/username_isu_pulse"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Username"
+        android:background="@android:drawable/edit_text"
+        android:padding="10dp"
+        android:textColor="#000000"
+        android:inputType="text"
+        android:textStyle="bold"
+        android:layout_marginBottom="16dp" />
+
+    <EditText
+        android:id="@+id/password_isu_pulse"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Password"
+        android:background="@android:drawable/edit_text"
+        android:padding="10dp"
+        android:textColor="#000000"
+        android:textStyle="bold"
+        android:inputType="textPassword"
+        android:layout_marginBottom="16dp" />
+
+    <EditText
+        android:id="@+id/retype_password_isu_pulse"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Retype Password"
+        android:background="@android:drawable/edit_text"
+        android:padding="10dp"
+        android:textColor="#000000"
+        android:textStyle="bold"
+        android:inputType="textPassword"
+        android:layout_marginBottom="32dp" />
+
+    <TextView
+        android:id="@+id/enter_isu_pulse"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Enter"
+        android:textColor="#FFFFFF"
+        android:layout_marginBottom="16dp" />
+
+    <TextView
+        android:id="@+id/sign_in_isu_pulse"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sign in"
+        android:textColor="#FFFFFF"
+        android:layout_marginBottom="16dp" />
+
+    <TextView
+        android:id="@+id/forgot_password_isu_pulse"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Forgot password"
+        android:textColor="#FFFFFF" />
+
+</LinearLayout>
