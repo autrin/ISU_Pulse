@@ -1,5 +1,6 @@
 package com.coms309.isu_pulse_frontend.ui.home;
 
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,6 +32,9 @@ public class HomeFragment extends Fragment {
 
         announcements = root.findViewById(R.id.textAnnouncementTitle);
         announcements.setText("Announcements");
+        announcements.setTextSize(25);
+        // make the text bold
+        announcements.setTypeface(null, Typeface.BOLD);
 
         return root;
     }
