@@ -10,10 +10,13 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.coms309.isu_pulse_frontend.databinding.FragmentHomeBinding;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class HomeFragment extends Fragment {
@@ -48,6 +51,8 @@ public class HomeFragment extends Fragment {
         textViewTasksDueTodayTitle.setTypeface(null, Typeface.BOLD);
 
         // Create a weekly calendar that will show the tasks and events for each day on the calendar
+        RecyclerView recyclerView = binding.recyclerViewWeeklyCalendar;
+
         return root;
     }
 
