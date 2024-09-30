@@ -1,5 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
+//    id("org.jetbrains.kotlin.android") version "2.0.20" apply false
+
 }
 
 android {
@@ -8,7 +10,7 @@ android {
 
     defaultConfig {
         applicationId = "com.coms309.isu_pulse_frontend"
-        minSdk = 30
+        minSdk = 27
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
@@ -31,6 +33,8 @@ android {
     }
     buildFeatures {
         viewBinding = true
+        dataBinding = true
+
     }
 }
 
