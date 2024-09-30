@@ -13,10 +13,10 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.coms309.isu_pulse_frontend.R;
 import com.coms309.isu_pulse_frontend.databinding.FragmentHomeBinding;
-import com.coms309.isu_pulse_frontend.ui.home.HomeViewModel;
-public class HomeFragment extends Fragment {
-    TextView announcements;
 
+public class HomeFragment extends Fragment {
+    TextView announcementsTitle;
+    TextView tasksDueTodayTitle;
     private FragmentHomeBinding binding;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -30,11 +30,15 @@ public class HomeFragment extends Fragment {
         final TextView textView = binding.textHome;
         homeViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
 
-        announcements = root.findViewById(R.id.textAnnouncementTitle);
-        announcements.setText("Announcements");
-        announcements.setTextSize(25);
-        // make the text bold
-        announcements.setTypeface(null, Typeface.BOLD);
+        announcementsTitle = root.findViewById(R.id.textAnnouncementTitle);
+        announcementsTitle.setText("Announcements");
+        announcementsTitle.setTextSize(25);
+        announcementsTitle.setTypeface(null, Typeface.BOLD);
+
+        tasksDueTodayTitle = root.findViewById(R.id.textTasksDueTodayTitle);
+        tasksDueTodayTitle.setText("Tasks Due Today");
+        tasksDueTodayTitle.setTextSize(25);
+        tasksDueTodayTitle.setTypeface(null, Typeface.BOLD);
 
         return root;
     }
