@@ -2,126 +2,185 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
+    android:background="#5E98D0"
     android:gravity="center"
-    android:background="#6699cc"
+    android:orientation="vertical"
     android:padding="16dp">
 
     <TextView
         android:id="@+id/sign_up_page_isu_pulse"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="32dp"
         android:text="Sign up"
-        android:textSize="24sp"
         android:textColor="#FFFFFF"
-        android:layout_marginBottom="32dp" />
+        android:textSize="24sp" />
 
     <EditText
         android:id="@+id/netid_isu_pulse"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="NetID"
+        android:layout_marginBottom="16dp"
         android:background="@android:drawable/edit_text"
+        android:hint="NetID"
+        android:inputType="text"
         android:padding="10dp"
         android:textColor="#000000"
-        android:textStyle="bold"
-        android:inputType="text"
-        android:layout_marginBottom="16dp" />
+        android:textStyle="bold" />
 
     <EditText
         android:id="@+id/firstname_isu_pulse"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="First name"
+        android:layout_marginBottom="16dp"
         android:background="@android:drawable/edit_text"
+        android:hint="First name"
+        android:inputType="text"
         android:padding="10dp"
         android:textColor="#000000"
-        android:textStyle="bold"
-        android:inputType="text"
-        android:layout_marginBottom="16dp" />
+        android:textStyle="bold" />
 
     <EditText
         android:id="@+id/lastname_isu_pulse"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Last name"
+        android:layout_marginBottom="16dp"
         android:background="@android:drawable/edit_text"
+        android:hint="Last name"
+        android:inputType="text"
         android:padding="10dp"
         android:textColor="#000000"
-        android:textStyle="bold"
-        android:inputType="text"
-        android:layout_marginBottom="16dp" />
+        android:textStyle="bold" />
 
     <EditText
         android:id="@+id/email_isu_pulse"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Email"
+        android:layout_marginBottom="16dp"
         android:background="@android:drawable/edit_text"
+        android:hint="Email"
+        android:inputType="textEmailAddress"
         android:padding="10dp"
         android:textColor="#000000"
-        android:textStyle="bold"
-        android:inputType="textEmailAddress"
-        android:layout_marginBottom="16dp" />
+        android:textStyle="bold" />
 
     <EditText
         android:id="@+id/usertype_isu_pulse"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="UserType"
-        android:background="@android:drawable/edit_text"
+        android:background="@android:drawable/btn_dropdown"
         android:padding="10dp"
         android:textColor="#000000"
         android:inputType="text"
         android:textStyle="bold"
         android:layout_marginBottom="16dp" />
 
+
+
+    <!--    <Spinner-->
+    <!--        android:id="@+id/usertype_isu_pulse"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_marginBottom="16dp"-->
+    <!--        android:background="@android:drawable/edit_text"-->
+    <!--        android:padding="10dp"-->
+    <!--        android:textColor="#000000"-->
+    <!--        android:textStyle="bold" />-->
+<!--    <com.google.android.material.textfield.TextInputLayout-->
+<!--        style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginBottom="16dp"-->
+<!--        android:background="@android:drawable/edit_text"-->
+<!--        android:hint="UserType"-->
+<!--        android:padding="10dp"-->
+<!--        android:textColor="#000000"-->
+<!--        android:textStyle="bold">-->
+
+<!--        <AutoCompleteTextView-->
+<!--            android:id="@+id/auto_complete_textview"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="40dp"-->
+<!--            android:inputType="none" />-->
+<!--    </com.google.android.material.textfield.TextInputLayout>-->
+
+
     <EditText
         android:id="@+id/password_isu_pulse"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Password"
+        android:layout_marginBottom="16dp"
         android:background="@android:drawable/edit_text"
+        android:hint="Password"
+        android:inputType="textPassword"
         android:padding="10dp"
         android:textColor="#000000"
-        android:textStyle="bold"
-        android:inputType="textPassword"
-        android:layout_marginBottom="16dp" />
+        android:textStyle="bold" />
 
     <EditText
         android:id="@+id/confirm_password_isu_pulse"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Confirm Password"
+        android:layout_marginBottom="20dp"
         android:background="@android:drawable/edit_text"
+        android:hint="Confirm Password"
+        android:inputType="textPassword"
         android:padding="10dp"
         android:textColor="#000000"
-        android:textStyle="bold"
-        android:inputType="textPassword"
-        android:layout_marginBottom="20dp" />
+        android:textStyle="bold" />
+
+    <LinearLayout
+        android:id="@+id/profile_image_section"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <!-- Profile Image Placeholder -->
+        <ImageView
+            android:id="@+id/profile_image"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginEnd="16dp"
+            android:background="@drawable/rounded_rectangle"
+            android:contentDescription="Profile Image"
+            android:src="@drawable/isu_logo" />
+
+        <!-- Upload Image Button -->
+        <Button
+            android:id="@+id/upload_image_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#FFFFFF"
+            android:text="Upload Profile Image"
+            android:textColor="#000000" />
+
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center">
+        android:gravity="center"
+        android:orientation="horizontal">
 
         <Button
             android:id="@+id/enter_isu_pulse"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"
+            android:backgroundTint="#512DA8"
             android:text="Enter"
-            android:textColor="#FFFFFF"
-            android:backgroundTint="#512DA8" />
+            android:textColor="#FFFFFF" />
 
         <Button
             android:id="@+id/sign_in_isu_pulse"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:backgroundTint="#512DA8"
             android:text="Sign in"
-            android:textColor="#FFFFFF"
-            android:backgroundTint="#512DA8" />
+            android:textColor="#FFFFFF" />
     </LinearLayout>
 
 </LinearLayout>
