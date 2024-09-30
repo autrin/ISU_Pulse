@@ -52,6 +52,7 @@ public class HomeFragment extends Fragment {
 
         // Create a weekly calendar that will show the tasks and events for each day on the calendar
         RecyclerView recyclerView = binding.recyclerViewWeeklyCalendar;
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         return root;
     }
