@@ -3,88 +3,45 @@ package coms309.backEnd.demo.entity;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "course" )
 public class Course {
 
     @Id
-    @Column(name = "course_Id")
-    private String cId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int cId;
 
-    @Column(name = "code")
-    private int code;
-
-    @Column(name = "title")
+    private String code;
     private String title;
 
-    @Column(name = "description")
+    @Column(columnDefinition = "TEXT")
     private String description;
 
-    @Column(name = "credits")
     private int credits;
-
-    @Column(name = "section")
     private int numSections;
 
-    @Column(name = "department")
-    @JoinColumn(name = "department_id")
+    @ManyToOne
+    @JoinColumn(name = "dId")
     private Department department;
 
-    public Course() {
-    }
-
-    public String getcId() {
+    // Getters and Setters
+    public int getCId() {
         return cId;
     }
 
-    public void setcId(String cId) {
+    public void setCId(int cId) {
         this.cId = cId;
     }
 
-    public int getCode() {
-        return code;
+    // Constructors
+    public Course() {
     }
 
-    public void setCode(int code) {
+    public Course(int cId, String code, String title, String description, int credits, int numSections, Department department) {
+        this.cId = cId;
         this.code = code;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
         this.title = title;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
         this.description = description;
-    }
-
-    public int getCredits() {
-        return credits;
-    }
-
-    public void setCredits(int credits) {
         this.credits = credits;
-    }
-
-    public int getNumSections() {
-        return numSections;
-    }
-
-    public void setNumSections(int numSections) {
         this.numSections = numSections;
-    }
-
-    public Department getDepartment() {
-        return department;
-    }
-
-    public void setDepartment(Department department) {
         this.department = department;
     }
 }

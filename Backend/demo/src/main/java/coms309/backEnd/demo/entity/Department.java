@@ -3,43 +3,31 @@ package coms309.backEnd.demo.entity;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "Department")
 public class Department {
+
     @Id
-    @Column(name = "dId")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String dId;
 
-    @Column(name = "department_name")
     private String name;
-
-    @Column(name = "location")
     private String location;
 
-
-    public Department() {
-    }
-
-    public String getdId() {
+    // Getters and Setters
+    public String getDId() {
         return dId;
     }
 
-    public void setdId(String dId) {
+    public void setDId(String dId) {
         this.dId = dId;
     }
 
-    public String getName() {
-        return name;
+    // Constructors
+    public Department() {
     }
 
-    public void setName(String name) {
+    public Department(String dId, String name, String location) {
+        this.dId = dId;
         this.name = name;
-    }
-
-    public String getLocation() {
-        return location;
-    }
-
-    public void setLocation(String location) {
         this.location = location;
     }
 }
