@@ -15,7 +15,8 @@ import com.coms309.isu_pulse_frontend.databinding.FragmentHomeBinding;
 public class HomeFragment extends Fragment {
 
     private FragmentHomeBinding binding;
-
+    private TextView textViewTasksDueTodayTitle;
+    private TextView textViewAnnouncementTitle;
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         HomeViewModel homeViewModel =
