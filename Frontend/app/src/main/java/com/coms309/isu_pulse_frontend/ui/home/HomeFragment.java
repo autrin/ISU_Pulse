@@ -13,11 +13,19 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.coms309.isu_pulse_frontend.databinding.FragmentHomeBinding;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class HomeFragment extends Fragment {
 
     private FragmentHomeBinding binding;
     private TextView textViewTasksDueTodayTitle;
     private TextView textViewAnnouncementTitle;
+
+    private List<String> tasksDueToday = new ArrayList<>();
+    private List<String> events = new ArrayList<>();
+    private List<String> announcements = new ArrayList<>();
+
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         HomeViewModel homeViewModel =
@@ -39,6 +47,7 @@ public class HomeFragment extends Fragment {
         textViewTasksDueTodayTitle.setTextSize(25);
         textViewTasksDueTodayTitle.setTypeface(null, Typeface.BOLD);
 
+        // Create a weekly calendar that will show the tasks and events for each day on the calendar
         return root;
     }
 
