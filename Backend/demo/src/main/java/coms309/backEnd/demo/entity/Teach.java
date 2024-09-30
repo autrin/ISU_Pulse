@@ -1,54 +1,54 @@
 package coms309.backEnd.demo.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import java.io.Serializable;
 
-public class Teach {
+@Entity
+@IdClass(TeachId.class)
+public class Teach implements Serializable {
+
     @Id
-    @Column(name = "fId")
-    private Long fId;
+    private String fId;
 
-    @Column(name = "cId")
-    private Long cId;
+    @Id
+    private String cId;
 
-    @Column(name = "section")
-    private String section;
+    @Id
+    private int section;
 
-    @Column(name = "classTime")
     private String classTime;
 
-    public Teach() {
-    }
+    @ManyToOne
+    @JoinColumn(name = "fId", referencedColumnName = "facultyId", insertable = false, updatable = false)
+    private Faculty faculty;
 
-    public Long getcId(){
-        return cId;
-    }
+    @ManyToOne
+    @JoinColumn(name = "cId", insertable = false, updatable = false)
+    private Course course;
 
-    public void setcId(Long cId) {
-        this.cId = cId;
-    }
-
-    public Long getfId() {
+    // Getters and Setters
+    public String getFId() {
         return fId;
     }
 
-    public void setfId(Long fId) {
+    public void setFId(String fId) {
         this.fId = fId;
     }
 
-    public String getSection() {
-        return section;
+    // (Other getters and setters)
+
+    // Constructors
+    public Teach() {
     }
 
-    public void setSection(String section) {
+    public Teach(String fId, String cId, int section, String classTime, Faculty faculty, Course course) {
+        this.fId = fId;
+        this.cId = cId;
         this.section = section;
-    }
-
-    public String getClassTime() {
-        return classTime;
-    }
-
-    public void setClassTime(String classTime) {
         this.classTime = classTime;
+        this.faculty = faculty;
+        this.course = course;
     }
+
+    // (Optional: toString method)
 }

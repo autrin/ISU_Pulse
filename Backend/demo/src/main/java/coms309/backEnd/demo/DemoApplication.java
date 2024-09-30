@@ -1,5 +1,6 @@
 package coms309.backEnd.demo;
 
+import coms309.backEnd.demo.entity.Faculty;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -10,4 +11,7 @@ public class DemoApplication {
 		SpringApplication.run(DemoApplication.class, args);
 	}
 
+	private static void test(Faculty f) {
+		f.getDepartment();
+	}
 }

@@ -1,46 +1,51 @@
 package coms309.backEnd.demo.entity;
 
 import jakarta.persistence.*;
+import java.io.Serializable;
 
 @Entity
-@Table(name = "Enroll")
-public class Enroll {
+@IdClass(EnrollId.class)
+public class Enroll implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "sId")
-    private Long sId;
+    private String sId;
 
-    @Column(name = "cId")
-    private Long cId;
+    @Id
+    private String cId;
 
-    @Column(name = "section")
-    private String section;
+    @Id
+    private int section;
 
-    public Enroll() {
-    }
+    @ManyToOne
+    @JoinColumn(name = "sId", referencedColumnName = "netId", insertable = false, updatable = false)
+    private User student;
 
-    public Long getsId() {
+    @ManyToOne
+    @JoinColumn(name = "cId", insertable = false, updatable = false)
+    private Course course;
+
+    // Getters and Setters
+    public String getSId() {
         return sId;
     }
 
-    public void setsId(Long sId) {
+    public void setSId(String sId) {
         this.sId = sId;
     }
 
-    public Long getcId() {
-        return cId;
+    // (Other getters and setters)
+
+    // Constructors
+    public Enroll() {
     }
 
-    public void setcId(Long cId) {
+    public Enroll(String sId, String cId, int section, User student, Course course) {
+        this.sId = sId;
         this.cId = cId;
-    }
-
-    public String getSection() {
-        return section;
-    }
-
-    public void setSection(String section) {
         this.section = section;
+        this.student = student;
+        this.course = course;
     }
+
+    // (Optional: toString method)
 }
