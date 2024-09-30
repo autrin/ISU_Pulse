@@ -30,6 +30,7 @@ public class HomeFragment extends Fragment {
 
         textViewAnnouncementTitle = binding.TextViewAnnouncementTitle;
         textViewAnnouncementTitle.setText("Announcements");
+        textViewAnnouncementTitle.setTextSize(25);
 
         return root;
     }
