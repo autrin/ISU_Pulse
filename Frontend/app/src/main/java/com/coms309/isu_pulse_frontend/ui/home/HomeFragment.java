@@ -32,8 +32,13 @@ public class HomeFragment extends Fragment {
         textViewAnnouncementTitle = binding.TextViewAnnouncementTitle;
         textViewAnnouncementTitle.setText("Announcements");
         textViewAnnouncementTitle.setTextSize(25);
-        // make it bold
-        textViewAnnouncementTitle.setTypeface(null, Typeface.BOLD);
+        textViewAnnouncementTitle.setTypeface(null, Typeface.BOLD); // make it bold
+
+        textViewTasksDueTodayTitle = binding.textViewTasksDueToday;
+        textViewTasksDueTodayTitle.setText("Tasks Due Today");
+        textViewTasksDueTodayTitle.setTextSize(25);
+        textViewTasksDueTodayTitle.setTypeface(null, Typeface.BOLD);
+
         return root;
     }
 
