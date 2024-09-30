@@ -54,6 +54,9 @@ public class HomeFragment extends Fragment {
         RecyclerView recyclerView = binding.recyclerViewWeeklyCalendar;
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
+        List<String> days = Arrays.asList("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday");
+        WeeklyCalendarAdapter adapter = new WeeklyCalendarAdapter(days, tasksDueToday, events);
+        recyclerView.setAdapter(adapter);
         return root;
     }
 
