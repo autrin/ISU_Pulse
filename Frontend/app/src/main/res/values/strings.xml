@@ -10,4 +10,11 @@
     <string name="menu_home">Home</string>
     <string name="menu_gallery">Gallery</string>
     <string name="menu_slideshow">Slideshow</string>
+
+    <!-- Added the string-array inside the resources tag -->
+    <string-array name="user_types">
+        <item>Teacher</item>
+        <item>Student</item>
+        <item>Admin</item>
+    </string-array>
 </resources>
