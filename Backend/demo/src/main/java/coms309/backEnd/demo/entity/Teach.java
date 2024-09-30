@@ -20,7 +20,7 @@ public class Teach {
     public Teach() {
     }
 
-    public Long getcId() {
+    public Long getcId(){
         return cId;
     }
 
