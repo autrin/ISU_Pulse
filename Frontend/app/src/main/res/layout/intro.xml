@@ -44,11 +44,11 @@
             android:layout_marginEnd="16dp"
             android:text="Sign Up" />
 
-        <Button
-            android:id="@+id/guestButton_isu_pulse"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Guest" />
+<!--        <Button-->
+<!--            android:id="@+id/guestButton_isu_pulse"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="Guest" />-->
 
     </LinearLayout>
 

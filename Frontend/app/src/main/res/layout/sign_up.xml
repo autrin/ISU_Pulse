@@ -89,7 +89,7 @@
         android:layout_marginBottom="16dp" />
 
     <EditText
-        android:id="@+id/retype_password_isu_pulse"
+        android:id="@+id/confirm_password_isu_pulse"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Confirm Password"
@@ -113,7 +113,7 @@
             android:layout_marginEnd="16dp"
             android:text="Enter"
             android:textColor="#FFFFFF"
-            android:backgroundTint="#FF0000" />
+            android:backgroundTint="#512DA8" />
 
         <Button
             android:id="@+id/sign_in_isu_pulse"
@@ -121,7 +121,7 @@
             android:layout_height="wrap_content"
             android:text="Sign in"
             android:textColor="#FFFFFF"
-            android:backgroundTint="#FF0000" />
+            android:backgroundTint="#512DA8" />
     </LinearLayout>
 
 </LinearLayout>

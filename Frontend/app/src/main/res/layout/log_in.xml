@@ -52,7 +52,7 @@
             android:layout_height="wrap_content"
             android:text="Enter"
             android:textColor="#FFFFFF"
-            android:backgroundTint="#FF0000"
+            android:backgroundTint="#512DA8"
             android:layout_marginEnd="16dp" />
 
         <Button
@@ -61,7 +61,7 @@
             android:layout_height="wrap_content"
             android:text="Sign up"
             android:textColor="#FFFFFF"
-            android:backgroundTint="#FF0000" />
+            android:backgroundTint="#512DA8" />
     </LinearLayout>
 
     <!-- Uncomment for Forgot Password option -->
