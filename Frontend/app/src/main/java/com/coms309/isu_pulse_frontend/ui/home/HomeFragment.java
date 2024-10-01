@@ -77,7 +77,7 @@ public class HomeFragment extends Fragment {
 
     public void populateTasksDueToday(){
         // First roundtrip to the server to get the tasks due today
-        // tasksDueToday = getTasksDueToday();
+         getTasksDueToday();
     }
     public void getTasksDueToday(){
         StringRequest stringRequest = new StringRequest(Request.Method.GET, URL_STRING_REQ, new Response.Listener<String>() {
