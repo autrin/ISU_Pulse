@@ -80,11 +80,16 @@ public class HomeFragment extends Fragment {
         // tasksDueToday = getTasksDueToday();
     }
     public void getTasksDueToday(){
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, URL_STRING_REQ. new Response.Listener<String>(){
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, URL_STRING_REQ, new Response.Listener<String>() {
             @Override
             public void onResponse(String response){
                 VolleyLog.d("Response: " + response.toString());
                 tasksDueToday.add(response);
+            }
+        }, new Response.ErrorListener(){
+            @Override
+            public void onErrorResponse(VolleyError error){
+                VolleyLog.e("Error: " + error.getMessage());
             }
         });
     }
