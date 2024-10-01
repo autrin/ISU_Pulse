@@ -2,6 +2,7 @@ package com.coms309.isu_pulse_frontend.ui.home;
 
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,8 +14,10 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.volley.toolbox.JsonArrayRequest;
 import com.coms309.isu_pulse_frontend.databinding.FragmentHomeBinding;
 
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -24,6 +27,9 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.StringRequest;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 
 public class HomeFragment extends Fragment {
@@ -82,12 +88,29 @@ public class HomeFragment extends Fragment {
          getTasksDueToday();
     }
     public void getTasksDueToday(){ // might need to change this to JsonArrayRequest if we want to get a list of tasks
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, URL_STRING_REQ, new Response.Listener<String>() {
+        JsonArrayRequest jsonArrReq = new JsonArrayRequest(Request.Method.GET, URL_STRING_REQ, null, new Response.Listener<JSONArray>() {
             @Override
-            public void onResponse(String response){
-                VolleyLog.d("Response: " + response.toString());
-                tasksDueToday.add(response);
+            public void onResponse(JSONArray response) {
+                Log.d("Response: " , response.toString());
+                for (int i = 0; i < response.length(); i++) {
+                    try {
+                        JSONObject jsonObject = response.getJSONObject(i);
+                        // TODO - get the properties of the task object
+                        Long cId = jsonObject.getLong("cId");
+                        Long tId = jsonObject.getLong("tId");
+                        String section = jsonObject.getString("section");
+                        String title = jsonObject.getString("title");
+                        String description = jsonObject.getString("description");
+                        Date date = Date.valueOf(jsonObject.getString("date"));
+                        String taskType = jsonObject.getString("taskType");
+
+//                        tasksDueToday.add(task);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
             }
+
         }, new Response.ErrorListener(){
             @Override
             public void onErrorResponse(VolleyError error){
