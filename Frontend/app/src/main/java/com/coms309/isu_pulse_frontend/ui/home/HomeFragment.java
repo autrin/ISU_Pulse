@@ -36,7 +36,7 @@ public class HomeFragment extends Fragment {
     private List<String> events = new ArrayList<>();
     private List<String> announcements = new ArrayList<>();
 
-    public final String URL_STRING_REQ = "http://localhost:8080/tasksduetoday";
+    public final String URL_STRING_REQ = "http://10.0.2.2:8080/tasksduetoday";
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
