@@ -19,6 +19,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.VolleyLog;
+import com.android.volley.toolbox.StringRequest;
+
+
 public class HomeFragment extends Fragment {
 
     private FragmentHomeBinding binding;
@@ -28,6 +35,8 @@ public class HomeFragment extends Fragment {
     private List<String> tasksDueToday = new ArrayList<>();
     private List<String> events = new ArrayList<>();
     private List<String> announcements = new ArrayList<>();
+
+    public final String URL_STRING_REQ = "http://localhost:8080/tasksduetoday";
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -64,5 +73,19 @@ public class HomeFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
+    }
+
+    public void populateTasksDueToday(){
+        // First roundtrip to the server to get the tasks due today
+        // tasksDueToday = getTasksDueToday();
+    }
+    public void getTasksDueToday(){
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, URL_STRING_REQ. new Response.Listener<String>(){
+            @Override
+            public void onResponse(String response){
+                VolleyLog.d("Response: " + response.toString());
+                tasksDueToday.add(response);
+            }
+        });
     }
 }
