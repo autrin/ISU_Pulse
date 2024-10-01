@@ -66,6 +66,8 @@ public class HomeFragment extends Fragment {
         List<String> days = Arrays.asList("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday");
         WeeklyCalendarAdapter adapter = new WeeklyCalendarAdapter(days, tasksDueToday, events);
         recyclerView.setAdapter(adapter);
+        populateTasksDueToday();
+
         return root;
     }
 
