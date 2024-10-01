@@ -79,7 +79,7 @@ public class HomeFragment extends Fragment {
         // First roundtrip to the server to get the tasks due today
          getTasksDueToday();
     }
-    public void getTasksDueToday(){
+    public void getTasksDueToday(){ // might need to change this to JsonArrayRequest if we want to get a list of tasks
         StringRequest stringRequest = new StringRequest(Request.Method.GET, URL_STRING_REQ, new Response.Listener<String>() {
             @Override
             public void onResponse(String response){
