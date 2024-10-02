@@ -36,7 +36,25 @@ public class ApiService {
         JsonArrayRequest jsonArrReq = new JsonArrayRequest(Request.Method.GET, URL_STRING_REQ, null, new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray response) {
-
+                Log.d("Response: ", response.toString());
+                List<ListTaskObject> tasks = new ArrayList<>();
+                for (int i = 0; i < response.length(); i++) {
+                    try {
+                        JSONObject jsonObject = response.getJSONObject(i);
+                        Long cId = jsonObject.getLong("cId");
+                        Long tId = jsonObject.getLong("tId");
+                        String section = jsonObject.getString("section");
+                        String title = jsonObject.getString("title");
+                        String description = jsonObject.getString("description");
+                        Date date = Date.valueOf(jsonObject.getString("date"));
+                        String taskType = jsonObject.getString("taskType");
+                        ListTaskObject task = new ListTaskObject(cId, tId, section, title, description, date, taskType);
+                        tasks.add(task);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                listener.onResponse(tasks);
             }
         }, new Response.ErrorListener() {
             @Override
