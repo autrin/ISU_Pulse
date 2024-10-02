@@ -12,7 +12,7 @@
     <string name="menu_slideshow">Slideshow</string>
 
     <!-- Added the string-array inside the resources tag -->
-    <string-array name="user_types">
+    <string-array name="user_roles">
         <item>Teacher</item>
         <item>Student</item>
         <item>Admin</item>
