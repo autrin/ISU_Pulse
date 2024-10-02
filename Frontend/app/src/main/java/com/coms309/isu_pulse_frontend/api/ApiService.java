@@ -20,7 +20,7 @@ import java.util.List;
 
 public class ApiService {
 
-    private static final String URL_STRING_REQ = "http://10.0.2.2:8080/tasksduetoday";
+    private static final String URL_STRING_REQ = "https://8a50931b-2282-4c0b-b239-6544d8d72ce3.mock.pstmn.io";
     private Context context;
 
     public ApiService(Context context) {
