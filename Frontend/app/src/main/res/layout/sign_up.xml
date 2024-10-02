@@ -64,7 +64,7 @@
         android:textColor="#000000"
         android:textStyle="bold" />
 
-    <EditText
+    <Spinner
         android:id="@+id/usertype_isu_pulse"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
