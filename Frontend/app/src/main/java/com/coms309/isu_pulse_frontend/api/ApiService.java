@@ -47,5 +47,7 @@ public class ApiService {
             }
         });
 
+        // Add the request to the RequestQueue
+        Volley.newRequestQueue(context).add(jsonArrReq);
     }
 }
