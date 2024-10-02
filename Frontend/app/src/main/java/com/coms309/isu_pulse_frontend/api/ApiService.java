@@ -32,5 +32,20 @@ public class ApiService {
         void onError(String message);
     }
 
+    public void getTasksDueToday(TaskResponseListener listener) {
+        JsonArrayRequest jsonArrReq = new JsonArrayRequest(Request.Method.GET, URL_STRING_REQ, null, new Response.Listener<JSONArray>() {
+            @Override
+            public void onResponse(JSONArray response) {
 
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                String errorMessage = error.getMessage() != null ? error.getMessage() : "Unknown error";
+                VolleyLog.e("Error: " + errorMessage);
+                listener.onError(errorMessage);
+            }
+        });
+
+    }
 }
