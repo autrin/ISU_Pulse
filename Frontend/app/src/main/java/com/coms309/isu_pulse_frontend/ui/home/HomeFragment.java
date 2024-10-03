@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -33,7 +34,7 @@ public class HomeFragment extends Fragment {
     private List<ListTaskObject> tasksDueToday = new ArrayList<>();
     private List<String> events = new ArrayList<>();
     private List<String> announcements = new ArrayList<>();
-
+    private ListView listviwTasksDueToday;
     private ApiService apiService;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -66,6 +67,8 @@ public class HomeFragment extends Fragment {
         recyclerView.setAdapter(adapter);
 
         taskAdapter = new TaskListAdapter(tasksDueToday); // Create a new adapter with the tasks due today
+//        listviwTasksDueToday.setAdapter((android.widget.ListAdapter) taskAdapter);
+        // TODO: Fix the display of the tasks due today
         apiService = new ApiService(getContext());
         populateTasksDueToday();
 
