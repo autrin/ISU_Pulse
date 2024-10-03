@@ -1,4 +1,54 @@
 package com.coms309.isu_pulse_frontend.adapters;
 
-public class TaskListAdapter {
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.coms309.isu_pulse_frontend.R;
+import com.coms309.isu_pulse_frontend.ui.home.ListTaskObject;
+import com.coms309.isu_pulse_frontend.viewholders.ViewHolder;
+
+import java.util.List;
+
+public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskViewHolder> {
+    private List<ListTaskObject> tasks;
+
+    public TaskListAdapter(List<ListTaskObject> tasks) {
+        this.tasks = tasks;
+    }
+
+
+    @NonNull
+    @Override
+    public TaskListAdapter.TaskViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        return null;
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull TaskListAdapter.TaskViewHolder holder, int position) {
+
+    }
+
+    @Override
+    public int getItemCount() {
+        return 0;
+    }
+    public static class TaskViewHolder extends RecyclerView.ViewHolder implements ViewHolder {
+        TextView textViewTaskTitle;
+        TextView textViewTaskDescription;
+        TextView textViewDate;
+
+        public TaskViewHolder(@NonNull View itemView) {
+            super(itemView);
+        }
+
+        @Override
+        public void bind(Object obj) {
+
+        }
+    }
 }
