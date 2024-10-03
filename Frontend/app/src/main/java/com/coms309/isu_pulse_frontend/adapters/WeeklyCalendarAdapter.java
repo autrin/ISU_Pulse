@@ -1,4 +1,4 @@
-package com.coms309.isu_pulse_frontend.ui.home;
+package com.coms309.isu_pulse_frontend.adapters;
 
 import android.view.LayoutInflater;
 import android.view.View;
