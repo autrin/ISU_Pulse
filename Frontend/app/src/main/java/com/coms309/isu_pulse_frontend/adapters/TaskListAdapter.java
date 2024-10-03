@@ -24,13 +24,17 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskVi
 
     @NonNull
     @Override
-    public TaskListAdapter.TaskViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return null;
+    public TaskViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType){
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_task, parent, false);
+        return new TaskViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull TaskListAdapter.TaskViewHolder holder, int position) {
-
+        ListTaskObject task = tasks.get(position);
+        holder.textViewDate.setText(task.getDate().toString());
+        holder.textViewTitle.setText(task.getTitle());
+        holder.textViewDescription.setText(task.getDescription());
     }
 
     @Override
