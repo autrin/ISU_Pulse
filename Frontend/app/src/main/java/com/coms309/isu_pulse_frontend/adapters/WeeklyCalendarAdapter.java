@@ -9,16 +9,18 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.coms309.isu_pulse_frontend.R;
+import com.coms309.isu_pulse_frontend.ui.home.ListTaskObject;
+import com.coms309.isu_pulse_frontend.viewholders.ViewHolder;
 
 import java.util.List;
 
-public class WeeklyCalendarAdapter extends RecyclerView.Adapter<WeeklyCalendarAdapter.ViewHolder> {
+public class WeeklyCalendarAdapter extends RecyclerView.Adapter<WeeklyCalendarAdapter.WeeklyViewHolder> {
 
     private List<String> days;
-    private List<String> tasksDueToday;
+    private List<ListTaskObject> tasksDueToday;
     private List<String> events;
 
-    public WeeklyCalendarAdapter(List<String> days, List<String> tasksDueToday, List<String> events) {
+    public WeeklyCalendarAdapter(List<String> days, List<ListTaskObject> tasksDueToday, List<String> events) {
         this.days = days;
         this.tasksDueToday = tasksDueToday;
         this.events = events;
@@ -26,19 +28,18 @@ public class WeeklyCalendarAdapter extends RecyclerView.Adapter<WeeklyCalendarAd
 
     @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public WeeklyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_day, parent, false);
-        return new ViewHolder(view);
+        return new WeeklyViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull WeeklyViewHolder holder, int position) {
         String day = days.get(position);
         holder.textViewDay.setText(day);
 
-        // Check if tasksDueToday and events lists are not empty before accessing them
         if (!tasksDueToday.isEmpty() && position < tasksDueToday.size()) {
-            holder.textViewTask.setText(tasksDueToday.get(position));
+            holder.textViewTask.setText(tasksDueToday.get(position).getTitle());
         } else {
             holder.textViewTask.setText("No tasks");
         }
@@ -55,16 +56,21 @@ public class WeeklyCalendarAdapter extends RecyclerView.Adapter<WeeklyCalendarAd
         return days.size();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public static class WeeklyViewHolder extends RecyclerView.ViewHolder implements ViewHolder {
         TextView textViewDay;
         TextView textViewTask;
         TextView textViewEvent;
 
-        public ViewHolder(@NonNull View itemView) {
+        public WeeklyViewHolder(@NonNull View itemView) {
             super(itemView);
             textViewDay = itemView.findViewById(R.id.textViewDay);
             textViewTask = itemView.findViewById(R.id.textViewTasks);
             textViewEvent = itemView.findViewById(R.id.textViewEvents);
+        }
+
+        @Override
+        public void bind(Object obj) {
+
         }
     }
 }
