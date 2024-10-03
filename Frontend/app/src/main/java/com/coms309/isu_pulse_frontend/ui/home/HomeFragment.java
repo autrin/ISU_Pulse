@@ -14,6 +14,8 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.coms309.isu_pulse_frontend.adapters.TaskListAdapter;
+import com.coms309.isu_pulse_frontend.adapters.WeeklyCalendarAdapter;
 import com.coms309.isu_pulse_frontend.api.ApiService;
 import com.coms309.isu_pulse_frontend.databinding.FragmentHomeBinding;
 
@@ -26,8 +28,9 @@ public class HomeFragment extends Fragment {
     private FragmentHomeBinding binding;
     private TextView textViewTasksDueTodayTitle;
     private TextView textViewAnnouncementTitle;
+    private TaskListAdapter taskAdapter;
 
-    private List<String> tasksDueToday = new ArrayList<>();
+    private List<ListTaskObject> tasksDueToday = new ArrayList<>();
     private List<String> events = new ArrayList<>();
     private List<String> announcements = new ArrayList<>();
 
@@ -62,6 +65,7 @@ public class HomeFragment extends Fragment {
         WeeklyCalendarAdapter adapter = new WeeklyCalendarAdapter(days, tasksDueToday, events);
         recyclerView.setAdapter(adapter);
 
+        taskAdapter = new TaskListAdapter(tasksDueToday); // Create a new adapter with the tasks due today
         apiService = new ApiService(getContext());
         populateTasksDueToday();
 
@@ -80,7 +84,7 @@ public class HomeFragment extends Fragment {
             public void onResponse(List<ListTaskObject> tasks) {
                 // Handle the response and update the UI
                 for (ListTaskObject task : tasks) {
-                    tasksDueToday.add(task.getTitle());
+                    tasksDueToday.add(task);
                 }
                 // Notify the adapter that the data has changed
                 binding.recyclerViewWeeklyCalendar.getAdapter().notifyDataSetChanged();
