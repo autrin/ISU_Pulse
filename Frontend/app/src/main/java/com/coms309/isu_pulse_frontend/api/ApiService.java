@@ -20,7 +20,7 @@ import java.util.List;
 
 public class ApiService {
 
-    private static final String URL_STRING_REQ = "https://8a50931b-2282-4c0b-b239-6544d8d72ce3.mock.pstmn.io";
+    private static final String URL_STRING_REQ = "https://ae21ce63-e030-423f-aa6f-a80597a900cf.mock.pstmn.io";
     private Context context;
 
     public ApiService(Context context) {
@@ -33,7 +33,8 @@ public class ApiService {
     }
 
     public void getTasksDueToday(TaskResponseListener listener) {
-        JsonArrayRequest jsonArrReq = new JsonArrayRequest(Request.Method.GET, URL_STRING_REQ, null, new Response.Listener<JSONArray>() {
+        String url = URL_STRING_REQ + "/tasksdueToday";
+        JsonArrayRequest jsonArrReq = new JsonArrayRequest(Request.Method.GET, url, null, new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray response) {
                 Log.d("Response: ", response.toString());
