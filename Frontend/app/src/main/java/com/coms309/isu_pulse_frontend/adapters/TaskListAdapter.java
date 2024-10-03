@@ -38,12 +38,15 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskVi
         return 0;
     }
     public static class TaskViewHolder extends RecyclerView.ViewHolder implements ViewHolder {
-        TextView textViewTaskTitle;
-        TextView textViewTaskDescription;
+        TextView textViewTitle;
+        TextView textViewDescription;
         TextView textViewDate;
 
         public TaskViewHolder(@NonNull View itemView) {
             super(itemView);
+            textViewTitle = itemView.findViewById(R.id.textViewTitle);
+            textViewDescription = itemView.findViewById(R.id.textViewDescription);
+            textViewDate = itemView.findViewById(R.id.textViewDate);
         }
 
         @Override
