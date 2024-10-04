@@ -6,10 +6,6 @@ import jakarta.persistence.*;
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int uId;
-
-    @Column(unique = true)
     private String netId;
 
     private String firstName;
@@ -20,28 +16,6 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     private UserType userType;
-
-    // Getters and Setters
-    public int getUId() {
-        return uId;
-    }
-
-    // Setter is optional and often omitted for ID fields managed by the database
-    public void setUId(int uId) {
-        this.uId = uId;
-    }
-
-    public String getNetId() {
-        return netId;
-    }
-
-    public void setNetId(String netId) {
-        this.netId = netId;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
 
     // Constructors
     public User() {

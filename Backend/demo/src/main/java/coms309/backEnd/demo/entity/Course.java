@@ -3,6 +3,7 @@ package coms309.backEnd.demo.entity;
 import jakarta.persistence.*;
 
 @Entity
+
 public class Course {
 
     @Id

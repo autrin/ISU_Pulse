@@ -7,17 +7,17 @@ public class Department {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String dId;
+    private int dId;
 
     private String name;
     private String location;
 
     // Getters and Setters
-    public String getDId() {
+    public int getDId() {
         return dId;
     }
 
-    public void setDId(String dId) {
+    public void setDId(int dId) {
         this.dId = dId;
     }
 
@@ -25,7 +25,7 @@ public class Department {
     public Department() {
     }
 
-    public Department(String dId, String name, String location) {
+    public Department(int dId, String name, String location) {
         this.dId = dId;
         this.name = name;
         this.location = location;

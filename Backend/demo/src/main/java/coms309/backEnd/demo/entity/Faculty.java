@@ -10,18 +10,16 @@ import lombok.Setter;
 @Table(name = "Faculty")
 public class Faculty {
     @Id
-    @Getter
-    @Setter
     private String facultyId;
 
     private String title;
 
     @OneToOne
-    @JoinColumn(name = "facultyId")
+    @JoinColumn(name = "facultyId", referencedColumnName = "netId")
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "departmentId")
+    @JoinColumn(name = "dId")
     private Department department;
 
 
