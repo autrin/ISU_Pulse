@@ -2,76 +2,72 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#5E98D0"
+    android:background="@color/white"
     android:gravity="center"
     android:orientation="vertical"
-    android:padding="16dp">
-
+    android:padding="24dp">
 
     <TextView
         android:id="@+id/signin_isu_pulse"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="32dp"
-        android:text="Sign in"
-        android:textColor="#FFFFFF"
-        android:textSize="24sp" />
-
+        android:layout_marginBottom="48dp"
+        android:text="ISU Pulse"
+        android:textColor="@color/design_default_color_primary"
+        android:textSize="36sp"
+        android:textStyle="bold" />
 
     <EditText
         android:id="@+id/netid_isu_pulse"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
-        android:background="@android:drawable/edit_text"
+        android:background="@drawable/edit_text_background"
         android:hint="NetID"
-        android:padding="10dp"
-        android:textColor="#000000"
-        android:textStyle="bold" />
+        android:padding="16dp"
+        android:textColor="@color/design_default_color_on_secondary"
+        android:textColorHint="@color/design_default_color_on_secondary" />
 
     <EditText
         android:id="@+id/password_isu_pulse"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="32dp"
-        android:background="@android:drawable/edit_text"
+        android:layout_marginBottom="24dp"
+        android:background="@drawable/edit_text_background"
         android:hint="Password"
         android:inputType="textPassword"
-        android:padding="10dp"
-        android:textColor="#000000"
-        android:textStyle="bold" />
+        android:padding="16dp"
+        android:textColor="@color/design_default_color_on_secondary"
+        android:textColorHint="@color/design_default_color_on_secondary" />
 
-    <LinearLayout
+    <Button
+        android:id="@+id/enter_isu_pulse"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
-        android:gravity="center"
-        android:orientation="horizontal">
+        android:backgroundTint="@color/design_default_color_primary"
+        android:padding="16dp"
+        android:text="Log In"
+        android:textColor="@color/white"
+        android:textSize="16sp" />
 
-        <Button
-            android:id="@+id/enter_isu_pulse"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
-            android:backgroundTint="#512DA8"
-            android:text="Enter"
-            android:textColor="#FFFFFF" />
+    <Button
+        android:id="@+id/sign_up_isu_pulse"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        android:backgroundTint="@color/design_default_color_secondary"
+        android:padding="16dp"
+        android:text="Create New Account"
+        android:textColor="@color/white"
+        android:textSize="16sp" />
 
-        <Button
-            android:id="@+id/sign_up_isu_pulse"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:backgroundTint="#512DA8"
-            android:text="Sign up"
-            android:textColor="#FFFFFF" />
-    </LinearLayout>
-
-    <!-- Uncomment for Forgot Password option -->
-    <!-- <TextView
+    <TextView
         android:id="@+id/forgot_password_isu_pulse"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Forgot password"
-        android:textColor="#FFFFFF" /> -->
+        android:text="Forgot Password?"
+        android:textColor="@color/design_default_color_primary"
+        android:textSize="16sp" />
 
 </LinearLayout>
