@@ -8,7 +8,7 @@ import java.util.Objects;
 public class TeachId implements Serializable {
 
     private String fId;
-    private String cId;
+    private int cId;
     private int section;
 
 
@@ -16,7 +16,7 @@ public class TeachId implements Serializable {
     }
 
     // Parameterized constructor
-    public TeachId(String fId, String cId, int section) {
+    public TeachId(String fId, int cId, int section) {
         this.fId = fId;
         this.cId = cId;
         this.section = section;
