@@ -50,6 +50,7 @@ public class ApiService {
                         String description = jsonObject.getString("description");
                         Date date = Date.valueOf(jsonObject.getString("date"));
                         String taskType = jsonObject.getString("taskType");
+
                         ListTaskObject task = new ListTaskObject(cId, tId, section, title, description, date, taskType);
                         tasks.add(task);
                     } catch (Exception e) {
