@@ -15,6 +15,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.coms309.isu_pulse_frontend.R;
 import com.coms309.isu_pulse_frontend.adapters.TaskListAdapter;
 import com.coms309.isu_pulse_frontend.adapters.WeeklyCalendarAdapter;
 import com.coms309.isu_pulse_frontend.api.ApiService;
@@ -45,8 +46,8 @@ public class HomeFragment extends Fragment {
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        final TextView textView = binding.textHome;
-        homeViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
+//        final TextView textView = binding.textHome;
+//        homeViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
 
         textViewAnnouncementTitle = binding.TextViewAnnouncementTitle;
         textViewAnnouncementTitle.setText("Announcements");
@@ -66,7 +67,9 @@ public class HomeFragment extends Fragment {
         WeeklyCalendarAdapter adapter = new WeeklyCalendarAdapter(days, tasksDueToday, events);
         recyclerView.setAdapter(adapter);
 
-        taskAdapter = new TaskListAdapter(tasksDueToday); // Create a new adapter with the tasks due today
+        // Create the tasks due today
+        RecyclerView recylcerViewTasksDueToday = binding.recylcerViewTasksDueToday;
+
 //        listviwTasksDueToday.setAdapter((android.widget.ListAdapter) taskAdapter);
         // TODO: Fix the display of the tasks due today
         apiService = new ApiService(getContext());
