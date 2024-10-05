@@ -60,20 +60,24 @@ public class HomeFragment extends Fragment {
         textViewTasksDueTodayTitle.setTypeface(null, Typeface.BOLD);
 
         // Create a weekly calendar that will show the tasks and events for each day on the calendar
-        RecyclerView recyclerView = binding.recyclerViewWeeklyCalendar;
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+        RecyclerView recyclerViewCalendar = binding.recyclerViewWeeklyCalendar;
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+        layoutManager.setReverseLayout(false);
+        recyclerViewCalendar.setLayoutManager(layoutManager);
 
         List<String> days = Arrays.asList("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday");
-        WeeklyCalendarAdapter adapter = new WeeklyCalendarAdapter(days, tasksDueToday, events);
-        recyclerView.setAdapter(adapter);
+        WeeklyCalendarAdapter calendarAdapter = new WeeklyCalendarAdapter(days, tasksDueToday, events);
+        recyclerViewCalendar.setAdapter(calendarAdapter);
 
 
         // Create the tasks due today
         RecyclerView recylcerViewTasksDueToday = binding.recylcerViewTasksDueToday;
-        recylcerViewTasksDueToday.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
+        LinearLayoutManager layoutManagerTasks = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
+        layoutManagerTasks.setReverseLayout(false); // Ensure items start from the top
+        layoutManagerTasks.setStackFromEnd(false); // Ensure items are not stacked from the end
+        recylcerViewTasksDueToday.setLayoutManager(layoutManagerTasks);
 
         taskAdapter = new TaskListAdapter(tasksDueToday); // Create a new adapter with the tasks due today
-//        listviwTasksDueToday.setAdapter((android.widget.ListAdapter) taskAdapter);
         recylcerViewTasksDueToday.setAdapter(taskAdapter);
         apiService = new ApiService(getContext());
         populateTasksDueToday();
