@@ -44,9 +44,12 @@
         android:id="@+id/recylcerViewTasksDueToday"
         android:layout_width="411dp"
         android:layout_height="153dp"
-        android:layout_marginTop="228dp"
+        android:layout_marginBottom="88dp"
+        android:layout_marginTop="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/recyclerViewWeeklyCalendar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0" />
 </androidx.constraintlayout.widget.ConstraintLayout>
