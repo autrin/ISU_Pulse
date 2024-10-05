@@ -9,7 +9,6 @@ public class EnrollId implements Serializable {
     private String cId;
     private int section;
 
-    // Default constructor
     public EnrollId() {
     }
 
@@ -19,9 +18,6 @@ public class EnrollId implements Serializable {
         this.cId = cId;
         this.section = section;
     }
-
-    // Getters and Setters
-    // Implement getters and setters for sId, cId, and section
 
     // hashCode and equals methods
     @Override

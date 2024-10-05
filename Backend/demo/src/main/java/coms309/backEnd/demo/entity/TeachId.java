@@ -1,5 +1,7 @@
 package coms309.backEnd.demo.entity;
 
+import lombok.Data;
+
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -9,7 +11,7 @@ public class TeachId implements Serializable {
     private String cId;
     private int section;
 
-    // Default constructor
+
     public TeachId() {
     }
 
@@ -19,9 +21,6 @@ public class TeachId implements Serializable {
         this.cId = cId;
         this.section = section;
     }
-
-    // Getters and Setters
-    // (Implement getters and setters)
 
     // hashCode and equals methods
     @Override

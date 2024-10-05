@@ -1,8 +1,11 @@
 package coms309.backEnd.demo.entity;
 
 import jakarta.persistence.*;
+import lombok.Data;
+
 import java.io.Serializable;
 
+@Data
 @Entity
 @IdClass(EnrollId.class)
 public class Enroll implements Serializable {
@@ -24,7 +27,6 @@ public class Enroll implements Serializable {
     @JoinColumn(name = "cId", insertable = false, updatable = false)
     private Course course;
 
-    // Getters and Setters
     public String getSId() {
         return sId;
     }
@@ -33,7 +35,6 @@ public class Enroll implements Serializable {
         this.sId = sId;
     }
 
-    // (Other getters and setters)
 
     // Constructors
     public Enroll() {
@@ -47,5 +48,4 @@ public class Enroll implements Serializable {
         this.course = course;
     }
 
-    // (Optional: toString method)
 }

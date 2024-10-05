@@ -1,25 +1,18 @@
 package coms309.backEnd.demo.entity;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
+@Data
 @Entity
 public class Department {
-
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue
+    // fix: no strategy = IDENTITY
     private String dId;
 
     private String name;
     private String location;
-
-    // Getters and Setters
-    public String getDId() {
-        return dId;
-    }
-
-    public void setDId(String dId) {
-        this.dId = dId;
-    }
 
     // Constructors
     public Department() {

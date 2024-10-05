@@ -1,10 +1,11 @@
 package coms309.backEnd.demo.entity;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
+@Data
 @Entity
 public class Course {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int cId;
@@ -19,19 +20,9 @@ public class Course {
     private int numSections;
 
     @ManyToOne
-    @JoinColumn(name = "dId")
+    @JoinColumn(name = "d_id", referencedColumnName = "dId")
     private Department department;
 
-    // Getters and Setters
-    public int getCId() {
-        return cId;
-    }
-
-    public void setCId(int cId) {
-        this.cId = cId;
-    }
-
-    // Constructors
     public Course() {
     }
 

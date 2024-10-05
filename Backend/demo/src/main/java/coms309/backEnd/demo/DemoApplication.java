@@ -10,8 +10,4 @@ public class DemoApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(DemoApplication.class, args);
 	}
-
-	private static void test(Faculty f) {
-		f.getDepartment();
-	}
 }

@@ -10,8 +10,6 @@ import lombok.Setter;
 @Table(name = "Faculty")
 public class Faculty {
     @Id
-    @Getter
-    @Setter
     private String facultyId;
 
     private String title;
