@@ -14,19 +14,19 @@ import org.springframework.web.bind.annotation.RestController;
 public class CourseController {
 
 
-    @Autowired
-    private final CourseRepository courseRepository;
-
-    public CourseController(CourseRepository courseRepository) {
-        this.courseRepository = courseRepository;
-    }
-
-    @PostMapping("/addCourse")
-    public void addCourse(@RequestBody Course courseDetails){
-        if (courseRepository.findByCode(courseDetails.getCode()) != null) {
-            throw new IllegalArgumentException("Course already Exist");
-        }
-
-
-    }
+//    @Autowired
+//    private final CourseRepository courseRepository;
+//
+//    public CourseController(CourseRepository courseRepository) {
+//        this.courseRepository = courseRepository;
+//    }
+//
+//    @PostMapping("/addCourse")
+//    public void addCourse(@RequestBody Course courseDetails){
+//        if (courseRepository.findByCode(courseDetails.getCode()) != null) {
+//            throw new IllegalArgumentException("Course already Exist");
+//        }
+//
+//
+//    }
 }
