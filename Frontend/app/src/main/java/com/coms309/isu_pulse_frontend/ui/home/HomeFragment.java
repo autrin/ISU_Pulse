@@ -67,6 +67,7 @@ public class HomeFragment extends Fragment {
         WeeklyCalendarAdapter adapter = new WeeklyCalendarAdapter(days, tasksDueToday, events);
         recyclerView.setAdapter(adapter);
 
+
         // Create the tasks due today
         RecyclerView recylcerViewTasksDueToday = binding.recylcerViewTasksDueToday;
         recylcerViewTasksDueToday.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
@@ -74,7 +75,6 @@ public class HomeFragment extends Fragment {
         taskAdapter = new TaskListAdapter(tasksDueToday); // Create a new adapter with the tasks due today
 //        listviwTasksDueToday.setAdapter((android.widget.ListAdapter) taskAdapter);
         recylcerViewTasksDueToday.setAdapter(taskAdapter);
-        // TODO: Fix the display of the tasks due today
         apiService = new ApiService(getContext());
         populateTasksDueToday();
 
@@ -94,6 +94,7 @@ public class HomeFragment extends Fragment {
                 // Handle the response and update the UI
                 for (ListTaskObject task : tasks) {
                     tasksDueToday.add(task);
+                    taskAdapter.notifyDataSetChanged();
                 }
                 // Notify the adapter that the data has changed
                 binding.recyclerViewWeeklyCalendar.getAdapter().notifyDataSetChanged();
