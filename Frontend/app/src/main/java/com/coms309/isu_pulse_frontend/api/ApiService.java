@@ -21,6 +21,7 @@ import java.util.List;
 public class ApiService {
 
     private static final String URL_STRING_REQ = "https://ae21ce63-e030-423f-aa6f-a80597a900cf.mock.pstmn.io";
+    private static final String URL_STRING_REQ_VM = "http://coms-3090-042.class.las.iastate.edu:8080/tasksduetoday";
     private Context context;
 
     public ApiService(Context context) {
@@ -33,7 +34,7 @@ public class ApiService {
     }
 
     public void getTasksDueToday(TaskResponseListener listener) {
-        String url = URL_STRING_REQ + "/tasksdueToday";
+        String url = URL_STRING_REQ + "/tasksduetoday";
         JsonArrayRequest jsonArrReq = new JsonArrayRequest(Request.Method.GET, url, null, new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray response) {
