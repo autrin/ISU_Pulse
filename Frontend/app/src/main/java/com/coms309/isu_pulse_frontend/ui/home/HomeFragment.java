@@ -69,6 +69,7 @@ public class HomeFragment extends Fragment {
 
         // Create the tasks due today
         RecyclerView recylcerViewTasksDueToday = binding.recylcerViewTasksDueToday;
+        recylcerViewTasksDueToday.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
 
 //        listviwTasksDueToday.setAdapter((android.widget.ListAdapter) taskAdapter);
         // TODO: Fix the display of the tasks due today
