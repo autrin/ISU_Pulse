@@ -13,7 +13,7 @@ public class Teach implements Serializable {
     private String fId;
 
     @Id
-    private String cId;
+    private int cId;
 
     @Id
     private int section;
@@ -21,11 +21,11 @@ public class Teach implements Serializable {
     private String classTime;
 
     @ManyToOne
-    @JoinColumn(name = "fId", referencedColumnName = "facultyId", insertable = false, updatable = false)
+    @JoinColumn(name = "fId", referencedColumnName = "facultyId")
     private Faculty faculty;
 
     @ManyToOne
-    @JoinColumn(name = "cId", insertable = false, updatable = false)
+    @JoinColumn(name = "cId", referencedColumnName = "cId")
     private Course course;
 
     public String getFId() {
@@ -40,7 +40,7 @@ public class Teach implements Serializable {
     public Teach() {
     }
 
-    public Teach(String fId, String cId, int section, String classTime, Faculty faculty, Course course) {
+    public Teach(String fId, int cId, int section, String classTime, Faculty faculty, Course course) {
         this.fId = fId;
         this.cId = cId;
         this.section = section;

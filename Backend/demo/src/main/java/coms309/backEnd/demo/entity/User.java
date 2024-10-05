@@ -6,12 +6,7 @@ import lombok.Data;
 @Data
 @Entity
 public class User {
-
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int uId;
-
-    @Column(unique = true)
     private String netId;
 
     private String firstName;
@@ -22,7 +17,6 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     private UserType userType;
-
 
     // Constructors
     public User() {

@@ -7,9 +7,8 @@ import lombok.Data;
 @Entity
 public class Department {
     @Id
-    @GeneratedValue
-    // fix: no strategy = IDENTITY
-    private String dId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int dId;
 
     private String name;
     private String location;
@@ -18,7 +17,7 @@ public class Department {
     public Department() {
     }
 
-    public Department(String dId, String name, String location) {
+    public Department(int dId, String name, String location) {
         this.dId = dId;
         this.name = name;
         this.location = location;

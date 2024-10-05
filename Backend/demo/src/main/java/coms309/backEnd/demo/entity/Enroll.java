@@ -14,7 +14,7 @@ public class Enroll implements Serializable {
     private String sId;
 
     @Id
-    private String cId;
+    private int cId;
 
     @Id
     private int section;
@@ -40,7 +40,7 @@ public class Enroll implements Serializable {
     public Enroll() {
     }
 
-    public Enroll(String sId, String cId, int section, User student, Course course) {
+    public Enroll(String sId, int cId, int section, User student, Course course) {
         this.sId = sId;
         this.cId = cId;
         this.section = section;
