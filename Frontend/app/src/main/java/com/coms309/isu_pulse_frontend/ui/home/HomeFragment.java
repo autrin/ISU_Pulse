@@ -73,6 +73,7 @@ public class HomeFragment extends Fragment {
 
         taskAdapter = new TaskListAdapter(tasksDueToday); // Create a new adapter with the tasks due today
 //        listviwTasksDueToday.setAdapter((android.widget.ListAdapter) taskAdapter);
+        recylcerViewTasksDueToday.setAdapter(taskAdapter);
         // TODO: Fix the display of the tasks due today
         apiService = new ApiService(getContext());
         populateTasksDueToday();
