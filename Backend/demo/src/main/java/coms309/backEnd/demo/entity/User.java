@@ -3,6 +3,8 @@ package coms309.backEnd.demo.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 @Entity
 public class User {
@@ -18,6 +20,10 @@ public class User {
     @Enumerated(EnumType.STRING)
     private UserType userType;
 
+
+//    @OneToMany
+//    @JoinColumn(name = "enroll", referencedColumnName = "SId")
+//    private List<Enroll> enrollList;
     // Constructors
     public User() {
     }

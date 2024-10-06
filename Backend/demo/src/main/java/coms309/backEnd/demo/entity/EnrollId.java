@@ -6,14 +6,14 @@ import java.util.Objects;
 public class EnrollId implements Serializable {
 
     private String sId;
-    private String cId;
+    private int cId;
     private int section;
 
     public EnrollId() {
     }
 
     // Parameterized constructor
-    public EnrollId(String sId, String cId, int section) {
+    public EnrollId(String sId, int cId, int section) {
         this.sId = sId;
         this.cId = cId;
         this.section = section;
