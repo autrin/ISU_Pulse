@@ -1,4 +1,4 @@
-package com.coms309.isu_pulse_frontend;
+package com.coms309.isu_pulse_frontend.loginsignup;
 
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
@@ -15,6 +15,8 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.coms309.isu_pulse_frontend.MainActivity;
+import com.coms309.isu_pulse_frontend.R;
 
 // Other necessary imports
 import java.util.HashMap;

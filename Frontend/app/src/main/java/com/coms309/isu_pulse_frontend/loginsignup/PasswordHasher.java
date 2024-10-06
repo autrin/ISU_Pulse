@@ -1,4 +1,4 @@
-package com.coms309.isu_pulse_frontend;
+package com.coms309.isu_pulse_frontend.loginsignup;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.nio.charset.StandardCharsets;

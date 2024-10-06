@@ -1,4 +1,4 @@
-package com.coms309.isu_pulse_frontend;
+package com.coms309.isu_pulse_frontend.loginsignup;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
@@ -16,6 +16,8 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.coms309.isu_pulse_frontend.R;
 
 import java.io.File;
 import java.io.IOException;

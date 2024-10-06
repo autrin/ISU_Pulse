@@ -33,10 +33,10 @@
         </provider>
 
         <activity
-            android:name=".SignupActivity"
+            android:name=".loginsignup.SignupActivity"
             android:exported="false" />
         <activity
-            android:name=".LoginActivity"
+            android:name=".loginsignup.LoginActivity"
             android:exported="false" />
         <activity
             android:name=".MainActivity"
