@@ -5,6 +5,7 @@
     android:orientation="vertical"
     android:padding="8dp">
 
+    <!-- Task Title -->
     <TextView
         android:id="@+id/textViewTitle"
         android:layout_width="wrap_content"
@@ -12,16 +13,43 @@
         android:textSize="18sp"
         android:textStyle="bold" />
 
+    <!-- Task Description -->
     <TextView
         android:id="@+id/textViewDescription"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="14sp" />
 
+    <!-- Task Due Date -->
     <TextView
         android:id="@+id/textViewDate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="12sp"
         android:textColor="#888888" />
+
+    <!-- Course Name -->
+    <TextView
+        android:id="@+id/textViewCourseName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="14sp"
+        android:textStyle="italic" />
+
+    <!-- Credits -->
+    <TextView
+        android:id="@+id/textViewCredits"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="12sp"
+        android:textColor="#888888" />
+
+    <!-- Room and Building -->
+    <TextView
+        android:id="@+id/textViewRoom"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="12sp"
+        android:textColor="#888888" />
+
 </LinearLayout>
