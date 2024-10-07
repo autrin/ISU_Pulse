@@ -1,5 +1,6 @@
 package coms309.backEnd.demo.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -22,6 +23,7 @@ public class PersonalTask {
 
     @ManyToOne
     @JoinColumn(name = "sId", referencedColumnName = "netId")
+    @JsonIgnore
     private User user;
 
     public PersonalTask() {
