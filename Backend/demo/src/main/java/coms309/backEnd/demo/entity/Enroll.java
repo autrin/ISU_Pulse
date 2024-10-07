@@ -36,6 +36,9 @@ public class Enroll implements Serializable {
         this.sId = sId;
     }
 
+    public Course getCourse(){
+        return course;
+    }
 
     // Constructors
     public Enroll() {

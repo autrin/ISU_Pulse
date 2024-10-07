@@ -33,6 +33,10 @@ public class Task {
     public Task() {
     }
 
+    public Date getDueDate() {
+        return dueDate;
+    }
+
     public Task(String tId, int section, String title, String description, Date dueDate, TaskType taskType, Course course) {
         this.tId = tId;
         this.section = section;
