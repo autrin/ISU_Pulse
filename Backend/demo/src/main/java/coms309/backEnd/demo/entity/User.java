@@ -20,10 +20,6 @@ public class User {
     @Enumerated(EnumType.STRING)
     private UserType userType;
 
-
-//    @OneToMany
-//    @JoinColumn(name = "enroll", referencedColumnName = "SId")
-//    private List<Enroll> enrollList;
     // Constructors
     public User() {
     }
