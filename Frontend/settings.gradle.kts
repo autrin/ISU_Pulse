@@ -21,5 +21,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "ISU_Pulse_Frontend"
 
-include(":app", ":api", ":adapters", "viewholders")
+include(":app")
  
