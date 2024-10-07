@@ -33,23 +33,13 @@ public class UserController {
         }
     }
 
+    @PostMapping
+    public void registerNewStudent(@RequestBody User user) {
+        Optional<User> userOptional = userRepository.findById(user.getNetId());
+        if (userOptional.isPresent()) {
+            throw new IllegalStateException("Student with NetId already exists.");
+        }
 
-//    @PostMapping("/addStudent")
-//    public void addStudent(@RequestBody User studentDetails) {
-//        if (userRepository.findByNetId(studentDetails.getNetId()) != null) {
-//            throw new IllegalArgumentException("NetId already exists");
-//        }
-//
-//        User newStudent = new User(
-//                studentDetails.getNetId(),
-//                studentDetails.getFirstName(),
-//                studentDetails.getLastName(),
-//                studentDetails.getEmail(),
-//                studentDetails.getHashedPassword(),
-//                studentDetails.getProfilePictureUrl(),
-//                UserType.STUDENT
-//        );
-//
-//        userRepository.save(newStudent);
-//    }
+        userRepository.save(user);
+    }
 }
