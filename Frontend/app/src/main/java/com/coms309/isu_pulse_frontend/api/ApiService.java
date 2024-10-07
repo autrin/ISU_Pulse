@@ -21,7 +21,7 @@ import java.util.List;
 public class ApiService {
 
     private static final String URL_STRING_REQ = "https://ae21ce63-e030-423f-aa6f-a80597a900cf.mock.pstmn.io";
-    private static final String URL_STRING_REQ_VM = "http://coms-3090-042.class.las.iastate.edu:8080/tasksduetoday";
+    private static final String URL_STRING_REQ_VM = "http://coms-3090-042.class.las.iastate.edu:8080/task/getTaskByUserIn2days";
     private Context context;
 
     public ApiService(Context context) {
