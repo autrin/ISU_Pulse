@@ -12,8 +12,7 @@ import android.widget.Toast;
 // Other necessary imports
 import com.coms309.isu_pulse_frontend.MainActivity;
 import com.coms309.isu_pulse_frontend.R;
-import com.coms309.isu_pulse_frontend.api.ApiService_LoginSignup;
-import com.coms309.isu_pulse_frontend.loginsignup.PasswordHasher;
+import com.coms309.isu_pulse_frontend.api.AuthenticationService;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -50,8 +49,8 @@ public class LoginActivity extends AppCompatActivity {
                     Toast.makeText(LoginActivity.this, "Password must be at least 8 characters", Toast.LENGTH_SHORT).show();
                 } else {
                     // Proceed to check if user exists
-                    ApiService_LoginSignup apiService = new ApiService_LoginSignup();
-                    apiService.checkUserExists(netIdInput, LoginActivity.this, new ApiService_LoginSignup.VolleyCallback() {
+                    AuthenticationService apiService = new AuthenticationService();
+                    apiService.checkUserExists(netIdInput, LoginActivity.this, new AuthenticationService.VolleyCallback() {
                         @Override
                         public void onSuccess(JSONObject result) {
                             // User exists, now verify the password

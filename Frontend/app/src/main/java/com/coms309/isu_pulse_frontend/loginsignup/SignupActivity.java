@@ -17,7 +17,11 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.coms309.isu_pulse_frontend.MainActivity;
 import com.coms309.isu_pulse_frontend.R;
+import com.coms309.isu_pulse_frontend.api.AuthenticationService;
+
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
@@ -63,47 +67,62 @@ public class SignupActivity extends AppCompatActivity {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         usertype.setAdapter(adapter);
 
-        uploadImageButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showImagePickerOptions();
+        uploadImageButton.setOnClickListener(v -> showImagePickerOptions());
+
+        enter.setOnClickListener(view -> {
+            AuthenticationService apiService = new AuthenticationService();
+            String firstNameInput = firstname.getText().toString();
+            String lastNameInput = lastname.getText().toString();
+            String emailInput = email.getText().toString();
+            String netIdInput = netId.getText().toString();
+            String passwordInput = password.getText().toString();
+            String hashedPassword = PasswordHasher.hashPassword(passwordInput);
+            String retypePasswordInput = retypepassword.getText().toString();
+
+            if (firstNameInput.isEmpty() || lastNameInput.isEmpty() || emailInput.isEmpty() || netIdInput.isEmpty() || passwordInput.isEmpty() || retypePasswordInput.isEmpty()) {
+                Toast.makeText(SignupActivity.this, "Please enter all fields", Toast.LENGTH_SHORT).show();
+            } else if (passwordInput.length() < 8) {
+                Toast.makeText(SignupActivity.this, "Password must be at least 8 characters", Toast.LENGTH_SHORT).show();
+            } else if (!passwordInput.equals(retypePasswordInput)) {
+                Toast.makeText(SignupActivity.this, "Passwords do not match", Toast.LENGTH_SHORT).show();
+            } else if (imageUri == null) {
+                Toast.makeText(SignupActivity.this, "Please upload a profile image", Toast.LENGTH_SHORT).show();
+            } else {
+                // Proceed with signup
+                String imageUrl = convertImageUriToUrl(imageUri);
+
+                // Use imageUrl for further processing (e.g., sending to server)
+                Toast.makeText(SignupActivity.this, "Signup successful!", Toast.LENGTH_SHORT).show();
+
+                apiService.registerNewUser(
+                        netIdInput,
+                        firstNameInput,
+                        lastNameInput,
+                        emailInput,
+                        hashedPassword,
+                        imageUrl,
+                        usertype.getSelectedItem().toString(),
+                        SignupActivity.this,
+                        new AuthenticationService.VolleyCallback() {
+                            @Override
+                            public void onSuccess(JSONObject result) {
+                                Toast.makeText(SignupActivity.this, "Signup successful!", Toast.LENGTH_SHORT).show();
+                                Intent intent = new Intent(SignupActivity.this, MainActivity.class);
+                                startActivity(intent);
+                            }
+
+                            @Override
+                            public void onError(String message) {
+                                Toast.makeText(SignupActivity.this, "Signup failed: " + message, Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                );
             }
         });
 
-        enter.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String firstNameInput = firstname.getText().toString();
-                String lastNameInput = lastname.getText().toString();
-                String emailInput = email.getText().toString();
-                String netIdInput = netId.getText().toString();
-                String passwordInput = password.getText().toString();
-                String hashedPassword = PasswordHasher.hashPassword(passwordInput);
-                String retypePasswordInput = retypepassword.getText().toString();
-
-                if (firstNameInput.isEmpty() || lastNameInput.isEmpty() || emailInput.isEmpty() || netIdInput.isEmpty() || passwordInput.isEmpty() || retypePasswordInput.isEmpty()) {
-                    Toast.makeText(SignupActivity.this, "Please enter all fields", Toast.LENGTH_SHORT).show();
-                } else if (passwordInput.length() < 8) {
-                    Toast.makeText(SignupActivity.this, "Password must be at least 8 characters", Toast.LENGTH_SHORT).show();
-                } else if (!passwordInput.equals(retypePasswordInput)) {
-                    Toast.makeText(SignupActivity.this, "Passwords do not match", Toast.LENGTH_SHORT).show();
-                } else if (imageUri == null) {
-                    Toast.makeText(SignupActivity.this, "Please upload a profile image", Toast.LENGTH_SHORT).show();
-                } else {
-                    // Proceed with signup
-                    String imageUrl = convertImageUriToUrl(imageUri);
-                    // Use imageUrl for further processing (e.g., sending to server)
-                    Toast.makeText(SignupActivity.this, "Signup successful!", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-
-        signin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(SignupActivity.this, LoginActivity.class);
-                startActivity(intent);
-            }
+        signin.setOnClickListener(view -> {
+            Intent intent = new Intent(SignupActivity.this, LoginActivity.class);
+            startActivity(intent);
         });
     }
 
@@ -164,8 +183,6 @@ public class SignupActivity extends AppCompatActivity {
     }
 
     private String convertImageUriToUrl(Uri uri) {
-        // In a real-world scenario, you would upload the image to a server and get a URL back
-        // For this example, we'll just return the local URI as a string
         return uri.toString();
     }
 }
