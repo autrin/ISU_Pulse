@@ -54,4 +54,31 @@ public class PersonalTaskController {
         ));
         return ResponseEntity.ok(true);
     }
+
+    @PutMapping("/updatePersonalTask/{sId}")
+    public ResponseEntity<Boolean> updatePersonTasks(
+            @PathVariable String sId,
+            @RequestParam int taskId,
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) String description,
+            @RequestParam(required = false) Long dueDateTimestamp
+    ){
+        Optional<User> curUser = userRepository.findById(sId);
+        if (curUser.isEmpty()){
+            return ResponseEntity.internalServerError().build();
+        }
+
+        Optional<PersonalTask> optionalTask = personalTaskRepository.findById(taskId);
+        if (optionalTask.isEmpty()) return ResponseEntity.notFound().build();
+
+        PersonalTask task = optionalTask.get();
+
+        if (title != null) task.setTitle(title);
+        if (description != null) task.setDescription(description);
+        if (dueDateTimestamp != null) task.setDueDate(new Date(dueDateTimestamp));
+
+        personalTaskRepository.save(task);
+
+        return ResponseEntity.ok(true);
+    }
 }
