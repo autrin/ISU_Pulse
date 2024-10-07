@@ -20,6 +20,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.ISU_Pulse_Frontend"
+        android:usesCleartextTraffic="true"
         tools:targetApi="35">
 
         <provider
