@@ -31,9 +31,16 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskVi
     @Override
     public void onBindViewHolder(@NonNull TaskListAdapter.TaskViewHolder holder, int position) {
         ListTaskObject task = tasks.get(position);
-        holder.textViewDate.setText(task.getDate().toString());
+
+        // Setting task details
+        holder.textViewDate.setText(task.getDueDate().toString());
         holder.textViewTitle.setText(task.getTitle());
         holder.textViewDescription.setText(task.getDescription());
+
+        // Setting additional fields
+        holder.textViewCourseName.setText(task.getCourseName());
+        holder.textViewCredits.setText(String.valueOf(task.getCredits()));
+        holder.textViewRoom.setText(task.getRoomName() + ", " + task.getBuilding());
     }
 
     @Override
@@ -45,18 +52,23 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskVi
         TextView textViewTitle;
         TextView textViewDescription;
         TextView textViewDate;
+        TextView textViewCourseName;
+        TextView textViewCredits;
+        TextView textViewRoom;
 
         public TaskViewHolder(@NonNull View itemView) {
             super(itemView);
             textViewTitle = itemView.findViewById(R.id.textViewTitle);
             textViewDescription = itemView.findViewById(R.id.textViewDescription);
             textViewDate = itemView.findViewById(R.id.textViewDate);
-//            textViewTitle.setTextAlignment(View.TEXT_DIRECTION_FIRST_STRONG_LTR);
+            textViewCourseName = itemView.findViewById(R.id.textViewCourseName);
+            textViewCredits = itemView.findViewById(R.id.textViewCredits);
+            textViewRoom = itemView.findViewById(R.id.textViewRoom);
         }
 
         @Override
         public void bind(Object obj) {
-
+            // Binding logic, if needed
         }
     }
 }
