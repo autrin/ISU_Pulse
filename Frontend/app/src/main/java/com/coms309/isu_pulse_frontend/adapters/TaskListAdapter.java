@@ -51,6 +51,7 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskVi
             textViewTitle = itemView.findViewById(R.id.textViewTitle);
             textViewDescription = itemView.findViewById(R.id.textViewDescription);
             textViewDate = itemView.findViewById(R.id.textViewDate);
+//            textViewTitle.setTextAlignment(View.TEXT_DIRECTION_FIRST_STRONG_LTR);
         }
 
         @Override
