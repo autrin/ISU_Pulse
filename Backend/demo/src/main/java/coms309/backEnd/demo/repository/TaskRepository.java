@@ -5,8 +5,9 @@ import coms309.backEnd.demo.entity.Task;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 public interface TaskRepository extends JpaRepository<Task,String> {
-    public Task findByCourse(Course course);
+    public List<Task> findAllByCourse(Course course);
 }

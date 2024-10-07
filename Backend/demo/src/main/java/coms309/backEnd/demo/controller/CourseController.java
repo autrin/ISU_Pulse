@@ -57,18 +57,18 @@ public class CourseController {
 //    }
 
     @GetMapping("/getCourseList/{sId}")
-    public ResponseEntity<List<String>> getCourseByStudentId(@PathVariable String sId){
+    public ResponseEntity<List<Enroll>> getCourseByStudentId(@PathVariable String sId){
         Optional<User> curUser = userRepository.findById(sId);
         if(curUser.isEmpty()){
             return  ResponseEntity.internalServerError().build();
         }
         List<Enroll> enrolls = enrollRepository.findAllBysId(sId);
-        List<String> codeList = new ArrayList<>();
-        for (Enroll en : enrolls){
-            String code = en.getCourse().getCode();
-            codeList.add(code);
-        }
-        return ResponseEntity.ok(codeList);
+//        List<String> codeList = new ArrayList<>();
+//        for (Enroll en : enrolls){
+//            String code = en.getCourse().getCode();
+//            codeList.add(code);
+//        }
+        return ResponseEntity.ok(enrolls);
     }
 
     @PostMapping("/addCourses")
