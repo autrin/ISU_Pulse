@@ -25,7 +25,7 @@ public class Course {
     private int numSections;
 
     @ManyToOne
-    @JoinColumn(name = "d_id", referencedColumnName = "dId")
+    @JoinColumn(name = "dId")
     private Department department;
 
 //    @OneToMany

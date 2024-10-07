@@ -20,10 +20,6 @@ public class User {
     @Enumerated(EnumType.STRING)
     private UserType userType;
 
-    public String getNetId(){
-        return this.netId;
-    }
-
 
 //    @OneToMany
 //    @JoinColumn(name = "enroll", referencedColumnName = "SId")
