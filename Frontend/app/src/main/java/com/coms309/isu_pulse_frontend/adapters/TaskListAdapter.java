@@ -15,10 +15,11 @@ import com.coms309.isu_pulse_frontend.viewholders.ViewHolder;
 import java.util.List;
 
 public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskViewHolder> {
-    private List<ListTaskObject> tasks;
 
-    public TaskListAdapter(List<ListTaskObject> tasks) {
-        this.tasks = tasks;
+    private List<ListTaskObject> taskList;
+
+    public TaskListAdapter(List<ListTaskObject> taskList) {
+        this.taskList = taskList;
     }
 
     @NonNull
@@ -29,38 +30,31 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskVi
     }
 
     @Override
-    public void onBindViewHolder(@NonNull TaskListAdapter.TaskViewHolder holder, int position) {
-        ListTaskObject task = tasks.get(position);
-
-        // Setting task details
-        holder.textViewDate.setText(task.getDueDate().toString());
-        holder.textViewTitle.setText(task.getTitle());
-        holder.textViewDescription.setText(task.getDescription());
-        holder.textViewCourseCode.setText(task.getCourseCode());
+    public void onBindViewHolder(@NonNull TaskViewHolder holder, int position) {
+        ListTaskObject task = taskList.get(position);
+        holder.title.setText(task.getTitle());
+        holder.description.setText(task.getDescription());
+        holder.dueDate.setText(task.getDueDate().toString());
     }
 
     @Override
     public int getItemCount() {
-        return tasks.size();
+        return taskList.size();
     }
 
     public static class TaskViewHolder extends RecyclerView.ViewHolder implements ViewHolder {
-        TextView textViewTitle;
-        TextView textViewDescription;
-        TextView textViewDate;
-        TextView textViewCourseCode;
+        TextView title, description, dueDate;
 
         public TaskViewHolder(@NonNull View itemView) {
             super(itemView);
-            textViewTitle = itemView.findViewById(R.id.textViewTitle);
-            textViewDescription = itemView.findViewById(R.id.textViewDescription);
-            textViewDate = itemView.findViewById(R.id.textViewDate);
-            textViewCourseCode = itemView.findViewById(R.id.textViewCourseCode);
+            title = itemView.findViewById(R.id.task_title);
+            description = itemView.findViewById(R.id.task_description);
+            dueDate = itemView.findViewById(R.id.task_due_date);
         }
 
         @Override
         public void bind(Object obj) {
-            // Binding logic, if needed
+
         }
     }
 }
