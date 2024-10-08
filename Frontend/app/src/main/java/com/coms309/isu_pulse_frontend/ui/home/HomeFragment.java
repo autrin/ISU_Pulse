@@ -15,10 +15,9 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.coms309.isu_pulse_frontend.R;
 import com.coms309.isu_pulse_frontend.adapters.TaskListAdapter;
 import com.coms309.isu_pulse_frontend.adapters.WeeklyCalendarAdapter;
-import com.coms309.isu_pulse_frontend.api.ApiService;
+import com.coms309.isu_pulse_frontend.api.TaskApiService;
 import com.coms309.isu_pulse_frontend.databinding.FragmentHomeBinding;
 
 import java.util.ArrayList;
@@ -36,7 +35,7 @@ public class HomeFragment extends Fragment {
     private List<String> events = new ArrayList<>();
     private List<String> announcements = new ArrayList<>();
     private ListView listviwTasksDueToday;
-    private ApiService apiService;
+    private TaskApiService taskApiService;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -79,7 +78,7 @@ public class HomeFragment extends Fragment {
 
         taskAdapter = new TaskListAdapter(tasksDueToday); // Create a new adapter with the tasks due today
         recylcerViewTasksDueToday.setAdapter(taskAdapter);
-        apiService = new ApiService(getContext());
+        taskApiService = new TaskApiService(getContext());
         populateTasksDueToday();
 
         return root;
@@ -92,7 +91,7 @@ public class HomeFragment extends Fragment {
     }
 
     public void populateTasksDueToday() {
-        apiService.getTasksDueToday(new ApiService.TaskResponseListener() {
+        taskApiService.getTasksDueToday(new TaskApiService.TaskResponseListener() {
             @Override
             public void onResponse(List<ListTaskObject> tasks) {
                 // Handle the response and update the UI

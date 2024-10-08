@@ -8,6 +8,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.coms309.isu_pulse_frontend.ui.home.ListTaskObject;
 
@@ -16,14 +17,17 @@ import org.json.JSONObject;
 
 import java.sql.Date;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-public class ApiService {
+public class TaskApiService {
 
     private static final String URL_STRING_REQ = "https://ae21ce63-e030-423f-aa6f-a80597a900cf.mock.pstmn.io";
+    private static final String URL_STRING_REQ_VM = "http://coms-3090-042.class.las.iastate.edu:8080/task/getTaskByUserIn2days/n001";
     private Context context;
 
-    public ApiService(Context context) {
+    public TaskApiService(Context context) {
         this.context = context;
     }
 
@@ -32,9 +36,13 @@ public class ApiService {
         void onError(String message);
     }
 
+    /**
+     * Fetches tasks due today from the backend
+     * @param listener the listener to handle the response
+     */
     public void getTasksDueToday(TaskResponseListener listener) {
         String url = URL_STRING_REQ + "/tasksduetoday";
-        JsonArrayRequest jsonArrReq = new JsonArrayRequest(Request.Method.GET, url, null, new Response.Listener<JSONArray>() {
+        JsonArrayRequest jsonArrReq = new JsonArrayRequest(Request.Method.GET, URL_STRING_REQ_VM, null, new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray response) {
                 Log.d("Response: ", response.toString());
@@ -76,5 +84,53 @@ public class ApiService {
 
         // Add the request to the RequestQueue
         Volley.newRequestQueue(context).add(jsonArrReq);
+    }
+
+    /**
+     * Update the task with the given task object
+     * @param task the task object to update
+     */
+    public void updateTask(ListTaskObject task) {
+        // implementing PUT method here
+        JSONObject jsonObject = new JsonObjectRequest(Request.Method.PUT, URL_STRING_REQ_VM, null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                Log.d("Response: ", response.toString());
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                String errorMessage = error.getMessage() != null ? error.getMessage() : "Unknown error";
+                VolleyLog.e("Error: " + errorMessage);
+            }
+        }) {
+            @Override
+            public JSONObject getBody() {
+                JSONObject body = new JSONObject();
+                try {
+                    body.put("cId", task.getcId());
+                    body.put("tId", task.gettId());
+                    body.put("section", task.getSection());
+                    body.put("title", task.getTitle());
+                    body.put("description", task.getDescription());
+                    body.put("dueDate", task.getDueDate());
+                    body.put("taskType", task.getTaskType());
+                    body.put("courseCode", task.getCourseCode());
+                    body.put("courseTitle", task.getCourseTitle());
+                    body.put("departmentName", task.getDepartmentName());
+                    body.put("departmentLocation", task.getDepartmentLocation());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return body;
+            }
+
+            @Override
+            public Map<String, String> getHeaders() {
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Content-Type", "application/json");
+                return headers;
+            }
+        };
     }
 }
