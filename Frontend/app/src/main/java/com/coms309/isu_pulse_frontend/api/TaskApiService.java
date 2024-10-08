@@ -198,4 +198,22 @@ public class TaskApiService {
         Volley.newRequestQueue(context).add(jsonObjectRequest);
     }
 
+    /**
+     * Delete the task with the given task object
+     * @param task the task object to delete
+     */
+    public void deleteTask(ListTaskObject task){
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.DELETE, URL_STRING_REQ_VM + "/" + task.gettId(), null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                Log.d("Response: ", response.toString());
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error){
+                String errorMessage = error.getMessage() != null ? error.getMessage(): "Unknown error";
+                VolleyLog.e("Error: " + errorMessage);
+            }
+        });
+    }
 }
