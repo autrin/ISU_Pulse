@@ -48,16 +48,14 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskVi
         TextView textViewTitle;
         TextView textViewDescription;
         TextView textViewDate;
-        TextView textViewCourseName;
-        TextView textViewCredits;
-        TextView textViewRoom;
+        TextView textViewCourseCode;
 
         public TaskViewHolder(@NonNull View itemView) {
             super(itemView);
             textViewTitle = itemView.findViewById(R.id.textViewTitle);
             textViewDescription = itemView.findViewById(R.id.textViewDescription);
             textViewDate = itemView.findViewById(R.id.textViewDate);
-            textViewCourseName = itemView.findViewById(R.id.textViewCourseCode);
+            textViewCourseCode = itemView.findViewById(R.id.textViewCourseCode);
         }
 
         @Override
