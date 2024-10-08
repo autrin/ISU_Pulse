@@ -188,6 +188,12 @@ public class TaskApiService {
                     return null;
                 }
             }
+            @Override
+            public Map<String, String> getHeaders(){
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Content-Type", "application/json");
+                return headers;
+            }
 
         };
     }
