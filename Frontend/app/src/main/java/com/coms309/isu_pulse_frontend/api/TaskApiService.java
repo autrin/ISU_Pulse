@@ -24,8 +24,8 @@ import java.util.Map;
 
 public class TaskApiService {
 
-    private static final String URL_STRING_REQ = "https://ae21ce63-e030-423f-aa6f-a80597a900cf.mock.pstmn.io";
-    private static final String URL_STRING_REQ_VM = "http://coms-3090-042.class.las.iastate.edu:8080/task/getTaskByUserIn2days/n001";
+    private static final String URL_STRING_REQ = "https://65e24ca1-c2ef-4182-97c5-5133a65636e4.mock.pstmn.io/tasksdue";
+    private static final String URL_STRING_REQ_VM = "http://coms-3090-042.class.las.iastate.edu:8080/task/n001";
     private Context context;
 
     public TaskApiService(Context context) {
@@ -40,11 +40,10 @@ public class TaskApiService {
 
     /**
      * Fetches tasks due today from the backend
-     *
      * @param listener the listener to handle the response
      */
     public void getTasksDueToday(TaskResponseListener listener) {
-        String url = URL_STRING_REQ + "/tasksduetoday";
+//        String url = URL_STRING_REQ + "/tasksduetoday";
         JsonArrayRequest jsonArrReq = new JsonArrayRequest(Request.Method.GET, URL_STRING_REQ_VM, null, new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray response) {
@@ -143,6 +142,54 @@ public class TaskApiService {
         };
 
         Volley.newRequestQueue(context).add(jsonObjectRequest);
+    }
+
+    /**
+     * Create a new task with the given task object using a POST request
+     * @param task the task object to create
+     */
+    public void createTask(ListTaskObject task) {
+        JSONObject body = new JSONObject();
+        try{
+            body.put("cId", task.getcId());
+            body.put("tId", task.gettId());
+            body.put("section", task.getSection());
+            body.put("title", task.getTitle());
+            body.put("description", task.getDescription());
+            body.put("dueDate", task.getDueDate().toString());
+            body.put("taskType", task.getTaskType());
+            body.put("courseCode", task.getCourseCode());
+            body.put("courseTitle", task.getCourseTitle());
+            body.put("departmentName", task.getDepartmentName());
+            body.put("departmentLocation", task.getDepartmentLocation());
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, URL_STRING_REQ_VM, body, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                Log.d("Response: ", response.toString());
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error){
+                String errorMessage = error.getMessage() != null ? error.getMessage(): "Unknown error";
+                VolleyLog.e("Error: " + errorMessage);
+            }
+        }){
+            @Override
+            public byte[] getBody(){
+                try{
+                    return body.toString().getBytes("utf-8");
+                } catch (UnsupportedEncodingException e) {
+                    VolleyLog.wtf("Unsupported Encoding while trying to get the bytes of %s using %s", body.toString(), "utf-8");
+                    return null;
+                }
+            }
+
+        };
     }
 
 }
