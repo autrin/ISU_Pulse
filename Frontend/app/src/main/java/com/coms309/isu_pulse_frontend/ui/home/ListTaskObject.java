@@ -4,19 +4,18 @@ import java.sql.Date;
 
 public class ListTaskObject {
     private Long cId;
-    private Long tId;
+    private String tId;
     private String section;
     private String title;
     private String description;
     private Date dueDate;
     private String taskType;
-    private String courseName;
-    private int credits;
-    private int mediumTerm;
-    private String roomName;
-    private String building;
+    private String courseCode;
+    private String courseTitle;
+    private String departmentName;
+    private String departmentLocation;
 
-    public ListTaskObject(Long cId, Long tId, String section, String title, String description, Date dueDate, String taskType, String courseName, int credits, int mediumTerm, String roomName, String building) {
+    public ListTaskObject(Long cId, String tId, String section, String title, String description, Date dueDate, String taskType, String courseCode, String courseTitle, String departmentName, String departmentLocation) {
         this.cId = cId;
         this.tId = tId;
         this.section = section;
@@ -24,11 +23,10 @@ public class ListTaskObject {
         this.description = description;
         this.dueDate = dueDate;
         this.taskType = taskType;
-        this.courseName = courseName;
-        this.credits = credits;
-        this.mediumTerm = mediumTerm;
-        this.roomName = roomName;
-        this.building = building;
+        this.courseCode = courseCode;
+        this.courseTitle = courseTitle;
+        this.departmentName = departmentName;
+        this.departmentLocation = departmentLocation;
     }
 
     public String getTaskType() {
@@ -51,7 +49,7 @@ public class ListTaskObject {
         return section;
     }
 
-    public Long gettId() {
+    public String gettId() {
         return tId;
     }
 
@@ -59,23 +57,19 @@ public class ListTaskObject {
         return cId;
     }
 
-    public String getCourseName() {
-        return courseName;
+    public String getCourseCode() {
+        return courseCode;
     }
 
-    public int getCredits() {
-        return credits;
+    public String getCourseTitle() {
+        return courseTitle;
     }
 
-    public int getMediumTerm() {
-        return mediumTerm;
+    public String getDepartmentName() {
+        return departmentName;
     }
 
-    public String getRoomName() {
-        return roomName;
-    }
-
-    public String getBuilding() {
-        return building;
+    public String getDepartmentLocation() {
+        return departmentLocation;
     }
 }
