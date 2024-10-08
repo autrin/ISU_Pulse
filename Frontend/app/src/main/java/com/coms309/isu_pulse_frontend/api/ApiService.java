@@ -44,17 +44,17 @@ public class ApiService {
                         JSONObject jsonObject = response.getJSONObject(i);
 
                         // Extracting task-related properties
-                        Long cId = jsonObject.getLong("cId");
+                        Long cId = jsonObject.getJSONObject("course").getLong("cid");
                         String tId = jsonObject.getString("tId");
                         String section = jsonObject.getString("section");
                         String title = jsonObject.getString("title");
                         String description = jsonObject.getString("description");
-                        Date dueDate = Date.valueOf(jsonObject.getString("dueDate"));
+                        Date dueDate = Date.valueOf(jsonObject.getString("dueDate").split("T")[0]);
                         String taskType = jsonObject.getString("taskType");
-                        String courseCode = jsonObject.getString("courseCode");
-                        String courseTitle = jsonObject.getString("courseTitle");
-                        String departmentName = jsonObject.getString("departmentName");
-                        String departmentLocation = jsonObject.getString("departmentLocation");
+                        String courseCode = jsonObject.getJSONObject("course").getString("code");
+                        String courseTitle = jsonObject.getJSONObject("course").getString("title");
+                        String departmentName = jsonObject.getJSONObject("course").getJSONObject("department").getString("name");
+                        String departmentLocation = jsonObject.getJSONObject("course").getJSONObject("department").getString("location");
 
                         // Creating the task object with updated fields
                         ListTaskObject task = new ListTaskObject(cId, tId, section, title, description, dueDate, taskType, courseCode, courseTitle, departmentName, departmentLocation);
