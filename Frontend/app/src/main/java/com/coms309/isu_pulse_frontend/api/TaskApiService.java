@@ -15,6 +15,7 @@ import com.coms309.isu_pulse_frontend.ui.home.ListTaskObject;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,11 +34,13 @@ public class TaskApiService {
 
     public interface TaskResponseListener {
         void onResponse(List<ListTaskObject> tasks);
+
         void onError(String message);
     }
 
     /**
      * Fetches tasks due today from the backend
+     *
      * @param listener the listener to handle the response
      */
     public void getTasksDueToday(TaskResponseListener listener) {
@@ -91,8 +94,25 @@ public class TaskApiService {
      * @param task the task object to update
      */
     public void updateTask(ListTaskObject task) {
-        // implementing PUT method here
-        JSONObject jsonObject = new JsonObjectRequest(Request.Method.PUT, URL_STRING_REQ_VM, null, new Response.Listener<JSONObject>() {
+        String url = URL_STRING_REQ_VM;
+        JSONObject body = new JSONObject();
+        try {
+            body.put("cId", task.getcId());
+            body.put("tId", task.gettId());
+            body.put("section", task.getSection());
+            body.put("title", task.getTitle());
+            body.put("description", task.getDescription());
+            body.put("dueDate", task.getDueDate().toString());
+            body.put("taskType", task.getTaskType());
+            body.put("courseCode", task.getCourseCode());
+            body.put("courseTitle", task.getCourseTitle());
+            body.put("departmentName", task.getDepartmentName());
+            body.put("departmentLocation", task.getDepartmentLocation());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.PUT, url, body, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 Log.d("Response: ", response.toString());
@@ -105,24 +125,13 @@ public class TaskApiService {
             }
         }) {
             @Override
-            public JSONObject getBody() {
-                JSONObject body = new JSONObject();
+            public byte[] getBody() {
                 try {
-                    body.put("cId", task.getcId());
-                    body.put("tId", task.gettId());
-                    body.put("section", task.getSection());
-                    body.put("title", task.getTitle());
-                    body.put("description", task.getDescription());
-                    body.put("dueDate", task.getDueDate());
-                    body.put("taskType", task.getTaskType());
-                    body.put("courseCode", task.getCourseCode());
-                    body.put("courseTitle", task.getCourseTitle());
-                    body.put("departmentName", task.getDepartmentName());
-                    body.put("departmentLocation", task.getDepartmentLocation());
-                } catch (Exception e) {
-                    e.printStackTrace();
+                    return body.toString().getBytes("utf-8");
+                } catch (UnsupportedEncodingException e) {
+                    VolleyLog.wtf("Unsupported Encoding while trying to get the bytes of %s using %s", body.toString(), "utf-8");
+                    return null;
                 }
-                return body;
             }
 
             @Override
@@ -132,5 +141,8 @@ public class TaskApiService {
                 return headers;
             }
         };
+
+        Volley.newRequestQueue(context).add(jsonObjectRequest);
     }
+
 }
