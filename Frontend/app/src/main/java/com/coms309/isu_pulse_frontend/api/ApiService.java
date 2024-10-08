@@ -21,7 +21,6 @@ import java.util.List;
 public class ApiService {
 
     private static final String URL_STRING_REQ = "https://ae21ce63-e030-423f-aa6f-a80597a900cf.mock.pstmn.io";
-    private static final String URL_STRING_REQ_VM = "http://coms-3090-042.class.las.iastate.edu:8080/task/getTaskByUserIn2days/n001";
     private Context context;
 
     public ApiService(Context context) {
@@ -35,7 +34,7 @@ public class ApiService {
 
     public void getTasksDueToday(TaskResponseListener listener) {
         String url = URL_STRING_REQ + "/tasksduetoday";
-        JsonArrayRequest jsonArrReq = new JsonArrayRequest(Request.Method.GET, URL_STRING_REQ_VM, null, new Response.Listener<JSONArray>() {
+        JsonArrayRequest jsonArrReq = new JsonArrayRequest(Request.Method.GET, url, null, new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray response) {
                 Log.d("Response: ", response.toString());
@@ -46,22 +45,19 @@ public class ApiService {
 
                         // Extracting task-related properties
                         Long cId = jsonObject.getLong("cId");
-                        Long tId = jsonObject.getLong("tId");
+                        String tId = jsonObject.getString("tId");
                         String section = jsonObject.getString("section");
                         String title = jsonObject.getString("title");
                         String description = jsonObject.getString("description");
                         Date dueDate = Date.valueOf(jsonObject.getString("dueDate"));
                         String taskType = jsonObject.getString("taskType");
-
-                        // Extracting additional fields
-                        String courseName = jsonObject.getString("courseName");
-                        int credits = jsonObject.getInt("credits");
-                        int mediumTerm = jsonObject.getInt("mediumTerm");
-                        String roomName = jsonObject.getString("roomName");
-                        String building = jsonObject.getString("building");
+                        String courseCode = jsonObject.getString("courseCode");
+                        String courseTitle = jsonObject.getString("courseTitle");
+                        String departmentName = jsonObject.getString("departmentName");
+                        String departmentLocation = jsonObject.getString("departmentLocation");
 
                         // Creating the task object with updated fields
-                        ListTaskObject task = new ListTaskObject(cId, tId, section, title, description, dueDate, taskType, courseName, credits, mediumTerm, roomName, building);
+                        ListTaskObject task = new ListTaskObject(cId, tId, section, title, description, dueDate, taskType, courseCode, courseTitle, departmentName, departmentLocation);
                         tasks.add(task);
                     } catch (Exception e) {
                         e.printStackTrace();
