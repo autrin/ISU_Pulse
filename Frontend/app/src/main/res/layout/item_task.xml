@@ -5,12 +5,16 @@
     android:orientation="vertical"
     android:padding="16dp">
 
+    <CheckBox
+        android:id="@+id/checkBoxTask"
+        android:layout_width="37dp"
+        android:layout_height="37dp" />
+
     <TextView
         android:id="@+id/task_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingStart="16dp"
-        android:text="title"
         android:textSize="18sp"
         android:textStyle="bold" />
 
@@ -19,7 +23,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingStart="16dp"
-        android:text="description"
         android:textSize="16sp" />
 
     <TextView
