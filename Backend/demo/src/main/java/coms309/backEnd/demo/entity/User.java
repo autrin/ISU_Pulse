@@ -10,8 +10,6 @@ import java.util.Set;
 @Entity
 public class User {
     @Id
-    private Long id;
-
     private String netId;
 
     private String firstName;
@@ -23,7 +21,7 @@ public class User {
     @Enumerated(EnumType.STRING)
     private UserType userType;
 
-    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<Enroll> enrollments;
 
     // Constructors

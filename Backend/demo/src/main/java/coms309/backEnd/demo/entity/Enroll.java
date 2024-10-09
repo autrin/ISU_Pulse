@@ -18,11 +18,11 @@ public class Enroll implements Serializable {
     @Id
     private int section;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "sId", referencedColumnName = "netId")
     private User student;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "cId")
     private Course course;
 

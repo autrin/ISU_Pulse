@@ -20,7 +20,7 @@ public class Teach implements Serializable {
 
     private String classTime;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "fId", referencedColumnName = "facultyId")
     private Faculty faculty;
 

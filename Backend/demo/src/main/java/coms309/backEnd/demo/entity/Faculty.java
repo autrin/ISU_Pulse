@@ -14,7 +14,7 @@ public class Faculty {
 
     private String title;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "facultyId", referencedColumnName = "netId")
     private User user;
 

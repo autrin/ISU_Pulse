@@ -5,6 +5,7 @@ import coms309.backEnd.demo.entity.UserType;
 import coms309.backEnd.demo.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +17,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/users")
+@Slf4j // Lombok annotation for logging
 public class UserController {
 
     @Autowired
@@ -64,12 +66,19 @@ public class UserController {
 
     @DeleteMapping(path = "/{netId}")
     public ResponseEntity<String> deleteUserAccount(@PathVariable String netId) {
-        // Check if the user exists, if not throw an exception
+        log.info("Attempting to delete user with NetId: {}", netId);
         User user = userRepository.findById(netId)
-                .orElseThrow(() -> new IllegalStateException("User does not exist"));
+                .orElseThrow(() -> {
+                    log.warn("User with NetId {} does not exist.", netId);
+                    return new IllegalStateException("User does not exist");
+                });
 
-        // Proceed to delete the user
-        userRepository.delete(user);
+        // Proceed to delete the user (Enroll records will be deleted via cascade if configured)
+        log.info("Fetch User's data: {}.", user.getEmail());
+        userRepository.deleteById(netId);
+        // Alternatively, you can use: userRepository.deleteById(netId);
+
+        log.info("User with NetId {} deleted successfully.", netId);
 
         // Return a response indicating success
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body("User account deleted successfully.");

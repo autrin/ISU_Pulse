@@ -29,7 +29,7 @@ public class Course {
     @JoinColumn(name = "dId")
     private Department department;
 
-    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<Enroll> enrollments;
 
 //    @OneToMany
