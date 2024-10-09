@@ -9,8 +9,6 @@ import java.io.Serializable;
 @Entity
 @IdClass(EnrollId.class)
 public class Enroll implements Serializable {
-
-
     @Id
     private String sId;
 
@@ -36,6 +34,9 @@ public class Enroll implements Serializable {
         this.sId = sId;
     }
 
+    public Course getCourse(){
+        return course;
+    }
 
     // Constructors
     public Enroll() {
