@@ -13,7 +13,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class AuthenticationService {
-    private static final String BASE_URL = "http://coms-3090-042.class.las.iastate.edu:8080/users";
+//    private static final String BASE_URL = "http://coms-3090-042.class.las.iastate.edu:8080/users";
+    private static final String BASE_URL = "http://10.0.2.2:8080/users";
 
     // Define a callback interface to handle the asynchronous response
     public interface VolleyCallback {
@@ -21,6 +22,7 @@ public class AuthenticationService {
 
         void onError(String message);
     }
+
     public void registerNewUser(
             String netId,
             String firstName,
@@ -54,7 +56,10 @@ public class AuthenticationService {
         JsonObjectRequest postRequest = new JsonObjectRequest(
                 Request.Method.POST, url, userJson,
                 callback::onSuccess,
-                error -> callback.onError(error.getMessage())
+                error -> {
+                    callback.onError(error.toString());
+                    error.printStackTrace();
+                }
         );
 
         queue.add(postRequest);
