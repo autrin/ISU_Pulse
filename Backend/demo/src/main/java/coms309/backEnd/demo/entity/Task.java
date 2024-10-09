@@ -25,7 +25,7 @@ public class Task {
     @Enumerated(EnumType.STRING)
     private TaskType taskType;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "cId")
     private Course course;
 

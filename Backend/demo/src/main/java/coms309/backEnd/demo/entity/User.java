@@ -4,11 +4,14 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.util.List;
+import java.util.Set;
 
 @Data
 @Entity
 public class User {
     @Id
+    private Long id;
+
     private String netId;
 
     private String firstName;
@@ -19,6 +22,9 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     private UserType userType;
+
+    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Enroll> enrollments;
 
     // Constructors
     public User() {

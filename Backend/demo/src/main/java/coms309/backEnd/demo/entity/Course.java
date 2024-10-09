@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.util.List;
+import java.util.Set;
 
 @Data
 @Entity
@@ -24,9 +25,12 @@ public class Course {
     private int credits;
     private int numSections;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "dId")
     private Department department;
+
+    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Enroll> enrollments;
 
 //    @OneToMany
 //    @JoinColumn(name = "course_id", referencedColumnName = "cId")

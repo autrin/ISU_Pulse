@@ -64,7 +64,6 @@ public class UserController {
 
     @DeleteMapping(path = "/{netId}")
     public ResponseEntity<String> deleteUserAccount(@PathVariable String netId) {
-        System.out.println("TESTING");
         // Check if the user exists, if not throw an exception
         User user = userRepository.findById(netId)
                 .orElseThrow(() -> new IllegalStateException("User does not exist"));
