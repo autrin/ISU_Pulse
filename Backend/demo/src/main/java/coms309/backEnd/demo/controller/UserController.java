@@ -58,7 +58,7 @@ public class UserController {
         }
 
         User user = userOptional.get();
-        if (user.getHashedPassword() == newPassword)
+        if (user.getHashedPassword().equals(newPassword))
             throw new IllegalStateException("New newPassword must be different from the old newPassword");
         
         user.setHashedPassword(newPassword);
