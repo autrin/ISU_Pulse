@@ -9,6 +9,8 @@
         android:id="@+id/task_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:paddingStart="16dp"
+        android:text="title"
         android:textSize="18sp"
         android:textStyle="bold" />
 
@@ -16,11 +18,15 @@
         android:id="@+id/task_description"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:paddingStart="16dp"
+        android:text="description"
         android:textSize="16sp" />
 
     <TextView
         android:id="@+id/task_due_date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="14sp" />
+        android:paddingStart="16dp"
+        android:textSize="14sp"
+        />
 </LinearLayout>
