@@ -22,7 +22,7 @@ public class PersonalTask {
     @Temporal(TemporalType.TIMESTAMP)
     private Date dueDate;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "sId", referencedColumnName = "netId")
     @JsonIgnore
     private User user;
