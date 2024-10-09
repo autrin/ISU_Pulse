@@ -9,7 +9,6 @@ import coms309.backEnd.demo.repository.CourseRepository;
 import coms309.backEnd.demo.repository.EnrollRepository;
 import coms309.backEnd.demo.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,21 +34,17 @@ public class EnrollController {
     }
 
     @PostMapping("/addEnroll")
-    public ResponseEntity<String> addEnroll(@RequestParam("netId") String netId, @RequestParam("course") int courseId) {
+    public ResponseEntity<Boolean> addEnroll(@RequestParam("netId") String netId, @RequestParam("course") int courseId) {
         Optional<User> curUser = userRepository.findById(netId);
         if (curUser.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("User not found.");
+            return ResponseEntity.internalServerError().build();
         }
-
         Optional<Course> curCourse = courseRepository.findById(courseId);
         if (curCourse.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Course not found.");
+            return ResponseEntity.internalServerError().build();
         }
-
-        Enroll curEnroll = new Enroll(curUser.get().getNetId(), curCourse.get().getCId(), curCourse.get().getNumSections(), curUser.get(), curCourse.get());
+        Enroll curEnroll = new Enroll(curUser.get().getNetId(), curCourse.get().getCId(),curCourse.get().getNumSections(), curUser.get(), curCourse.get());
         enrollRepository.save(curEnroll);
-
-        return ResponseEntity.ok("Enrollment successful!");
+        return ResponseEntity.ok(true);
     }
-
 }
