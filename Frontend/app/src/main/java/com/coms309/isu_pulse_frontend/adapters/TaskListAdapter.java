@@ -55,18 +55,32 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskVi
         holder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked && task instanceof PersonalTask) {
-                    taskApiService.deletePersonalTask((PersonalTask) task, new TaskApiService.TaskResponseListener() {
-                        @Override
-                        public void onResponse(List<Object> tasks) {
-                            removeTask(holder.getAdapterPosition());
-                        }
+                if (isChecked) {
+                    if (task instanceof PersonalTask) {
+                        taskApiService.deletePersonalTask((PersonalTask) task, new TaskApiService.TaskResponseListener() {
+                            @Override
+                            public void onResponse(List<Object> tasks) {
+                                removeTask(holder.getAdapterPosition());
+                            }
 
-                        @Override
-                        public void onError(String message) {
-                            // Handle error
-                        }
-                    });
+                            @Override
+                            public void onError(String message) {
+                                // Handle error
+                            }
+                        });
+                    } else if (task instanceof CourseTask) {
+                        taskApiService.deleteCourseTask((CourseTask) task, new TaskApiService.TaskResponseListener() {
+                            @Override
+                            public void onResponse(List<Object> tasks) {
+                                removeTask(holder.getAdapterPosition());
+                            }
+
+                            @Override
+                            public void onError(String message) {
+                                // Handle error
+                            }
+                        });
+                    }
                 }
             }
         });
