@@ -24,7 +24,7 @@ import java.util.List;
 
 public class TaskApiService {
 
-    private static final String BASE_URL = "https://65e24ca1-c2ef-4182-97c5-5133a65636e4.mock.pstmn.io";
+    private static final String BASE_URL = "http://coms-3090-042.class.las.iastate.edu:8080";
     private static final String NET_ID = "n001";
     private Context context;
     private RequestQueue requestQueue;
@@ -95,7 +95,7 @@ public class TaskApiService {
     }
 
     private void fetchPersonalTasks(final List<Object> tasks, final TaskResponseListener listener) {
-        String personalTasksUrl = BASE_URL + "/getPersonalTasks/" + NET_ID;
+        String personalTasksUrl = BASE_URL + "/personalTask/getPersonalTasks/" + NET_ID;
         JsonArrayRequest personalTasksRequest = new JsonArrayRequest(Request.Method.GET, personalTasksUrl, null,
                 new Response.Listener<JSONArray>() {
                     @Override
@@ -130,18 +130,8 @@ public class TaskApiService {
     }
 
     public void createPersonalTask(PersonalTask task) {
-        String url = BASE_URL + "/addPersonalTask/" + NET_ID;
-        JSONObject body = new JSONObject();
-        try {
-            body.put("title", task.getTitle());
-            body.put("description", task.getDescription());
-            body.put("dueDate", task.getDueDate());
-            body.put("userNetId", task.getUserNetId());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, body,
+        String url = BASE_URL + "/personalTask/addPersonalTask/" + NET_ID + "?title=" + task.getTitle() + "&description=" + task.getDescription() + "&dueDateTimestamp=" + task.getDueDate();
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, null,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
@@ -160,18 +150,8 @@ public class TaskApiService {
     }
 
     public void updatePersonalTask(PersonalTask task) {
-        String url = BASE_URL + "/updatePersonalTask/" + NET_ID;
-        JSONObject body = new JSONObject();
-        try {
-            body.put("title", task.getTitle());
-            body.put("description", task.getDescription());
-            body.put("dueDate", task.getDueDate());
-            body.put("userNetId", task.getUserNetId());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.PUT, url, body,
+        String url = BASE_URL + "/personalTask/updatePersonalTask/" + NET_ID + "?taskId=" + task.getUserNetId() + "&title=" + task.getTitle() + "&description=" + task.getDescription() + "&dueDateTimestamp=" + task.getDueDate();
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.PUT, url, null,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
@@ -190,19 +170,8 @@ public class TaskApiService {
     }
 
     public void deletePersonalTask(PersonalTask task, final TaskResponseListener listener) {
-        String url = BASE_URL + "/deletePersonalTask/" + NET_ID; // TODO: need to get the actual id later.
-
-        JSONObject body = new JSONObject();
-        try {
-            body.put("title", task.getTitle());
-            body.put("description", task.getDescription());
-            body.put("dueDate", task.getDueDate());
-            body.put("userNetId", task.getUserNetId());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.DELETE, url, body,
+        String url = BASE_URL + "/personalTask/deletePersonalTask/" + NET_ID + "/" + task.getUserNetId();
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.DELETE, url, null,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
