@@ -1,5 +1,6 @@
 package coms309.backEnd.demo.controller;
 
+import coms309.backEnd.demo.entity.Profile;
 import coms309.backEnd.demo.entity.User;
 import coms309.backEnd.demo.entity.UserType;
 import coms309.backEnd.demo.repository.UserRepository;
@@ -48,6 +49,9 @@ public class UserController {
             response.put("message", "Student with NetId already exists");
             return ResponseEntity.badRequest().body(response);
         }
+
+        Profile profile = new Profile();
+        profile.setUser(user);
 
         userRepository.save(user);
         response.put("message", "Successfully registered new user.");

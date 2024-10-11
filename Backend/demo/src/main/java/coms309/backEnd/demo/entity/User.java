@@ -21,8 +21,11 @@ public class User {
     @Enumerated(EnumType.STRING)
     private UserType userType;
 
-    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "student", orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<Enroll> enrollments;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private Profile profile;
 
     // Constructors
     public User() {
