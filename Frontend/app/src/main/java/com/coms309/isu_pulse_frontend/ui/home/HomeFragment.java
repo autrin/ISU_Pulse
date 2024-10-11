@@ -15,7 +15,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.fragment.app.DialogFragment;
+
 import com.coms309.isu_pulse_frontend.adapters.TaskListAdapter;
 import com.coms309.isu_pulse_frontend.adapters.WeeklyCalendarAdapter;
 import com.coms309.isu_pulse_frontend.api.TaskApiService;
@@ -33,7 +33,7 @@ public class HomeFragment extends Fragment {
     private TaskListAdapter taskAdapter;
     private Button buttonAddTask;
 
-    private List<ListTaskObject> tasksDueToday = new ArrayList<>();
+    private List<Object> tasksDueToday = new ArrayList<>();
     private List<String> events = new ArrayList<>();
     private List<String> announcements = new ArrayList<>();
     private ListView listviwTasksDueToday;
@@ -101,15 +101,13 @@ public class HomeFragment extends Fragment {
 
     public void populateTasksDue() {
         taskApiService.getTasksDueToday(new TaskApiService.TaskResponseListener() {
-            @Override
-            public void onResponse(List<ListTaskObject> tasks) {
+            public void onResponse(List<Object> tasks) {
                 tasksDueToday.clear();
                 tasksDueToday.addAll(tasks);
                 taskAdapter.notifyDataSetChanged();
                 binding.recyclerViewWeeklyCalendar.getAdapter().notifyDataSetChanged();
             }
 
-            @Override
             public void onError(String message) {
                 String errorMessage = message != null ? message : "Unknown error";
                 Log.e("API Error", errorMessage);
@@ -117,7 +115,7 @@ public class HomeFragment extends Fragment {
         });
     }
 
-    public void addNewTask(ListTaskObject newTask) {
+    public void addNewTask(PersonalTask newTask) {
         tasksDueToday.add(newTask);
         taskAdapter.notifyItemInserted(tasksDueToday.size() - 1);
         binding.recylcerViewTasksDueToday.scrollToPosition(tasksDueToday.size() - 1);
