@@ -7,16 +7,12 @@ The ISU Pulse application aims to provide Iowa State University (ISU) students, 
 
     Autrin (Frontend Developer)
         Responsible for designing and implementing the user interface and user experience.
-        May assist with backend tasks as needed to ensure seamless integration.
     Bach (Frontend Developer)
         Collaborates on UI/UX development and ensures responsiveness across devices.
-        Available to support backend development when required.
     Minh (Backend Developer)
         Develops and maintains server-side logic, database structures, and API integrations.
-        Assists frontend team with minor tasks and features to ensure cohesive functionality.
     Chris (Backend Developer)
         Focuses on backend infrastructure, security, and data management.
-        Provides support to frontend development with minor tasks and feature implementations.
 
 3. Core Requirements Alignment
 3.1. Different Categories of Users
