@@ -37,6 +37,7 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskVi
         holder.title.setText(task.getTitle());
         holder.description.setText(task.getDescription());
         holder.dueDate.setText(task.getDueDate().toString());
+        holder.checkBox.setChecked(false);
     }
 
     @Override
