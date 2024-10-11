@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     // id("com.android.application") // Removed this line
     id("com.google.gms.google-services")
+    id("com.google.firebase.crashlytics")
 }
 
 android {
@@ -45,9 +46,11 @@ dependencies {
     implementation(libs.navigation.fragment)
     implementation(platform("com.google.firebase:firebase-bom:33.4.0"))
     implementation("com.google.firebase:firebase-analytics")
+    implementation("com.google.firebase:firebase-crashlytics")
     implementation(libs.navigation.ui)
     implementation(libs.volley)
     implementation(libs.firebase.storage)
+    implementation(libs.firebase.auth)
     testImplementation(libs.junit)
     implementation(libs.glide)
     annotationProcessor(libs.glide.compiler)
