@@ -36,4 +36,24 @@ public class PersonalTask {
     public String getUserNetId() {
         return userNetId;
     }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setDueDate(long dueDate) {
+        this.dueDate = dueDate;
+    }
+
+    public void setUserNetId(String userNetId) {
+        this.userNetId = userNetId;
+    }
 }
