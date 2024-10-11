@@ -5,6 +5,7 @@ import coms309.backEnd.demo.entity.UserType;
 import coms309.backEnd.demo.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -18,6 +19,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/users")
+@Slf4j // Lombok annotation for logging
 public class UserController {
 
     @Autowired

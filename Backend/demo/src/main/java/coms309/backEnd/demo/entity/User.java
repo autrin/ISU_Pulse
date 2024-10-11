@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.util.List;
+import java.util.Set;
 
 @Data
 @Entity
@@ -20,10 +21,9 @@ public class User {
     @Enumerated(EnumType.STRING)
     private UserType userType;
 
+    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private Set<Enroll> enrollments;
 
-//    @OneToMany
-//    @JoinColumn(name = "enroll", referencedColumnName = "SId")
-//    private List<Enroll> enrollList;
     // Constructors
     public User() {
     }
