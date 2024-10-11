@@ -6,7 +6,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -40,26 +39,22 @@ public class HomeFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        HomeViewModel homeViewModel=
+        HomeViewModel homeViewModel =
                 new ViewModelProvider(this).get(HomeViewModel.class);
 
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-//        final TextView textView = binding.textHome;
-//        homeViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
-
         textViewAnnouncementTitle = binding.TextViewAnnouncementTitle;
         textViewAnnouncementTitle.setText("Announcements");
         textViewAnnouncementTitle.setTextSize(25);
-        textViewAnnouncementTitle.setTypeface(null, Typeface.BOLD); // make it bold
+        textViewAnnouncementTitle.setTypeface(null, Typeface.BOLD);
 
         textViewTasksDueTodayTitle = binding.textViewTasksDueToday;
         textViewTasksDueTodayTitle.setText("Tasks Due Today");
         textViewTasksDueTodayTitle.setTextSize(25);
         textViewTasksDueTodayTitle.setTypeface(null, Typeface.BOLD);
 
-        // Create a weekly calendar that will show the tasks and events for each day on the calendar
         RecyclerView recyclerViewCalendar = binding.recyclerViewWeeklyCalendar;
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
         layoutManager.setReverseLayout(false);
@@ -69,18 +64,15 @@ public class HomeFragment extends Fragment {
         WeeklyCalendarAdapter calendarAdapter = new WeeklyCalendarAdapter(days, tasksDueToday, events);
         recyclerViewCalendar.setAdapter(calendarAdapter);
 
-
-        // Create the tasks due today
         RecyclerView recylcerViewTasksDueToday = binding.recylcerViewTasksDueToday;
         LinearLayoutManager layoutManagerTasks = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
-//        layoutManagerTasks.setReverseLayout(false); // Ensure items start from the top
-//        layoutManagerTasks.setStackFromEnd(false); // Ensure items are not stacked from the end
         recylcerViewTasksDueToday.setLayoutManager(layoutManagerTasks);
 
-        taskAdapter = new TaskListAdapter(tasksDueToday); // Create a new adapter with the tasks due today
-        recylcerViewTasksDueToday.setAdapter(taskAdapter);
         taskApiService = new TaskApiService(getContext());
-        populateTasksDueToday();
+        taskAdapter = new TaskListAdapter(tasksDueToday, taskApiService); // Pass the TaskApiService instance
+        recylcerViewTasksDueToday.setAdapter(taskAdapter);
+
+        populateTasksDue();
 
         return root;
     }
@@ -91,16 +83,13 @@ public class HomeFragment extends Fragment {
         binding = null;
     }
 
-    public void populateTasksDueToday() {
+    public void populateTasksDue() {
         taskApiService.getTasksDueToday(new TaskApiService.TaskResponseListener() {
             @Override
             public void onResponse(List<ListTaskObject> tasks) {
-                // Handle the response and update the UI
-                for (ListTaskObject task : tasks) {
-                    tasksDueToday.add(task);
-                    taskAdapter.notifyDataSetChanged();
-                }
-                // Notify the adapter that the data has changed
+                tasksDueToday.clear();
+                tasksDueToday.addAll(tasks);
+                taskAdapter.notifyDataSetChanged();
                 binding.recyclerViewWeeklyCalendar.getAdapter().notifyDataSetChanged();
             }
 
@@ -110,12 +99,5 @@ public class HomeFragment extends Fragment {
                 Log.e("API Error", errorMessage);
             }
         });
-    }
-
-    /**
-     * Delete the task when the checkbox of a item_task is checked
-     */
-    public void deleteTaskInHome() {
-//        taskApiService.deleteTask();
     }
 }
