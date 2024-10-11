@@ -13,6 +13,7 @@ import androidx.fragment.app.DialogFragment;
 
 import com.coms309.isu_pulse_frontend.R;
 import com.coms309.isu_pulse_frontend.adapters.TaskListAdapter;
+import com.coms309.isu_pulse_frontend.adapters.WeeklyCalendarAdapter;
 import com.coms309.isu_pulse_frontend.api.TaskApiService;
 import com.coms309.isu_pulse_frontend.ui.home.PersonalTask;
 
@@ -20,17 +21,18 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
-
 public class EditTaskDialog extends DialogFragment {
 
     private TaskApiService taskApiService;
     private Object task;
     private TaskListAdapter taskListAdapter;
+    private WeeklyCalendarAdapter weekCalendarAdapter;
 
-    public EditTaskDialog(TaskApiService taskApiService, Object task, TaskListAdapter taskListAdapter) {
+    public EditTaskDialog(TaskApiService taskApiService, Object task, TaskListAdapter taskListAdapter, WeeklyCalendarAdapter weekCalendarAdapter) {
         this.taskApiService = taskApiService;
         this.task = task;
         this.taskListAdapter = taskListAdapter;
+        this.weekCalendarAdapter = weekCalendarAdapter;
     }
 
     @Nullable
@@ -70,6 +72,7 @@ public class EditTaskDialog extends DialogFragment {
                     personalTask.setDueDate(dueDateTimestamp);
                     taskApiService.updatePersonalTask(personalTask);
                     taskListAdapter.notifyDataSetChanged();
+                    weekCalendarAdapter.notifyDataSetChanged();
                 }
 
                 dismiss();
