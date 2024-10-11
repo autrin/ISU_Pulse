@@ -4,234 +4,251 @@ import android.content.Context;
 import android.util.Log;
 
 import com.android.volley.Request;
+import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.coms309.isu_pulse_frontend.ui.home.Course;
+import com.coms309.isu_pulse_frontend.ui.home.CourseTask;
 import com.coms309.isu_pulse_frontend.ui.home.Department;
-import com.coms309.isu_pulse_frontend.ui.home.ListTaskObject;
+import com.coms309.isu_pulse_frontend.ui.home.PersonalTask;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.UnsupportedEncodingException;
 import java.sql.Date;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class TaskApiService {
 
-    private static final String URL_STRING_REQ_VM = "https://65e24ca1-c2ef-4182-97c5-5133a65636e4.mock.pstmn.io/tasksdue";
+    private static final String BASE_URL = "https://65e24ca1-c2ef-4182-97c5-5133a65636e4.mock.pstmn.io";
+    private static final String NET_ID = "n001";
     private Context context;
+    private RequestQueue requestQueue;
 
     public TaskApiService(Context context) {
         this.context = context;
+        requestQueue = Volley.newRequestQueue(context);
     }
 
     public interface TaskResponseListener {
-        void onResponse(List<ListTaskObject> tasks);
-
+        void onResponse(List<Object> tasks);
         void onError(String message);
     }
 
-    public void getTasksDueToday(TaskResponseListener listener) {
-        JsonArrayRequest jsonArrReq = new JsonArrayRequest(Request.Method.GET, URL_STRING_REQ_VM, null, new Response.Listener<JSONArray>() {
-            @Override
-            public void onResponse(JSONArray response) {
-                Log.d("Response: ", response.toString());
-                List<ListTaskObject> tasks = new ArrayList<>();
-                for (int i = 0; i < response.length(); i++) {
-                    try {
-                        JSONObject jsonObject = response.getJSONObject(i);
+    public void getTasksDueToday(final TaskResponseListener listener) {
+        String url = BASE_URL + "/getTaskByUserIn2days/" + NET_ID;
+        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, url, null,
+                new Response.Listener<JSONArray>() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        List<Object> tasks = new ArrayList<>();
+                        for (int i = 0; i < response.length(); i++) {
+                            try {
+                                JSONObject jsonObject = response.getJSONObject(i);
+                                // Extract task details
+                                String tId = jsonObject.getString("tId");
+                                int section = jsonObject.getInt("section");
+                                String title = jsonObject.getString("title");
+                                String description = jsonObject.getString("description");
+                                Date dueDate = Date.valueOf(jsonObject.getString("dueDate").split("T")[0]);
+                                String taskType = jsonObject.getString("taskType");
 
-                        // Extracting task-related properties
-                        String tId = jsonObject.getString("tId");
-                        int section = jsonObject.getInt("section");
-                        String title = jsonObject.getString("title");
-                        String description = jsonObject.getString("description");
-                        Date dueDate = Date.valueOf(jsonObject.getString("dueDate").split("T")[0]);
-                        String taskType = jsonObject.getString("taskType");
+                                // Extract course details
+                                JSONObject courseJson = jsonObject.getJSONObject("course");
+                                String courseCode = courseJson.getString("code");
+                                String courseTitle = courseJson.getString("title");
+                                String courseDescription = courseJson.getString("description");
+                                int courseCredits = courseJson.getInt("credits");
+                                int courseNumSections = courseJson.getInt("numSections");
 
-                        // Extracting course-related properties
-                        JSONObject courseJson = jsonObject.getJSONObject("course");
-                        String courseCode = courseJson.getString("code");
-                        String courseTitle = courseJson.getString("title");
-                        String courseDescription = courseJson.getString("description");
-                        int courseCredits = courseJson.getInt("credits");
-                        int courseNumSections = courseJson.getInt("numSections");
+                                // Extract department details
+                                JSONObject departmentJson = courseJson.getJSONObject("department");
+                                String departmentName = departmentJson.getString("name");
+                                String departmentLocation = departmentJson.getString("location");
+                                int departmentId = departmentJson.getInt("did");
 
-                        // Extracting department-related properties
-                        JSONObject departmentJson = courseJson.getJSONObject("department");
-                        String departmentName = departmentJson.getString("name");
-                        String departmentLocation = departmentJson.getString("location");
-                        int departmentId = departmentJson.getInt("did");
-
-                        Department department = new Department(departmentName, departmentLocation, departmentId);
-                        Course course = new Course(courseCode, courseTitle, courseDescription, courseCredits, courseNumSections, department, courseJson.getInt("cid"));
-                        ListTaskObject task = new ListTaskObject(tId, section, title, description, dueDate, taskType, course, department);
-                        tasks.add(task);
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                                Department department = new Department(departmentName, departmentLocation, departmentId);
+                                Course course = new Course(courseCode, courseTitle, courseDescription, courseCredits, courseNumSections, department, courseJson.getInt("cid"));
+                                CourseTask task = new CourseTask(tId, section, title, description, dueDate, taskType, course, department);
+                                tasks.add(task);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        fetchPersonalTasks(tasks, listener);
                     }
-                }
-                listener.onResponse(tasks);
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                String errorMessage = error.getMessage() != null ? error.getMessage() : "Unknown error";
-                VolleyLog.e("Error: " + errorMessage);
-                listener.onError(errorMessage);
-            }
-        });
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        String errorMessage = error.getMessage() != null ? error.getMessage() : "Unknown error";
+                        Log.e("API Error", errorMessage);
+                        listener.onError(errorMessage);
+                    }
+                });
 
-        Volley.newRequestQueue(context).add(jsonArrReq);
+        requestQueue.add(jsonArrayRequest);
     }
 
-    public void updateTask(ListTaskObject task) {
-        String url = URL_STRING_REQ_VM;
+    private void fetchPersonalTasks(final List<Object> tasks, final TaskResponseListener listener) {
+        String personalTasksUrl = BASE_URL + "/getPersonalTasks/" + NET_ID;
+        JsonArrayRequest personalTasksRequest = new JsonArrayRequest(Request.Method.GET, personalTasksUrl, null,
+                new Response.Listener<JSONArray>() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        for (int i = 0; i < response.length(); i++) {
+                            try {
+                                JSONObject jsonObject = response.getJSONObject(i);
+                                String title = jsonObject.getString("title");
+                                String description = jsonObject.getString("description");
+                                String dueDate = jsonObject.getString("dueDate");
+                                String userNetId = jsonObject.getString("userNetId");
+
+                                PersonalTask task = new PersonalTask(title, description, dueDate, userNetId);
+                                tasks.add(task);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        listener.onResponse(tasks);
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        String errorMessage = error.getMessage() != null ? error.getMessage() : "Unknown error";
+                        Log.e("API Error", errorMessage);
+                        listener.onError(errorMessage);
+                    }
+                });
+
+        requestQueue.add(personalTasksRequest);
+    }
+
+    public void createPersonalTask(PersonalTask task) {
+        String url = BASE_URL + "/addPersonalTask/" + NET_ID;
         JSONObject body = new JSONObject();
         try {
-            body.put("tId", task.gettId());
-            body.put("section", task.getSection());
             body.put("title", task.getTitle());
             body.put("description", task.getDescription());
-            body.put("dueDate", task.getDueDate().toString());
-            body.put("taskType", task.getTaskType());
-
-            JSONObject courseJson = new JSONObject();
-            courseJson.put("code", task.getCourse().getCode());
-            courseJson.put("title", task.getCourse().getTitle());
-            courseJson.put("description", task.getCourse().getDescription());
-            courseJson.put("credits", task.getCourse().getCredits());
-            courseJson.put("numSections", task.getCourse().getNumSections());
-            courseJson.put("cid", task.getCourse().getcId());
-
-            JSONObject departmentJson = new JSONObject();
-            departmentJson.put("name", task.getDepartment().getName());
-            departmentJson.put("location", task.getDepartment().getLocation());
-            departmentJson.put("did", task.getDepartment().getDid());
-
-            courseJson.put("department", departmentJson);
-            body.put("course", courseJson);
+            body.put("dueDate", task.getDueDate());
+            body.put("userNetId", task.getUserNetId());
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.PUT, url, body, new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                Log.d("Response: ", response.toString());
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                String errorMessage = error.getMessage() != null ? error.getMessage() : "Unknown error";
-                VolleyLog.e("Error: " + errorMessage);
-            }
-        }) {
-            @Override
-            public byte[] getBody() {
-                try {
-                    return body.toString().getBytes("utf-8");
-                } catch (UnsupportedEncodingException e) {
-                    VolleyLog.wtf("Unsupported Encoding while trying to get the bytes of %s using %s", body.toString(), "utf-8");
-                    return null;
-                }
-            }
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, body,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.d("Response: ", response.toString());
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        String errorMessage = error.getMessage() != null ? error.getMessage() : "Unknown error";
+                        Log.e("API Error", errorMessage);
+                    }
+                });
 
-            @Override
-            public Map<String, String> getHeaders() {
-                Map<String, String> headers = new HashMap<>();
-                headers.put("Content-Type", "application/json");
-                return headers;
-            }
-        };
-
-        Volley.newRequestQueue(context).add(jsonObjectRequest);
+        requestQueue.add(jsonObjectRequest);
     }
 
-    public void createTask(ListTaskObject task) {
+    public void updatePersonalTask(PersonalTask task) {
+        String url = BASE_URL + "/updatePersonalTask/" + NET_ID;
         JSONObject body = new JSONObject();
         try {
-            body.put("tId", task.gettId());
-            body.put("section", task.getSection());
             body.put("title", task.getTitle());
             body.put("description", task.getDescription());
-            body.put("dueDate", task.getDueDate().toString());
-            body.put("taskType", task.getTaskType());
-
-            JSONObject courseJson = new JSONObject();
-            courseJson.put("code", task.getCourse().getCode());
-            courseJson.put("title", task.getCourse().getTitle());
-            courseJson.put("description", task.getCourse().getDescription());
-            courseJson.put("credits", task.getCourse().getCredits());
-            courseJson.put("numSections", task.getCourse().getNumSections());
-            courseJson.put("cid", task.getCourse().getcId());
-
-            JSONObject departmentJson = new JSONObject();
-            departmentJson.put("name", task.getDepartment().getName());
-            departmentJson.put("location", task.getDepartment().getLocation());
-            departmentJson.put("did", task.getDepartment().getDid());
-
-            courseJson.put("department", departmentJson);
-            body.put("course", courseJson);
+            body.put("dueDate", task.getDueDate());
+            body.put("userNetId", task.getUserNetId());
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, URL_STRING_REQ_VM, body, new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                Log.d("Response: ", response.toString());
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                String errorMessage = error.getMessage() != null ? error.getMessage() : "Unknown error";
-                VolleyLog.e("Error: " + errorMessage);
-            }
-        }) {
-            @Override
-            public byte[] getBody() {
-                try {
-                    return body.toString().getBytes("utf-8");
-                } catch (UnsupportedEncodingException e) {
-                    VolleyLog.wtf("Unsupported Encoding while trying to get the bytes of %s using %s", body.toString(), "utf-8");
-                    return null;
-                }
-            }
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.PUT, url, body,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.d("Response: ", response.toString());
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        String errorMessage = error.getMessage() != null ? error.getMessage() : "Unknown error";
+                        Log.e("API Error", errorMessage);
+                    }
+                });
 
-            @Override
-            public Map<String, String> getHeaders() {
-                Map<String, String> headers = new HashMap<>();
-                headers.put("Content-Type", "application/json");
-                return headers;
-            }
-        };
-
-        Volley.newRequestQueue(context).add(jsonObjectRequest);
+        requestQueue.add(jsonObjectRequest);
     }
 
-    public void deleteTask(ListTaskObject task) {
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.DELETE, URL_STRING_REQ_VM + "/" + task.gettId(), null, new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                Log.d("Response: ", response.toString());
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                String errorMessage = error.getMessage() != null ? error.getMessage() : "Unknown error";
-                VolleyLog.e("Error: " + errorMessage);
-            }
-        });
+    public void deletePersonalTask(PersonalTask task, final TaskResponseListener listener) {
+        String url = BASE_URL + "/deletePersonalTask/" + NET_ID; // TODO: need to get the actual id later.
 
-        Volley.newRequestQueue(context).add(jsonObjectRequest);
+        JSONObject body = new JSONObject();
+        try {
+            body.put("title", task.getTitle());
+            body.put("description", task.getDescription());
+            body.put("dueDate", task.getDueDate());
+            body.put("userNetId", task.getUserNetId());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.DELETE, url, body,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.d("Response: ", response.toString());
+                        listener.onResponse(null);
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        String errorMessage = error.getMessage() != null ? error.getMessage() : "Unknown error";
+                        Log.e("API Error", errorMessage);
+                    }
+                });
+
+        requestQueue.add(jsonObjectRequest);
+    }
+    public void deleteCourseTask(CourseTask task, final TaskResponseListener listener) {
+        String url = BASE_URL + "/deleteCourseTask/" + NET_ID + "/" + task.gettId();
+
+        JSONObject body = new JSONObject();
+        try {
+            body.put("title", task.getTitle());
+            body.put("description", task.getDescription());
+            body.put("dueDate", task.getDueDate().toString());
+            body.put("courseId", task.getCourse().getcId());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.DELETE, url, body,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.d("Response: ", response.toString());
+                        listener.onResponse(null);
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        String errorMessage = error.getMessage() != null ? error.getMessage() : "Unknown error";
+                        Log.e("API Error", errorMessage);
+                    }
+                });
+
+        requestQueue.add(jsonObjectRequest);
     }
 }
