@@ -23,6 +23,7 @@ import android.widget.Toast;
 import com.coms309.isu_pulse_frontend.MainActivity;
 import com.coms309.isu_pulse_frontend.R;
 import com.coms309.isu_pulse_frontend.api.AuthenticationService;
+import com.coms309.isu_pulse_frontend.proifle_activity.ProfileActivity;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -37,7 +38,7 @@ import java.util.Date;
 import java.util.Locale;
 
 public class SignupActivity extends AppCompatActivity {
-    private EditText netId, firstname, lastname, email, password, retypepassword;
+    private static EditText netId, firstname, lastname, email, password, retypepassword;
     private TextView enter, signin;
     private Spinner usertype;
     private ImageView profileImage;
@@ -114,7 +115,7 @@ public class SignupActivity extends AppCompatActivity {
                                     @Override
                                     public void onSuccess(JSONObject result) {
                                         Toast.makeText(SignupActivity.this, "Signup successful!", Toast.LENGTH_SHORT).show();
-                                        Intent intent = new Intent(SignupActivity.this, MainActivity.class);
+                                        Intent intent = new Intent(SignupActivity.this, ProfileActivity.class);
                                         startActivity(intent);
                                     }
 
