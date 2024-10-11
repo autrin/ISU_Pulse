@@ -5,7 +5,7 @@ import java.sql.Date;
 public class ListTaskObject {
     private Long cId;
     private String tId;
-    private String section;
+    private int section;
     private String title;
     private String description;
     private Date dueDate;
@@ -13,7 +13,7 @@ public class ListTaskObject {
     private Course course;
     private Department department;
 
-    public ListTaskObject(Long cId, String tId, String section, String title, String description, Date dueDate, String taskType, Course course, Department department) {
+    public ListTaskObject(Long cId, String tId, int section, String title, String description, Date dueDate, String taskType, Course course, Department department) {
         this.cId = cId;
         this.tId = tId;
         this.section = section;
@@ -41,7 +41,7 @@ public class ListTaskObject {
         return title;
     }
 
-    public String getSection() {
+    public int getSection() {
         return section;
     }
 
