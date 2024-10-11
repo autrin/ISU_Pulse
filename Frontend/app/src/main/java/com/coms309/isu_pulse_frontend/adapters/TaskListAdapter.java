@@ -12,17 +12,18 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.coms309.isu_pulse_frontend.R;
 import com.coms309.isu_pulse_frontend.api.TaskApiService;
-import com.coms309.isu_pulse_frontend.ui.home.ListTaskObject;
+import com.coms309.isu_pulse_frontend.ui.home.CourseTask;
+import com.coms309.isu_pulse_frontend.ui.home.PersonalTask;
 import com.coms309.isu_pulse_frontend.viewholders.ViewHolder;
 
 import java.util.List;
 
 public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskViewHolder> {
 
-    private List<ListTaskObject> taskList;
+    private List<Object> taskList;
     private TaskApiService taskApiService;
 
-    public TaskListAdapter(List<ListTaskObject> taskList, TaskApiService taskApiService) {
+    public TaskListAdapter(List<Object> taskList, TaskApiService taskApiService) {
         this.taskList = taskList;
         this.taskApiService = taskApiService;
     }
@@ -36,18 +37,36 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskVi
 
     @Override
     public void onBindViewHolder(@NonNull TaskViewHolder holder, int position) {
-        ListTaskObject task = taskList.get(position);
-        holder.title.setText(task.getTitle());
-        holder.description.setText(task.getDescription());
-        holder.dueDate.setText(task.getDueDate().toString());
+        Object task = taskList.get(position);
+        if (task instanceof CourseTask) {
+            CourseTask courseTask = (CourseTask) task;
+            holder.title.setText(courseTask.getTitle());
+            holder.description.setText(courseTask.getDescription());
+            holder.dueDate.setText(courseTask.getDueDate().toString());
+        } else if (task instanceof PersonalTask) {
+            PersonalTask personalTask = (PersonalTask) task;
+            holder.title.setText(personalTask.getTitle());
+            holder.description.setText(personalTask.getDescription());
+            holder.dueDate.setText(personalTask.getDueDate());
+        }
+
         holder.checkBox.setOnCheckedChangeListener(null); // Remove previous listener
         holder.checkBox.setChecked(false);
         holder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    taskApiService.deleteTask(task);
-                    removeTask(position);
+                if (isChecked && task instanceof PersonalTask) {
+                    taskApiService.deletePersonalTask((PersonalTask) task, new TaskApiService.TaskResponseListener() {
+                        @Override
+                        public void onResponse(List<Object> tasks) {
+                            removeTask(holder.getAdapterPosition());
+                        }
+
+                        @Override
+                        public void onError(String message) {
+                            // Handle error
+                        }
+                    });
                 }
             }
         });
@@ -58,12 +77,12 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskVi
         return taskList.size();
     }
 
-    public void updateTasks(List<ListTaskObject> newTaskList) {
+    public void updateTasks(List<Object> newTaskList) {
         this.taskList = newTaskList;
         notifyDataSetChanged();
     }
 
-    public void addTask(ListTaskObject task) {
+    public void addTask(Object task) {
         this.taskList.add(task);
         notifyItemInserted(taskList.size() - 1);
     }
