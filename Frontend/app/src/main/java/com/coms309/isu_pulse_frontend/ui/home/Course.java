@@ -7,14 +7,16 @@ public class Course {
     private int credits;
     private int numSections;
     private Department department;
+    private int cId;
 
-    public Course(String code, String title, String description, int credits, int numSections, Department department) {
+    public Course(String code, String title, String description, int credits, int numSections, Department department, int cId) {
         this.code = code;
         this.title = title;
         this.description = description;
         this.credits = credits;
         this.numSections = numSections;
         this.department = department;
+        this.cId = cId;
     }
 
     // Getters and setters
@@ -65,4 +67,11 @@ public class Course {
     public void setDepartment(Department department) {
         this.department = department;
     }
+    public int getcId() {
+        return cId;
+    }
+    public void setcId(int cId) {
+        this.cId = cId;
+    }
+
 }
