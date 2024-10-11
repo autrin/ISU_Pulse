@@ -1,5 +1,6 @@
 package coms309.backEnd.demo.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -12,11 +13,12 @@ public class Profile {
 
     @OneToOne
     @JoinColumn
+    @JsonIgnore
     private User user;
 
-    private String linkedinUrl;
-    private String externalUrl;
-    private String description;
+    private String linkedinUrl = "";
+    private String externalUrl = "";
+    private String description = "";
 
     public Profile() {
     }

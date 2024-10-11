@@ -16,7 +16,7 @@ public class User {
     private String lastName;
     private String email;
     private String hashedPassword;
-    private String profilePictureUrl;
+    private String profilePictureUrl = "https://as1.ftcdn.net/v2/jpg/01/78/33/12/1000_F_178331249_PIVD6lideletB8pUGKaRy1Z3L3N2YE9n.jpg";
 
     @Enumerated(EnumType.STRING)
     private UserType userType;
@@ -31,13 +31,12 @@ public class User {
     public User() {
     }
 
-    public User(String netId, String firstName, String lastName, String email, String hashedPassword, String profilePictureUrl, UserType userType) {
+    public User(String netId, String firstName, String lastName, String email, String hashedPassword, UserType userType) {
         this.netId = netId;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.hashedPassword = hashedPassword;
-        this.profilePictureUrl = profilePictureUrl;
         this.userType = userType;
     }
 }

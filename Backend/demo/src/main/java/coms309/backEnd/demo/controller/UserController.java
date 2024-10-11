@@ -53,6 +53,8 @@ public class UserController {
         Profile profile = new Profile();
         profile.setUser(user);
 
+        // Cascade will automatically save profile
+        user.setProfile(profile);
         userRepository.save(user);
         response.put("message", "Successfully registered new user.");
         return ResponseEntity.ok(response);
