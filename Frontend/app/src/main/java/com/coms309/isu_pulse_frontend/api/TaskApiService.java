@@ -105,10 +105,10 @@ public class TaskApiService {
                                 JSONObject jsonObject = response.getJSONObject(i);
                                 String title = jsonObject.getString("title");
                                 String description = jsonObject.getString("description");
-                                String dueDate = jsonObject.getString("dueDate");
+                                long dueDate = jsonObject.getLong("dueDate");
                                 String userNetId = jsonObject.getString("userNetId");
 
-                                PersonalTask task = new PersonalTask(title, description, dueDate, userNetId);
+                                PersonalTask task = new PersonalTask(null, title, description, dueDate, userNetId);
                                 tasks.add(task);
                             } catch (Exception e) {
                                 e.printStackTrace();
@@ -127,6 +127,35 @@ public class TaskApiService {
                 });
 
         requestQueue.add(personalTasksRequest);
+    }
+
+    public void getLastPersonalTask(final TaskResponseListener listener) { // For later to get the last task id
+        String url = BASE_URL + "/personalTask/getLastPersonalTask/" + NET_ID;
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            int id = response.getInt("personalTaskId");
+                            List<Object> idList = new ArrayList<>();
+                            idList.add(id);
+                            listener.onResponse(idList);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            listener.onError("Failed to parse response");
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        String errorMessage = error.getMessage() != null ? error.getMessage() : "Unknown error";
+                        Log.e("API Error", errorMessage);
+                        listener.onError(errorMessage);
+                    }
+                });
+
+        requestQueue.add(jsonObjectRequest);
     }
 
     public void createPersonalTask(PersonalTask task) {
@@ -150,7 +179,10 @@ public class TaskApiService {
     }
 
     public void updatePersonalTask(PersonalTask task) {
-        String url = BASE_URL + "/personalTask/updatePersonalTask/" + NET_ID + "?taskId=" + task.getUserNetId() + "&title=" + task.getTitle() + "&description=" + task.getDescription() + "&dueDateTimestamp=" + task.getDueDate();
+        String url = BASE_URL + "/personalTask/updatePersonalTask/" + NET_ID + "?taskId=" + task.getId() +
+                "&title=" + task.getTitle() + "&description=" + task.getDescription() +
+                "&dueDateTimestamp=" + task.getDueDate();
+
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.PUT, url, null,
                 new Response.Listener<JSONObject>() {
                     @Override
@@ -170,7 +202,7 @@ public class TaskApiService {
     }
 
     public void deletePersonalTask(PersonalTask task, final TaskResponseListener listener) {
-        String url = BASE_URL + "/personalTask/deletePersonalTask/" + NET_ID + "/" + task.getUserNetId();
+        String url = BASE_URL + "/personalTask/deletePersonalTask/" + NET_ID + "/" + task.getId();
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.DELETE, url, null,
                 new Response.Listener<JSONObject>() {
                     @Override
