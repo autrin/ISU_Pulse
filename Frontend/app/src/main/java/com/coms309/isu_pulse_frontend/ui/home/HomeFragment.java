@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -72,8 +73,8 @@ public class HomeFragment extends Fragment {
         // Create the tasks due today
         RecyclerView recylcerViewTasksDueToday = binding.recylcerViewTasksDueToday;
         LinearLayoutManager layoutManagerTasks = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
-        layoutManagerTasks.setReverseLayout(false); // Ensure items start from the top
-        layoutManagerTasks.setStackFromEnd(false); // Ensure items are not stacked from the end
+//        layoutManagerTasks.setReverseLayout(false); // Ensure items start from the top
+//        layoutManagerTasks.setStackFromEnd(false); // Ensure items are not stacked from the end
         recylcerViewTasksDueToday.setLayoutManager(layoutManagerTasks);
 
         taskAdapter = new TaskListAdapter(tasksDueToday); // Create a new adapter with the tasks due today
@@ -109,5 +110,12 @@ public class HomeFragment extends Fragment {
                 Log.e("API Error", errorMessage);
             }
         });
+    }
+
+    /**
+     * Delete the task when the checkbox of a item_task is checked
+     */
+    public void deleteTaskInHome() {
+//        taskApiService.deleteTask();
     }
 }
