@@ -3,7 +3,6 @@ package com.coms309.isu_pulse_frontend.ui.home;
 import java.sql.Date;
 
 public class ListTaskObject {
-    private Long cId;
     private String tId;
     private int section;
     private String title;
@@ -13,8 +12,7 @@ public class ListTaskObject {
     private Course course;
     private Department department;
 
-    public ListTaskObject(Long cId, String tId, int section, String title, String description, Date dueDate, String taskType, Course course, Department department) {
-        this.cId = cId;
+    public ListTaskObject(String tId, int section, String title, String description, Date dueDate, String taskType, Course course, Department department) {
         this.tId = tId;
         this.section = section;
         this.title = title;
@@ -49,9 +47,6 @@ public class ListTaskObject {
         return tId;
     }
 
-    public Long getcId() {
-        return cId;
-    }
 
     public Course getCourse() {
         return course;
