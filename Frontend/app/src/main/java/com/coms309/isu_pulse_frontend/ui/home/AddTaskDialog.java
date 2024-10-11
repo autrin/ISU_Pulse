@@ -60,6 +60,23 @@ public class AddTaskDialog extends DialogFragment {
                 dismiss();
             }
         });
+        /** //For later to get the last task id
+         *                 taskApiService.getLastPersonalTask(new TaskApiService.TaskResponseListener() {
+         *                     @Override
+         *                     public void onResponse(String lastTaskId) {
+         *                         String newTaskId = String.valueOf(Integer.parseInt(lastTaskId) + 1);
+         *                         PersonalTask newTask = new PersonalTask(newTaskId, title, description, dueDateTimestamp, "n001");
+         *                         taskApiService.createPersonalTask(newTask);
+         *                         homeFragment.addNewTask(newTask);
+         *                         dismiss();
+         *                     }
+         *
+         *                     @Override
+         *                     public void onError(String message) {
+         *                         // Handle error
+         *                     }
+         *                 });
+         */
 
         return view;
     }
