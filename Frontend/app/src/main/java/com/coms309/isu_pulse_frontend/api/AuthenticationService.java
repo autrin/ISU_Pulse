@@ -1,5 +1,7 @@
 package com.coms309.isu_pulse_frontend.api;
 
+import static com.coms309.isu_pulse_frontend.api.Constants.BASE_URL;
+
 import android.content.Context;
 
 import com.android.volley.Request;
@@ -13,8 +15,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class AuthenticationService {
-//    private static final String BASE_URL = "http://coms-3090-042.class.las.iastate.edu:8080/users";
-    private static final String BASE_URL = "http://10.0.2.2:8080/users";
 
     // Define a callback interface to handle the asynchronous response
     public interface VolleyCallback {
@@ -34,7 +34,7 @@ public class AuthenticationService {
             Context context,
             final VolleyCallback callback
     ) {
-        String url = BASE_URL;
+        String url = BASE_URL + "users/";
 
         // Create the JSON object representing the user
         JSONObject userJson = new JSONObject();
@@ -66,7 +66,7 @@ public class AuthenticationService {
     }
 
     public void checkUserExists(String netId, Context context, final VolleyCallback callback) {
-        String url = BASE_URL + "/" + netId;
+        String url = BASE_URL + "users/" + netId;
         RequestQueue queue = Volley.newRequestQueue(context);
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
