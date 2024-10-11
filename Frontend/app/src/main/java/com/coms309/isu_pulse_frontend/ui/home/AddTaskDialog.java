@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import com.coms309.isu_pulse_frontend.R;
+import com.coms309.isu_pulse_frontend.adapters.TaskListAdapter;
 import com.coms309.isu_pulse_frontend.api.TaskApiService;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -19,9 +20,13 @@ import java.sql.Date;
 public class AddTaskDialog extends DialogFragment {
 
     private TaskApiService taskApiService;
+    private TaskListAdapter taskListAdapter;
+    private HomeFragment homeFragment;
 
-    public AddTaskDialog(TaskApiService taskApiService) {
+    public AddTaskDialog(TaskApiService taskApiService, TaskListAdapter taskListAdapter, HomeFragment homeFragment) {
         this.taskApiService = taskApiService;
+        this.taskListAdapter = taskListAdapter;
+        this.homeFragment = homeFragment;
     }
 
     @Nullable
@@ -77,6 +82,7 @@ public class AddTaskDialog extends DialogFragment {
                 ListTaskObject newTask = new ListTaskObject("newTask", section, title, description, sqlDueDate, taskType, course, department);
 
                 taskApiService.createTask(newTask);
+                homeFragment.addNewTask(newTask); // Add the new task to the HomeFragment
                 dismiss();
             }
         });
