@@ -40,7 +40,7 @@ public class PersonalTaskController {
     }
 
     @PostMapping("/addPersonalTask/{sId}")
-    public ResponseEntity<Boolean> addPersonTasks(
+    public ResponseEntity<String> addPersonTasks(
             @PathVariable String sId,
             @RequestParam String title,
             @RequestParam String description,
@@ -48,12 +48,12 @@ public class PersonalTaskController {
     ) {
         Optional<User> curUser = userRepository.findById(sId);
         if (curUser.isEmpty()){
-            return ResponseEntity.internalServerError().build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
         }
         personalTaskRepository.save(new PersonalTask(
             title, new Date(dueDateTimestamp), description, curUser.get()
         ));
-        return ResponseEntity.ok(true);
+        return ResponseEntity.ok("Personal task added successfully.");
     }
 
 
