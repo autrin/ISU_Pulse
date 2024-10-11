@@ -1,3 +1,4 @@
+// AddTaskDialog.java
 package com.coms309.isu_pulse_frontend.ui.home;
 
 import android.os.Bundle;
@@ -14,8 +15,6 @@ import androidx.fragment.app.DialogFragment;
 import com.coms309.isu_pulse_frontend.R;
 import com.coms309.isu_pulse_frontend.adapters.TaskListAdapter;
 import com.coms309.isu_pulse_frontend.api.TaskApiService;
-import com.coms309.isu_pulse_frontend.ui.home.HomeFragment;
-import com.coms309.isu_pulse_frontend.ui.home.PersonalTask;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -55,7 +54,7 @@ public class AddTaskDialog extends DialogFragment {
                     e.printStackTrace();
                 }
 
-                PersonalTask newTask = new PersonalTask(title, description, String.valueOf(dueDateTimestamp), "n001");
+                PersonalTask newTask = new PersonalTask(null, title, description, dueDateTimestamp, "n001");
                 taskApiService.createPersonalTask(newTask);
                 homeFragment.addNewTask(newTask);
                 dismiss();
