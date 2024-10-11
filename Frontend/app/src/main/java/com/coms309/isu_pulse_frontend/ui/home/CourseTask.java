@@ -2,7 +2,7 @@ package com.coms309.isu_pulse_frontend.ui.home;
 
 import java.sql.Date;
 
-public class ListTaskObject {
+public class CourseTask {
     private String tId;
     private int section;
     private String title;
@@ -12,7 +12,7 @@ public class ListTaskObject {
     private Course course;
     private Department department;
 
-    public ListTaskObject(String tId, int section, String title, String description, Date dueDate, String taskType, Course course, Department department) {
+    public CourseTask(String tId, int section, String title, String description, Date dueDate, String taskType, Course course, Department department) {
         this.tId = tId;
         this.section = section;
         this.title = title;
