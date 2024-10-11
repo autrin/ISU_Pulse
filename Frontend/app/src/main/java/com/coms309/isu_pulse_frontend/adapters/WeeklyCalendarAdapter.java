@@ -9,7 +9,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.coms309.isu_pulse_frontend.R;
-import com.coms309.isu_pulse_frontend.ui.home.ListTaskObject;
+import com.coms309.isu_pulse_frontend.ui.home.CourseTask;
+import com.coms309.isu_pulse_frontend.ui.home.PersonalTask;
 import com.coms309.isu_pulse_frontend.viewholders.ViewHolder;
 
 import java.util.List;
@@ -17,10 +18,10 @@ import java.util.List;
 public class WeeklyCalendarAdapter extends RecyclerView.Adapter<WeeklyCalendarAdapter.WeeklyViewHolder> {
 
     private List<String> days;
-    private List<ListTaskObject> tasksDueToday;
+    private List<Object> tasksDueToday;
     private List<String> events;
 
-    public WeeklyCalendarAdapter(List<String> days, List<ListTaskObject> tasksDueToday, List<String> events) {
+    public WeeklyCalendarAdapter(List<String> days, List<Object> tasksDueToday, List<String> events) {
         this.days = days;
         this.tasksDueToday = tasksDueToday;
         this.events = events;
@@ -39,7 +40,14 @@ public class WeeklyCalendarAdapter extends RecyclerView.Adapter<WeeklyCalendarAd
         holder.textViewDay.setText(day);
 
         if (!tasksDueToday.isEmpty() && position < tasksDueToday.size()) {
-            holder.textViewTask.setText(tasksDueToday.get(position).getTitle());
+            Object task = tasksDueToday.get(position);
+            if (task instanceof CourseTask) {
+                holder.textViewTask.setText(((CourseTask) task).getTitle());
+            } else if (task instanceof PersonalTask) {
+                holder.textViewTask.setText(((PersonalTask) task).getTitle());
+            } else {
+                holder.textViewTask.setText("Unknown task type");
+            }
         } else {
             holder.textViewTask.setText("No tasks");
         }
@@ -70,7 +78,7 @@ public class WeeklyCalendarAdapter extends RecyclerView.Adapter<WeeklyCalendarAd
 
         @Override
         public void bind(Object obj) {
-
+            // Implement binding logic if needed
         }
     }
 }
