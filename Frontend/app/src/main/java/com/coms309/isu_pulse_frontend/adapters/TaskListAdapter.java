@@ -4,11 +4,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.CompoundButton;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.toolbox.Volley;
@@ -17,6 +19,7 @@ import com.coms309.isu_pulse_frontend.api.TaskApiService;
 import com.coms309.isu_pulse_frontend.ui.home.CourseTask;
 import com.coms309.isu_pulse_frontend.ui.home.PersonalTask;
 import com.coms309.isu_pulse_frontend.viewholders.ViewHolder;
+import com.coms309.isu_pulse_frontend.ui.home.EditTaskDialog;
 
 import java.util.List;
 import java.text.DateFormat;
@@ -58,6 +61,15 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskVi
             holder.dueDate.setText(dateFormat.format(new Date(personalTask.getDueDate() * 1000)));
         }
 
+        holder.buttonEditTask.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Open edit dialog
+                EditTaskDialog editTaskDialog = new EditTaskDialog(taskApiService, task, TaskListAdapter.this);
+                editTaskDialog.show(((FragmentActivity) v.getContext()).getSupportFragmentManager(), "EditTaskDialog");
+            }
+        });
+
         holder.checkBox.setOnCheckedChangeListener(null); // Remove previous listener
         holder.checkBox.setChecked(false);
         holder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -77,22 +89,30 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskVi
                             }
                         });
                     } else if (task instanceof CourseTask) {
-//                        taskApiService.deleteCourseTask((CourseTask) task, new TaskApiService.TaskResponseListener() {
-//                            @Override
-//                            public void onResponse(List<Object> tasks) {
-//                                removeTask(holder.getAdapterPosition());
-//                            }
-//
-//                            @Override
-//                            public void onError(String message) {
-//                                Log.e("API Error occurred in TaskListAdapter, type CourseTask", message);
-//                            }
-//                        });
+                        // Handle CourseTask deletion
                     }
                 }
             }
         });
     }
+
+    /**
+     * else if (task instanceof CourseTask) {
+     * //                        taskApiService.deleteCourseTask((CourseTask) task, new TaskApiService.TaskResponseListener() {
+     * //                            @Override
+     * //                            public void onResponse(List<Object> tasks) {
+     * //                                removeTask(holder.getAdapterPosition());
+     * //                            }
+     * //
+     * //                            @Override
+     * //                            public void onError(String message) {
+     * //                                Log.e("API Error occurred in TaskListAdapter, type CourseTask", message);
+     * //                            }
+     * //                        });
+     *                     }
+     *
+     */
+
 
     @Override
     public int getItemCount() {
@@ -117,6 +137,7 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskVi
     public static class TaskViewHolder extends RecyclerView.ViewHolder implements ViewHolder {
         TextView title, description, dueDate;
         CheckBox checkBox;
+        Button buttonEditTask;
 
         public TaskViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -124,6 +145,7 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskVi
             description = itemView.findViewById(R.id.task_description);
             dueDate = itemView.findViewById(R.id.task_due_date);
             checkBox = itemView.findViewById(R.id.checkBoxTask);
+            buttonEditTask = itemView.findViewById(R.id.buttonEditTask);
         }
 
         @Override
