@@ -133,6 +133,7 @@
                             android:textStyle="bold" />
 
                         <TextView
+                            android:id="@+id/coursesTextView"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Courses"
@@ -158,6 +159,7 @@
                             android:textStyle="bold" />
 
                         <TextView
+                            android:id="@+id/friendsTextView"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Friends"

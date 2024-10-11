@@ -9,9 +9,12 @@ import coms309.backEnd.demo.repository.CourseRepository;
 import coms309.backEnd.demo.repository.EnrollRepository;
 import coms309.backEnd.demo.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -32,19 +35,43 @@ public class EnrollController {
         this.userRepository = userRepository;
         this.courseRepository = courseRepository;
     }
-
-    @PostMapping("/addEnroll")
-    public ResponseEntity<Boolean> addEnroll(@RequestParam("netId") String netId, @RequestParam("course") int courseId) {
-        Optional<User> curUser = userRepository.findById(netId);
+    @GetMapping("/getEnroll/{sId}")
+    public ResponseEntity<List<Course>> addEnroll(@PathVariable String sId){
+        Optional<User> curUser = userRepository.findById(sId);
         if (curUser.isEmpty()) {
-            return ResponseEntity.internalServerError().build();
+            return  ResponseEntity.internalServerError().build();
+        }
+        User user = curUser.get();
+        List<Enroll> enrollList = enrollRepository.findAllBysId(sId);
+        List<Course> courseList = new ArrayList<>();
+        for(Enroll en : enrollList){
+            courseList.add(en.getCourse());
+        }
+        return ResponseEntity.ok(courseList);
+    }
+
+    @PostMapping("/addEnroll/{sId}")
+    public ResponseEntity<String> addEnroll(@PathVariable String sId, @RequestParam("course") int courseId) {
+        Optional<User> curUser = userRepository.findById(sId);
+        if (curUser.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("User not found.");
         }
         Optional<Course> curCourse = courseRepository.findById(courseId);
         if (curCourse.isEmpty()) {
-            return ResponseEntity.internalServerError().build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Course not found.");
         }
-        Enroll curEnroll = new Enroll(curUser.get().getNetId(), curCourse.get().getCId(),curCourse.get().getNumSections(), curUser.get(), curCourse.get());
+        Enroll curEnroll = new Enroll(curUser.get().getNetId(), curCourse.get().getCId(),
+                curCourse.get().getNumSections(), curUser.get(), curCourse.get());
+
         enrollRepository.save(curEnroll);
-        return ResponseEntity.ok(true);
+
+        return ResponseEntity.ok("Enrollment successful.");
     }
+
+
+//    @DeleteMapping("/removeEnroll/{sId}")
+//    public ResponseEntity<String> removeEnroll(@PathVariable String sId) {
+//
+//        return ResponseEntity.ok("Successfully removed enrollment");
+//    }
 }
