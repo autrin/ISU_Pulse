@@ -4,7 +4,6 @@ package coms309.backEnd.demo.controller;
 import coms309.backEnd.demo.entity.Course;
 import coms309.backEnd.demo.entity.Enroll;
 import coms309.backEnd.demo.entity.User;
-import coms309.backEnd.demo.entity.UserType;
 import coms309.backEnd.demo.repository.CourseRepository;
 import coms309.backEnd.demo.repository.EnrollRepository;
 import coms309.backEnd.demo.repository.UserRepository;
@@ -42,7 +41,7 @@ public class EnrollController {
             return  ResponseEntity.internalServerError().build();
         }
         User user = curUser.get();
-        List<Enroll> enrollList = enrollRepository.findAllBysId(sId);
+        List<Enroll> enrollList = enrollRepository.findAllByStudentid(sId);
         List<Course> courseList = new ArrayList<>();
         for(Enroll en : enrollList){
             courseList.add(en.getCourse());
@@ -70,8 +69,17 @@ public class EnrollController {
 
 
     @DeleteMapping("/removeEnroll/{sId}")
-    public ResponseEntity<String> removeEnroll(@PathVariable String sId) {
+    public ResponseEntity<String> removeEnroll(@PathVariable String sId, @RequestParam("c_id") int courseId) {
+        Optional<User> curUser = userRepository.findById(sId);
+        if (curUser.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("User not found.");
+        }
+        Optional<Course> curCourse = courseRepository.findById(courseId);
+        if (curCourse.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Course not found.");
+        }
 
+        Enroll enroll = enrollRepository.findByStudentidAndCourseid(sId, courseId);
         return ResponseEntity.ok("Successfully removed enrollment");
     }
 }

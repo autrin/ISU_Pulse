@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Date;
 import java.util.Calendar;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -65,7 +64,7 @@ public class TaskController {
         if(curUser.isEmpty()){
             return  ResponseEntity.internalServerError().build();
         }
-        List<Enroll> curEnroll = enrollRepository.findAllBysId(sId);
+        List<Enroll> curEnroll = enrollRepository.findAllByStudentid(sId);
         List<Task> taskin2days = new ArrayList<>();
         for(Enroll en : curEnroll){
             Course cou = en.getCourse();
