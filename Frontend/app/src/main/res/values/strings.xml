@@ -1,5 +1,8 @@
 <resources>
+    <!-- App Name -->
     <string name="app_name">ISU_Pulse_Frontend</string>
+
+    <!-- Navigation Drawer -->
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="nav_header_title">Android Studio</string>
@@ -7,7 +10,25 @@
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
 
+    <!-- Menu Items -->
     <string name="menu_home">Home</string>
     <string name="menu_gallery">Gallery</string>
     <string name="menu_slideshow">Slideshow</string>
+
+    <!-- User Roles -->
+    <string-array name="user_roles">
+        <item>FACULTY</item>
+        <item>STUDENT</item>
+        <item>ADMIN</item>
+    </string-array>
+
+    <!-- New Strings for ISU Pulse Frontend -->
+    <string name="isu_logo_description">ISU Pulse logo with a heartbeat symbol</string>
+    <string name="sign_in">Sign In</string>
+    <string name="sign_up">Sign Up</string>
+
+    <!-- Optional: Additional Strings -->
+    <!-- Uncomment if you decide to use the Guest button
+    <string name="guest">Guest</string>
+    -->
 </resources>
