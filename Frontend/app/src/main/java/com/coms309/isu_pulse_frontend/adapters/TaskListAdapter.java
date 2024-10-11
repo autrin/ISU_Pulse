@@ -31,10 +31,11 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskVi
 
     private List<Object> taskList;
     private TaskApiService taskApiService;
-
-    public TaskListAdapter(List<Object> taskList, TaskApiService taskApiService) {
+    private WeeklyCalendarAdapter weekCalendarAdapter;
+    public TaskListAdapter(List<Object> taskList, TaskApiService taskApiService, WeeklyCalendarAdapter weekCalendarAdapter) {
         this.taskList = taskList;
         this.taskApiService = taskApiService;
+        this.weekCalendarAdapter = weekCalendarAdapter;
     }
 
     @NonNull
@@ -65,7 +66,7 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskVi
             @Override
             public void onClick(View v) {
                 // Open edit dialog
-                EditTaskDialog editTaskDialog = new EditTaskDialog(taskApiService, task, TaskListAdapter.this);
+                EditTaskDialog editTaskDialog = new EditTaskDialog(taskApiService, task, TaskListAdapter.this, weekCalendarAdapter);
                 editTaskDialog.show(((FragmentActivity) v.getContext()).getSupportFragmentManager(), "EditTaskDialog");
             }
         });
