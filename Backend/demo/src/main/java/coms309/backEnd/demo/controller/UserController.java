@@ -12,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.swing.text.html.Option;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 
@@ -39,18 +41,22 @@ public class UserController {
     }
 
     @PostMapping
-    public void registerNewStudent(@RequestBody User user) {
+    public ResponseEntity<Map<String, String>> registerNewStudent(@RequestBody User user) {
         Optional<User> userOptional = userRepository.findById(user.getNetId());
+        Map<String, String> response = new HashMap<>();
         if (userOptional.isPresent()) {
-            throw new IllegalStateException("Student with NetId already exists.");
+            response.put("message", "Student with NetId already exists");
+            return ResponseEntity.badRequest().body(response);
         }
 
         userRepository.save(user);
+        response.put("message", "Successfully registered new user.");
+        return ResponseEntity.ok(response);
     }
 
     @Transactional
     @PutMapping(path = "updatepw/{netId}")
-    public void updateUserAccount(@PathVariable String netId,
+    public ResponseEntity<String> updateUserAccount(@PathVariable String netId,
                                   @RequestParam(required = true) String newPassword) {
         Optional<User> userOptional = userRepository.findById(netId);
         if (!userOptional.isPresent()) {
@@ -62,6 +68,7 @@ public class UserController {
             throw new IllegalStateException("New newPassword must be different from the old newPassword");
         
         user.setHashedPassword(newPassword);
+        return ResponseEntity.ok("User " + netId + " has successfully changed the password.");
     }
 
     @DeleteMapping(path = "/{netId}")
