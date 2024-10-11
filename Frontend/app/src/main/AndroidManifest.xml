@@ -38,6 +38,12 @@
             android:name=".loginsignup.SignupActivity"
             android:exported="false" />
         <activity
+            android:name=".proifle_activity.ProfileActivity"
+            android:exported="false" />
+        <activity
+            android:name=".proifle_activity.EditProfileActivity"
+            android:exported="false" />
+        <activity
             android:name=".loginsignup.LoginActivity"
             android:exported="false" />
         <activity
