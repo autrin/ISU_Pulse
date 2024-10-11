@@ -89,7 +89,7 @@ public class HomeFragment extends Fragment {
     }
 
     private void openAddTaskDialog() {
-        AddTaskDialog addTaskDialog = new AddTaskDialog(taskApiService);
+        AddTaskDialog addTaskDialog = new AddTaskDialog(taskApiService, taskAdapter, this);
         addTaskDialog.show(getChildFragmentManager(), "Add Task Dialog");
     }
 
@@ -115,5 +115,11 @@ public class HomeFragment extends Fragment {
                 Log.e("API Error", errorMessage);
             }
         });
+    }
+
+    public void addNewTask(ListTaskObject newTask) {
+        tasksDueToday.add(newTask);
+        taskAdapter.notifyItemInserted(tasksDueToday.size() - 1);
+        binding.recylcerViewTasksDueToday.scrollToPosition(tasksDueToday.size() - 1);
     }
 }
