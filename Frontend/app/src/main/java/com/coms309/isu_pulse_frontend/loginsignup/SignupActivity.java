@@ -1,5 +1,7 @@
 package com.coms309.isu_pulse_frontend.loginsignup;
 
+import static android.content.ContentValues.TAG;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
@@ -10,6 +12,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.webkit.MimeTypeMap;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -24,7 +27,13 @@ import com.coms309.isu_pulse_frontend.MainActivity;
 import com.coms309.isu_pulse_frontend.R;
 import com.coms309.isu_pulse_frontend.api.AuthenticationService;
 import com.coms309.isu_pulse_frontend.proifle_activity.ProfileActivity;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GetTokenResult;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -44,6 +53,7 @@ public class SignupActivity extends AppCompatActivity {
     private ImageView profileImage;
     private Button uploadImageButton;
     private Uri imageUri;
+    private FirebaseAuth mAuth;
 
     private StorageReference storageReference;
 
@@ -57,6 +67,10 @@ public class SignupActivity extends AppCompatActivity {
 
         FirebaseApp.initializeApp(this);
         storageReference = FirebaseStorage.getInstance().getReference();
+
+        mAuth = FirebaseAuth.getInstance();
+
+        signInAnonymously();
 
         firstname = findViewById(R.id.firstname_isu_pulse);
         lastname = findViewById(R.id.lastname_isu_pulse);
@@ -136,7 +150,56 @@ public class SignupActivity extends AppCompatActivity {
             Intent intent = new Intent(SignupActivity.this, LoginActivity.class);
             startActivity(intent);
         });
+
+
     }
+
+    private void signInAnonymously() {
+        mAuth.signInAnonymously()
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // Sign-in success
+                            Log.d(TAG, "signInAnonymously:success");
+                            FirebaseUser user = mAuth.getCurrentUser();
+                            // You can now get the token
+                            getToken();
+                        } else {
+                            // If sign-in fails, display a message to the user.
+                            Log.w(TAG, "signInAnonymously:failure", task.getException());
+                            Toast.makeText(SignupActivity.this, "Authentication failed.",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+    }
+
+    private void getToken() {
+        FirebaseUser user = mAuth.getCurrentUser();
+        if (user != null) {
+            user.getIdToken(/* forceRefresh */ true)
+                    .addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<GetTokenResult> task) {
+                            if (task.isSuccessful()) {
+                                // Get new ID token
+                                String idToken = task.getResult().getToken();
+                                // Send token to your backend via HTTPS
+                                // ...
+                                Log.d(TAG, "Token: " + idToken);
+                            } else {
+                                // Handle error -> task.getException();
+                                Log.w(TAG, "getIdToken failed", task.getException());
+                            }
+                        }
+                    });
+        } else {
+            Log.w(TAG, "User is not signed in");
+        }
+    }
+
+
 
     private void showImagePickerOptions() {
         String[] options = {"Take Photo", "Choose from Gallery"};
