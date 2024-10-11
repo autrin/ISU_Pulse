@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -14,7 +15,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
+import androidx.fragment.app.DialogFragment;
 import com.coms309.isu_pulse_frontend.adapters.TaskListAdapter;
 import com.coms309.isu_pulse_frontend.adapters.WeeklyCalendarAdapter;
 import com.coms309.isu_pulse_frontend.api.TaskApiService;
@@ -30,6 +31,7 @@ public class HomeFragment extends Fragment {
     private TextView textViewTasksDueTodayTitle;
     private TextView textViewAnnouncementTitle;
     private TaskListAdapter taskAdapter;
+    private Button buttonAddTask;
 
     private List<ListTaskObject> tasksDueToday = new ArrayList<>();
     private List<String> events = new ArrayList<>();
@@ -72,9 +74,23 @@ public class HomeFragment extends Fragment {
         taskAdapter = new TaskListAdapter(tasksDueToday, taskApiService); // Pass the TaskApiService instance
         recylcerViewTasksDueToday.setAdapter(taskAdapter);
 
+        buttonAddTask = binding.buttonAddTask;
+        buttonAddTask.setText("Add Task");
+        buttonAddTask.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openAddTaskDialog();
+            }
+        });
+
         populateTasksDue();
 
         return root;
+    }
+
+    private void openAddTaskDialog() {
+        AddTaskDialog addTaskDialog = new AddTaskDialog();
+        addTaskDialog.show(getChildFragmentManager(), "Add Task Dialog");
     }
 
     @Override
