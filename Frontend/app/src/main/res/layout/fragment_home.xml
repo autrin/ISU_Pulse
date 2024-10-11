@@ -54,8 +54,8 @@
 
     <Button
         android:id="@+id/buttonAddTask"
-        android:layout_width="74dp"
-        android:layout_height="39dp"
+        android:layout_width="116dp"
+        android:layout_height="41dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.954"
