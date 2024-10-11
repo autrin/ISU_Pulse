@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.coms309.isu_pulse_frontend.R;
+import com.coms309.isu_pulse_frontend.api.TaskApiService;
 import com.coms309.isu_pulse_frontend.ui.home.ListTaskObject;
 import com.coms309.isu_pulse_frontend.viewholders.ViewHolder;
 
@@ -18,9 +19,11 @@ import java.util.List;
 public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskViewHolder> {
 
     private List<ListTaskObject> taskList;
+    private TaskApiService taskApiService;
+    public TaskListAdapter(List<ListTaskObject> taskList, TaskApiService taskApiService) {
 
-    public TaskListAdapter(List<ListTaskObject> taskList) {
         this.taskList = taskList;
+        this.taskApiService = taskApiService;
     }
 
     @NonNull
