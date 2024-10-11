@@ -24,8 +24,8 @@ import java.util.Map;
 
 public class TaskApiService {
 
-    private static final String URL_STRING_REQ = "https://65e24ca1-c2ef-4182-97c5-5133a65636e4.mock.pstmn.io/tasksdue";
-    private static final String URL_STRING_REQ_VM = "http://coms-3090-042.class.las.iastate.edu:8080/task/n001"; //TODO: needs to use the user's id instead of the hardcoded one later
+    private static final String URL_STRING_REQ_VM = "https://65e24ca1-c2ef-4182-97c5-5133a65636e4.mock.pstmn.io/tasksdue";
+//    private static final String URL_STRING_REQ_VM = "http://coms-3090-042.class.las.iastate.edu:8080/task/n001"; //TODO: needs to use the user's id instead of the hardcoded one later
     private Context context;
 
     public TaskApiService(Context context) {
