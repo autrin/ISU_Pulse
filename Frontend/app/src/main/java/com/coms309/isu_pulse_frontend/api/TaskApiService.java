@@ -40,7 +40,7 @@ public class TaskApiService {
     }
 
     public void getTasksDueToday(final TaskResponseListener listener) {
-        String url = BASE_URL + "/getTaskByUserIn2days/" + NET_ID;
+        String url = BASE_URL + "/task" +"/getTaskByUserIn2days/" + NET_ID;
         JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, url, null,
                 new Response.Listener<JSONArray>() {
                     @Override
