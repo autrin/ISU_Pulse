@@ -1,5 +1,6 @@
 package com.coms309.isu_pulse_frontend.adapters;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +11,7 @@ import android.widget.CompoundButton;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.volley.toolbox.Volley;
 import com.coms309.isu_pulse_frontend.R;
 import com.coms309.isu_pulse_frontend.api.TaskApiService;
 import com.coms309.isu_pulse_frontend.ui.home.CourseTask;
@@ -17,6 +19,10 @@ import com.coms309.isu_pulse_frontend.ui.home.PersonalTask;
 import com.coms309.isu_pulse_frontend.viewholders.ViewHolder;
 
 import java.util.List;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskViewHolder> {
 
@@ -38,6 +44,8 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskVi
     @Override
     public void onBindViewHolder(@NonNull TaskViewHolder holder, int position) {
         Object task = taskList.get(position);
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+
         if (task instanceof CourseTask) {
             CourseTask courseTask = (CourseTask) task;
             holder.title.setText(courseTask.getTitle());
@@ -47,7 +55,7 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskVi
             PersonalTask personalTask = (PersonalTask) task;
             holder.title.setText(personalTask.getTitle());
             holder.description.setText(personalTask.getDescription());
-            holder.dueDate.setText(personalTask.getDueDate());
+            holder.dueDate.setText(dateFormat.format(new Date(personalTask.getDueDate() * 1000)));
         }
 
         holder.checkBox.setOnCheckedChangeListener(null); // Remove previous listener
@@ -65,21 +73,21 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskVi
 
                             @Override
                             public void onError(String message) {
-                                // Handle error
+                                Log.e("API Error occurred in TaskListAdapter, type PersonalTask", message);
                             }
                         });
                     } else if (task instanceof CourseTask) {
-                        taskApiService.deleteCourseTask((CourseTask) task, new TaskApiService.TaskResponseListener() {
-                            @Override
-                            public void onResponse(List<Object> tasks) {
-                                removeTask(holder.getAdapterPosition());
-                            }
-
-                            @Override
-                            public void onError(String message) {
-                                // Handle error
-                            }
-                        });
+//                        taskApiService.deleteCourseTask((CourseTask) task, new TaskApiService.TaskResponseListener() {
+//                            @Override
+//                            public void onResponse(List<Object> tasks) {
+//                                removeTask(holder.getAdapterPosition());
+//                            }
+//
+//                            @Override
+//                            public void onError(String message) {
+//                                Log.e("API Error occurred in TaskListAdapter, type CourseTask", message);
+//                            }
+//                        });
                     }
                 }
             }
@@ -120,7 +128,6 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskVi
 
         @Override
         public void bind(Object obj) {
-            // Implement binding logic if needed
         }
     }
 }
