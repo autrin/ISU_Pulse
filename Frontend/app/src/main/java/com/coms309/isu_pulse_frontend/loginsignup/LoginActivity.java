@@ -1,7 +1,7 @@
 package com.coms309.isu_pulse_frontend.loginsignup;
 
 import androidx.appcompat.app.AppCompatActivity;
-//import com.coms309.isu_pulse_frontend.proifle_activity.ProfileActivity;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -13,6 +13,8 @@ import android.widget.Toast;
 import com.coms309.isu_pulse_frontend.MainActivity;
 import com.coms309.isu_pulse_frontend.R;
 import com.coms309.isu_pulse_frontend.api.AuthenticationService;
+import com.coms309.isu_pulse_frontend.proifle_activity.ProfileActivity;
+
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -22,6 +24,7 @@ public class LoginActivity extends AppCompatActivity {
     private EditText passWord;
     private TextView enter;
     private TextView signup;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +37,7 @@ public class LoginActivity extends AppCompatActivity {
         enter = findViewById(R.id.enter_isu_pulse);
         signup = findViewById(R.id.sign_up_isu_pulse);
 
+
         // Set onClickListener for the "Enter" button
         enter.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -45,43 +49,48 @@ public class LoginActivity extends AppCompatActivity {
                 // Input validation
                 if (netIdInput.isEmpty() || passWordInput.isEmpty()) {
                     Toast.makeText(LoginActivity.this, "Please enter all fields", Toast.LENGTH_SHORT).show();
-                } else if (passWordInput.length() < 8) {
-                    Toast.makeText(LoginActivity.this, "Password must be at least 8 characters", Toast.LENGTH_SHORT).show();
-                } else {
-                    // Proceed to check if user exists
-                    AuthenticationService apiService = new AuthenticationService();
-                    apiService.checkUserExists(netIdInput, LoginActivity.this, new AuthenticationService.VolleyCallback() {
-                        @Override
-                        public void onSuccess(JSONObject result) {
-                            // User exists, now verify the password
-                            try {
-                                String storedHashedPassword = result.getString("hashedPassword");
+                    return;
+                }
 
-                                if (storedHashedPassword.equals(hashPassword)) {
-                                    // Passwords match, login successful
-                                    Toast.makeText(LoginActivity.this, "Login successful", Toast.LENGTH_SHORT).show();
+                if (passWordInput.length() < 8) {
+                    Toast.makeText(LoginActivity.this, "Password must be at least 8 characters", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                // Proceed to check if user exists
+                AuthenticationService apiService = new AuthenticationService();
+                apiService.checkUserExists(netIdInput, LoginActivity.this, new AuthenticationService.VolleyCallback() {
+                    @Override
+                    public void onSuccess(JSONObject result) {
+                        // User exists, now verify the password
+                        try {
+                            String storedHashedPassword = result.getString("hashedPassword");
+
+                            if (storedHashedPassword.equals(hashPassword)) {
+                                // Passwords match, login successful
+                                Toast.makeText(LoginActivity.this, "Login successful", Toast.LENGTH_SHORT).show();
 
 //                                    // Proceed to the main activity
-                                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                                    startActivity(intent);
-                                    finish();
-                                } else {
-                                    // Passwords don't match
-                                    Toast.makeText(LoginActivity.this, "Incorrect password", Toast.LENGTH_SHORT).show();
-                                }
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                                Toast.makeText(LoginActivity.this, "Error parsing response", Toast.LENGTH_SHORT).show();
+                                Intent intent = new Intent(LoginActivity.this, ProfileActivity.class);
+                                startActivity(intent);
+                                finish();
+                            } else {
+                                // Passwords don't match
+                                Toast.makeText(LoginActivity.this, "Incorrect password", Toast.LENGTH_SHORT).show();
                             }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            Toast.makeText(LoginActivity.this, "Error parsing response", Toast.LENGTH_SHORT).show();
                         }
+                    }
 
-                        @Override
-                        public void onError(String message) {
-                            // User does not exist or other error
-                            Toast.makeText(LoginActivity.this, "User does not exist", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                }
+                    @Override
+                    public void onError(String message) {
+                        // User does not exist or other error
+                        Toast.makeText(LoginActivity.this, message, Toast.LENGTH_SHORT).show();
+                    }
+                });
+
             }
         });
 
