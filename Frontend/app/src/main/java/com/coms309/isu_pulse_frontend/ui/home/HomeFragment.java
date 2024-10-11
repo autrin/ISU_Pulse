@@ -89,7 +89,7 @@ public class HomeFragment extends Fragment {
     }
 
     private void openAddTaskDialog() {
-        AddTaskDialog addTaskDialog = new AddTaskDialog();
+        AddTaskDialog addTaskDialog = new AddTaskDialog(taskApiService);
         addTaskDialog.show(getChildFragmentManager(), "Add Task Dialog");
     }
 
