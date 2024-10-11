@@ -10,12 +10,10 @@ public class ListTaskObject {
     private String description;
     private Date dueDate;
     private String taskType;
-    private String courseCode;
-    private String courseTitle;
-    private String departmentName;
-    private String departmentLocation;
+    private Course course;
+    private Department department;
 
-    public ListTaskObject(Long cId, String tId, String section, String title, String description, Date dueDate, String taskType, String courseCode, String courseTitle, String departmentName, String departmentLocation) {
+    public ListTaskObject(Long cId, String tId, String section, String title, String description, Date dueDate, String taskType, Course course, Department department) {
         this.cId = cId;
         this.tId = tId;
         this.section = section;
@@ -23,10 +21,8 @@ public class ListTaskObject {
         this.description = description;
         this.dueDate = dueDate;
         this.taskType = taskType;
-        this.courseCode = courseCode;
-        this.courseTitle = courseTitle;
-        this.departmentName = departmentName;
-        this.departmentLocation = departmentLocation;
+        this.course = course;
+        this.department = department;
     }
 
     public String getTaskType() {
@@ -57,19 +53,11 @@ public class ListTaskObject {
         return cId;
     }
 
-    public String getCourseCode() {
-        return courseCode;
+    public Course getCourse() {
+        return course;
     }
 
-    public String getCourseTitle() {
-        return courseTitle;
-    }
-
-    public String getDepartmentName() {
-        return departmentName;
-    }
-
-    public String getDepartmentLocation() {
-        return departmentLocation;
+    public Department getDepartment() {
+        return department;
     }
 }
