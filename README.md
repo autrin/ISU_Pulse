@@ -99,28 +99,7 @@ The ISU Pulse application aims to provide Iowa State University (ISU) students, 
         Ensure secure authentication mechanisms, especially when integrating NetID for user identification.
         Adhere to data privacy standards for handling user information and communications.
 
-4. Additional Considerations and Open Questions
-
-    Integration with Workday
-        Question: Can the app sync class schedules directly with Workday, or should classes be added manually?
-        Consideration: Integrating with Workday would enhance user convenience but may require compliance and access permissions. Alternatively, implementing a manual add feature initially with plans for future integration.
-    Calendar Export and Subscription
-        Question: Should the calendar be exportable and support subscription features?
-        Consideration: Providing export and subscription capabilities increases flexibility for users to integrate schedules with other calendar applications.
-    User Access Scope
-        Question: Should the app be exclusive to ISU students, or open to a broader audience?
-        Consideration: Limiting access to ISU students ensures focused functionality and security. Utilizing NetID for authentication reinforces this exclusivity.
-    Map and Weather Feature Relevance
-        Question: Do map and weather integrations significantly benefit the app's purpose?
-        Consideration: Including these features enhances the overall utility by assisting with daily planning and navigation, especially beneficial for new students.
-    Friend and Class Interaction
-        Question: Is allowing friends to see each other's class schedules and inviting friends to classes beneficial?
-        Consideration: These social features promote collaboration and community building among students, aligning with the app's goal to facilitate academic and social interactions.
-    Invitation and Onboarding
-        Question: Should there be functionality to invite others to the app?
-        Consideration: Implementing an invitation system can aid in user acquisition and encourage widespread adoption among the student body.
-
-5. Development Timeline (week)
+4. Development Timeline (week)
 
 Week
 	
@@ -198,7 +177,7 @@ Tasks
 - Prepare presentation materials and demo video.
 
 - Deploy the application and perform final evaluations.
-6. Expected Deliverables
+5. Expected Deliverables
 
     Functional Android Application
         A fully integrated and tested app ready for deployment and demonstration.
@@ -211,12 +190,11 @@ Tasks
     Testing Reports
         Detailed reports covering unit tests, integration tests, performance tests, and security assessments.
 
-7. Conclusion
+6. Conclusion
 
 The ISU Pulse application aspires to enhance the academic and social experience of ISU students by consolidating essential campus services into a single, user-friendly platform. With a clear division of responsibilities and a structured development plan, our team is committed to delivering a high-quality application that meets and exceeds user expectations within the allocated semester timeline.
 
-We welcome feedback and suggestions to further refine this proposal and ensure its alignment with project goals and stakeholder expectations
-
+7. License
 Shield: [![CC BY-NC-SA 4.0][cc-by-nc-sa-shield]][cc-by-nc-sa]
 
 This work is licensed under a
