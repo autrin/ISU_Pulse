@@ -7,7 +7,6 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.CompoundButton;
 
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -22,8 +21,8 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskVi
 
     private List<ListTaskObject> taskList;
     private TaskApiService taskApiService;
-    public TaskListAdapter(List<ListTaskObject> taskList, TaskApiService taskApiService) {
 
+    public TaskListAdapter(List<ListTaskObject> taskList, TaskApiService taskApiService) {
         this.taskList = taskList;
         this.taskApiService = taskApiService;
     }
@@ -32,7 +31,6 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskVi
     @Override
     public TaskViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_task, parent, false);
-
         return new TaskViewHolder(view);
     }
 
@@ -44,12 +42,12 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskVi
         holder.dueDate.setText(task.getDueDate().toString());
         holder.checkBox.setOnCheckedChangeListener(null); // Remove previous listener
         holder.checkBox.setChecked(false);
-        holder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
-
+        holder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked){
+                if (isChecked) {
                     taskApiService.deleteTask(task);
+                    removeTask(position);
                 }
             }
         });
@@ -58,6 +56,21 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskVi
     @Override
     public int getItemCount() {
         return taskList.size();
+    }
+
+    public void updateTasks(List<ListTaskObject> newTaskList) {
+        this.taskList = newTaskList;
+        notifyDataSetChanged();
+    }
+
+    public void addTask(ListTaskObject task) {
+        this.taskList.add(task);
+        notifyItemInserted(taskList.size() - 1);
+    }
+
+    public void removeTask(int position) {
+        this.taskList.remove(position);
+        notifyItemRemoved(position);
     }
 
     public static class TaskViewHolder extends RecyclerView.ViewHolder implements ViewHolder {
@@ -74,7 +87,7 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskVi
 
         @Override
         public void bind(Object obj) {
-
+            // Implement binding logic if needed
         }
     }
 }
