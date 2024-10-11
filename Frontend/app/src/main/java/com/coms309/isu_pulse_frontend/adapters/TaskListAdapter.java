@@ -5,6 +5,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.TextView;
+import android.widget.CompoundButton;
+
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -40,7 +42,17 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskVi
         holder.title.setText(task.getTitle());
         holder.description.setText(task.getDescription());
         holder.dueDate.setText(task.getDueDate().toString());
+        holder.checkBox.setOnCheckedChangeListener(null); // Remove previous listener
         holder.checkBox.setChecked(false);
+        holder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
+
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked){
+                    taskApiService.deleteTask(task);
+                }
+            }
+        });
     }
 
     @Override
