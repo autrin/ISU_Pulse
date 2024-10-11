@@ -1,47 +1,39 @@
 package com.coms309.isu_pulse_frontend.ui.home;
 
 public class PersonalTask {
+    private String id;
     private String title;
     private String description;
-    private String dueDate;
+    private long dueDate;
     private String userNetId;
 
-    public PersonalTask(String title, String description, String dueDate, String userNetId) {
+    // Constructor
+    public PersonalTask(String id, String title, String description, long dueDate, String userNetId) {
+        this.id = id;
         this.title = title;
         this.description = description;
         this.dueDate = dueDate;
         this.userNetId = userNetId;
     }
-    public String getUserNetId() {
-        return userNetId;
-    }
 
-    public void setUserNetId(String userNetId) {
-        this.userNetId = userNetId;
-    }
-
-    public String getDueDate() {
-        return dueDate;
-    }
-
-    public void setDueDate(String dueDate) {
-        this.dueDate = dueDate;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
+    // Getters
+    public String getId() {
+        return id;
     }
 
     public String getTitle() {
         return title;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public String getDescription() {
+        return description;
     }
 
+    public long getDueDate() {
+        return dueDate;
+    }
+
+    public String getUserNetId() {
+        return userNetId;
+    }
 }
