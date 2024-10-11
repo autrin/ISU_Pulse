@@ -119,5 +119,6 @@ public class HomeFragment extends Fragment {
         tasksDueToday.add(newTask);
         taskAdapter.notifyItemInserted(tasksDueToday.size() - 1);
         binding.recylcerViewTasksDueToday.scrollToPosition(tasksDueToday.size() - 1);
+        binding.recyclerViewWeeklyCalendar.getAdapter().notifyDataSetChanged();
     }
 }
