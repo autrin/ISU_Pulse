@@ -71,7 +71,7 @@ public class HomeFragment extends Fragment {
         recylcerViewTasksDueToday.setLayoutManager(layoutManagerTasks);
 
         taskApiService = new TaskApiService(getContext());
-        taskAdapter = new TaskListAdapter(tasksDueToday, taskApiService); // Pass the TaskApiService instance
+        taskAdapter = new TaskListAdapter(tasksDueToday, taskApiService, calendarAdapter); // Pass the TaskApiService instance
         recylcerViewTasksDueToday.setAdapter(taskAdapter);
 
         buttonAddTask = binding.buttonAddTask;
