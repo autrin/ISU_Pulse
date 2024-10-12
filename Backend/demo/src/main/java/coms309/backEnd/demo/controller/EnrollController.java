@@ -80,6 +80,7 @@ public class EnrollController {
         }
 
         Enroll enroll = enrollRepository.findByStudentidAndCourseid(sId, courseId);
+        enrollRepository.delete(enroll);
         return ResponseEntity.ok("Successfully removed enrollment");
     }
 }
