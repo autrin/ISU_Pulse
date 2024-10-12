@@ -3,6 +3,7 @@ package coms309.backEnd.demo.controller;
 import coms309.backEnd.demo.entity.Profile;
 import coms309.backEnd.demo.entity.User;
 import coms309.backEnd.demo.entity.UserType;
+import coms309.backEnd.demo.repository.ProfileRepository;
 import coms309.backEnd.demo.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -25,8 +26,12 @@ public class UserController {
     @Autowired
     private final UserRepository userRepository;
 
-    public UserController(UserRepository userRepository) {
+    @Autowired
+    private final ProfileRepository profileRepository;
+
+    public UserController(UserRepository userRepository, ProfileRepository profileRepository) {
         this.userRepository = userRepository;
+        this.profileRepository = profileRepository;
     }
 
     @GetMapping("/{netId}")
@@ -63,9 +68,9 @@ public class UserController {
         profile.setUser(user);
 
         // Cascade will automatically save profile
-        //user.setProfile(profile);
-        //use profile repo and save it
+//        user.setProfile(profile);
         userRepository.save(user);
+        profileRepository.save(profile);
         response.put("message", "Successfully registered new user.");
         return ResponseEntity.ok(response);
     }

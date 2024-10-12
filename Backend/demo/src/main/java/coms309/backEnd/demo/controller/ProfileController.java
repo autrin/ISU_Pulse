@@ -37,9 +37,13 @@ public class ProfileController {
         Profile profile = optionalProfile.get();
         User user = profile.getUser();
         String profilePictureUrl = user.getProfilePictureUrl();
+        String firstName = user.getFirstName();
+        String lastName = user.getLastName();
 
         Map<String, Object> response = new HashMap<>();
         response.put("profile", profile);
+        response.put("firstName", firstName);
+        response.put("lastName", lastName);
         response.put("profilePictureUrl", profilePictureUrl);
 
         return ResponseEntity.ok(response);
