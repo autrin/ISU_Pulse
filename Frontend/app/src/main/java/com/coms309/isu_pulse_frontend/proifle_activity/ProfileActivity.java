@@ -2,6 +2,7 @@ package com.coms309.isu_pulse_frontend.proifle_activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -35,9 +36,6 @@ public class ProfileActivity extends AppCompatActivity {
         setContentView(R.layout.profile);
 
         toolbar = findViewById(R.id.toolbar);
-//        setSupportActionBar(toolbar);
-//        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
-//        getSupportActionBar().setDisplayShowHomeEnabled(true);
         editProfile = findViewById(R.id.updateProfileButton);
         logout = findViewById(R.id.logoutButton);
         profileImage = findViewById(R.id.profileImage);
@@ -47,33 +45,28 @@ public class ProfileActivity extends AppCompatActivity {
         externalUrlTextView = findViewById(R.id.externalUrlTextView);
         descriptionTextView = findViewById(R.id.descriptionTextView);
 
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Handle back button press
-                //  onBackPressed();
-                Intent intent = new Intent(ProfileActivity.this, MainActivity.class);
-                startActivity(intent);
-            }
+        toolbar.setNavigationOnClickListener(v -> {
+            Intent intent = new Intent(ProfileActivity.this, MainActivity.class);
+            startActivity(intent);
         });
 
-        editProfile.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(ProfileActivity.this, EditProfileActivity.class);
-                startActivity(intent);
-            }
+        editProfile.setOnClickListener(v -> {
+            Intent intent = new Intent(ProfileActivity.this, EditProfileActivity.class);
+            startActivity(intent);
         });
 
-        logout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(ProfileActivity.this, MainActivity.class);
-                startActivity(intent);
-            }
+        logout.setOnClickListener(v -> {
+            Intent intent = new Intent(ProfileActivity.this, MainActivity.class);
+            startActivity(intent);
         });
 
         fetchProfileData();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        fetchProfileData(); // Fetch the latest profile data when the activity is resumed
     }
 
     private void fetchProfileData() {
@@ -94,9 +87,18 @@ public class ProfileActivity extends AppCompatActivity {
     private void updateUI(Profile profile) {
         String imageUrl = "https://firebasestorage.googleapis.com/v0/b/coms-309-image-storage.appspot.com/o/images%2Fbaonguyen.jpg?alt=media&token=9a992e70-2847-4007-b03c-90b622029b0d";
         Glide.with(this)
-//                .load(profile.getProfilePictureUrl())
                 .load(imageUrl)
                 .into(profileImage);
+        String firstName = profile.getFirstName();
+        String lastName = profile.getLastName();
+
+        // Log the values for debugging
+        Log.d("ProfileActivity", "First Name: " + firstName);
+        Log.d("ProfileActivity", "Last Name: " + lastName);
+        // Set the values to the TextViews
+        firstNameTextView.setText(firstName != null ? firstName : "No First Name");
+        lastNameTextView.setText(lastName != null ? lastName : "No Last Name");
+
         firstNameTextView.setText(profile.getFirstName());
         lastNameTextView.setText(profile.getLastName());
         linkedinUrlTextView.setText(profile.getProfile().getLinkedinUrl());
