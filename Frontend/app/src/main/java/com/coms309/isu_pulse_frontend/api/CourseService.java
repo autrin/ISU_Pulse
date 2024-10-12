@@ -37,8 +37,13 @@ public class CourseService {
         void onError(String error);
     }
 
-    public void getEnrolledCourses(String sId, final GetEnrolledCoursesCallback callback) {
-        String url = BASE_URL + "enroll/getEnroll/" + sId;
+    public interface RemoveEnrollCallback {
+        void onSuccess(String message);
+        void onError(String error);
+    }
+
+    public void getEnrolledCourses(String studentid, final GetEnrolledCoursesCallback callback) {
+        String url = BASE_URL + "enroll/getEnroll/" + studentid;
 
         JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, url, null,
                 new Response.Listener<JSONArray>() {
@@ -104,6 +109,32 @@ public class CourseService {
                 return params;
             }
         };
+
+        requestQueue.add(stringRequest);
+    }
+
+    public void removeEnroll(String studentid, int courseid, final RemoveEnrollCallback callback) {
+        String url = BASE_URL + "enroll/removeEnroll/" + studentid + "?c_id=" + courseid;
+
+        // Assuming the backend returns a success message
+        StringRequest stringRequest = new StringRequest(Request.Method.DELETE, url,
+                callback::onSuccess,
+                error -> {
+                    String errorMsg = "Error removing enrollment: ";
+                    if (error.networkResponse != null && error.networkResponse.data != null) {
+                        String body;
+                        try {
+                            body = new String(error.networkResponse.data, "UTF-8");
+                        } catch (Exception e) {
+                            body = "Unable to parse error response.";
+                        }
+                        errorMsg += body;
+                    } else {
+                        errorMsg += error.getMessage();
+                    }
+                    callback.onError(errorMsg);
+                }
+        );
 
         requestQueue.add(stringRequest);
     }

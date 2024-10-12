@@ -54,7 +54,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="Nguyễn Tất Bách"
+                android:text="Bach Nguyen"
                 android:textColor="@android:color/black"
                 android:textSize="24sp"
                 android:textStyle="bold"
@@ -125,6 +125,7 @@
                         android:orientation="vertical">
 
                         <TextView
+                            android:id="@+id/numcoursesTextView"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="6"

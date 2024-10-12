@@ -25,6 +25,7 @@ public class ProfileActivity extends AppCompatActivity {
     private ShapeableImageView profileImage;
     private TextView coursesTextView;
     private TextView friendsTextView;
+    private TextView numcoursesTextView;
 
 
     @Override
@@ -35,9 +36,11 @@ public class ProfileActivity extends AppCompatActivity {
         MaterialToolbar toolbar = findViewById(R.id.toolbar);
         TextView coursesTextView = findViewById(R.id.coursesTextView);
         TextView friendsTextView = findViewById(R.id.friendsTextView);
+        TextView numcoursesTextView = findViewById(R.id.numcoursesTextView);
 //        setSupportActionBar(toolbar);
 //        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
 //        getSupportActionBar().setDisplayShowHomeEnabled(true);
+
 
         MaterialButton editProfile = findViewById(R.id.updateProfileButton);
 
