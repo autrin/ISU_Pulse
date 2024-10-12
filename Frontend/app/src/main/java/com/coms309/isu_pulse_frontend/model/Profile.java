@@ -39,9 +39,6 @@ public class Profile {
         this.profilePictureUrl = profilePictureUrl;
     }
 
-
-
-
     public static class ProfileDetails {
         private int id;
         private String linkedinUrl;
