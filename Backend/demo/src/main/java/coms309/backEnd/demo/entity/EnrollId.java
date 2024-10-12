@@ -5,8 +5,8 @@ import java.util.Objects;
 
 public class EnrollId implements Serializable {
 
-    private String sId;
-    private int cId;
+    private String studentid;
+    private int courseid;
     private int section;
 
     public EnrollId() {
@@ -14,15 +14,15 @@ public class EnrollId implements Serializable {
 
     // Parameterized constructor
     public EnrollId(String sId, int cId, int section) {
-        this.sId = sId;
-        this.cId = cId;
+        this.studentid = sId;
+        this.courseid = cId;
         this.section = section;
     }
 
     // hashCode and equals methods
     @Override
     public int hashCode() {
-        return Objects.hash(sId, cId, section);
+        return Objects.hash(studentid, courseid, section);
     }
 
     @Override
@@ -31,7 +31,7 @@ public class EnrollId implements Serializable {
         if (!(obj instanceof EnrollId)) return false;
         EnrollId that = (EnrollId) obj;
         return section == that.section &&
-                Objects.equals(sId, that.sId) &&
-                Objects.equals(cId, that.cId);
+                Objects.equals(studentid, that.studentid) &&
+                Objects.equals(courseid, that.courseid);
     }
 }

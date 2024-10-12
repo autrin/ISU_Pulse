@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "520940628946",
+    "project_id": "coms-309-image-storage",
+    "storage_bucket": "coms-309-image-storage.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:520940628946:android:458d353cdd09ffcbaef60b",
+        "android_client_info": {
+          "package_name": "com.coms309.frontend"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBQgFGahS7OE6dArFItPxQHuvzF8N92-Ag"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:520940628946:android:7048c9cc25965bd2aef60b",
+        "android_client_info": {
+          "package_name": "com.coms309.isu_pulse_frontend"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBQgFGahS7OE6dArFItPxQHuvzF8N92-Ag"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
