@@ -9,6 +9,8 @@ import java.io.Serializable;
 @Entity
 @IdClass(EnrollId.class)
 public class Enroll implements Serializable {
+
+
     @Id
     private String studentid;
 
