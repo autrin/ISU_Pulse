@@ -25,9 +25,9 @@ public class User {
     @OneToMany(mappedBy = "student", orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<Enroll> enrollments;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-    @JsonIgnore
-    private Profile profile;
+//    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+//    @JsonIgnore
+//    private Profile profile;
 
     // Constructors
     public User() {
