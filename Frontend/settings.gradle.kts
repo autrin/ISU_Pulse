@@ -20,5 +20,6 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "ISU_Pulse_Frontend"
+
 include(":app")
  
