@@ -15,6 +15,7 @@ public class Task {
     private String tId;
 
     private int section;
+
     private String title;
 
     @Column(columnDefinition = "TEXT")
