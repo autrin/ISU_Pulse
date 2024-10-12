@@ -1,5 +1,6 @@
 package coms309.backEnd.demo.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -21,11 +22,12 @@ public class User {
     @Enumerated(EnumType.STRING)
     private UserType userType;
 
-    @OneToMany(mappedBy = "student", orphanRemoval = true, fetch = FetchType.LAZY)
-    private Set<Enroll> enrollments;
-
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-    private Profile profile;
+//    @OneToMany(mappedBy = "student", orphanRemoval = true, fetch = FetchType.LAZY)
+//    private Set<Enroll> enrollments;
+//
+//    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+//    @JsonIgnore
+//    private Profile profile;
 
     // Constructors
     public User() {

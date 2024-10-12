@@ -37,9 +37,13 @@ public class ProfileController {
         Profile profile = optionalProfile.get();
         User user = profile.getUser();
         String profilePictureUrl = user.getProfilePictureUrl();
+        String firstName = user.getFirstName();
+        String lastName = user.getLastName();
 
         Map<String, Object> response = new HashMap<>();
         response.put("profile", profile);
+        response.put("firstName", firstName);
+        response.put("lastName", lastName);
         response.put("profilePictureUrl", profilePictureUrl);
 
         return ResponseEntity.ok(response);
@@ -55,9 +59,15 @@ public class ProfileController {
         if (!optionalProfile.isPresent())
             throw new IllegalStateException("Profile doesn't exist.");
         Profile profile = optionalProfile.get();
-        profile.setDescription(description);
-        profile.setExternalUrl(externalUrl);
-        profile.setLinkedinUrl(linkedinUrl);
+
+        if(description != null)
+            profile.setDescription(description);
+
+        if (externalUrl != null)
+            profile.setExternalUrl(externalUrl);
+
+        if (linkedinUrl != null)
+            profile.setLinkedinUrl(linkedinUrl);
         return ResponseEntity.ok("Update profile successfully");
     }
 }

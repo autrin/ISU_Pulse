@@ -10,10 +10,12 @@ import java.util.Date;
 @Data
 @Table(name = "Task")
 public class Task {
+    // change this instance variable into integer
     @Id
     private String tId;
 
     private int section;
+
     private String title;
 
     @Column(columnDefinition = "TEXT")
@@ -33,9 +35,6 @@ public class Task {
     public Task() {
     }
 
-    public Date getDueDate() {
-        return dueDate;
-    }
 
     public Task(String tId, int section, String title, String description, Date dueDate, TaskType taskType, Course course) {
         this.tId = tId;
