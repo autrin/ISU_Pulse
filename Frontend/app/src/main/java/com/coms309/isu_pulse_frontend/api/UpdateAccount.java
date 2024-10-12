@@ -3,6 +3,8 @@ package com.coms309.isu_pulse_frontend.api;
 import static com.coms309.isu_pulse_frontend.api.Constants.BASE_URL;
 
 import android.content.Context;
+import android.util.Log;
+
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -76,32 +78,30 @@ public class UpdateAccount {
 
     public void updateProfile(
             String netId,
-            Profile updatedProfile,
+            String description,
+            String externalUrl,
+            String linkedinUrl,
             Context context,
             final VolleyCallback callback
     ) {
-        String url = BASE_URL + "users/profile/" + netId; // Use the actual user's netId
+        // Construct the URL with query parameters for PUT request
+        String url = BASE_URL + "profile/" + netId
+                + "?description=" + description
+                + "&externalUrl=" + externalUrl
+                + "&linkedinUrl=" + linkedinUrl;
+
         RequestQueue queue = Volley.newRequestQueue(context);
 
-        Gson gson = new Gson();
-        String jsonString = gson.toJson(updatedProfile);
-
-        try {
-            JSONObject jsonObject = new JSONObject(jsonString);
-
-            JsonObjectRequest putRequest = new JsonObjectRequest(
-                    Request.Method.PUT, url, jsonObject,
-                    response -> callback.onSuccess(response.toString()),
-                    error -> {
-                        callback.onError(error.toString());
-                        error.printStackTrace();
-                    }
-            );
-
-            queue.add(putRequest);
-        } catch (JSONException e) {
-            e.printStackTrace();
-            callback.onError(e.toString());
-        }
+        // Create a PUT request
+        StringRequest putRequest = new StringRequest(
+                Request.Method.PUT, url,
+                response -> callback.onSuccess(response),
+                error -> {
+                    callback.onError(error.toString());
+                    error.printStackTrace();
+                }
+        );
+        queue.add(putRequest);
     }
+
 }
