@@ -29,6 +29,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
+            <!-- Net ID -->
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/netIdLayout"
                 android:layout_width="0dp"
@@ -44,9 +45,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="text" />
-
             </com.google.android.material.textfield.TextInputLayout>
 
+            <!-- Old Password -->
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/oldPasswordLayout"
                 android:layout_width="0dp"
@@ -63,9 +64,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="textPassword" />
-
             </com.google.android.material.textfield.TextInputLayout>
 
+            <!-- Check Credentials Button -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/checkCredentialsButton"
                 android:layout_width="0dp"
@@ -77,6 +78,61 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/oldPasswordLayout" />
 
+            <!-- Description -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/descriptionLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:hint="Description"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/checkCredentialsButton">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/descriptionEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- LinkedIn URL -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/linkedinUrlLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:hint="LinkedIn URL"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/descriptionLayout">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/linkedinUrlEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textUri" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- External URL -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/externalUrlLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:hint="External URL"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/linkedinUrlLayout">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/externalUrlEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textUri" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- New Password -->
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/newPasswordLayout"
                 android:layout_width="0dp"
@@ -85,7 +141,7 @@
                 android:hint="New Password"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/checkCredentialsButton"
+                app:layout_constraintTop_toBottomOf="@+id/externalUrlLayout"
                 app:passwordToggleEnabled="true">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -93,7 +149,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="textPassword" />
-
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
@@ -112,9 +167,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="textPassword" />
-
             </com.google.android.material.textfield.TextInputLayout>
 
+            <!-- Update Profile Button -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/updateProfileButton"
                 android:layout_width="0dp"
@@ -126,6 +181,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/confirmNewPasswordLayout" />
 
+            <!-- Back Button -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/backButton"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
