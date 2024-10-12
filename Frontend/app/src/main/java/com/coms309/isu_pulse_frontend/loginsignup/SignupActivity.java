@@ -110,7 +110,29 @@ public class SignupActivity extends AppCompatActivity {
             } else if (!passwordInput.equals(retypePasswordInput)) {
                 Toast.makeText(SignupActivity.this, "Passwords do not match", Toast.LENGTH_SHORT).show();
             } else if (imageUri == null) {
-                Toast.makeText(SignupActivity.this, "Please upload a profile image", Toast.LENGTH_SHORT).show();
+                apiService.registerNewUser(
+                        netIdInput,
+                        firstNameInput,
+                        lastNameInput,
+                        emailInput,
+                        hashedPassword,
+                        null,
+                        usertype.getSelectedItem().toString(),
+                        SignupActivity.this,
+                        new AuthenticationService.VolleyCallback() {
+                            @Override
+                            public void onSuccess(JSONObject result) {
+                                Toast.makeText(SignupActivity.this, "Signup successful!", Toast.LENGTH_SHORT).show();
+                                Intent intent = new Intent(SignupActivity.this, ProfileActivity.class);
+                                startActivity(intent);
+                            }
+
+                            @Override
+                            public void onError(String message) {
+                                Toast.makeText(SignupActivity.this, "Signup failed: " + message, Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                );
             } else {
                 String finalNetIdInput = netIdInput;
                 uploadImageToFirebase(netIdInput, (downloadUrl) -> {

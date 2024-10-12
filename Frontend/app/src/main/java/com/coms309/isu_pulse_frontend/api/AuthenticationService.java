@@ -34,7 +34,7 @@ public class AuthenticationService {
             Context context,
             final VolleyCallback callback
     ) {
-        String url = BASE_URL + "users/";
+        String url = BASE_URL + "users";
 
         // Create the JSON object representing the user
         JSONObject userJson = new JSONObject();
