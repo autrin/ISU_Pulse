@@ -83,7 +83,7 @@ public class TaskApiService {
                             }
                         }
                         fetchPersonalTasks(tasks, listener);
-//                        listener.onResponse(tasks);
+                        listener.onResponse(tasks);
                     }
                 },
                 new Response.ErrorListener() {
@@ -117,7 +117,7 @@ public class TaskApiService {
 
 //                                String userNetId = jsonObject.getString("userNetId");
                                 String userNetId = "tamminh";
-                                PersonalTask task = new PersonalTask(null, title, description, dueDateMillis, userNetId);
+                                PersonalTask task = new PersonalTask(1, title, description, dueDateMillis, userNetId); //TODO: Hardcoded taskid for now
                                 tasks.add(task);
                             } catch (Exception e) {
                                 e.printStackTrace();
@@ -190,9 +190,17 @@ public class TaskApiService {
     }
 
     public void updatePersonalTask(PersonalTask task) {
-        String url = BASE_URL + "/personalTask/updatePersonalTask/" + NET_ID + "?taskId=" + task.getId() +
-                "&title=" + task.getTitle() + "&description=" + task.getDescription() +
-                "&dueDateTimestamp=" + task.getDueDate();
+        if (task.getId() == 0) {
+            Log.e("API Error", "Task ID cannot be null or empty for updating.");
+            return;
+        }
+        task.setId(1); //TODO: hardcoded for now
+        String url = BASE_URL + "/personalTask/updatePersonalTask/" + NET_ID +
+//                "?taskId=" + task.getId() +
+                "?taskId=" + 1 + //TODO: hardcoded for now
+                "&title=" + task.getTitle() +
+                "&description=" + task.getDescription() +
+                "&dueDateTimestamp=" + task.getDueDate(); // Unix timestamp
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.PUT, url, null,
                 new Response.Listener<JSONObject>() {
@@ -211,6 +219,7 @@ public class TaskApiService {
 
         requestQueue.add(jsonObjectRequest);
     }
+
 
     public void deletePersonalTask(PersonalTask task, final TaskResponseListener listener) {
         String url = BASE_URL + "/personalTask/deletePersonalTask/" + NET_ID + "/" + task.getId();
