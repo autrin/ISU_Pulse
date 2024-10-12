@@ -21,6 +21,8 @@ import org.json.JSONObject;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
+import java.text.SimpleDateFormat;
+import java.util.Locale;
 
 public class TaskApiService {
 
@@ -40,11 +42,12 @@ public class TaskApiService {
     }
 
     public void getTasksDueToday(final TaskResponseListener listener) {
-        String url = BASE_URL + "/task" +"/getTaskByUserIn2days/" + NET_ID;
+        String url = BASE_URL + "/task/getTaskByUserIn2days/" + "tamminh";
         JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, url, null,
                 new Response.Listener<JSONArray>() {
                     @Override
                     public void onResponse(JSONArray response) {
+                        Log.d("API Response", response.toString());  // Log the response
                         List<Object> tasks = new ArrayList<>();
                         for (int i = 0; i < response.length(); i++) {
                             try {
@@ -80,14 +83,14 @@ public class TaskApiService {
                             }
                         }
                         fetchPersonalTasks(tasks, listener);
+//                        listener.onResponse(tasks);
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        String errorMessage = error.getMessage() != null ? error.getMessage() : "Unknown error";
-                        Log.e("API Error", errorMessage);
-                        listener.onError(errorMessage);
+                        Log.e("API Error", error.toString());
+                        listener.onError(error.toString());
                     }
                 });
 
@@ -95,20 +98,26 @@ public class TaskApiService {
     }
 
     private void fetchPersonalTasks(final List<Object> tasks, final TaskResponseListener listener) {
-            String personalTasksUrl = BASE_URL + "/personalTask/getPersonalTasks/" + NET_ID;
+            String personalTasksUrl = BASE_URL + "/personalTask/getPersonalTasks/" + "tamminh";
         JsonArrayRequest personalTasksRequest = new JsonArrayRequest(Request.Method.GET, personalTasksUrl, null,
                 new Response.Listener<JSONArray>() {
                     @Override
                     public void onResponse(JSONArray response) {
+                        Log.d("Personal Tasks API", response.toString());  // Log personal tasks response
                         for (int i = 0; i < response.length(); i++) {
                             try {
                                 JSONObject jsonObject = response.getJSONObject(i);
                                 String title = jsonObject.getString("title");
                                 String description = jsonObject.getString("description");
-                                long dueDate = jsonObject.getLong("dueDate");
-                                String userNetId = jsonObject.getString("userNetId");
+                                String dueDateString = jsonObject.getString("dueDate");  // Fetch date as a string
+                                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+                                java.util.Date utilDate = dateFormat.parse(dueDateString); // Parse using java.util.Date
+                                Date sqlDate = new Date(utilDate.getTime()); // Convert to java.sql.Date
+                                long dueDateMillis = sqlDate.getTime();// Convert java.sql.Date to a long (milliseconds since epoch)
 
-                                PersonalTask task = new PersonalTask(null, title, description, dueDate, userNetId);
+//                                String userNetId = jsonObject.getString("userNetId");
+                                String userNetId = "tamminh";
+                                PersonalTask task = new PersonalTask(null, title, description, dueDateMillis, userNetId);
                                 tasks.add(task);
                             } catch (Exception e) {
                                 e.printStackTrace();
@@ -116,6 +125,8 @@ public class TaskApiService {
                         }
                         listener.onResponse(tasks);
                     }
+
+
                 },
                 new Response.ErrorListener() {
                     @Override
