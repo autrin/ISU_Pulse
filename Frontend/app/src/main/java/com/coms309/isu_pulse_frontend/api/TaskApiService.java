@@ -170,7 +170,7 @@ public class TaskApiService {
     }
 
     public void createPersonalTask(PersonalTask task) {
-        String url = BASE_URL + "/personalTask/addPersonalTask/" + NET_ID + "?title=" + task.getTitle() + "&description=" + task.getDescription() + "&dueDateTimestamp=" + task.getDueDate();
+        String url = BASE_URL + "/personalTask/addPersonalTask/" + NET_ID + "?title=" + 16 + "&description=" + task.getDescription() + "&dueDateTimestamp=" + task.getDueDate(); // TODO: hardcoded for now taskid for now
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, null,
                 new Response.Listener<JSONObject>() {
                     @Override
@@ -222,13 +222,14 @@ public class TaskApiService {
 
 
     public void deletePersonalTask(PersonalTask task, final TaskResponseListener listener) {
+        task.setId(2); //TODO: hardcoded for now
         String url = BASE_URL + "/personalTask/deletePersonalTask/" + NET_ID + "/" + task.getId();
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.DELETE, url, null,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
                         Log.d("Response: ", response.toString());
-                        listener.onResponse(null);
+                        listener.onResponse(null);  // Update UI on successful deletion
                     }
                 },
                 new Response.ErrorListener() {
@@ -241,6 +242,9 @@ public class TaskApiService {
 
         requestQueue.add(jsonObjectRequest);
     }
+
+
+
     public void deleteCourseTask(CourseTask task, final TaskResponseListener listener) {
         String url = BASE_URL + "/deleteCourseTask/" + NET_ID + "/" + task.gettId();
 
