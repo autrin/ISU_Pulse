@@ -1,4 +1,3 @@
-// Profile.java
 package com.coms309.isu_pulse_frontend.model;
 
 public class Profile {
@@ -6,6 +5,7 @@ public class Profile {
     private String firstName;
     private String lastName;
     private ProfileDetails profile;
+    private String netId;
 
     public ProfileDetails getProfile() {
         return profile;
@@ -39,26 +39,26 @@ public class Profile {
         this.profilePictureUrl = profilePictureUrl;
     }
 
+    public String getNetId() {
+        return netId;
+    }
+
+    public void setNetId(String netId) {
+        this.netId = netId;
+    }
+
     public static class ProfileDetails {
-        private int id;
+        private Long id;
         private String linkedinUrl;
         private String externalUrl;
         private String description;
 
-        public String getDescription() {
-            return description;
+        public Long getId() {
+            return id;
         }
 
-        public void setDescription(String description) {
-            this.description = description;
-        }
-
-        public String getExternalUrl() {
-            return externalUrl;
-        }
-
-        public void setExternalUrl(String externalUrl) {
-            this.externalUrl = externalUrl;
+        public void setId(Long id) {
+            this.id = id;
         }
 
         public String getLinkedinUrl() {
@@ -69,13 +69,20 @@ public class Profile {
             this.linkedinUrl = linkedinUrl;
         }
 
-        public int getId() {
-            return id;
+        public String getExternalUrl() {
+            return externalUrl;
         }
 
-        public void setId(int id) {
-            this.id = id;
+        public void setExternalUrl(String externalUrl) {
+            this.externalUrl = externalUrl;
         }
 
+        public String getDescription() {
+            return description;
+        }
+
+        public void setDescription(String description) {
+            this.description = description;
+        }
     }
 }
