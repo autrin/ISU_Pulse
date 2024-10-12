@@ -12,6 +12,7 @@ public class PersonalTask {
 
     // This is the id for personal task
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int personalTaskId;
 
     private String title;
@@ -21,7 +22,7 @@ public class PersonalTask {
     @Temporal(TemporalType.TIMESTAMP)
     private Date dueDate;
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "sId", referencedColumnName = "netId")
     @JsonIgnore
     private User user;
