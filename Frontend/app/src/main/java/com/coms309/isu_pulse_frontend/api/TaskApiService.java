@@ -21,6 +21,8 @@ import org.json.JSONObject;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
+import java.text.SimpleDateFormat;
+import java.util.Locale;
 
 public class TaskApiService {
 
@@ -40,11 +42,12 @@ public class TaskApiService {
     }
 
     public void getTasksDueToday(final TaskResponseListener listener) {
-        String url = BASE_URL + "/task" +"/getTaskByUserIn2days/" + NET_ID;
+        String url = BASE_URL + "/task/getTaskByUserIn2days/" + "tamminh";
         JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, url, null,
                 new Response.Listener<JSONArray>() {
                     @Override
                     public void onResponse(JSONArray response) {
+                        Log.d("API Response", response.toString());  // Log the response
                         List<Object> tasks = new ArrayList<>();
                         for (int i = 0; i < response.length(); i++) {
                             try {
@@ -80,14 +83,14 @@ public class TaskApiService {
                             }
                         }
                         fetchPersonalTasks(tasks, listener);
+                        listener.onResponse(tasks);
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        String errorMessage = error.getMessage() != null ? error.getMessage() : "Unknown error";
-                        Log.e("API Error", errorMessage);
-                        listener.onError(errorMessage);
+                        Log.e("API Error", error.toString());
+                        listener.onError(error.toString());
                     }
                 });
 
@@ -95,20 +98,26 @@ public class TaskApiService {
     }
 
     private void fetchPersonalTasks(final List<Object> tasks, final TaskResponseListener listener) {
-            String personalTasksUrl = BASE_URL + "/personalTask/getPersonalTasks/" + NET_ID;
+            String personalTasksUrl = BASE_URL + "/personalTask/getPersonalTasks/" + "tamminh";
         JsonArrayRequest personalTasksRequest = new JsonArrayRequest(Request.Method.GET, personalTasksUrl, null,
                 new Response.Listener<JSONArray>() {
                     @Override
                     public void onResponse(JSONArray response) {
+                        Log.d("Personal Tasks API", response.toString());  // Log personal tasks response
                         for (int i = 0; i < response.length(); i++) {
                             try {
                                 JSONObject jsonObject = response.getJSONObject(i);
                                 String title = jsonObject.getString("title");
                                 String description = jsonObject.getString("description");
-                                long dueDate = jsonObject.getLong("dueDate");
-                                String userNetId = jsonObject.getString("userNetId");
+                                String dueDateString = jsonObject.getString("dueDate");  // Fetch date as a string
+                                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+                                java.util.Date utilDate = dateFormat.parse(dueDateString); // Parse using java.util.Date
+                                Date sqlDate = new Date(utilDate.getTime()); // Convert to java.sql.Date
+                                long dueDateMillis = sqlDate.getTime();// Convert java.sql.Date to a long (milliseconds since epoch)
 
-                                PersonalTask task = new PersonalTask(null, title, description, dueDate, userNetId);
+//                                String userNetId = jsonObject.getString("userNetId");
+                                String userNetId = "tamminh";
+                                PersonalTask task = new PersonalTask(1, title, description, dueDateMillis, userNetId); //TODO: Hardcoded taskid for now
                                 tasks.add(task);
                             } catch (Exception e) {
                                 e.printStackTrace();
@@ -116,6 +125,8 @@ public class TaskApiService {
                         }
                         listener.onResponse(tasks);
                     }
+
+
                 },
                 new Response.ErrorListener() {
                     @Override
@@ -159,7 +170,7 @@ public class TaskApiService {
     }
 
     public void createPersonalTask(PersonalTask task) {
-        String url = BASE_URL + "/personalTask/addPersonalTask/" + NET_ID + "?title=" + task.getTitle() + "&description=" + task.getDescription() + "&dueDateTimestamp=" + task.getDueDate();
+        String url = BASE_URL + "/personalTask/addPersonalTask/" + NET_ID + "?title=" + 16 + "&description=" + task.getDescription() + "&dueDateTimestamp=" + task.getDueDate(); // TODO: hardcoded for now taskid for now
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, null,
                 new Response.Listener<JSONObject>() {
                     @Override
@@ -179,9 +190,17 @@ public class TaskApiService {
     }
 
     public void updatePersonalTask(PersonalTask task) {
-        String url = BASE_URL + "/personalTask/updatePersonalTask/" + NET_ID + "?taskId=" + task.getId() +
-                "&title=" + task.getTitle() + "&description=" + task.getDescription() +
-                "&dueDateTimestamp=" + task.getDueDate();
+        if (task.getId() == 0) {
+            Log.e("API Error", "Task ID cannot be null or empty for updating.");
+            return;
+        }
+        task.setId(1); //TODO: hardcoded for now
+        String url = BASE_URL + "/personalTask/updatePersonalTask/" + NET_ID +
+//                "?taskId=" + task.getId() +
+                "?taskId=" + 1 + //TODO: hardcoded for now
+                "&title=" + task.getTitle() +
+                "&description=" + task.getDescription() +
+                "&dueDateTimestamp=" + task.getDueDate(); // Unix timestamp
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.PUT, url, null,
                 new Response.Listener<JSONObject>() {
@@ -201,14 +220,16 @@ public class TaskApiService {
         requestQueue.add(jsonObjectRequest);
     }
 
+
     public void deletePersonalTask(PersonalTask task, final TaskResponseListener listener) {
+        task.setId(2); //TODO: hardcoded for now
         String url = BASE_URL + "/personalTask/deletePersonalTask/" + NET_ID + "/" + task.getId();
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.DELETE, url, null,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
                         Log.d("Response: ", response.toString());
-                        listener.onResponse(null);
+                        listener.onResponse(null);  // Update UI on successful deletion
                     }
                 },
                 new Response.ErrorListener() {
@@ -221,6 +242,9 @@ public class TaskApiService {
 
         requestQueue.add(jsonObjectRequest);
     }
+
+
+
     public void deleteCourseTask(CourseTask task, final TaskResponseListener listener) {
         String url = BASE_URL + "/deleteCourseTask/" + NET_ID + "/" + task.gettId();
 

@@ -48,7 +48,7 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskVi
     @Override
     public void onBindViewHolder(@NonNull TaskViewHolder holder, int position) {
         Object task = taskList.get(position);
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        Log.d("Task Data", "Position: " + position + ", Task: " + task.toString());  // Log task data
 
         if (task instanceof CourseTask) {
             CourseTask courseTask = (CourseTask) task;
@@ -59,7 +59,7 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskVi
             PersonalTask personalTask = (PersonalTask) task;
             holder.title.setText(personalTask.getTitle());
             holder.description.setText(personalTask.getDescription());
-            holder.dueDate.setText(dateFormat.format(new Date(personalTask.getDueDate() * 1000)));
+            holder.dueDate.setText(new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date(personalTask.getDueDate() * 1000)));
         }
 
         holder.buttonEditTask.setOnClickListener(new View.OnClickListener() {
