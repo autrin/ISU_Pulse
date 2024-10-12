@@ -64,7 +64,7 @@ public class TaskController {
         if(curUser.isEmpty()){
             return  ResponseEntity.internalServerError().build();
         }
-        List<Enroll> curEnroll = enrollRepository.findAllByStudentid(sId);
+        List<Enroll> curEnroll = enrollRepository.findAllByStudent(curUser.get());
         List<Task> taskin2days = new ArrayList<>();
         for(Enroll en : curEnroll){
             Course cou = en.getCourse();
