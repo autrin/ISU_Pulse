@@ -36,6 +36,11 @@
             android:padding="16dp">
 
             <!-- Profile Image -->
+
+            <!-- First and Last Name TextViews -->
+
+            <!-- Username -->
+
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/profileImage"
                 android:layout_width="120dp"
@@ -43,41 +48,41 @@
                 android:layout_marginTop="16dp"
                 android:scaleType="centerCrop"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.498"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:shapeAppearanceOverlay="@style/CircleImageView"
                 tools:src="@drawable/isu_logo" />
 
-            <!-- First and Last Name TextViews -->
-
-            <!-- Username -->
-
             <TextView
                 android:id="@+id/firstNameTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="48dp"
                 android:layout_marginTop="4dp"
-                android:text="First Name"
                 android:textColor="@android:color/black"
                 android:textSize="24sp"
                 android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.393"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/profileImage" />
+                app:layout_constraintTop_toBottomOf="@id/profileImage"
+                app:layout_constraintVertical_bias="0.014" />
 
             <TextView
                 android:id="@+id/lastNameTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="Last Name"
+                android:layout_marginTop="8dp"
                 android:textColor="@android:color/black"
                 android:textSize="24sp"
                 android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.324"
+                app:layout_constraintHorizontal_bias="0.291"
                 app:layout_constraintStart_toEndOf="@+id/firstNameTextView"
-                app:layout_constraintTop_toBottomOf="@+id/profileImage" />
+                app:layout_constraintTop_toBottomOf="@+id/profileImage"
+                app:layout_constraintVertical_bias="0.0" />
 
             <TextView
                 android:id="@+id/usernameTextView"
