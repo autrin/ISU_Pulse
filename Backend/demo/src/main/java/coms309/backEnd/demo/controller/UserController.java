@@ -85,7 +85,20 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body("Password updated successfully");
     }
 
-
-
-
+//    @Transactional
+//    @PutMapping(path = "updatepw/{netId}")
+//    public ResponseEntity<String> updateUserAccount(@PathVariable String netId,
+//                                  @RequestParam(required = true) String newPassword) {
+//        Optional<User> userOptional = userRepository.findById(netId);
+//        if (!userOptional.isPresent()) {
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User does not exist");
+//        }
+//
+//        User user = userOptional.get();
+//        if (user.getHashedPassword().equals(newPassword))
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("New password must be different from the old password");
+//
+//        user.setHashedPassword(newPassword);
+//        return ResponseEntity.ok("User " + netId + " has successfully changed the password.");
+//    }
 }

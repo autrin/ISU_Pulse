@@ -51,23 +51,23 @@ public class PersonalTaskController {
         return ResponseEntity.ok(personalTasklist);
     }
 
-    @PostMapping("/addEnroll/{sId}")
-    public ResponseEntity<String> addEnroll(@PathVariable String sId, @RequestParam("course") int courseId) {
+    @PostMapping("/addPersonalTask/{sId}")
+    public ResponseEntity<String> addPersonTasks(
+            @PathVariable String sId,
+            @RequestParam String title,
+            @RequestParam String description,
+            @RequestParam long dueDateTimestamp
+    ) {
         Optional<User> curUser = userRepository.findById(sId);
-        if (curUser.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("User not found.");
+        if (curUser.isEmpty()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
         }
-        Optional<Course> curCourse = courseRepository.findById(courseId);
-        if (curCourse.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Course not found.");
-        }
-        Enroll curEnroll = new Enroll(curUser.get().getNetId(), curCourse.get().getCId(),
-                curCourse.get().getNumSections(), curUser.get(), curCourse.get());
-
-        enrollRepository.save(curEnroll);
-
-        return ResponseEntity.ok("Enrollment successful.");
+        personalTaskRepository.save(new PersonalTask(
+                title, new Date(dueDateTimestamp), description, curUser.get()
+        ));
+        return ResponseEntity.ok("Personal task added successfully.");
     }
+
 
     @PutMapping("/updatePersonalTask/{sId}")
     public ResponseEntity<String> updatePersonTasks(
