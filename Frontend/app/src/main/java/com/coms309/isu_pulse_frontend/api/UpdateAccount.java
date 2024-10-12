@@ -10,14 +10,21 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import org.json.JSONException;
+import com.bumptech.glide.Glide;
+import com.coms309.isu_pulse_frontend.model.Profile;
+import com.google.gson.Gson;
 import org.json.JSONObject;
 
 public class UpdateAccount {
+
     public interface VolleyCallback {
         void onSuccess(String result);
-
         void onError(String message);
+    }
+
+    public interface ProfileCallback {
+        void onSuccess(Profile profile);
+        void onError(VolleyError error);
     }
 
     public void updateUserPassword(
@@ -40,7 +47,28 @@ public class UpdateAccount {
         queue.add(putRequest);
     }
 
+    public static void fetchProfileData(Context context, final ProfileCallback callback) {
+        String url = BASE_URL + "profile/userTest"; //TODO: need to use the actual user's netId later
+        RequestQueue queue = Volley.newRequestQueue(context);
 
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
+                Request.Method.GET, url, null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Gson gson = new Gson();
+                        Profile profile = gson.fromJson(response.toString(), Profile.class);
+                        callback.onSuccess(profile);
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        callback.onError(error);
+                    }
+                }
+        );
 
-
+        queue.add(jsonObjectRequest);
+    }
 }
