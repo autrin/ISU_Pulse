@@ -25,7 +25,7 @@ public class Course {
         this.description = description;
         this.credits = credits;
         this.numSections = numSections;
-        this.cId = cId;
+        this.cId = cid;
         this.department = new Department(name, location, did);
     }
 

@@ -4,31 +4,45 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.coms309.isu_pulse_frontend.R;
 import com.coms309.isu_pulse_frontend.api.CourseService;
+import com.coms309.isu_pulse_frontend.ui.home.Course;
 
 public class CourseItem extends AppCompatActivity {
     private ImageButton deleteButton;
+    private TextView courseCodeTextView;
+    private TextView courseTitleTextView;
+    private TextView courseDescriptionTextView;
+    private TextView courseCreditsTextView;
+    private TextView courseDepartmentTextView;
+
     private String studentId;
-    private int courseId;
+    private Course course;
+    private CourseService courseService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.course_item);
 
+        // Initialize views
+        deleteButton = findViewById(R.id.deleteButton);
+        courseCodeTextView = findViewById(R.id.courseCodeTextView);
 
-        // Retrieve studentId and courseId from Intent extras
+        // Initialize CourseService
+        courseService = new CourseService(this);
+
+        // Retrieve studentId and course from Intent extras
         Intent intent = getIntent();
         if (intent != null) {
             studentId = intent.getStringExtra("studentId");
-            courseId = intent.getIntExtra("courseId", -1);
-            if (studentId == null || courseId == -1) {
+            course = (Course) intent.getSerializableExtra("course");
+            if (studentId == null || course == null) {
                 Toast.makeText(this, "Invalid course or student information.", Toast.LENGTH_SHORT).show();
                 finish(); // Close the activity if data is missing
                 return;
@@ -39,40 +53,46 @@ public class CourseItem extends AppCompatActivity {
             return;
         }
 
-        // Initialize the delete button and set its click listener
-        deleteButton = findViewById(R.id.deleteButton);
+        // Populate views with course data
+        courseCodeTextView.setText(course.getCode());
+        courseTitleTextView.setText(course.getTitle());
+
+
+
+        // Set up delete button click listener
         deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CourseView.courseService.removeEnroll(studentId, courseId, new CourseService.RemoveEnrollCallback() {
+                deleteCourse();
+            }
+        });
+    }
+
+    private void deleteCourse() {
+        courseService.removeEnroll(studentId, course.getcId(), new CourseService.RemoveEnrollCallback() {
+            @Override
+            public void onSuccess(String message) {
+                runOnUiThread(new Runnable() {
                     @Override
-                    public void onSuccess(String message) {
-                        // Notify the user of success and finish the activity with result
+                    public void run() {
                         Toast.makeText(CourseItem.this, "Course removed successfully.", Toast.LENGTH_SHORT).show();
                         Intent resultIntent = new Intent();
-                        resultIntent.putExtra("deletedCourseId", courseId);
-                        for (int i = 0; i < CourseView.courseList.size(); i++) {
-                            if (CourseView.courseList.get(i).getcId() == courseId) {
-                                CourseView.courseList.remove(i);
-                                CourseView.adapter.notifyItemRemoved(i);
-                            }
-                        }
-                        CourseView.adapter = new CourseAdapter(CourseView.courseList);
-                        CourseView.recyclerViewCourses.setAdapter(CourseView.adapter);
-                        CourseView.adapter.notifyDataSetChanged();
-
+                        resultIntent.putExtra("deletedCourseId", course.getcId());
                         setResult(RESULT_OK, resultIntent);
                         finish(); // Close the activity and return to CourseView
                     }
+                });
+            }
 
+            @Override
+            public void onError(String error) {
+                runOnUiThread(new Runnable() {
                     @Override
-                    public void onError(String error) {
-                        // Notify the user of the error
+                    public void run() {
                         Toast.makeText(CourseItem.this, "Error removing course: " + error, Toast.LENGTH_LONG).show();
                     }
                 });
             }
         });
     }
-
 }

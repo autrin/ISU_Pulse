@@ -5,37 +5,39 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.coms309.isu_pulse_frontend.R;
 import com.coms309.isu_pulse_frontend.ui.home.Course;
 import java.util.List;
 
 public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseViewHolder> {
-
     private List<Course> courseList;
+    private OnCourseDeleteListener deleteListener;
 
-    public CourseAdapter(List<Course> courseList) {
-        this.courseList = courseList;
+    public interface OnCourseDeleteListener {
+        void onCourseDelete(int position, Course course);
     }
 
-    @NonNull
+    public CourseAdapter(List<Course> courseList, OnCourseDeleteListener listener) {
+        this.courseList = courseList;
+        this.deleteListener = listener;
+    }
+
     @Override
-    public CourseViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public CourseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.course_item, parent, false);
         return new CourseViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull CourseViewHolder holder, int position) {
+    public void onBindViewHolder(CourseViewHolder holder, int position) {
         Course course = courseList.get(position);
         holder.courseCodeTextView.setText(course.getCode());
-        holder.courseNameTextView.setText(course.getTitle());
+        holder.courseTitleTextView.setText(course.getTitle());
         holder.deleteButton.setOnClickListener(v -> {
-            courseList.remove(position);
-            notifyItemRemoved(position);
-            notifyItemRangeChanged(position, courseList.size());
+            if (deleteListener != null) {
+                deleteListener.onCourseDelete(position, course);
+            }
         });
     }
 
@@ -45,13 +47,14 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseView
     }
 
     static class CourseViewHolder extends RecyclerView.ViewHolder {
-        TextView courseCodeTextView, courseNameTextView;
+        TextView courseCodeTextView;
+        TextView courseTitleTextView;
         ImageButton deleteButton;
 
-        public CourseViewHolder(@NonNull View itemView) {
+        CourseViewHolder(View itemView) {
             super(itemView);
             courseCodeTextView = itemView.findViewById(R.id.courseCodeTextView);
-            courseNameTextView = itemView.findViewById(R.id.courseNameTextView);
+            courseTitleTextView = itemView.findViewById(R.id.courseNameTextView);
             deleteButton = itemView.findViewById(R.id.deleteButton);
         }
     }

@@ -3,13 +3,9 @@ package com.coms309.isu_pulse_frontend.course_functional;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.SimpleCursorTreeAdapter;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -18,35 +14,22 @@ import com.coms309.isu_pulse_frontend.R;
 import com.coms309.isu_pulse_frontend.api.CourseService;
 import com.coms309.isu_pulse_frontend.proifle_activity.ProfileActivity;
 import com.coms309.isu_pulse_frontend.ui.home.Course;
-import com.coms309.isu_pulse_frontend.ui.home.Department;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class CourseView extends AppCompatActivity {
+public class CourseView extends AppCompatActivity implements CourseAdapter.OnCourseDeleteListener {
 
     private ImageButton backButton;
-    public static RecyclerView recyclerViewCourses;
-    public static List<Course> courseList;
-    static CourseAdapter adapter;
-    public static CourseService courseService;
-    private static final int DELETE_COURSE_REQUEST_CODE = 1;
-
-    private String getCurrentStudentId() {
-        // Replace this with your actual method of retrieving the student ID
-        // For example, from SharedPreferences or a user session
-        SharedPreferences prefs = getSharedPreferences("UserPrefs", MODE_PRIVATE);
-        return prefs.getString("studentId", "bachnguyen"); // Default to "bachnguyen" if not found
-    }
-
-
+    private RecyclerView recyclerViewCourses;
+    private List<Course> courseList;
+    private CourseAdapter adapter;
+    private CourseService courseService;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState){
-
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.course_view);
-
 
         recyclerViewCourses = findViewById(R.id.recyclerViewCourses);
         recyclerViewCourses.setLayoutManager(new LinearLayoutManager(this));
@@ -58,74 +41,63 @@ public class CourseView extends AppCompatActivity {
         });
 
         courseList = new ArrayList<>();
-//        courseList.add(new Course("COMS 309", "Mobile Application Development", "Description 1", 3, 2, "Department 1", "Location 1", 10, 10));
-//        courseList.add(new Course("COMS 331", "Mobile Application Development", "Description 1", 3, 2, "Department 1", "Location 1", 10, 10));
-
-//        fetchEnrolledCourses("bachnguyen");
-        adapter = new CourseAdapter(courseList);
+        adapter = new CourseAdapter(courseList, this);
         recyclerViewCourses.setAdapter(adapter);
+
         courseService = new CourseService(this);
 
         String studentId = getCurrentStudentId();
         fetchEnrolledCourses(studentId);
+    }
 
-
+    private String getCurrentStudentId() {
+        SharedPreferences prefs = getSharedPreferences("UserPrefs", MODE_PRIVATE);
+        return prefs.getString("studentId", "bachnguyen"); // Default to "bachnguyen" if not found
     }
 
     private void fetchEnrolledCourses(String sId) {
-
-
         courseService.getEnrolledCourses(sId, new CourseService.GetEnrolledCoursesCallback() {
             @Override
             public void onSuccess(List<Course> courses) {
-
-
-                if (courses.isEmpty()) {
-                    Toast.makeText(CourseView.this, "No enrolled courses found.", Toast.LENGTH_SHORT).show();
-                } else {
-                    courseList.clear();
-                    courseList.addAll(courses);
-                    adapter.notifyDataSetChanged();
-                }
+                runOnUiThread(() -> {
+                    if (courses.isEmpty()) {
+                        Toast.makeText(CourseView.this, "No enrolled courses found.", Toast.LENGTH_SHORT).show();
+                    } else {
+                        courseList.clear();
+                        courseList.addAll(courses);
+                        adapter.notifyDataSetChanged();
+                    }
+                });
             }
 
             @Override
             public void onError(String error) {
-
-
-                Toast.makeText(CourseView.this, error, Toast.LENGTH_LONG).show();
+                runOnUiThread(() -> {
+                    Toast.makeText(CourseView.this, error, Toast.LENGTH_LONG).show();
+                });
             }
         });
     }
 
-    private void onCourseItemClicked(Course course) {
-        Intent intent = new Intent(CourseView.this, CourseItem.class);
-        intent.putExtra("studentId", getCurrentStudentId());
-        intent.putExtra("courseId", course.getcId());
-        startActivityForResult(intent, DELETE_COURSE_REQUEST_CODE);
-    }
-
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == DELETE_COURSE_REQUEST_CODE && resultCode == RESULT_OK && data != null) {
-            int deletedCourseId = data.getIntExtra("deletedCourseId", -1);
-            if (deletedCourseId != -1) {
-                removeCourseFromList(deletedCourseId);
+    public void onCourseDelete(int position, Course course) {
+        String studentId = getCurrentStudentId();
+        courseService.removeEnroll(studentId, course.getcId(), new CourseService.RemoveEnrollCallback() {
+            @Override
+            public void onSuccess(String message) {
+                runOnUiThread(() -> {
+                    courseList.remove(position);
+                    adapter.notifyItemRemoved(position);
+                    Toast.makeText(CourseView.this, "Course removed successfully", Toast.LENGTH_SHORT).show();
+                });
             }
-        }
-    }
 
-    public static void removeCourseFromList(int courseId) {
-        for (int i = 0; i < courseList.size(); i++) {
-            if (courseList.get(i).getcId() == courseId) {
-                courseList.remove(i);
-                adapter.notifyItemRemoved(i);
+            @Override
+            public void onError(String error) {
+                runOnUiThread(() -> {
+                    Toast.makeText(CourseView.this, "Error removing course: " + error, Toast.LENGTH_LONG).show();
+                });
             }
-        }
+        });
     }
-
-
-
 }
