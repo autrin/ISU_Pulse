@@ -1,7 +1,11 @@
 package coms309.backEnd.demo.controller;
 
+import coms309.backEnd.demo.entity.Course;
+import coms309.backEnd.demo.entity.Enroll;
 import coms309.backEnd.demo.entity.PersonalTask;
 import coms309.backEnd.demo.entity.User;
+import coms309.backEnd.demo.repository.CourseRepository;
+import coms309.backEnd.demo.repository.EnrollRepository;
 import coms309.backEnd.demo.repository.PersonalTaskRepository;
 import coms309.backEnd.demo.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,10 +27,18 @@ public class PersonalTaskController {
     @Autowired
     private final UserRepository userRepository;
 
+    @Autowired
+    private final CourseRepository courseRepository;
 
-    public PersonalTaskController(PersonalTaskRepository personalTaskRepository, UserRepository userRepository) {
+    @Autowired
+    private final EnrollRepository enrollRepository;
+
+
+    public PersonalTaskController(PersonalTaskRepository personalTaskRepository, UserRepository userRepository, CourseRepository courseRepository, EnrollRepository enrollRepository) {
         this.personalTaskRepository = personalTaskRepository;
         this.userRepository = userRepository;
+        this.courseRepository = courseRepository;
+        this.enrollRepository = enrollRepository;
     }
 
     @GetMapping("/getPersonalTasks/{sId}")
@@ -51,7 +63,7 @@ public class PersonalTaskController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
         }
         personalTaskRepository.save(new PersonalTask(
-            title, new Date(dueDateTimestamp), description, curUser.get()
+                title, new Date(dueDateTimestamp), description, curUser.get()
         ));
         return ResponseEntity.ok("Personal task added successfully.");
     }
@@ -104,7 +116,6 @@ public class PersonalTaskController {
         return ResponseEntity.ok("Task updated successfully.");
     }
 
-
     @DeleteMapping("/deletePersonalTask/{sId}")
     public ResponseEntity<String> deletePersonalTasks(
             @PathVariable String sId,
@@ -134,4 +145,6 @@ public class PersonalTaskController {
         personalTaskRepository.delete(task);
         return ResponseEntity.ok("Task deleted successfully.");
     }
+
+
 }

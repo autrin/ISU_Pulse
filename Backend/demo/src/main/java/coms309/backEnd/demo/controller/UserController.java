@@ -9,11 +9,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.swing.text.html.Option;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -42,6 +40,16 @@ public class UserController {
         }
     }
 
+//    @PostMapping
+//    public void registerNewStudent(@RequestBody User user) {
+//        Optional<User> userOptional = userRepository.findById(user.getNetId());
+//        if (userOptional.isPresent()) {
+//            throw new IllegalStateException("Student with NetId already exists.");
+//        }
+//
+//        userRepository.save(user);
+//    }
+
     @PostMapping
     public ResponseEntity<Map<String, String>> registerNewStudent(@RequestBody User user) {
         Optional<User> userOptional = userRepository.findById(user.getNetId());
@@ -63,8 +71,7 @@ public class UserController {
 
     @Transactional
     @PutMapping(path = "updatepw/{netId}")
-    public ResponseEntity<String> updateUserAccount(@PathVariable String netId,
-                                  @RequestParam(required = true) String newPassword) {
+    public ResponseEntity<String> updateUserAccount(@PathVariable String netId, @RequestParam(required = true) String newPassword) {
         Optional<User> userOptional = userRepository.findById(netId);
         if (!userOptional.isPresent()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User does not exist");
@@ -75,8 +82,23 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("New password must be different from the old password");
 
         user.setHashedPassword(newPassword);
-        return ResponseEntity.ok("User " + netId + " has successfully changed the password.");
+        return ResponseEntity.status(HttpStatus.OK).body("Password updated successfully");
     }
 
-
+//    @Transactional
+//    @PutMapping(path = "updatepw/{netId}")
+//    public ResponseEntity<String> updateUserAccount(@PathVariable String netId,
+//                                  @RequestParam(required = true) String newPassword) {
+//        Optional<User> userOptional = userRepository.findById(netId);
+//        if (!userOptional.isPresent()) {
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User does not exist");
+//        }
+//
+//        User user = userOptional.get();
+//        if (user.getHashedPassword().equals(newPassword))
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("New password must be different from the old password");
+//
+//        user.setHashedPassword(newPassword);
+//        return ResponseEntity.ok("User " + netId + " has successfully changed the password.");
+//    }
 }

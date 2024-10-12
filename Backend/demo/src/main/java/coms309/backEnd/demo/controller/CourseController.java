@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -62,7 +61,7 @@ public class CourseController {
         if(curUser.isEmpty()){
             return  ResponseEntity.internalServerError().build();
         }
-        List<Enroll> enrolls = enrollRepository.findAllBysId(sId);
+        List<Enroll> enrolls = enrollRepository.findAllByStudentid(sId);
 //        List<String> codeList = new ArrayList<>();
 //        for (Enroll en : enrolls){
 //            String code = en.getCourse().getCode();
