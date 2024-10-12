@@ -28,7 +28,7 @@ public class CourseService {
     }
 
     public interface EnrollCallback {
-        void onSuccess(boolean enrolled);
+        void onSuccess(String message);
         void onError(String error);
     }
 
@@ -42,8 +42,8 @@ public class CourseService {
         void onError(String error);
     }
 
-    public void getEnrolledCourses(String studentid, final GetEnrolledCoursesCallback callback) {
-        String url = BASE_URL + "enroll/getEnroll/" + studentid;
+    public void getEnrolledCourses(String studentId, final GetEnrolledCoursesCallback callback) {
+        String url = BASE_URL + "enroll/getEnroll/" + studentId;
 
         JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, url, null,
                 new Response.Listener<JSONArray>() {
@@ -84,15 +84,14 @@ public class CourseService {
         requestQueue.add(jsonArrayRequest);
     }
 
-    public void enrollInCourse(String sId, int courseId, final EnrollCallback callback) {
-        String url = BASE_URL + "enroll/addEnroll/" + sId + "?course=" + courseId;
+    public void enrollInCourse(String studentId, int courseId, final EnrollCallback callback) {
+        String url = BASE_URL + "enroll/addEnroll/" + studentId + "?course=" + courseId;
 
         StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        boolean enrolled = Boolean.parseBoolean(response);
-                        callback.onSuccess(enrolled);
+                        callback.onSuccess(response);
                     }
                 },
                 new Response.ErrorListener() {
@@ -100,41 +99,37 @@ public class CourseService {
                     public void onErrorResponse(VolleyError error) {
                         callback.onError("Error enrolling in course: " + error.getMessage());
                     }
-                }) {
-            @Override
-            protected Map<String, String> getParams() {
-                Map<String, String> params = new HashMap<>();
-                params.put("netId", sId);
-                params.put("course", String.valueOf(courseId));
-                return params;
-            }
-        };
+                });
 
         requestQueue.add(stringRequest);
     }
 
-    public void removeEnroll(String studentid, int courseid, final RemoveEnrollCallback callback) {
-        String url = BASE_URL + "enroll/removeEnroll/" + studentid + "?c_id=" + courseid;
+    public void removeEnroll(String studentId, int courseId, final RemoveEnrollCallback callback) {
+        String url = BASE_URL + "enroll/removeEnroll/" + studentId + "?c_id=" + courseId;
 
-        // Assuming the backend returns a success message
         StringRequest stringRequest = new StringRequest(Request.Method.DELETE, url,
-                callback::onSuccess,
-                error -> {
-                    String errorMsg = "Error removing enrollment: ";
-                    if (error.networkResponse != null && error.networkResponse.data != null) {
-                        String body;
-                        try {
-                            body = new String(error.networkResponse.data, "UTF-8");
-                        } catch (Exception e) {
-                            body = "Unable to parse error response.";
-                        }
-                        errorMsg += body;
-                    } else {
-                        errorMsg += error.getMessage();
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        callback.onSuccess(response);
                     }
-                    callback.onError(errorMsg);
-                }
-        );
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        String errorMsg = "Error removing enrollment: ";
+                        if (error.networkResponse != null && error.networkResponse.data != null) {
+                            try {
+                                errorMsg += new String(error.networkResponse.data, "UTF-8");
+                            } catch (Exception e) {
+                                errorMsg += "Unable to parse error response.";
+                            }
+                        } else {
+                            errorMsg += error.getMessage();
+                        }
+                        callback.onError(errorMsg);
+                    }
+                });
 
         requestQueue.add(stringRequest);
     }

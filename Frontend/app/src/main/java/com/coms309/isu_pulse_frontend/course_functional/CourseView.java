@@ -3,6 +3,7 @@ package com.coms309.isu_pulse_frontend.course_functional;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
@@ -25,6 +26,7 @@ public class CourseView extends AppCompatActivity implements CourseAdapter.OnCou
     private List<Course> courseList;
     private CourseAdapter adapter;
     private CourseService courseService;
+    private Button addclass;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +35,12 @@ public class CourseView extends AppCompatActivity implements CourseAdapter.OnCou
 
         recyclerViewCourses = findViewById(R.id.recyclerViewCourses);
         recyclerViewCourses.setLayoutManager(new LinearLayoutManager(this));
+
+        addclass = findViewById(R.id.buttonAddClass);
+        addclass.setOnClickListener(view -> {
+            Intent intent = new Intent(CourseView.this, AddCourse.class);
+            startActivity(intent);
+        });
 
         backButton = findViewById(R.id.backButton);
         backButton.setOnClickListener(view -> {
