@@ -44,8 +44,6 @@
                     android:id="@+id/netIdEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:minHeight="40dp"
-                    android:padding="8dp"
                     android:inputType="text" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -65,8 +63,6 @@
                     android:id="@+id/oldPasswordEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:minHeight="40dp"
-                    android:padding="8dp"
                     android:inputType="textPassword" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -97,8 +93,6 @@
                     android:id="@+id/descriptionEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:minHeight="40dp"
-                    android:padding="8dp"
                     android:inputType="text" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -117,8 +111,6 @@
                     android:id="@+id/linkedinUrlEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:minHeight="40dp"
-                    android:padding="8dp"
                     android:inputType="textUri" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -137,8 +129,6 @@
                     android:id="@+id/externalUrlEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:minHeight="40dp"
-                    android:padding="8dp"
                     android:inputType="textUri" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -158,8 +148,6 @@
                     android:id="@+id/newPasswordEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:minHeight="40dp"
-                    android:padding="8dp"
                     android:inputType="textPassword" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -178,8 +166,6 @@
                     android:id="@+id/confirmNewPasswordEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:minHeight="40dp"
-                    android:padding="8dp"
                     android:inputType="textPassword" />
             </com.google.android.material.textfield.TextInputLayout>
 
