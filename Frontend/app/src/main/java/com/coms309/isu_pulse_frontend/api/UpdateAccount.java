@@ -13,6 +13,8 @@ import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
 import com.coms309.isu_pulse_frontend.model.Profile;
 import com.google.gson.Gson;
+
+import org.json.JSONException;
 import org.json.JSONObject;
 
 public class UpdateAccount {
@@ -70,5 +72,36 @@ public class UpdateAccount {
         );
 
         queue.add(jsonObjectRequest);
+    }
+
+    public void updateProfile(
+            String netId,
+            Profile updatedProfile,
+            Context context,
+            final VolleyCallback callback
+    ) {
+        String url = BASE_URL + "users/profile/" + netId; // Use the actual user's netId
+        RequestQueue queue = Volley.newRequestQueue(context);
+
+        Gson gson = new Gson();
+        String jsonString = gson.toJson(updatedProfile);
+
+        try {
+            JSONObject jsonObject = new JSONObject(jsonString);
+
+            JsonObjectRequest putRequest = new JsonObjectRequest(
+                    Request.Method.PUT, url, jsonObject,
+                    response -> callback.onSuccess(response.toString()),
+                    error -> {
+                        callback.onError(error.toString());
+                        error.printStackTrace();
+                    }
+            );
+
+            queue.add(putRequest);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            callback.onError(e.toString());
+        }
     }
 }
