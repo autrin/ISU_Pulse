@@ -9,8 +9,6 @@ import java.io.Serializable;
 @Entity
 @IdClass(EnrollId.class)
 public class Enroll implements Serializable {
-
-
     @Id
     private String sId;
 
@@ -20,12 +18,12 @@ public class Enroll implements Serializable {
     @Id
     private int section;
 
-    @ManyToOne
-    @JoinColumn(name = "sId", referencedColumnName = "netId", insertable = false, updatable = false)
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "sId", referencedColumnName = "netId")
     private User student;
 
-    @ManyToOne
-    @JoinColumn(name = "cId", insertable = false, updatable = false)
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "cId")
     private Course course;
 
     public String getSId() {
