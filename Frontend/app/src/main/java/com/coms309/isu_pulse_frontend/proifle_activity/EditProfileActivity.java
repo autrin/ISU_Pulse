@@ -2,6 +2,7 @@ package com.coms309.isu_pulse_frontend.proifle_activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -10,7 +11,9 @@ import com.android.volley.VolleyError;
 import com.coms309.isu_pulse_frontend.R;
 import com.coms309.isu_pulse_frontend.api.AuthenticationService;
 import com.coms309.isu_pulse_frontend.api.UpdateAccount;
+import com.coms309.isu_pulse_frontend.loginsignup.LoginActivity;
 import com.coms309.isu_pulse_frontend.loginsignup.PasswordHasher;
+import com.coms309.isu_pulse_frontend.loginsignup.SignupActivity;
 import com.coms309.isu_pulse_frontend.model.Profile;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputLayout;
@@ -41,6 +44,16 @@ public class EditProfileActivity extends AppCompatActivity {
 
         // Initialize UI elements
         backButton = findViewById(R.id.backButton);
+
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(EditProfileActivity.this, ProfileActivity.class);
+                startActivity(intent);
+            }
+        });
+
+
         netid = findViewById(R.id.netIdLayout);
         oldPassword = findViewById(R.id.oldPasswordLayout);
         newPassword = findViewById(R.id.newPasswordLayout);

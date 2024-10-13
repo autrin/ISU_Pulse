@@ -19,6 +19,16 @@ public class Course {
         this.cId = cId;
     }
 
+    public Course(String code, String title, String description, int credits, int numSections, String name, String location, int did, int cid) {
+        this.code = code;
+        this.title = title;
+        this.description = description;
+        this.credits = credits;
+        this.numSections = numSections;
+        this.cId = cid;
+        this.department = new Department(name, location, did);
+    }
+
     // Getters and setters
     public String getCode() {
         return code;
