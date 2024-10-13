@@ -12,11 +12,13 @@ import com.android.volley.VolleyError;
 import com.bumptech.glide.Glide;
 import com.coms309.isu_pulse_frontend.MainActivity;
 import com.coms309.isu_pulse_frontend.R;
+import com.coms309.isu_pulse_frontend.course_functional.CourseView;
 import com.coms309.isu_pulse_frontend.model.Profile;
 import com.coms309.isu_pulse_frontend.api.UpdateAccount;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.imageview.ShapeableImageView;
+import java.util.Objects;
 
 public class ProfileActivity extends AppCompatActivity {
 
@@ -24,6 +26,10 @@ public class ProfileActivity extends AppCompatActivity {
     private MaterialButton editProfile;
     private MaterialButton logout;
     private ShapeableImageView profileImage;
+    private TextView coursesTextView;
+    private TextView friendsTextView;
+    private TextView numcoursesTextView;
+
     private TextView firstNameTextView;
     private TextView lastNameTextView;
     private TextView linkedinUrlTextView;
@@ -36,6 +42,10 @@ public class ProfileActivity extends AppCompatActivity {
         setContentView(R.layout.profile);
 
         toolbar = findViewById(R.id.toolbar);
+        coursesTextView = findViewById(R.id.coursesLabelTextView);
+        friendsTextView = findViewById(R.id.friendsLabelTextView);
+        numcoursesTextView = findViewById(R.id.coursesCountTextView);
+
         editProfile = findViewById(R.id.updateProfileButton);
         logout = findViewById(R.id.logoutButton);
         profileImage = findViewById(R.id.profileImage);
@@ -61,6 +71,11 @@ public class ProfileActivity extends AppCompatActivity {
         });
 
         fetchProfileData();
+
+        coursesTextView.setOnClickListener(v -> {
+            Intent intent = new Intent(ProfileActivity.this, CourseView.class);
+            startActivity(intent);
+        });
     }
 
     @Override
@@ -89,16 +104,6 @@ public class ProfileActivity extends AppCompatActivity {
         Glide.with(this)
                 .load(imageUrl)
                 .into(profileImage);
-        String firstName = profile.getFirstName();
-        String lastName = profile.getLastName();
-
-        // Log the values for debugging
-        Log.d("ProfileActivity", "First Name: " + firstName);
-        Log.d("ProfileActivity", "Last Name: " + lastName);
-        // Set the values to the TextViews
-        firstNameTextView.setText(firstName != null ? firstName : "No First Name");
-        lastNameTextView.setText(lastName != null ? lastName : "No Last Name");
-
         firstNameTextView.setText(profile.getFirstName());
         lastNameTextView.setText(profile.getLastName());
         linkedinUrlTextView.setText(profile.getProfile().getLinkedinUrl());

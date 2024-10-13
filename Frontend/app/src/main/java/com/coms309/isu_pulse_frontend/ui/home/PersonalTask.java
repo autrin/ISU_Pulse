@@ -1,14 +1,14 @@
 package com.coms309.isu_pulse_frontend.ui.home;
 
 public class PersonalTask {
-    private String id;
+    private int id;
     private String title;
     private String description;
     private long dueDate;
     private String userNetId;
 
     // Constructor
-    public PersonalTask(String id, String title, String description, long dueDate, String userNetId) {
+    public PersonalTask(int id, String title, String description, long dueDate, String userNetId) {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -17,7 +17,7 @@ public class PersonalTask {
     }
 
     // Getters
-    public String getId() {
+    public int getId() {
         return id;
     }
 
@@ -37,7 +37,7 @@ public class PersonalTask {
         return userNetId;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 

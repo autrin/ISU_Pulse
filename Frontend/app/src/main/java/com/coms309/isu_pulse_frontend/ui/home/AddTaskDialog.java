@@ -54,7 +54,7 @@ public class AddTaskDialog extends DialogFragment {
                     e.printStackTrace();
                 }
 
-                PersonalTask newTask = new PersonalTask(null, title, description, dueDateTimestamp, "n001");
+                PersonalTask newTask = new PersonalTask(1, title, description, dueDateTimestamp, "n001");
                 taskApiService.createPersonalTask(newTask);
                 homeFragment.addNewTask(newTask);
                 dismiss();

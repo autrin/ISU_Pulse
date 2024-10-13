@@ -105,7 +105,7 @@ public class HomeFragment extends Fragment {
                 tasksDueToday.clear();
                 tasksDueToday.addAll(tasks);
                 taskAdapter.notifyDataSetChanged();
-                binding.recyclerViewWeeklyCalendar.getAdapter().notifyDataSetChanged();
+                binding.recyclerViewWeeklyCalendar.getAdapter().notifyDataSetChanged(); // ?
             }
 
             public void onError(String message) {
