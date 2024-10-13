@@ -224,6 +224,8 @@ public class TaskApiService {
     public void deletePersonalTask(PersonalTask task, final TaskResponseListener listener) {
         task.setId(2); //TODO: hardcoded for now
         String url = BASE_URL + "/personalTask/deletePersonalTask/" + NET_ID + "/" + task.getId();
+        String url1="coms-3090-042.class.las.iastate.edu:8080/personalTask/deletePersonalTask/autrin?taskId=6";
+
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.DELETE, url, null,
                 new Response.Listener<JSONObject>() {
                     @Override
@@ -247,7 +249,6 @@ public class TaskApiService {
 
     public void deleteCourseTask(CourseTask task, final TaskResponseListener listener) {
         String url = BASE_URL + "/deleteCourseTask/" + NET_ID + "/" + task.gettId();
-
         JSONObject body = new JSONObject();
         try {
             body.put("title", task.getTitle());
