@@ -36,6 +36,9 @@ public class Schedule {
     @OneToMany(mappedBy = "schedule")
     private  List<Task> taskList;
 
+    @OneToOne(mappedBy = "schedule")
+    private Teach teach;
+
     public Schedule() {
     }
 }

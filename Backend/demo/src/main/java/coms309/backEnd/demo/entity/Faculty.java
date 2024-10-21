@@ -5,6 +5,8 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Data
 @Entity
 @Table(name = "Faculty")
@@ -22,6 +24,9 @@ public class Faculty {
     @ManyToOne
     @JoinColumn
     private Department department;
+
+    @OneToMany(mappedBy = "faculty")
+    private List<Teach> teachList;
 
     public Faculty() {
     }
