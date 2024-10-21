@@ -11,7 +11,6 @@ public class Teach {
     private long id;
 
 
-
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "fId", referencedColumnName = "facultyId")
     private Faculty faculty;
@@ -23,14 +22,5 @@ public class Teach {
 
     // Constructors
     public Teach() {
-    }
-
-    public Teach(String fId, int cId, int section, String classTime, Faculty faculty, Course course) {
-        this.fId = fId;
-        this.cId = cId;
-        this.section = section;
-        this.classTime = classTime;
-        this.faculty = faculty;
-        this.course = course;
     }
 }

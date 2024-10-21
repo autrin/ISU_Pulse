@@ -1,6 +1,7 @@
 package coms309.backEnd.demo.entity;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import lombok.Data;
@@ -14,6 +15,9 @@ import java.util.List;
 @Data
 @Entity
 public class Schedule {
+
+    @Id
+    private int id;
 
     @ManyToOne
     private Course course;
