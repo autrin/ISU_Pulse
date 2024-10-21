@@ -10,26 +10,25 @@ import lombok.Setter;
 @Table(name = "Faculty")
 public class Faculty {
     @Id
-    private String facultyId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
 
     private String title;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "facultyId", referencedColumnName = "netId")
+    @OneToOne
+    @JoinColumn
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "dId")
+    @JoinColumn
     private Department department;
 
     public Faculty() {
     }
 
-    public Faculty(String facultyId, String title, User user, Department department) {
-        this.facultyId = facultyId;
+    public Faculty(String title, User user, Department department) {
         this.title = title;
         this.user = user;
         this.department = department;
     }
-
 }

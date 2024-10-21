@@ -11,7 +11,6 @@ import java.util.Set;
 @Entity
 
 public class Course {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -25,7 +24,6 @@ public class Course {
     private String description;
 
     private int credits;
-
     private int numSections;
 
     @OneToMany(mappedBy = "course")

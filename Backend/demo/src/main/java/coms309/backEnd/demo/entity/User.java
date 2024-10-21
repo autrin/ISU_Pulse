@@ -11,6 +11,10 @@ import java.util.Set;
 @Entity
 public class User {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
+
+    @Column(unique = true)
     private String netId;
 
     private String firstName;
@@ -30,12 +34,15 @@ public class User {
 
 //    @OneToMany(mappedBy = "student", orphanRemoval = true, fetch = FetchType.LAZY)
 //    private Set<Enroll> enrollments;
-//
-//    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-//    @JsonIgnore
-//    private Profile profile;
 
-    // Constructors
+    @OneToOne(mappedBy = "user")
+    @JsonIgnore
+    private Profile profile;
+
+    @OneToOne(mappedBy = "user")
+    @JsonIgnore
+    private Faculty faculty;
+
     public User() {
     }
 
