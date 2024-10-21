@@ -29,6 +29,15 @@ public class Schedule {
     //“MWF|11:00-13:00”
     private String schedule;
 
+    @Column(nullable = false)
+    private String recurringPattern;
+
+    @Column(nullable = false)
+    private java.time.LocalTime startTime;
+
+    @Column(nullable = false)
+    private java.time.LocalTime endTime;
+
     @OneToMany(mappedBy = "schedule")
     private List<Enroll> enrollList;
 
