@@ -26,17 +26,18 @@ public class Task {
 
     @ManyToOne
     @JoinColumn
-    private Section section;
+    private Schedule schedule;
+
 
     public Task() {
     }
 
-    public Task(long id, String title, String description, Date dueDate, TaskType taskType, Section section) {
+    public Task(long id, String title, String description, Date dueDate, TaskType taskType, Schedule schedule) {
         this.id = id;
         this.title = title;
         this.description = description;
         this.dueDate = dueDate;
         this.taskType = taskType;
-        this.section = section;
+        this.schedule = schedule;
     }
 }

@@ -22,14 +22,16 @@ public class Enroll {
     @ManyToOne
     @JoinColumn
     @JsonIgnore
-    private Course course;
+    private Schedule schedule;
+
+
 
     public Enroll() {
     }
 
-    public Enroll(long id, User student, Course course) {
+    public Enroll(long id, User student, Schedule schedule) {
         Id = id;
         this.student = student;
-        this.course = course;
+        this.schedule = schedule;
     }
 }

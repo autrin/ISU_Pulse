@@ -24,7 +24,11 @@ public class Course {
     private String description;
 
     private int credits;
-    private int numSections;
+
+    //“MWF|11:00-13:00”
+    private List<String> schedule;
+
+    private int section;
 
     @OneToMany(mappedBy = "course")
     @JsonIgnore
@@ -35,23 +39,24 @@ public class Course {
     @JsonIgnore
     private Department department;
 
-    @OneToMany(mappedBy = "course")
-    @JsonIgnore
-    private List<Section> sectionList;
+
+    @OneToMany(mappedBy = "section")
+    private List<Task> taskList;
 
     public Course() {
     }
 
-    public Course(long id, String code, String title, String description, int credits, int numSections, List<Enroll> enrollList, Department department, List<Section> sectionList) {
+    public Course(long id, String code, String title, String description, int credits, List<String> schedule, int section, List<Enroll> enrollList, Department department, List<Task> taskList) {
         this.id = id;
         this.code = code;
         this.title = title;
         this.description = description;
         this.credits = credits;
-        this.numSections = numSections;
+        this.schedule = schedule;
+        this.section = section;
         this.enrollList = enrollList;
         this.department = department;
-        this.sectionList = sectionList;
+        this.taskList = taskList;
     }
 
     //    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
