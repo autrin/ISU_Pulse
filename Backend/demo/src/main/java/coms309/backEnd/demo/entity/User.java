@@ -32,8 +32,8 @@ public class User {
     @OneToMany(mappedBy = "student")
     private List<Enroll> enrollList;
 
-//    @OneToMany(mappedBy = "student", orphanRemoval = true, fetch = FetchType.LAZY)
-//    private Set<Enroll> enrollments;
+    @OneToMany(mappedBy = "student")
+    private List<Enroll> enrollments;
 
     @OneToOne(mappedBy = "user")
     @JsonIgnore
