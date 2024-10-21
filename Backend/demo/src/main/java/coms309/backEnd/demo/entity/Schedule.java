@@ -26,9 +26,6 @@ public class Schedule {
 
     private String section;
 
-    //“MWF|11:00-13:00”
-    private String schedule;
-
     @Column(nullable = false)
     private String recurringPattern;
 
