@@ -1,5 +1,6 @@
 package coms309.backEnd.demo.entity;
 
+import jakarta.persistence.*;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
@@ -17,7 +18,8 @@ import java.util.List;
 public class Schedule {
 
     @Id
-    private int id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
 
     @ManyToOne
     private Course course;
@@ -35,13 +37,5 @@ public class Schedule {
     private  List<Task> taskList;
 
     public Schedule() {
-    }
-
-    public Schedule(Course course, String section, String schedule, List<Enroll> enrollList, List<Task> taskList) {
-        this.course = course;
-        this.section = section;
-        this.schedule = schedule;
-        this.enrollList = enrollList;
-        this.taskList = taskList;
     }
 }

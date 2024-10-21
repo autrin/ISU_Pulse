@@ -25,6 +25,10 @@ public class Course {
 
     private int credits;
 
+    //“MWF|11:00-13:00”
+    private List<String> schedule;
+
+
     @ManyToOne
     @JoinColumn
     @JsonIgnore
@@ -36,6 +40,15 @@ public class Course {
     public Course() {
     }
 
+    public Course(long id, String code, String title, String description, int credits, List<String> schedule, int section, Department department) {
+        this.id = id;
+        this.code = code;
+        this.title = title;
+        this.description = description;
+        this.credits = credits;
+        this.schedule = schedule;
+        this.department = department;
+    }
 
 
     //    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
