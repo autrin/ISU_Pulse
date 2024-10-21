@@ -22,6 +22,12 @@ public class User {
     @Enumerated(EnumType.STRING)
     private UserType userType;
 
+    @OneToMany(mappedBy = "user")
+    private List<PersonalTask> personalTaskList;
+
+    @OneToMany(mappedBy = "student")
+    private List<Enroll> enrollList;
+
 //    @OneToMany(mappedBy = "student", orphanRemoval = true, fetch = FetchType.LAZY)
 //    private Set<Enroll> enrollments;
 //

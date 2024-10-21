@@ -10,11 +10,8 @@ import java.util.Date;
 @Data
 @Table(name = "Task")
 public class Task {
-    // change this instance variable into integer
     @Id
-    private String tId;
-
-    private int section;
+    private long id;
 
     private String title;
 
@@ -27,22 +24,19 @@ public class Task {
     @Enumerated(EnumType.STRING)
     private TaskType taskType;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "cId")
-    private Course course;
-
+    @ManyToOne
+    @JoinColumn
+    private Section section;
 
     public Task() {
     }
 
-
-    public Task(String tId, int section, String title, String description, Date dueDate, TaskType taskType, Course course) {
-        this.tId = tId;
-        this.section = section;
+    public Task(long id, String title, String description, Date dueDate, TaskType taskType, Section section) {
+        this.id = id;
         this.title = title;
         this.description = description;
         this.dueDate = dueDate;
         this.taskType = taskType;
-        this.course = course;
+        this.section = section;
     }
 }

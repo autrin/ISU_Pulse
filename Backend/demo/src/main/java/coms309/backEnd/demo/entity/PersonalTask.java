@@ -13,7 +13,7 @@ public class PersonalTask {
     // This is the id for personal task
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int personalTaskId;
+    private int id;
 
     private String title;
 
@@ -23,17 +23,18 @@ public class PersonalTask {
     private Date dueDate;
 
     @ManyToOne
-    @JoinColumn(name = "sId", referencedColumnName = "netId")
+    @JoinColumn
     @JsonIgnore
     private User user;
 
-    public PersonalTask() {
+    public PersonalTask(int id, String title, String description, Date dueDate, User user) {
+        this.id = id;
+        this.title = title;
+        this.description = description;
+        this.dueDate = dueDate;
+        this.user = user;
     }
 
-    public PersonalTask(String title, Date dueDate, String description, User userNetId) {
-        this.title = title;
-        this.dueDate = dueDate;
-        this.description = description;
-        this.user = userNetId;
+    public PersonalTask() {
     }
 }
