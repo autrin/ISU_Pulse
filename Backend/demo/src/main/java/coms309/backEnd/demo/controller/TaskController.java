@@ -21,64 +21,64 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/task")
 public class TaskController {
-    @Autowired
-    private final UserRepository userRepository;
-
-    @Autowired
-    private final TaskRepository taskRepository;
-
-    @Autowired
-    private final CourseRepository courseRepository;
-
-    @Autowired
-    private final EnrollRepository enrollRepository;
-
-    public TaskController(UserRepository userRepository, TaskRepository taskRepository, CourseRepository courseRepository, EnrollRepository enrollRepository) {
-        this.userRepository = userRepository;
-        this.taskRepository = taskRepository;
-        this.courseRepository = courseRepository;
-        this.enrollRepository = enrollRepository;
-    }
-
-    @GetMapping("/getTasksByCourse")
-    public ResponseEntity<List<Task>> getTaskByCourse(@PathVariable int cId ){
-        Optional<Course> curCourse = courseRepository.findById(cId);
-        if(curCourse.isEmpty()){
-            return  ResponseEntity.internalServerError().build();
-        }
-
-        List<Task> tasklist = taskRepository.findAllByCourse(curCourse.get());
-        return ResponseEntity.ok(tasklist);
-    }
-
-    @GetMapping("/getTaskByUserIn2days/{sId}")
-    public ResponseEntity<List<Task>> getTaskByCourse(@PathVariable String sId){
-        //
-        Date currentDate = new Date();
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(currentDate);
-        calendar.add(Calendar.DATE, 2);
-        Date tomorrowDate = calendar.getTime();
-        //
-        Optional<User> curUser = userRepository.findById(sId);
-        if(curUser.isEmpty()){
-            return  ResponseEntity.internalServerError().build();
-        }
-        List<Enroll> curEnroll = enrollRepository.findAllByStudent(curUser.get());
-        List<Task> taskin2days = new ArrayList<>();
-        for(Enroll en : curEnroll){
-            Course cou = en.getCourse();
-            List<Task> listTaskOfOneCourse = taskRepository.findAllByCourse(cou);
-            for(Task task : listTaskOfOneCourse){
-                if (task.getDueDate() != null &&
-                        !task.getDueDate().before(currentDate) &&
-                        !task.getDueDate().after(tomorrowDate)) {
-                    taskin2days.add(task);
-                }
-            }
-        }
-        return ResponseEntity.ok(taskin2days);
-    }
-
+//    @Autowired
+//    private final UserRepository userRepository;
+//
+//    @Autowired
+//    private final TaskRepository taskRepository;
+//
+//    @Autowired
+//    private final CourseRepository courseRepository;
+//
+//    @Autowired
+//    private final EnrollRepository enrollRepository;
+//
+//    public TaskController(UserRepository userRepository, TaskRepository taskRepository, CourseRepository courseRepository, EnrollRepository enrollRepository) {
+//        this.userRepository = userRepository;
+//        this.taskRepository = taskRepository;
+//        this.courseRepository = courseRepository;
+//        this.enrollRepository = enrollRepository;
+//    }
+//
+//    @GetMapping("/getTasksByCourse")
+//    public ResponseEntity<List<Task>> getTaskByCourse(@PathVariable int cId ){
+//        Optional<Course> curCourse = courseRepository.findById(cId);
+//        if(curCourse.isEmpty()){
+//            return  ResponseEntity.internalServerError().build();
+//        }
+//
+//        List<Task> tasklist = taskRepository.findAllByCourse(curCourse.get());
+//        return ResponseEntity.ok(tasklist);
+//    }
+//
+//    @GetMapping("/getTaskByUserIn2days/{sId}")
+//    public ResponseEntity<List<Task>> getTaskByCourse(@PathVariable String sId){
+//        //
+//        Date currentDate = new Date();
+//        Calendar calendar = Calendar.getInstance();
+//        calendar.setTime(currentDate);
+//        calendar.add(Calendar.DATE, 2);
+//        Date tomorrowDate = calendar.getTime();
+//        //
+//        Optional<User> curUser = userRepository.findById(sId);
+//        if(curUser.isEmpty()){
+//            return  ResponseEntity.internalServerError().build();
+//        }
+//        List<Enroll> curEnroll = enrollRepository.findAllByStudent(curUser.get());
+//        List<Task> taskin2days = new ArrayList<>();
+//        for(Enroll en : curEnroll){
+//            Course cou = en.getCourse();
+//            List<Task> listTaskOfOneCourse = taskRepository.findAllByCourse(cou);
+//            for(Task task : listTaskOfOneCourse){
+//                if (task.getDueDate() != null &&
+//                        !task.getDueDate().before(currentDate) &&
+//                        !task.getDueDate().after(tomorrowDate)) {
+//                    taskin2days.add(task);
+//                }
+//            }
+//        }
+//        return ResponseEntity.ok(taskin2days);
+//    }
+//
 
 }

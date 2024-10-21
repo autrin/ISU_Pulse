@@ -7,8 +7,8 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
-public interface EnrollRepository extends JpaRepository<Enroll, String> {
-    public List<Enroll> findAllByStudentid(String sId);
-    public Enroll findByStudentidAndCourseid(@Param("studentid") String sId, @Param("courseid") int courseId);
-    public List<Enroll> findAllByStudent(User user);
+public interface EnrollRepository extends JpaRepository<Enroll, Long> {
+//    public List<Enroll> findAllByStudentid(String sId);
+//    public Enroll findByStudentidAndCourseid(@Param("studentid") String sId, @Param("courseid") int courseId);
+//    public List<Enroll> findAllByStudent(User user);
 }

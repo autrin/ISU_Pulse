@@ -9,7 +9,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-public interface TaskRepository extends JpaRepository<Task,String> {
-    public List<Task> findAllByCourse(Course course);
-    public List<Task> findAllByTaskType(TaskType taskType);
+public interface TaskRepository extends JpaRepository<Task,Long> {
+//    public List<Task> findAllByCourse(Course course);
+//    public List<Task> findAllByTaskType(TaskType taskType);
 }
