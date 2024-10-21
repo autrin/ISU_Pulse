@@ -40,13 +40,10 @@ public class Course {
     private Department department;
 
 
-    @OneToMany(mappedBy = "section")
-    private List<Task> taskList;
-
     public Course() {
     }
 
-    public Course(long id, String code, String title, String description, int credits, List<String> schedule, int section, List<Enroll> enrollList, Department department, List<Task> taskList) {
+    public Course(long id, String code, String title, String description, int credits, List<String> schedule, int section, List<Enroll> enrollList, Department department) {
         this.id = id;
         this.code = code;
         this.title = title;
@@ -56,7 +53,6 @@ public class Course {
         this.section = section;
         this.enrollList = enrollList;
         this.department = department;
-        this.taskList = taskList;
     }
 
     //    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
