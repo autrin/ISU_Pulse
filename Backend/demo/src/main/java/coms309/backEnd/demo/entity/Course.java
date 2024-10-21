@@ -28,11 +28,6 @@ public class Course {
     //“MWF|11:00-13:00”
     private List<String> schedule;
 
-    private int section;
-
-    @OneToMany(mappedBy = "course")
-    @JsonIgnore
-    private List<Enroll> enrollList;
 
     @ManyToOne
     @JoinColumn
@@ -43,7 +38,7 @@ public class Course {
     public Course() {
     }
 
-    public Course(long id, String code, String title, String description, int credits, List<String> schedule, int section, List<Enroll> enrollList, Department department) {
+    public Course(long id, String code, String title, String description, int credits, List<String> schedule, int section, Department department) {
         this.id = id;
         this.code = code;
         this.title = title;
@@ -51,7 +46,6 @@ public class Course {
         this.credits = credits;
         this.schedule = schedule;
         this.section = section;
-        this.enrollList = enrollList;
         this.department = department;
     }
 
