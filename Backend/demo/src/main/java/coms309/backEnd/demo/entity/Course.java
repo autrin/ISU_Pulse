@@ -31,6 +31,7 @@ public class Course {
     private Department department;
 
     @OneToMany(mappedBy = "course")
+    @JsonIgnore
     private List<Schedule> scheduleList;
 
     public Course() {

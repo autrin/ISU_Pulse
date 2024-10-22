@@ -1,5 +1,6 @@
 package coms309.backEnd.demo.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -36,13 +37,16 @@ public class Schedule {
     private java.time.LocalTime endTime;
 
     @OneToMany(mappedBy = "schedule")
+    @JsonIgnore
     private List<Enroll> enrollList;
 
     // Same class but different schedule(section) has different due dates for tasks or have different tasks
     @OneToMany(mappedBy = "schedule")
+    @JsonIgnore
     private  List<Task> taskList;
 
     @OneToOne(mappedBy = "schedule")
+    @JsonIgnore
     private Teach teach;
 
     public Schedule() {

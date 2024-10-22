@@ -20,26 +20,132 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/personalTask")
 public class PersonalTaskController {
-//
-//    @Autowired
-//    private final PersonalTaskRepository personalTaskRepository;
-//
-//    @Autowired
-//    private final UserRepository userRepository;
-//
-//    @Autowired
-//    private final CourseRepository courseRepository;
-//
-//    @Autowired
-//    private final EnrollRepository enrollRepository;
-//
-//
-//    public PersonalTaskController(PersonalTaskRepository personalTaskRepository, UserRepository userRepository, CourseRepository courseRepository, EnrollRepository enrollRepository) {
-//        this.personalTaskRepository = personalTaskRepository;
-//        this.userRepository = userRepository;
-//        this.courseRepository = courseRepository;
-//        this.enrollRepository = enrollRepository;
-//    }
+
+    @Autowired
+    private final PersonalTaskRepository personalTaskRepository;
+
+    @Autowired
+    private final UserRepository userRepository;
+
+    @Autowired
+    private final CourseRepository courseRepository;
+
+    @Autowired
+    private final EnrollRepository enrollRepository;
+
+    public PersonalTaskController(PersonalTaskRepository personalTaskRepository, UserRepository userRepository, CourseRepository courseRepository, EnrollRepository enrollRepository) {
+        this.personalTaskRepository = personalTaskRepository;
+        this.userRepository = userRepository;
+        this.courseRepository = courseRepository;
+        this.enrollRepository = enrollRepository;
+    }
+
+    @GetMapping("/getPersonalTasks/{id}")
+    public ResponseEntity<List<PersonalTask>> getListofPersonalTasks(@PathVariable long id){
+        Optional<User> curUser = userRepository.findById(id);
+        if(curUser.isEmpty()){
+            return  ResponseEntity.internalServerError().build();
+        }
+        User user = curUser.get();
+        List<PersonalTask> personalTasklist = personalTaskRepository.findAllByUser(user);
+        return ResponseEntity.ok(personalTasklist);
+    }
+    @PostMapping("/addPersonalTask/{id}")
+    public ResponseEntity<String> addPersonTasks(
+            @PathVariable long id,
+            @RequestParam String title,
+            @RequestParam String description,
+            @RequestParam long dueDateTimestamp
+    ){
+        Optional<User> curUser = userRepository.findById(id);
+        if(curUser.isEmpty()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
+        }
+        User user = curUser.get();
+        PersonalTask personalTask = new PersonalTask(title, description, new Date(dueDateTimestamp), user);
+        personalTaskRepository.save(personalTask);
+        return ResponseEntity.ok("Personal task added successfully.");
+    }
+
+    @PutMapping("/updatePersonalTask/{id}")
+    public ResponseEntity<String> updatePersonTasks(
+            @PathVariable long id,
+            @RequestParam long taskId,
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) String description,
+            @RequestParam(required = false) Long dueDateTimestamp
+    ) {
+        Optional<User> curUser = userRepository.findById(id);
+        if (curUser.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("User with ID " + id + " not found.");
+        }
+
+        User user = curUser.get();
+
+        Optional<PersonalTask> optionalTask = personalTaskRepository.findById(taskId);
+        if (optionalTask.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Task with ID " + taskId + " not found.");
+        }
+
+        PersonalTask task = optionalTask.get();
+
+        if(task.getUser().getId() != id){
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You are not authorized to update this task.");
+        }
+
+        if (title != null) {
+            task.setTitle(title);
+        }
+        if (description != null) {
+            task.setDescription(description);
+        }
+        if (dueDateTimestamp != null) {
+            task.setDueDate(new Date(dueDateTimestamp));
+        }
+
+        personalTaskRepository.save(task);
+
+        return ResponseEntity.ok("Task updated successfully.");
+
+    }
+
+    @DeleteMapping("/deletePersonalTask/{id}")
+    public ResponseEntity<String> deletePersonalTasks(
+            @PathVariable long id,
+            @RequestParam long taskId
+    ){
+        Optional<User> curUser = userRepository.findById(id);
+        if (curUser.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("User with ID " + id + " not found.");
+        }
+
+        User user = curUser.get();
+
+        Optional<PersonalTask> optionalTask = personalTaskRepository.findById(taskId);
+        if (optionalTask.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Task with ID " + taskId + " not found.");
+        }
+
+        PersonalTask task = optionalTask.get();
+
+        if(task.getUser().getId() != id){
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You are not authorized to update this task.");
+        }
+        personalTaskRepository.delete(task);
+        return ResponseEntity.ok("Task deleted successfully.");
+
+    }
+
+
+
+
+
+
+
 //
 //    @GetMapping("/getPersonalTasks/{sId}")
 //    public ResponseEntity<List<PersonalTask>> getListofPersonalTasks(@PathVariable String sId){

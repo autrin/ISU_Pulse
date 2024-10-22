@@ -24,11 +24,9 @@ public class PersonalTask {
 
     @ManyToOne
     @JoinColumn
-    @JsonIgnore
     private User user;
 
-    public PersonalTask(int id, String title, String description, Date dueDate, User user) {
-        this.id = id;
+    public PersonalTask(String title, String description, Date dueDate, User user) {
         this.title = title;
         this.description = description;
         this.dueDate = dueDate;

@@ -27,13 +27,15 @@ public class User {
     private UserType userType;
 
     @OneToMany(mappedBy = "user")
+    @JsonIgnore
     private List<PersonalTask> personalTaskList;
 
     @OneToMany(mappedBy = "student")
+    @JsonIgnore
     private List<Enroll> enrollList;
 
-    @OneToMany(mappedBy = "student")
-    private List<Enroll> enrollments;
+//    @OneToMany(mappedBy = "student")
+//    private List<Enroll> enrollments;
 
     @OneToOne(mappedBy = "user")
     @JsonIgnore
