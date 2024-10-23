@@ -7,7 +7,5 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.Optional;
 
 public interface ProfileRepository extends JpaRepository<Profile, Long> {
-
-    @Query("SELECT p FROM Profile p WHERE p.user.netId = ?1")
-    public Optional<Profile> findProfileByNetId(String netId);
+    Optional<Profile> findByUserNetId(String netId);
 }
