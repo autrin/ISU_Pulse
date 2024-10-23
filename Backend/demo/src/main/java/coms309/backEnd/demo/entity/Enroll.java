@@ -9,42 +9,32 @@ import java.io.Serializable;
 @Entity
 @IdClass(EnrollId.class)
 public class Enroll implements Serializable {
-    @Id
-    private String sId;
+
 
     @Id
-    private int cId;
+    private String studentid;
+
+    @Id
+    private int courseid;
 
     @Id
     private int section;
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "sId", referencedColumnName = "netId")
+    @ManyToOne
+    @JoinColumn(name = "studentid", referencedColumnName = "netId", insertable = false, updatable = false)
     private User student;
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "cId")
+    @ManyToOne
+    @JoinColumn(name = "courseid", insertable = false, updatable = false)
     private Course course;
-
-    public String getSId() {
-        return sId;
-    }
-
-    public void setSId(String sId) {
-        this.sId = sId;
-    }
-
-    public Course getCourse(){
-        return course;
-    }
 
     // Constructors
     public Enroll() {
     }
 
-    public Enroll(String sId, int cId, int section, User student, Course course) {
-        this.sId = sId;
-        this.cId = cId;
+    public Enroll(String studentid, int cId, int section, User student, Course course) {
+        this.studentid = studentid;
+        this.courseid = cId;
         this.section = section;
         this.student = student;
         this.course = course;

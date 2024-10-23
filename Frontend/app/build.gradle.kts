@@ -47,6 +47,7 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:33.4.0"))
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-crashlytics")
+    implementation("com.google.firebase:firebase-appcheck")
     implementation(libs.navigation.ui)
     implementation(libs.volley)
     implementation(libs.firebase.storage)
@@ -56,6 +57,7 @@ dependencies {
     annotationProcessor(libs.glide.compiler)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
+    implementation("com.google.code.gson:gson:2.8.8")
 }
 
 // Apply the Google Services plugin at the bottom of the file
