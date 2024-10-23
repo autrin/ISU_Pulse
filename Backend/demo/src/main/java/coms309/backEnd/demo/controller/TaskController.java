@@ -97,8 +97,12 @@ public class TaskController {
         for(Enroll enroll : curEnroll){
             Schedule schedule = enroll.getSchedule();
             List<Task> tasks = taskRepository.findAllBySchedule(schedule);
-            for(Task t : tasks){
-                taskList.add(t);
+            for(Task task : tasks){
+                if (task.getDueDate() != null &&
+                        !task.getDueDate().before(currentDate) &&
+                        !task.getDueDate().after(tomorrowDate)) {
+                taskList.add(task);
+                }
             }
         }
         return ResponseEntity.ok(taskList);
