@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 import java.util.Optional;
 
-public interface PersonalTaskRepository extends JpaRepository<PersonalTask, Integer> {
+public interface PersonalTaskRepository extends JpaRepository<PersonalTask, Long> {
+    //public List<PersonalTask> findAllByUser(User user);
     public List<PersonalTask> findAllByUser(User user);
 }

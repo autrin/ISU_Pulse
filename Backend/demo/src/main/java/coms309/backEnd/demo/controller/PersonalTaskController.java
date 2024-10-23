@@ -33,7 +33,6 @@ public class PersonalTaskController {
     @Autowired
     private final EnrollRepository enrollRepository;
 
-
     public PersonalTaskController(PersonalTaskRepository personalTaskRepository, UserRepository userRepository, CourseRepository courseRepository, EnrollRepository enrollRepository) {
         this.personalTaskRepository = personalTaskRepository;
         this.userRepository = userRepository;
@@ -41,50 +40,49 @@ public class PersonalTaskController {
         this.enrollRepository = enrollRepository;
     }
 
-    @GetMapping("/getPersonalTasks/{sId}")
-    public ResponseEntity<List<PersonalTask>> getListofPersonalTasks(@PathVariable String sId){
-        Optional<User> curUser = userRepository.findById(sId);
+    @GetMapping("/getPersonalTasks/{id}")
+    public ResponseEntity<List<PersonalTask>> getListofPersonalTasks(@PathVariable long id){
+        Optional<User> curUser = userRepository.findById(id);
         if(curUser.isEmpty()){
             return  ResponseEntity.internalServerError().build();
         }
-        List<PersonalTask> personalTasklist = personalTaskRepository.findAllByUser(curUser.get());
+        User user = curUser.get();
+        List<PersonalTask> personalTasklist = personalTaskRepository.findAllByUser(user);
         return ResponseEntity.ok(personalTasklist);
     }
-
-    @PostMapping("/addPersonalTask/{sId}")
+    @PostMapping("/addPersonalTask/{id}")
     public ResponseEntity<String> addPersonTasks(
-            @PathVariable String sId,
+            @PathVariable long id,
             @RequestParam String title,
             @RequestParam String description,
             @RequestParam long dueDateTimestamp
-    ) {
-        Optional<User> curUser = userRepository.findById(sId);
-        if (curUser.isEmpty()){
+    ){
+        Optional<User> curUser = userRepository.findById(id);
+        if(curUser.isEmpty()){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
         }
-        personalTaskRepository.save(new PersonalTask(
-                title, new Date(dueDateTimestamp), description, curUser.get()
-        ));
+        User user = curUser.get();
+        PersonalTask personalTask = new PersonalTask(title, description, new Date(dueDateTimestamp), user);
+        personalTaskRepository.save(personalTask);
         return ResponseEntity.ok("Personal task added successfully.");
     }
 
-
-    @PutMapping("/updatePersonalTask/{sId}")
+    @PutMapping("/updatePersonalTask/{id}")
     public ResponseEntity<String> updatePersonTasks(
-            @PathVariable String sId,
-            @RequestParam int taskId,
+            @PathVariable long id,
+            @RequestParam long taskId,
             @RequestParam(required = false) String title,
             @RequestParam(required = false) String description,
             @RequestParam(required = false) Long dueDateTimestamp
     ) {
-        // Check if the user exists
-        Optional<User> curUser = userRepository.findById(sId);
+        Optional<User> curUser = userRepository.findById(id);
         if (curUser.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("User with ID " + sId + " not found.");
+                    .body("User with ID " + id + " not found.");
         }
 
-        // Check if the task exists
+        User user = curUser.get();
+
         Optional<PersonalTask> optionalTask = personalTaskRepository.findById(taskId);
         if (optionalTask.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -93,13 +91,10 @@ public class PersonalTaskController {
 
         PersonalTask task = optionalTask.get();
 
-        // Check if the netId in the task matches the netId of the input user
-        if  (!task.getUser().getNetId().trim().equalsIgnoreCase(sId.trim())) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body("You are not authorized to update this task.");
+        if(task.getUser().getId() != id){
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You are not authorized to update this task.");
         }
 
-        // Update the task details if they are provided
         if (title != null) {
             task.setTitle(title);
         }
@@ -110,25 +105,25 @@ public class PersonalTaskController {
             task.setDueDate(new Date(dueDateTimestamp));
         }
 
-        // Save the updated task
         personalTaskRepository.save(task);
 
         return ResponseEntity.ok("Task updated successfully.");
+
     }
 
-    @DeleteMapping("/deletePersonalTask/{sId}")
+    @DeleteMapping("/deletePersonalTask/{id}")
     public ResponseEntity<String> deletePersonalTasks(
-            @PathVariable String sId,
-            @RequestParam int taskId
+            @PathVariable long id,
+            @RequestParam long taskId
     ){
-        // Check if the user exists
-        Optional<User> curUser = userRepository.findById(sId);
+        Optional<User> curUser = userRepository.findById(id);
         if (curUser.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("User with ID " + sId + " not found.");
+                    .body("User with ID " + id + " not found.");
         }
 
-        // Check if the task exists
+        User user = curUser.get();
+
         Optional<PersonalTask> optionalTask = personalTaskRepository.findById(taskId);
         if (optionalTask.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -137,14 +132,125 @@ public class PersonalTaskController {
 
         PersonalTask task = optionalTask.get();
 
-        // Check if the netId in the task matches the netId of the input user
-        if  (!task.getUser().getNetId().trim().equalsIgnoreCase(sId.trim())) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body("You are not authorized to delete this task.");
+        if(task.getUser().getId() != id){
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You are not authorized to update this task.");
         }
         personalTaskRepository.delete(task);
         return ResponseEntity.ok("Task deleted successfully.");
+
     }
 
+
+
+
+
+
+
+//
+//    @GetMapping("/getPersonalTasks/{sId}")
+//    public ResponseEntity<List<PersonalTask>> getListofPersonalTasks(@PathVariable String sId){
+//        Optional<User> curUser = userRepository.findById(sId);
+//        if(curUser.isEmpty()){
+//            return  ResponseEntity.internalServerError().build();
+//        }
+//        List<PersonalTask> personalTasklist = personalTaskRepository.findAllByUser(curUser.get());
+//        return ResponseEntity.ok(personalTasklist);
+//    }
+//
+//    @PostMapping("/addPersonalTask/{sId}")
+//    public ResponseEntity<String> addPersonTasks(
+//            @PathVariable String sId,
+//            @RequestParam String title,
+//            @RequestParam String description,
+//            @RequestParam long dueDateTimestamp
+//    ) {
+//        Optional<User> curUser = userRepository.findById(sId);
+//        if (curUser.isEmpty()){
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
+//        }
+//        personalTaskRepository.save(new PersonalTask(
+//                title, new Date(dueDateTimestamp), description, curUser.get()
+//        ));
+//        return ResponseEntity.ok("Personal task added successfully.");
+//    }
+//
+//
+//    @PutMapping("/updatePersonalTask/{sId}")
+//    public ResponseEntity<String> updatePersonTasks(
+//            @PathVariable String sId,
+//            @RequestParam int taskId,
+//            @RequestParam(required = false) String title,
+//            @RequestParam(required = false) String description,
+//            @RequestParam(required = false) Long dueDateTimestamp
+//    ) {
+//        // Check if the user exists
+//        Optional<User> curUser = userRepository.findById(sId);
+//        if (curUser.isEmpty()) {
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+//                    .body("User with ID " + sId + " not found.");
+//        }
+//
+//        // Check if the task exists
+//        Optional<PersonalTask> optionalTask = personalTaskRepository.findById(taskId);
+//        if (optionalTask.isEmpty()) {
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+//                    .body("Task with ID " + taskId + " not found.");
+//        }
+//
+//        PersonalTask task = optionalTask.get();
+//
+//        // Check if the netId in the task matches the netId of the input user
+//        if  (!task.getUser().getNetId().trim().equalsIgnoreCase(sId.trim())) {
+//            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+//                    .body("You are not authorized to update this task.");
+//        }
+//
+//        // Update the task details if they are provided
+//        if (title != null) {
+//            task.setTitle(title);
+//        }
+//        if (description != null) {
+//            task.setDescription(description);
+//        }
+//        if (dueDateTimestamp != null) {
+//            task.setDueDate(new Date(dueDateTimestamp));
+//        }
+//
+//        // Save the updated task
+//        personalTaskRepository.save(task);
+//
+//        return ResponseEntity.ok("Task updated successfully.");
+//    }
+//
+//    @DeleteMapping("/deletePersonalTask/{sId}")
+//    public ResponseEntity<String> deletePersonalTasks(
+//            @PathVariable String sId,
+//            @RequestParam int taskId
+//    ){
+//        // Check if the user exists
+//        Optional<User> curUser = userRepository.findById(sId);
+//        if (curUser.isEmpty()) {
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+//                    .body("User with ID " + sId + " not found.");
+//        }
+//
+//        // Check if the task exists
+//        Optional<PersonalTask> optionalTask = personalTaskRepository.findById(taskId);
+//        if (optionalTask.isEmpty()) {
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+//                    .body("Task with ID " + taskId + " not found.");
+//        }
+//
+//        PersonalTask task = optionalTask.get();
+//
+//        // Check if the netId in the task matches the netId of the input user
+//        if  (!task.getUser().getNetId().trim().equalsIgnoreCase(sId.trim())) {
+//            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+//                    .body("You are not authorized to delete this task.");
+//        }
+//        personalTaskRepository.delete(task);
+//        return ResponseEntity.ok("Task deleted successfully.");
+//    }
+//
 
 }

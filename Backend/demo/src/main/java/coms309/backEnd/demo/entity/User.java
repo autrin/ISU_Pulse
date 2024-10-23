@@ -11,6 +11,10 @@ import java.util.Set;
 @Entity
 public class User {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
+
+    @Column(unique = true)
     private String netId;
 
     private String firstName;
@@ -22,14 +26,22 @@ public class User {
     @Enumerated(EnumType.STRING)
     private UserType userType;
 
-//    @OneToMany(mappedBy = "student", orphanRemoval = true, fetch = FetchType.LAZY)
-//    private Set<Enroll> enrollments;
-//
-//    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-//    @JsonIgnore
-//    private Profile profile;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @JsonIgnore
+    private List<PersonalTask> personalTaskList;
 
-    // Constructors
+    @OneToMany(mappedBy = "student", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @JsonIgnore
+    private List<Enroll> enrollList;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private Profile profile;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @JsonIgnore
+    private Faculty faculty;
+
     public User() {
     }
 

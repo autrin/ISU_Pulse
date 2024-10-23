@@ -4,17 +4,24 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NonNull;
 
+import java.util.List;
+
 @Data
 @Entity
 public class Department {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int dId;
+    private long id;
 
     private String name;
     private String location;
 
-    // Constructors
+    @OneToMany(mappedBy = "department")
+    private List<Faculty> facultyList;
+
+    @OneToMany(mappedBy = "department")
+    private List<Course> courseList;
+
     public Department() {
     }
 
