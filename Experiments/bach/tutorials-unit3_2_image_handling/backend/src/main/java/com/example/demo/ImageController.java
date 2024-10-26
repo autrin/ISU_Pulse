@@ -13,7 +13,9 @@ import java.nio.file.Files;
 public class ImageController {
 
     // replace this! careful with the operating system in use
-    private static String directory = "/Users/nguye/";
+    private static String directory = "C:/Users/nguye/";
+    // Note double backslashes
+
 
     @Autowired
     private ImageRepository imageRepository;
