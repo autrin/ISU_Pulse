@@ -32,14 +32,18 @@
         android:layout_marginTop="20dp"
         android:text="Connect to chat server#1"
         android:id="@+id/connectBtn" />
+    <TextView
+        android:id="@+id/status1TextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Status: Disconnected"
+        android:layout_marginTop="8dp" />
+
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Back to chat server#1"
         android:id="@+id/backBtn" />
-
-
-<!--    second chat server -->
 
     <TextView
         android:layout_width="wrap_content"
@@ -66,6 +70,13 @@
         android:layout_marginTop="20dp"
         android:text="Connect to chat server#2"
         android:id="@+id/connectBtn2" />
+    <TextView
+        android:id="@+id/status2TextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Status: Disconnected"
+        android:layout_marginTop="8dp" />
+
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
