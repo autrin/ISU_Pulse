@@ -10,21 +10,16 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-
 /**
- * Custom request class for handling multipart/form-data requests with Volley.
- *
- * This class extends the Volley Request class, specifically handling the creation and transmission
- * of multipart requests. It is designed to send binary data like images, files, or other media
- * along with text data as part of a single request. It's commonly used for file uploads.
- *
- **/
- public class MultipartRequest extends Request<String> {
+ * Personalized multipart request class for uploading images or files.
+ * This includes additional error handling to provide detailed feedback on failure.
+ */
+public class MultipartRequest extends Request<String> {
 
     private final Response.Listener<String> mListener;
     private final Response.ErrorListener mErrorListener;
     private final byte[] mImageData;
-    private final String mBoundary = "apiclient-" + System.currentTimeMillis();
+    private final String mBoundary = "boundary-" + System.currentTimeMillis();
     private final String mLineEnd = "\r\n";
     private final String mTwoHyphens = "--";
 
@@ -47,7 +42,7 @@ import java.io.IOException;
 
         try {
             dos.writeBytes(mTwoHyphens + mBoundary + mLineEnd);
-            dos.writeBytes("Content-Disposition: form-data; name=\"image\";filename=\"image.jpg\"" + mLineEnd);
+            dos.writeBytes("Content-Disposition: form-data; name=\"image\";filename=\"personalized_image.jpg\"" + mLineEnd);
             dos.writeBytes(mLineEnd);
 
             dos.write(mImageData);
