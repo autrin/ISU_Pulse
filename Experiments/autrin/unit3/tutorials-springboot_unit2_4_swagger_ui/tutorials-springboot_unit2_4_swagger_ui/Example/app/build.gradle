@@ -41,6 +41,7 @@ task javadoc(type: Javadoc) {
 
     configurations.implementation.setCanBeResolved(true)
     source = android.sourceSets.main.java.srcDirs
+    classpath = files("${android.sdkDirectory}/platforms/${android.compileSdkVersion}/android.jar")
     classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
     classpath += configurations.implementation
     classpath += fileTree(dir: "$buildDir/tmp/aarsToJars/")
@@ -57,6 +58,7 @@ task javadoc(type: Javadoc) {
     exclude '**/BuildConfig.java'
     exclude '**/R.java'
 }
+
 
 
 // use this if project has data-binding issues
