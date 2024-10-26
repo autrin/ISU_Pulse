@@ -5,7 +5,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -19,54 +18,45 @@ public class ImageReqActivity extends AppCompatActivity {
     private Button btnImageReq;
     private ImageView imageView;
 
-//    public static final String URL_IMAGE = "http://sharding.org/outgoing/temp/testimg3.jpg";
-
-    public static final String URL_IMAGE = "http://10.0.2.2:8080/images/1";
+    private static final String URL_IMAGE = "http://10.0.2.2:8080/images/1";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image_req);
 
-        btnImageReq = (Button) findViewById(R.id.btnImageReq);
-        imageView = (ImageView) findViewById(R.id.imgView);
+        btnImageReq = findViewById(R.id.btnImageReq);
+        imageView = findViewById(R.id.imgView);
 
-        btnImageReq.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {makeImageRequest();}
+        btnImageReq.setOnClickListener(v -> {
+            Toast.makeText(this, "Requesting image...", Toast.LENGTH_SHORT).show();
+            makeImageRequest();
         });
     }
 
-    /**
-     * Making image request
-     * */
     private void makeImageRequest() {
-
         ImageRequest imageRequest = new ImageRequest(
-            URL_IMAGE,
-            new Response.Listener<Bitmap>() {
-                @Override
-                public void onResponse(Bitmap response) {
-                    // Display the image in the ImageView
-                    imageView.setImageBitmap(response);
+                URL_IMAGE,
+                new Response.Listener<Bitmap>() {
+                    @Override
+                    public void onResponse(Bitmap response) {
+                        imageView.setImageBitmap(response);
+                        Toast.makeText(getApplicationContext(), "Image loaded successfully", Toast.LENGTH_SHORT).show();
+                    }
+                },
+                0,
+                0,
+                ImageView.ScaleType.FIT_XY,
+                Bitmap.Config.RGB_565,
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.e("Image Request", "Error: " + error.toString());
+                        Toast.makeText(getApplicationContext(), "Failed to load image", Toast.LENGTH_LONG).show();
+                    }
                 }
-            },
-            0, // Width, set to 0 to get the original width
-            0, // Height, set to 0 to get the original height
-            ImageView.ScaleType.FIT_XY, // ScaleType
-            Bitmap.Config.RGB_565, // Bitmap config
-
-            new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    // Handle errors here
-                    Log.e("Volley Error", error.toString());
-                }
-            }
         );
 
-        // Adding request to request queue
         VolleySingleton.getInstance(getApplicationContext()).addToRequestQueue(imageRequest);
     }
-
 }
