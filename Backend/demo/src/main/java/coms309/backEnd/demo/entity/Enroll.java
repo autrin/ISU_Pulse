@@ -29,8 +29,7 @@ public class Enroll {
     public Enroll() {
     }
 
-    public Enroll(long id, User student, Schedule schedule) {
-        Id = id;
+    public Enroll( User student, Schedule schedule) {
         this.student = student;
         this.schedule = schedule;
     }
