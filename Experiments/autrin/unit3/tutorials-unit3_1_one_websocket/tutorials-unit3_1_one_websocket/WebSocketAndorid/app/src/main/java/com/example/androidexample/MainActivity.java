@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import org.java_websocket.handshake.ServerHandshake;
 
@@ -25,17 +26,25 @@ public class MainActivity extends AppCompatActivity implements WebSocketListener
         usernameEtx = (EditText) findViewById(R.id.unameEdt);
 
         /* connect button listener */
+// Inside onCreate()
         connectBtn.setOnClickListener(view -> {
-            String serverUrl = serverEtx.getText().toString() + usernameEtx.getText().toString();
+            String serverUrl = serverEtx.getText().toString();
+            String username = usernameEtx.getText().toString();
 
-            // Establish WebSocket connection and set listener
+            if(serverUrl.isEmpty() || username.isEmpty()) {
+                Toast.makeText(MainActivity.this, "Please enter both server and username!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            serverUrl = serverUrl + "/" + username;  // Customize URL pattern
             WebSocketManager.getInstance().connectWebSocket(serverUrl);
             WebSocketManager.getInstance().setWebSocketListener(MainActivity.this);
 
-            // got to chat activity
             Intent intent = new Intent(this, ChatActivity.class);
+            intent.putExtra("username", username);
             startActivity(intent);
         });
+
     }
 
 

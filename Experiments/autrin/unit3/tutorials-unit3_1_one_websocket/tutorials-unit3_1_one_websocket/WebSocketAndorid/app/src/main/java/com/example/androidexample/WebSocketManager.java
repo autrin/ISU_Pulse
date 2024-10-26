@@ -148,13 +148,16 @@ public class WebSocketManager {
          * @param remote A boolean flag indicating whether the closure was initiated remotely.
          *               'true' if initiated remotely, 'false' if initiated by the client.
          */
+        // Modify onClose to attempt reconnect on server closure
         @Override
         public void onClose(int code, String reason, boolean remote) {
-            Log.d("WebSocket", "Closed");
+            Log.d("WebSocket", "Closed with reason: " + reason + ". Reconnecting...");
+            if (remote) connectWebSocket(getURI().toString());
             if (webSocketListener != null) {
                 webSocketListener.onWebSocketClose(code, reason, remote);
             }
         }
+
 
         /**
          * Called when an error occurs during WebSocket communication. This method is
