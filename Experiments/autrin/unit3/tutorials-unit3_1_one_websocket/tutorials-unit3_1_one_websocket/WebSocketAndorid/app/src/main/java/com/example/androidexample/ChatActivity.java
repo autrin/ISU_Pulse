@@ -10,6 +10,10 @@ import android.widget.TextView;
 
 import org.java_websocket.handshake.ServerHandshake;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 public class ChatActivity extends AppCompatActivity implements WebSocketListener{
 
     private Button sendBtn;
@@ -28,6 +32,9 @@ public class ChatActivity extends AppCompatActivity implements WebSocketListener
 
         /* connect this activity to the websocket instance */
         WebSocketManager.getInstance().setWebSocketListener(ChatActivity.this);
+
+        String username = getIntent().getStringExtra("username");
+        msgTv.setText("Connected as: " + username + "\n");
 
         /* send button listener */
         sendBtn.setOnClickListener(v -> {
@@ -50,8 +57,9 @@ public class ChatActivity extends AppCompatActivity implements WebSocketListener
          * to occur safely from a background or non-UI thread.
          */
         runOnUiThread(() -> {
-            String s = msgTv.getText().toString();
-            msgTv.setText(s + "\n"+message);
+            String timestamp = new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(new Date());
+            String currentText = msgTv.getText().toString();
+            msgTv.setText(currentText + "\n[" + timestamp + "] " + message);
         });
     }
 
@@ -68,5 +76,9 @@ public class ChatActivity extends AppCompatActivity implements WebSocketListener
     public void onWebSocketOpen(ServerHandshake handshakedata) {}
 
     @Override
-    public void onWebSocketError(Exception ex) {}
+    public void onWebSocketError(Exception ex) {
+        runOnUiThread(() -> {
+            msgTv.setText(msgTv.getText() + "\nError: " + ex.getMessage());
+        });
+    }
 }
