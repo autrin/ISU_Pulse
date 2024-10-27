@@ -1,4 +1,7 @@
 package coms309.backEnd.demo.entity;
 
-public interface RequestStatus {
+public enum RequestStatus {
+    PENDING,
+    ACCEPTED,
+    REJECTED
 }
