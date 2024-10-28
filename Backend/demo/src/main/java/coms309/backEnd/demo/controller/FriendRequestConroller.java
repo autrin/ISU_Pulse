@@ -131,7 +131,7 @@ public class FriendRequestConroller {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body("You can not modify this friend request");
         }
-        // Set the friend request status into "Accepted"
+        // Set the friend request status into "Accepted" and save it in the friendRequestRepository
         friendRequest.setStatus(RequestStatus.ACCEPTED);
         friendRequestRepository.save(friendRequest);
 
@@ -173,7 +173,8 @@ public class FriendRequestConroller {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body("You can not modify this friend request");
         }
-        // Set the friend request status into "Accepted"
+
+        // Set the friend request status into "Rejected" and save it in friendRequestRepository
         friendRequest.setStatus(RequestStatus.REJECTED);
         friendRequestRepository.save(friendRequest);
 

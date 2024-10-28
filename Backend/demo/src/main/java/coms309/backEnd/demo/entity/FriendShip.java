@@ -1,5 +1,6 @@
 package coms309.backEnd.demo.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -12,10 +13,12 @@ public class FriendShip {
     private Long id;
 
     @ManyToOne
+    //@JsonIgnore
     @JoinColumn
     private User user1;
 
     @ManyToOne
+    //@JsonIgnore
     @JoinColumn
     private User user2;
 
