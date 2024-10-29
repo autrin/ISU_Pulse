@@ -56,6 +56,13 @@ public class EnrollController {
         }
         return ResponseEntity.ok(scheduleList);
     }
+
+    @GetMapping("/getPeople/{scheduleId}")
+    public ResponseEntity<List<User>> fetchStudents(@PathVariable long scheduleId) {
+        List<User> people = enrollRepository.findStudentsBySchedule(scheduleId);
+        return ResponseEntity.ok(people);
+    }
+
     @PostMapping("/addEnroll/{id}")
     public ResponseEntity<String> addSchedule(
             @PathVariable long id,

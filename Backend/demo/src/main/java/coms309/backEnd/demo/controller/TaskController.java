@@ -80,13 +80,12 @@ public class TaskController {
 
     @GetMapping("/getTaskByUserIn2days/{id}")
     public ResponseEntity<List<Task>> getTaskByCourse(@PathVariable Long id){
-        //
         Date currentDate = new Date();
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(currentDate);
         calendar.add(Calendar.DATE, 2);
         Date tomorrowDate = calendar.getTime();
-        //
+
         Optional<User> curUser = userRepository.findById(id);
         if(curUser.isEmpty()){
             return  ResponseEntity.internalServerError().build();
@@ -106,9 +105,6 @@ public class TaskController {
             }
         }
         return ResponseEntity.ok(taskList);
-
-
-
     }
 
 

@@ -16,9 +16,9 @@ public class Profile {
     @JsonIgnore
     private User user;
 
-    private String linkedinUrl = "";
-    private String externalUrl = "";
-    private String description = "";
+    private String linkedinUrl = "No LinkedIn";
+    private String externalUrl = "No External Url";
+    private String description = "No Description";
 
     public Profile() {
     }

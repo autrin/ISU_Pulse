@@ -38,7 +38,7 @@ public class User {
     @JsonIgnore
     private Profile profile;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private Faculty faculty;
 
