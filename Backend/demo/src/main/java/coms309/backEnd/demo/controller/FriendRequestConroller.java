@@ -35,14 +35,10 @@ public class FriendRequestConroller {
         this.friendShipRepository = friendShipRepository;
     }
 
-    /**
-     * This Api is used to get all pending the friend request
-     * @param id the id of the receiver
-     * @return  the list of pending friend requests that person received
-     */
-    @GetMapping("/receivedRequest/{id}")
-    public ResponseEntity<List<FriendRequest>> getAllFriendRequest(@PathVariable long id){
-        Optional<User> curReceiver = userRepository.findById(id);
+
+    @GetMapping("/receivedRequest/{netId}")
+    public ResponseEntity<List<FriendRequest>> getAllFriendRequest(@PathVariable String netId){
+        Optional<User> curReceiver = userRepository.findUserByNetId(netId);
         if (curReceiver.isEmpty()) {
             return  ResponseEntity.internalServerError().build();
         }
@@ -50,15 +46,10 @@ public class FriendRequestConroller {
         List<FriendRequest> receivedRequests = friendRequestRepository.findAllByReceiverAndStatus(receiver,RequestStatus.PENDING);
         return ResponseEntity.ok(receivedRequests);
     }
-    /**
-     * This Api is used to get all the friend request that person sent
-     * @param id the id of the sender
-     * @return the list of the friend request that person sent
-     */
 
-    @GetMapping("/sentRequest/{id}")
-    public ResponseEntity<List<FriendRequest>> getAllSentRequest(@PathVariable long id){
-        Optional<User> curSender = userRepository.findById(id);
+    @GetMapping("/sentRequest/{netId}")
+    public ResponseEntity<List<FriendRequest>> getAllSentRequest(@PathVariable String netId){
+        Optional<User> curSender = userRepository.findUserByNetId(netId);
         if (curSender.isEmpty()) {
             return  ResponseEntity.internalServerError().build();
         }
@@ -76,18 +67,18 @@ public class FriendRequestConroller {
      */
     @PostMapping("/request")
     public ResponseEntity<String> sendFriendRequest(
-            @RequestParam long senderId,
-            @RequestParam long receiverId){
-        Optional<User> curSender = userRepository.findById(senderId);
-        Optional<User> curReceiver = userRepository.findById(receiverId);
+            @RequestParam String senderNetId,
+            @RequestParam String receiverNetId){
+        Optional<User> curSender = userRepository.findUserByNetId(senderNetId);
+        Optional<User> curReceiver = userRepository.findUserByNetId(receiverNetId);
 
         if (curSender.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("User with ID " + senderId + " not found.");
+                    .body("User with ID " + senderNetId + " not found.");
         }
         if (curReceiver.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("User with ID " + receiverId + " not found.");
+                    .body("User with ID " + receiverNetId + " not found.");
         }
 
         User sender = curSender.get();

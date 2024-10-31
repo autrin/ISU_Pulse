@@ -40,9 +40,9 @@ public class FriendShipController {
         return friendlst;
     }
 
-    @GetMapping("/friends/{id}")
-    public ResponseEntity<List<User>> displayFriendList(@PathVariable long id){
-        Optional<User> curUser = userRepository.findById(id);
+    @GetMapping("/friends/{netId}")
+    public ResponseEntity<List<User>> displayFriendList(@PathVariable String netId){
+        Optional<User> curUser = userRepository.findUserByNetId(netId);
         if(curUser.isEmpty()){
             return  ResponseEntity.internalServerError().build();
         }
