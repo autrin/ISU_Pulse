@@ -56,7 +56,7 @@ public class EnrollController {
         }
         return ResponseEntity.ok(scheduleList);
     }
-    @PostMapping("/addEnroll/{id}")
+    @PostMapping("/addEnroll/{netId}")
     public ResponseEntity<String> addSchedule(
             @PathVariable String netId,
             @RequestParam long scheduleId) {
