@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -18,8 +19,12 @@ public class User {
     private String netId;
 
     private String firstName;
+
     private String lastName;
+
     private String email;
+
+    @JsonIgnore
     private String hashedPassword;
     private String profilePictureUrl = "https://as1.ftcdn.net/v2/jpg/01/78/33/12/1000_F_178331249_PIVD6lideletB8pUGKaRy1Z3L3N2YE9n.jpg";
 
@@ -42,6 +47,23 @@ public class User {
     @JsonIgnore
     private Faculty faculty;
 
+    @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<FriendRequest> sentRequests;
+
+    @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<FriendRequest> receivedRequests;
+
+    @OneToMany(mappedBy = "user1", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<FriendShip> friendshipsAsUser1;
+
+    @OneToMany(mappedBy = "user2", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<FriendShip> friendshipsAsUser2;
+
+
     public User() {
     }
 
@@ -52,5 +74,18 @@ public class User {
         this.email = email;
         this.hashedPassword = hashedPassword;
         this.userType = userType;
+    }
+
+    /**
+     * This function is used to return a list of friendships that one user has
+     * @return a list of friendships that one user has
+     */
+    @JsonIgnore
+    public List<FriendShip> getFriendShips(){
+        List<FriendShip> friendShips = new ArrayList<>();
+        friendShips.addAll(friendshipsAsUser1);
+        friendShips.addAll(friendshipsAsUser2);
+        return friendShips;
+
     }
 }
