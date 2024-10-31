@@ -58,13 +58,6 @@ public class FriendRequestConroller {
         return ResponseEntity.ok(sentRequest);
     }
 
-
-    /**\
-     * This API sends the friend request from one user to another user
-     * @param senderId the id(type: long) of the sender
-     * @param receiverId the id(type: long) of the receiver
-     * @return a message "Friend request sent" if it is successful
-     */
     @PostMapping("/request")
     public ResponseEntity<String> sendFriendRequest(
             @RequestParam String senderNetId,
@@ -90,22 +83,16 @@ public class FriendRequestConroller {
         return ResponseEntity.ok("Friend request sent.");
     }
 
-    /**
-     * This Api is used for the receiver to accept the friend request
-     * @param receiverId the ID of reciever
-     * @param requestId the ID of the friend request
-     * @return the message "Friend request accepted" if the receiver accepts the friend request
-     */
     @PutMapping("/accept")
     public ResponseEntity<String> acceptFriendRequest (
-            @RequestParam long receiverId,
+            @RequestParam String receiverNetId,
             @RequestParam long requestId
     ){
         // Check user exists or not
-        Optional<User> curReceiver = userRepository.findById(receiverId);
+        Optional<User> curReceiver = userRepository.findUserByNetId(receiverNetId);
         if (curReceiver.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("User with ID " + receiverId  + " not found.");
+                    .body("User with ID " + receiverNetId  + " not found.");
         }
         User receiver = curReceiver.get();
 
@@ -117,8 +104,9 @@ public class FriendRequestConroller {
         }
         FriendRequest friendRequest = curFriendRequest.get();
 
-        // Check if the receiver of the friend request is the same as the person who try to accept this friend request
-        if(friendRequest.getReceiver().getId() != receiverId){
+        //getNetId().trim().equalsIgnoreCase(sId.trim())
+        // Check if the receiver of the friend request is the same as the person who try to accept this friend request by NetId
+        if(!friendRequest.getReceiver().getNetId().trim().equalsIgnoreCase(receiverNetId)){
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body("You can not modify this friend request");
         }
@@ -132,22 +120,17 @@ public class FriendRequestConroller {
 
         return ResponseEntity.ok("Friend request accepted");
     }
-    /**
-     * This Api is used for the receiver to decline the friend request
-     * @param receiverId the ID of reciever
-     * @param requestId the ID of the friend request
-     * @return the message "Friend request rejected" if the receiver declines the friend request
-     */
-    @PutMapping("/decline")
+
+    @PutMapping("/reject")
     public ResponseEntity<String> declineFriendRequest (
-            @RequestParam long receiverId,
+            @RequestParam String receiverNetId,
             @RequestParam long requestId
     ){
         // Check user exists or not
-        Optional<User> curReceiver = userRepository.findById(receiverId);
+        Optional<User> curReceiver = userRepository.findUserByNetId(receiverNetId);
         if (curReceiver.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("User with ID " + receiverId  + " not found.");
+                    .body("User with ID " + receiverNetId  + " not found.");
         }
         User receiver = curReceiver.get();
 
@@ -159,8 +142,8 @@ public class FriendRequestConroller {
         }
         FriendRequest friendRequest = curFriendRequest.get();
 
-        // Check if the receiver of the friend request is the same as the person who try to accept this friend request
-        if(friendRequest.getReceiver().getId() != receiverId){
+        // Check if the receiver of the friend request is the same as the person who try to accept this friend request by NetId
+        if(!friendRequest.getReceiver().getNetId().trim().equalsIgnoreCase(receiverNetId)){
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body("You can not modify this friend request");
         }
@@ -169,21 +152,19 @@ public class FriendRequestConroller {
         friendRequest.setStatus(RequestStatus.REJECTED);
         friendRequestRepository.save(friendRequest);
 
-
-
         return ResponseEntity.ok("Friend request rejected");
     }
 
     @DeleteMapping("/unsent")
     public ResponseEntity<String> unsentFriendRequest(
-            @RequestParam long senderId,
+            @RequestParam String senderNetId,
             @RequestParam long requestId
             ){
         // Check user exists or not
-        Optional<User> curSender = userRepository.findById(senderId);
+        Optional<User> curSender = userRepository.findUserByNetId(senderNetId);
         if (curSender.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("User with ID " + senderId  + " not found.");
+                    .body("User with ID " + senderNetId + " not found.");
         }
         User sender = curSender.get();
 
@@ -196,7 +177,7 @@ public class FriendRequestConroller {
         FriendRequest friendRequest = curFriendRequest.get();
 
         // Check if the receiver of the friend request is the same as the person who try to accept this friend request
-        if(friendRequest.getSender().getId() != senderId){
+        if(!friendRequest.getSender().getNetId().equalsIgnoreCase(senderNetId)){
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body("You can not modify this friend request");
         }
@@ -204,8 +185,4 @@ public class FriendRequestConroller {
         friendRequestRepository.delete(friendRequest);
         return ResponseEntity.ok("Unsent Friend request successfully");
     }
-
-
-
-
 }
