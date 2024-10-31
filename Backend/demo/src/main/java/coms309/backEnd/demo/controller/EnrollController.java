@@ -40,9 +40,9 @@ public class EnrollController {
         this.scheduleRepository = scheduleRepository;
     }
 
-    @GetMapping("/getEnroll/{id}")
-    public ResponseEntity<List<Schedule>> getSchedule(@PathVariable long id){
-        Optional<User> curUser = userRepository.findById(id);
+    @GetMapping("/getEnroll/{netId}")
+    public ResponseEntity<List<Schedule>> getSchedule(@PathVariable String netId){
+        Optional<User> curUser = userRepository.findUserByNetId(netId);
         // check if user exists or not
         if(curUser.isEmpty()){
             return  ResponseEntity.internalServerError().build();
@@ -58,10 +58,10 @@ public class EnrollController {
     }
     @PostMapping("/addEnroll/{id}")
     public ResponseEntity<String> addSchedule(
-            @PathVariable long id,
+            @PathVariable String netId,
             @RequestParam long scheduleId) {
         // check if user exists or not
-        Optional<User> curUser = userRepository.findById(id);
+        Optional<User> curUser = userRepository.findUserByNetId(netId);
         if (curUser.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
         }
@@ -77,13 +77,13 @@ public class EnrollController {
         return ResponseEntity.ok("Add enrollment successfully");
     }
 
-    @DeleteMapping("/deleteEnroll/{id}")
+    @DeleteMapping("/deleteEnroll/{netId}")
     public ResponseEntity<String> deleteSchedule(
-            @PathVariable long id,
+            @PathVariable String netId,
             @RequestParam long enrollId
     ){
         // check if user exists or not
-        Optional<User> curUser = userRepository.findById(id);
+        Optional<User> curUser = userRepository.findUserByNetId(netId);
         if (curUser.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
         }
@@ -95,10 +95,9 @@ public class EnrollController {
         }
         Enroll enroll = curEnroll.get();
         // check if the enrollment belongs to the right person
-        if(enroll.getStudent().getId() != id){
+        if(!enroll.getStudent().getNetId().trim().equalsIgnoreCase(netId)){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("You are not authorized to delete this enrollment");
         }
-
         enrollRepository.delete(enroll);
         return ResponseEntity.ok("Delete enrollment successfully");
     }
