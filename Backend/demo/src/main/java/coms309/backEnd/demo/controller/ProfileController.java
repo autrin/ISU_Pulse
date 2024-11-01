@@ -26,10 +26,11 @@ public class ProfileController {
         this.profileRepository = profileRepository;
     }
 
+
     @GetMapping("/{netId}")
     public ResponseEntity<Map<String, Object>> getProfileByNetId(@PathVariable String netId) {
 
-        Optional<Profile> optionalProfile = profileRepository.findProfileByNetId(netId);
+        Optional<Profile> optionalProfile = profileRepository.findByUserNetId(netId);
 
         if (!optionalProfile.isPresent())
             throw new IllegalStateException("Profile doesn't exist.");
@@ -55,7 +56,7 @@ public class ProfileController {
                                                 @RequestParam(required = false) String linkedinUrl,
                                                 @RequestParam(required = false) String externalUrl,
                                                 @RequestParam(required = false) String description) {
-        Optional<Profile> optionalProfile = profileRepository.findProfileByNetId(netId);
+        Optional<Profile> optionalProfile = profileRepository.findByUserNetId(netId);
         if (!optionalProfile.isPresent())
             throw new IllegalStateException("Profile doesn't exist.");
         Profile profile = optionalProfile.get();

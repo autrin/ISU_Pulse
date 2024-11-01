@@ -13,7 +13,7 @@
 
     <fragment
         android:id="@+id/nav_gallery"
-        android:name="com.coms309.isu_pulse_frontend.ui.gallery.GalleryFragment"
+        android:name="com.coms309.isu_pulse_frontend.ui.profile.ProfileFragment"
         android:label="@string/menu_gallery"
         tools:layout="@layout/fragment_gallery" />
 

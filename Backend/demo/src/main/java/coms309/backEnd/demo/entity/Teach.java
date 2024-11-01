@@ -3,49 +3,23 @@ package coms309.backEnd.demo.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 
-import java.io.Serializable;
 @Data
 @Entity
-@IdClass(TeachId.class)
-public class Teach implements Serializable {
-
+public class Teach {
     @Id
-    private String fId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
 
-    @Id
-    private int cId;
-
-    @Id
-    private int section;
-
-    private String classTime;
-
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "fId", referencedColumnName = "facultyId")
+    @ManyToOne
+    @JoinColumn
     private Faculty faculty;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "cId", referencedColumnName = "cId")
-    private Course course;
+    @OneToOne
+    @JoinColumn
+    private Schedule schedule;
 
-    public String getFId() {
-        return fId;
-    }
-
-    public void setFId(String fId) {
-        this.fId = fId;
-    }
 
     // Constructors
     public Teach() {
-    }
-
-    public Teach(String fId, int cId, int section, String classTime, Faculty faculty, Course course) {
-        this.fId = fId;
-        this.cId = cId;
-        this.section = section;
-        this.classTime = classTime;
-        this.faculty = faculty;
-        this.course = course;
     }
 }

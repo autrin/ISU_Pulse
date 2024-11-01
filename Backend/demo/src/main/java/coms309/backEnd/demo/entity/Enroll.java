@@ -1,5 +1,6 @@
 package coms309.backEnd.demo.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -7,37 +8,29 @@ import java.io.Serializable;
 
 @Data
 @Entity
-@IdClass(EnrollId.class)
-public class Enroll implements Serializable {
-
+public class Enroll {
 
     @Id
-    private String studentid;
-
-    @Id
-    private int courseid;
-
-    @Id
-    private int section;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long Id;
 
     @ManyToOne
-    @JoinColumn(name = "studentid", referencedColumnName = "netId", insertable = false, updatable = false)
+    @JoinColumn
+    @JsonIgnore
     private User student;
 
     @ManyToOne
-    @JoinColumn(name = "courseid", insertable = false, updatable = false)
-    private Course course;
+    @JoinColumn
+    @JsonIgnore
+    private Schedule schedule;
 
-    // Constructors
+
+
     public Enroll() {
     }
 
-    public Enroll(String studentid, int cId, int section, User student, Course course) {
-        this.studentid = studentid;
-        this.courseid = cId;
-        this.section = section;
+    public Enroll( User student, Schedule schedule) {
         this.student = student;
-        this.course = course;
+        this.schedule = schedule;
     }
-
 }

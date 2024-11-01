@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 import java.util.Optional;
 
-public interface UserRepository extends JpaRepository<User, String> {
-    public List<Course> findCourseByNetId(User user);
+public interface UserRepository extends JpaRepository<User, Long> {
+   // public List<Course> findCourseByNetId(User user);
+    @Query("SELECT u FROM User u WHERE u.netId = ?1")
+    public Optional<User> findUserByNetId(String netId);
 }

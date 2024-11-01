@@ -5,31 +5,35 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Data
 @Entity
 @Table(name = "Faculty")
 public class Faculty {
     @Id
-    private String facultyId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
 
     private String title;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "facultyId", referencedColumnName = "netId")
+    @OneToOne
+    @JoinColumn
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "dId")
+    @JoinColumn
     private Department department;
+
+    @OneToMany(mappedBy = "faculty")
+    private List<Teach> teachList;
 
     public Faculty() {
     }
 
-    public Faculty(String facultyId, String title, User user, Department department) {
-        this.facultyId = facultyId;
+    public Faculty(String title, User user, Department department) {
         this.title = title;
         this.user = user;
         this.department = department;
     }
-
 }
