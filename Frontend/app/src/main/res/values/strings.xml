@@ -5,8 +5,8 @@
     <!-- Navigation Drawer -->
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="nav_header_title">ISU Pulse</string>
-    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_title">%1$s %2$s</string> <!--This is supposed to be the First name and last name-->
+    <!--    <string name="nav_header_subtitle"></string>--> <!--This is supposed to be the email address-->
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
 
