@@ -41,7 +41,7 @@ public class TaskApiService {
         void onError(String message);
     }
 
-    public void getTasksDueToday(final TaskResponseListener listener) {
+    public void getTasksIn2days(final TaskResponseListener listener) {
         String url = BASE_URL + "/task/getTaskByUserIn2days/" + "tamminh";
         JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, url, null,
                 new Response.Listener<JSONArray>() {
