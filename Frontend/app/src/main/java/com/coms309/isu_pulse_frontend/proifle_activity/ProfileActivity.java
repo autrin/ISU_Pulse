@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -18,6 +19,8 @@ import com.coms309.isu_pulse_frontend.api.UpdateAccount;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.imageview.ShapeableImageView;
+import com.google.android.material.navigation.NavigationView;
+
 import java.util.Objects;
 
 public class ProfileActivity extends AppCompatActivity {
@@ -35,6 +38,10 @@ public class ProfileActivity extends AppCompatActivity {
     private TextView linkedinUrlTextView;
     private TextView externalUrlTextView;
     private TextView descriptionTextView;
+    private NavigationView navigationView;
+    private View headerView;
+    private TextView navHeaderTitle;
+    private ImageView navHeaderImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +61,10 @@ public class ProfileActivity extends AppCompatActivity {
         linkedinUrlTextView = findViewById(R.id.linkedinUrlTextView);
         externalUrlTextView = findViewById(R.id.externalUrlTextView);
         descriptionTextView = findViewById(R.id.descriptionTextView);
+        navigationView = findViewById(R.id.nav_view);
+        headerView = navigationView.getHeaderView(0);
+        navHeaderTitle = headerView.findViewById(R.id.nav_header_title);
+        navHeaderImage = headerView.findViewById(R.id.nav_header_image);
 
         toolbar.setNavigationOnClickListener(v -> {
             Intent intent = new Intent(ProfileActivity.this, MainActivity.class);
@@ -101,13 +112,20 @@ public class ProfileActivity extends AppCompatActivity {
 
     private void updateUI(Profile profile) {
         String imageUrl = "https://firebasestorage.googleapis.com/v0/b/coms-309-image-storage.appspot.com/o/images%2Fbaonguyen.jpg?alt=media&token=9a992e70-2847-4007-b03c-90b622029b0d";
+        // Load image into profileImage (ShapeableImageView)
         Glide.with(this)
                 .load(imageUrl)
                 .into(profileImage);
+        // Load the same image into navHeaderImage (ImageView)
+        Glide.with(this)
+                .load(imageUrl)
+                .into(navHeaderImage);
         firstNameTextView.setText(profile.getFirstName());
         lastNameTextView.setText(profile.getLastName());
         linkedinUrlTextView.setText(profile.getProfile().getLinkedinUrl());
         externalUrlTextView.setText(profile.getProfile().getExternalUrl());
         descriptionTextView.setText(profile.getProfile().getDescription());
+        navHeaderTitle.setText(String.format(getString(R.string.nav_header_title), profile.getFirstName(), profile.getLastName()));
+
     }
 }
