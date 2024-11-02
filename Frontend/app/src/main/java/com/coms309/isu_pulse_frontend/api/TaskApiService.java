@@ -1,5 +1,7 @@
 package com.coms309.isu_pulse_frontend.api;
 
+import static com.coms309.isu_pulse_frontend.api.Constants.BASE_URL;
+
 import android.content.Context;
 import android.util.Log;
 
@@ -26,7 +28,7 @@ import java.util.Locale;
 
 public class TaskApiService {
 
-    private static final String BASE_URL = "http://coms-3090-042.class.las.iastate.edu:8080";
+    //    private static final String BASE_URL = "http://coms-3090-042.class.las.iastate.edu:8080";
     private static final String NET_ID = "tamminh";
     private Context context;
     private RequestQueue requestQueue;
@@ -98,7 +100,7 @@ public class TaskApiService {
     }
 
     private void fetchPersonalTasks(final List<Object> tasks, final TaskResponseListener listener) {
-            String personalTasksUrl = BASE_URL + "/personalTask/getPersonalTasks/" + "tamminh";
+        String personalTasksUrl = BASE_URL + "/personalTask/getPersonalTasks/" + NET_ID;
         JsonArrayRequest personalTasksRequest = new JsonArrayRequest(Request.Method.GET, personalTasksUrl, null,
                 new Response.Listener<JSONArray>() {
                     @Override
