@@ -110,12 +110,6 @@ public class EnrollController {
         return ResponseEntity.ok("Delete enrollment successfully");
     }
 
-
-
-
-
-
-
 //    @GetMapping("/getEnroll/{sId}")
 //    public ResponseEntity<List<Course>> addEnroll(@PathVariable String sId){
 //        Optional<User> curUser = userRepository.findById(sId);
