@@ -12,6 +12,7 @@ import java.util.Date;
 @Table(name = "Task")
 public class Task {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     private String title;
@@ -27,6 +28,7 @@ public class Task {
 
     @ManyToOne
     @JoinColumn
+    @JsonIgnore
     private Schedule schedule;
 
 
