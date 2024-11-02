@@ -32,7 +32,6 @@ public class ProfileActivity extends AppCompatActivity {
     private TextView coursesTextView;
     private TextView friendsTextView;
     private TextView numcoursesTextView;
-
     private TextView firstNameTextView;
     private TextView lastNameTextView;
     private TextView linkedinUrlTextView;
@@ -42,6 +41,7 @@ public class ProfileActivity extends AppCompatActivity {
     private View headerView;
     private TextView navHeaderTitle;
     private ImageView navHeaderImage;
+    private TextView navHeaderEmail;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +65,7 @@ public class ProfileActivity extends AppCompatActivity {
         headerView = navigationView.getHeaderView(0);
         navHeaderTitle = headerView.findViewById(R.id.nav_header_title);
         navHeaderImage = headerView.findViewById(R.id.nav_header_image);
+        navHeaderEmail = headerView.findViewById(R.id.nav_header_email);
 
         toolbar.setNavigationOnClickListener(v -> {
             Intent intent = new Intent(ProfileActivity.this, MainActivity.class);
@@ -126,6 +127,7 @@ public class ProfileActivity extends AppCompatActivity {
         externalUrlTextView.setText(profile.getProfile().getExternalUrl());
         descriptionTextView.setText(profile.getProfile().getDescription());
         navHeaderTitle.setText(String.format(getString(R.string.nav_header_title), profile.getFirstName(), profile.getLastName()));
-
+        String email = profile.getNetId() + "@iastate.edu";
+        navHeaderEmail.setText(email);
     }
 }
