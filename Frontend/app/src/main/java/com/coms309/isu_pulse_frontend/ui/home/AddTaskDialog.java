@@ -18,6 +18,8 @@ import com.coms309.isu_pulse_frontend.api.TaskApiService;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 public class AddTaskDialog extends DialogFragment {
 
@@ -47,14 +49,14 @@ public class AddTaskDialog extends DialogFragment {
                 String title = editTextTitle.getText().toString();
                 String description = editTextDescription.getText().toString();
                 String dueDateString = editTextDueDate.getText().toString();
-                long dueDateTimestamp = 0;
+                Long dueDateTimestamp = null;
                 try {
-                    dueDateTimestamp = new SimpleDateFormat("yyyy-MM-dd").parse(dueDateString).getTime() / 1000;
+                    dueDateTimestamp = new SimpleDateFormat("yyyy-MM-dd").parse(dueDateString).getTime();
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
 
-                PersonalTask newTask = new PersonalTask(1, title, description, dueDateTimestamp, "n001");
+                PersonalTask newTask = new PersonalTask(1, title, description, dueDateTimestamp, "n001"); // TODO: Replace "n001" with actual user id
                 taskApiService.createPersonalTask(newTask);
                 homeFragment.addNewTask(newTask);
                 dismiss();
