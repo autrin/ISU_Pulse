@@ -98,7 +98,7 @@ public class TaskApiService {
     }
 
     private void fetchPersonalTasks(final List<Object> tasks, final TaskResponseListener listener) {
-            String personalTasksUrl = BASE_URL + "/personalTask/getPersonalTasks/" + "tamminh";
+        String personalTasksUrl = BASE_URL + "/personalTask/getPersonalTasks/" + NET_ID;
         JsonArrayRequest personalTasksRequest = new JsonArrayRequest(Request.Method.GET, personalTasksUrl, null,
                 new Response.Listener<JSONArray>() {
                     @Override
@@ -213,14 +213,13 @@ public class TaskApiService {
     }
 
     public void updatePersonalTask(PersonalTask task) {
-        if (task.getId() == 0) {
+        if (task.getId() == 0) { // ! Do I need to check for null?
             Log.e("API Error", "Task ID cannot be null or empty for updating.");
             return;
         }
-        task.setId(1); //TODO: hardcoded for now
+
         String url = BASE_URL + "/personalTask/updatePersonalTask/" + NET_ID +
                 "?taskId=" + task.getId() +
-//                "?taskId=" + 1 + //TODO: hardcoded for now
                 "&title=" + task.getTitle() +
                 "&description=" + task.getDescription() +
                 "&dueDateTimestamp=" + task.getDueDate(); // Unix timestamp
@@ -242,7 +241,6 @@ public class TaskApiService {
 
         requestQueue.add(jsonObjectRequest);
     }
-
 
     public void deletePersonalTask(PersonalTask task, final TaskResponseListener listener) {
 //        task.setId(2); //TODO: hardcoded for now
