@@ -41,7 +41,7 @@ public class EnrollController {
     }
 
     @GetMapping("/getEnroll/{netId}")
-    public ResponseEntity<List<Schedule>> getSchedule(@PathVariable String netId){
+    public ResponseEntity<List<Schedule>> getEnroll(@PathVariable String netId){
         Optional<User> curUser = userRepository.findUserByNetId(netId);
         // check if user exists or not
         if(curUser.isEmpty()){
@@ -57,7 +57,7 @@ public class EnrollController {
         return ResponseEntity.ok(scheduleList);
     }
     @PostMapping("/addEnroll/{netId}")
-    public ResponseEntity<String> addSchedule(
+    public ResponseEntity<String> addEnroll(
             @PathVariable String netId,
             @RequestParam long scheduleId) {
         // check if user exists or not
