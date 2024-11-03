@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -90,5 +91,13 @@ public class UserController {
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body("User with NetID " + netId + " has been deleted successfully.");
+    }
+
+    @GetMapping("/AllStudents")
+    public ResponseEntity<List<User>> getAllStudents(){
+        Optional<List<User>> allStudents = userRepository.findAllUserByUserType(UserType.STUDENT);
+        List<User> listOfAllStudent = allStudents.get();
+        return ResponseEntity.ok(listOfAllStudent);
+
     }
 }
