@@ -1,5 +1,6 @@
 package coms309.backEnd.demo.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NonNull;
@@ -16,10 +17,12 @@ public class Department {
     private String name;
     private String location;
 
-    @OneToMany(mappedBy = "department")
+    @OneToMany(mappedBy = "department", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private List<Faculty> facultyList;
 
-    @OneToMany(mappedBy = "department")
+    @OneToMany(mappedBy = "department", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private List<Course> courseList;
 
     public Department() {
