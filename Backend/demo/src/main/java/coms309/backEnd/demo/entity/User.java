@@ -24,7 +24,6 @@ public class User {
 
     private String email;
 
-    @JsonIgnore
     private String hashedPassword;
     private String profilePictureUrl = "https://as1.ftcdn.net/v2/jpg/01/78/33/12/1000_F_178331249_PIVD6lideletB8pUGKaRy1Z3L3N2YE9n.jpg";
 
