@@ -39,18 +39,20 @@ public class TaskController {
         this.scheduleRepository = scheduleRepository;
     }
 
-    @GetMapping("/getTaskByUserIn2days/{id}")
-    public ResponseEntity<List<Task>> getTaskByCourse(@PathVariable Long id){
+
+    @GetMapping("/getTaskByUserIn2days/{netId}")
+    public ResponseEntity<List<Task>> getTaskByCourse(@PathVariable String netId){
         Date currentDate = new Date();
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(currentDate);
         calendar.add(Calendar.DATE, 2);
         Date tomorrowDate = calendar.getTime();
 
-        Optional<User> curUser = userRepository.findById(id);
+        Optional<User> curUser = userRepository.findUserByNetId(netId);
         if(curUser.isEmpty()){
             return  ResponseEntity.internalServerError().build();
         }
+        
         User user = curUser.get();
         List<Enroll> curEnroll = user.getEnrollList();
         List<Task> taskList = new ArrayList<>();

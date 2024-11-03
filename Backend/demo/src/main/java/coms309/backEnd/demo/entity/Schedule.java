@@ -36,16 +36,16 @@ public class Schedule {
     @Column(nullable = false)
     private java.time.LocalTime endTime;
 
-    @OneToMany(mappedBy = "schedule")
+    @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL,orphanRemoval = true)
     @JsonIgnore
     private List<Enroll> enrollList;
 
     // Same class but different schedule(section) has different due dates for tasks or have different tasks
-    @OneToMany(mappedBy = "schedule")
+    @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL,orphanRemoval = true)
     @JsonIgnore
     private  List<Task> taskList;
 
-    @OneToOne(mappedBy = "schedule")
+    @OneToOne(mappedBy = "schedule", cascade = CascadeType.ALL,orphanRemoval = true)
     @JsonIgnore
     private Teach teach;
 

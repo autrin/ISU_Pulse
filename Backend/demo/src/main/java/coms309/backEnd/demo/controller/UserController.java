@@ -11,9 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -129,5 +129,15 @@ public class UserController {
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body("User with NetID " + netId + " has been deleted successfully.");
+    }
+
+    @GetMapping("/allStudents")
+    public ResponseEntity<List<User>> getAllStudents(){
+        Optional<List<User>> allStudents = userRepository.findAllUserByUserType(UserType.STUDENT);
+        if(allStudents.isEmpty()){
+            return  ResponseEntity.internalServerError().build();
+        }
+        List<User> listOfAllStudent = allStudents.get();
+        return ResponseEntity.ok(listOfAllStudent);
     }
 }

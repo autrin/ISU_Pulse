@@ -40,9 +40,9 @@ public class EnrollController {
         this.scheduleRepository = scheduleRepository;
     }
 
-    @GetMapping("/getEnroll/{id}")
-    public ResponseEntity<List<Schedule>> getSchedule(@PathVariable long id){
-        Optional<User> curUser = userRepository.findById(id);
+    @GetMapping("/getEnroll/{netId}")
+    public ResponseEntity<List<Schedule>> getEnroll(@PathVariable String netId){
+        Optional<User> curUser = userRepository.findUserByNetId(netId);
         // check if user exists or not
         if(curUser.isEmpty()){
             return  ResponseEntity.internalServerError().build();
@@ -63,12 +63,12 @@ public class EnrollController {
         return ResponseEntity.ok(people);
     }
 
-    @PostMapping("/addEnroll/{id}")
-    public ResponseEntity<String> addSchedule(
-            @PathVariable long id,
+    @PostMapping("/addEnroll/{netId}")
+    public ResponseEntity<String> addEnroll(
+            @PathVariable String netId,
             @RequestParam long scheduleId) {
         // check if user exists or not
-        Optional<User> curUser = userRepository.findById(id);
+        Optional<User> curUser = userRepository.findUserByNetId(netId);
         if (curUser.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
         }
@@ -84,13 +84,13 @@ public class EnrollController {
         return ResponseEntity.ok("Add enrollment successfully");
     }
 
-    @DeleteMapping("/deleteEnroll/{id}")
-    public ResponseEntity<String> deleteSchedule(
-            @PathVariable long id,
+    @DeleteMapping("/deleteEnroll/{netId}")
+    public ResponseEntity<String> deleteEnroll(
+            @PathVariable String netId,
             @RequestParam long enrollId
     ){
         // check if user exists or not
-        Optional<User> curUser = userRepository.findById(id);
+        Optional<User> curUser = userRepository.findUserByNetId(netId);
         if (curUser.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
         }
@@ -102,61 +102,10 @@ public class EnrollController {
         }
         Enroll enroll = curEnroll.get();
         // check if the enrollment belongs to the right person
-        if(enroll.getStudent().getId() != id){
+        if(!enroll.getStudent().getNetId().trim().equalsIgnoreCase(netId)){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("You are not authorized to delete this enrollment");
         }
-
         enrollRepository.delete(enroll);
         return ResponseEntity.ok("Delete enrollment successfully");
     }
-
-//    @GetMapping("/getEnroll/{sId}")
-//    public ResponseEntity<List<Course>> addEnroll(@PathVariable String sId){
-//        Optional<User> curUser = userRepository.findById(sId);
-//        if (curUser.isEmpty()) {
-//            return  ResponseEntity.internalServerError().build();
-//        }
-//        User user = curUser.get();
-//        List<Enroll> enrollList = enrollRepository.findAllByStudentid(sId);
-//        List<Course> courseList = new ArrayList<>();
-//        for(Enroll en : enrollList){
-//            courseList.add(en.getCourse());
-//        }
-//        return ResponseEntity.ok(courseList);
-//    }
-//
-//    @PostMapping("/addEnroll/{sId}")
-//    public ResponseEntity<String> addEnroll(@PathVariable String sId, @RequestParam("course") int courseId) {
-//        Optional<User> curUser = userRepository.findById(sId);
-//        if (curUser.isEmpty()) {
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("User not found.");
-//        }
-//        Optional<Course> curCourse = courseRepository.findById(courseId);
-//        if (curCourse.isEmpty()) {
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Course not found.");
-//        }
-//        Enroll curEnroll = new Enroll(curUser.get().getNetId(), curCourse.get().getCId(),
-//                curCourse.get().getNumSections(), curUser.get(), curCourse.get());
-//
-//        enrollRepository.save(curEnroll);
-//
-//        return ResponseEntity.ok("Enrollment successful.");
-//    }
-//
-//
-//    @DeleteMapping("/removeEnroll/{sId}")
-//    public ResponseEntity<String> removeEnroll(@PathVariable String sId, @RequestParam("c_id") int courseId) {
-//        Optional<User> curUser = userRepository.findById(sId);
-//        if (curUser.isEmpty()) {
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("User not found.");
-//        }
-//        Optional<Course> curCourse = courseRepository.findById(courseId);
-//        if (curCourse.isEmpty()) {
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Course not found.");
-//        }
-//
-//        Enroll enroll = enrollRepository.findByStudentidAndCourseid(sId, courseId);
-//        enrollRepository.delete(enroll);
-//        return ResponseEntity.ok("Successfully removed enrollment");
-//    }
 }
