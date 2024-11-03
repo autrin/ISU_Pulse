@@ -1,7 +1,7 @@
 package com.coms309.isu_pulse_frontend.ui.home;
 
 public class PersonalTask {
-    private int id;
+    private long id;
     private String title;
     private String description;
     private long dueDate;
@@ -17,7 +17,7 @@ public class PersonalTask {
     }
 
     // Getters
-    public int getId() {
+    public long getId() {
         return id;
     }
 
@@ -37,7 +37,7 @@ public class PersonalTask {
         return userNetId;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 
