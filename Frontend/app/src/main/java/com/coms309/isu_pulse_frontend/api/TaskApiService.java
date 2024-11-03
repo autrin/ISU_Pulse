@@ -153,16 +153,16 @@ public class TaskApiService {
                             listener.onResponse(idList);
                         } catch (Exception e) {
                             e.printStackTrace();
-                            listener.onError("Failed to parse response");
+                            listener.onError("Failed to parse the response from the server.");
                         }
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        String errorMessage = error.getMessage() != null ? error.getMessage() : "Unknown error";
+                        String errorMessage = error.getMessage() != null ? error.getMessage() : "Unknown error occurred while fetching the last task ID.";
                         Log.e("API Error", errorMessage);
-                        listener.onError(errorMessage);
+                        listener.onError("Error fetching the last task ID: " + errorMessage);
                     }
                 });
 
