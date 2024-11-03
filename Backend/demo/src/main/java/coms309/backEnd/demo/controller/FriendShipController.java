@@ -54,5 +54,42 @@ public class FriendShipController {
 
 
 
+    @GetMapping("/sameFriends")
+    public ResponseEntity<List<User>> displayingFriendsInCommon(
+            @RequestParam String netIdUser1,
+            @RequestParam String netIdUser2){
 
+        Optional<User> curUser1 = userRepository.findUserByNetId(netIdUser1);
+        if(curUser1.isEmpty()){
+            return  ResponseEntity.internalServerError().build();
+        }
+        User user1 = curUser1.get();
+
+        Optional<User> curUser2 = userRepository.findUserByNetId(netIdUser2);
+        if(curUser2.isEmpty()){
+            return  ResponseEntity.internalServerError().build();
+        }
+        User user2 = curUser2.get();
+
+        List<FriendShip> friendShips1 = user1.getFriendShips();
+        List<User> friendLst1 = getFriendsfromFriendships(friendShips1,user1);
+
+        List<FriendShip> friendShips2 = user2.getFriendShips();
+        List<User> friendLst2 = getFriendsfromFriendships(friendShips2,user2);
+
+        List<User> friendsInCommon = new ArrayList<>();
+        for(User userFromFriendLst1 : friendLst1){
+            boolean isInCommon = false;
+            for(User userFromFriendLst2 : friendLst2){
+                if (userFromFriendLst1.getId() == userFromFriendLst2.getId()) {
+                    isInCommon = true;
+                    break;
+                }
+            }
+            if(isInCommon){
+                friendsInCommon.add(userFromFriendLst1);
+            }
+        }
+        return ResponseEntity.ok(friendsInCommon);
+    }
 }

@@ -40,9 +40,9 @@ public class PersonalTaskController {
         this.enrollRepository = enrollRepository;
     }
 
-    @GetMapping("/getPersonalTasks/{id}")
-    public ResponseEntity<List<PersonalTask>> getListofPersonalTasks(@PathVariable long id){
-        Optional<User> curUser = userRepository.findById(id);
+    @GetMapping("/getPersonalTasks/{netId}")
+    public ResponseEntity<List<PersonalTask>> getListofPersonalTasks(@PathVariable String netId){
+        Optional<User> curUser = userRepository.findUserByNetId(netId);
         if(curUser.isEmpty()){
             return  ResponseEntity.internalServerError().build();
         }
@@ -50,14 +50,14 @@ public class PersonalTaskController {
         List<PersonalTask> personalTasklist = personalTaskRepository.findAllByUser(user);
         return ResponseEntity.ok(personalTasklist);
     }
-    @PostMapping("/addPersonalTask/{id}")
+    @PostMapping("/addPersonalTask/{netId}")
     public ResponseEntity<String> addPersonTasks(
-            @PathVariable long id,
+            @PathVariable String netId,
             @RequestParam String title,
             @RequestParam String description,
             @RequestParam long dueDateTimestamp
     ){
-        Optional<User> curUser = userRepository.findById(id);
+        Optional<User> curUser = userRepository.findUserByNetId(netId);
         if(curUser.isEmpty()){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
         }
@@ -67,18 +67,18 @@ public class PersonalTaskController {
         return ResponseEntity.ok("Personal task added successfully.");
     }
 
-    @PutMapping("/updatePersonalTask/{id}")
+    @PutMapping("/updatePersonalTask/{netId}")
     public ResponseEntity<String> updatePersonTasks(
-            @PathVariable long id,
+            @PathVariable String netId,
             @RequestParam long taskId,
             @RequestParam(required = false) String title,
             @RequestParam(required = false) String description,
             @RequestParam(required = false) Long dueDateTimestamp
     ) {
-        Optional<User> curUser = userRepository.findById(id);
+        Optional<User> curUser = userRepository.findUserByNetId(netId);
         if (curUser.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("User with ID " + id + " not found.");
+                    .body("User with ID " + netId + " not found.");
         }
 
         User user = curUser.get();
@@ -91,7 +91,7 @@ public class PersonalTaskController {
 
         PersonalTask task = optionalTask.get();
 
-        if(task.getUser().getId() != id){
+        if(!task.getUser().getNetId().trim().equalsIgnoreCase(netId.trim())){
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You are not authorized to update this task.");
         }
 
@@ -111,15 +111,15 @@ public class PersonalTaskController {
 
     }
 
-    @DeleteMapping("/deletePersonalTask/{id}")
+    @DeleteMapping("/deletePersonalTask/{netId}")
     public ResponseEntity<String> deletePersonalTasks(
-            @PathVariable long id,
+            @PathVariable String netId,
             @RequestParam long taskId
     ){
-        Optional<User> curUser = userRepository.findById(id);
+        Optional<User> curUser = userRepository.findUserByNetId(netId);
         if (curUser.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("User with ID " + id + " not found.");
+                    .body("User with ID " + netId + " not found.");
         }
 
         User user = curUser.get();
@@ -132,7 +132,7 @@ public class PersonalTaskController {
 
         PersonalTask task = optionalTask.get();
 
-        if(task.getUser().getId() != id){
+        if(!task.getUser().getNetId().trim().equalsIgnoreCase(netId.trim())){
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You are not authorized to update this task.");
         }
         personalTaskRepository.delete(task);
