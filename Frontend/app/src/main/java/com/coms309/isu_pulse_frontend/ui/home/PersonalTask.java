@@ -4,7 +4,7 @@ public class PersonalTask {
     private long id;
     private String title;
     private String description;
-    private long dueDate;
+    private Long dueDate;
     private String userNetId;
 
     // Constructor
@@ -29,7 +29,7 @@ public class PersonalTask {
         return description;
     }
 
-    public long getDueDate() {
+    public Long getDueDate() {
         return dueDate;
     }
 
@@ -49,7 +49,7 @@ public class PersonalTask {
         this.description = description;
     }
 
-    public void setDueDate(long dueDate) {
+    public void setDueDate(Long dueDate) {
         this.dueDate = dueDate;
     }
 
