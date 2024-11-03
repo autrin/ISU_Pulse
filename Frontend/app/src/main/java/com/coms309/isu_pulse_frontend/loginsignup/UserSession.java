@@ -19,4 +19,9 @@ public class UserSession {
         }
         return instance;
     }
+
+    public String getNetId() {
+        return netId;
+    }
+
 }
