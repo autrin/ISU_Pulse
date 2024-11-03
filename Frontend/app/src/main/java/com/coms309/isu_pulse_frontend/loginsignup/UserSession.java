@@ -24,4 +24,11 @@ public class UserSession {
         return netId;
     }
 
+    public void clearSession(Context context) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences("UserSession", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.remove("netId");
+        editor.apply();
+        netId = null;
+    }
 }
