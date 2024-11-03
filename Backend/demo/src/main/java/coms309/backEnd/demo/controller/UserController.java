@@ -96,6 +96,9 @@ public class UserController {
     @GetMapping("/AllStudents")
     public ResponseEntity<List<User>> getAllStudents(){
         Optional<List<User>> allStudents = userRepository.findAllUserByUserType(UserType.STUDENT);
+        if(allStudents.isEmpty()){
+            return  ResponseEntity.internalServerError().build();
+        }
         List<User> listOfAllStudent = allStudents.get();
         return ResponseEntity.ok(listOfAllStudent);
 
