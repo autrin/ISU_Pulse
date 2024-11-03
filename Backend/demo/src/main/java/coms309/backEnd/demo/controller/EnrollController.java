@@ -78,7 +78,7 @@ public class EnrollController {
     }
 
     @DeleteMapping("/deleteEnroll/{netId}")
-    public ResponseEntity<String> deleteSchedule(
+    public ResponseEntity<String> deleteEnroll(
             @PathVariable String netId,
             @RequestParam long enrollId
     ){
