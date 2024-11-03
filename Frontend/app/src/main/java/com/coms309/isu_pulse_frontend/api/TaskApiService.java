@@ -10,6 +10,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.coms309.isu_pulse_frontend.loginsignup.UserSession;
 import com.coms309.isu_pulse_frontend.ui.home.Course;
 import com.coms309.isu_pulse_frontend.ui.home.CourseTask;
 import com.coms309.isu_pulse_frontend.ui.home.Department;
@@ -27,13 +28,15 @@ import java.util.Locale;
 public class TaskApiService {
 
     private static final String BASE_URL = "http://coms-3090-042.class.las.iastate.edu:8080";
-    private static final String NET_ID = "tamminh";
+    //    private static final String NET_ID = "tamminh";
+    private String netId;
     private Context context;
     private RequestQueue requestQueue;
 
     public TaskApiService(Context context) {
         this.context = context;
         requestQueue = Volley.newRequestQueue(context);
+        this.netId = UserSession.getInstance(context).getNetId();
     }
 
     public interface TaskResponseListener {
@@ -42,7 +45,7 @@ public class TaskApiService {
     }
 
     public void getTasksIn2days(final TaskResponseListener listener) {
-        String url = BASE_URL + "/task/getTaskByUserIn2days/" + NET_ID;
+        String url = BASE_URL + "/task/getTaskByUserIn2days/" + netId;
         JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, url, null,
                 new Response.Listener<JSONArray>() {
                     @Override
@@ -98,7 +101,7 @@ public class TaskApiService {
     }
 
     private void fetchPersonalTasks(final List<Object> tasks, final TaskResponseListener listener) {
-        String personalTasksUrl = BASE_URL + "/personalTask/getPersonalTasks/" + NET_ID;
+        String personalTasksUrl = BASE_URL + "/personalTask/getPersonalTasks/" + netId;
         JsonArrayRequest personalTasksRequest = new JsonArrayRequest(Request.Method.GET, personalTasksUrl, null,
                 new Response.Listener<JSONArray>() {
                     @Override
@@ -141,7 +144,7 @@ public class TaskApiService {
     }
 
     public void getLastPersonalTask(final TaskResponseListener listener) {
-        String url = BASE_URL + "/personalTask/getLastPersonalTaskID/" + NET_ID;
+        String url = BASE_URL + "/personalTask/getLastPersonalTaskID/" + netId;
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null,
                 new Response.Listener<JSONObject>() {
                     @Override
@@ -179,7 +182,7 @@ public class TaskApiService {
                     long newTaskId = lastTaskId + 1;
 
                     // Construct the URL with the new task ID
-                    String url = BASE_URL + "/personalTask/addPersonalTask/" + NET_ID +
+                    String url = BASE_URL + "/personalTask/addPersonalTask/" + netId +
                             "?taskId=" + newTaskId +
                             "&title=" + task.getTitle() +
                             "&description=" + task.getDescription() +
@@ -218,7 +221,7 @@ public class TaskApiService {
             return;
         }
 
-        String url = BASE_URL + "/personalTask/updatePersonalTask/" + NET_ID +
+        String url = BASE_URL + "/personalTask/updatePersonalTask/" + netId +
                 "?taskId=" + task.getId() +
                 "&title=" + task.getTitle() +
                 "&description=" + task.getDescription() +
@@ -244,7 +247,7 @@ public class TaskApiService {
 
     public void deletePersonalTask(PersonalTask task, final TaskResponseListener listener) {
 //        task.setId(2); //TODO: hardcoded for now
-        String url = BASE_URL + "/personalTask/deletePersonalTask/" + NET_ID;
+        String url = BASE_URL + "/personalTask/deletePersonalTask/" + netId;
 //        String url1="coms-3090-042.class.las.iastate.edu:8080/personalTask/deletePersonalTask/autrin?taskId=6";
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.DELETE, url, null,
@@ -269,7 +272,7 @@ public class TaskApiService {
 
 
     public void deleteCourseTask(CourseTask task, final TaskResponseListener listener) {
-        String url = BASE_URL + "/deleteCourseTask/" + NET_ID + "/" + task.gettId();
+        String url = BASE_URL + "/deleteCourseTask/" + netId + "/" + task.gettId();
         JSONObject body = new JSONObject();
         try {
             body.put("title", task.getTitle());
