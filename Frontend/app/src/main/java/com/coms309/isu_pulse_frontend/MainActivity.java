@@ -43,21 +43,23 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
             startActivity(intent);
             finish(); // Close MainActivity
+        } else {
+            // No saved session; show login screen
+            setContentView(R.layout.intro);
+
+            // Initialize login and sign-up buttons as usual
+            signInButton = findViewById(R.id.signInButton);
+            signUpButton = findViewById(R.id.signUpButton);
+            Bundle extras = getIntent().getExtras();
+
+            signInButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                    startActivity(intent);
+                }
+            });
         }
-
-
-        signInButton = findViewById(R.id.signInButton);
-        signUpButton = findViewById(R.id.signUpButton);
-        Bundle extras = getIntent().getExtras();
-
-        signInButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-                startActivity(intent);
-            }
-        });
-
         signUpButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -66,7 +68,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-//
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
