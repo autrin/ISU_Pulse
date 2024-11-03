@@ -42,7 +42,7 @@ public class TaskApiService {
     }
 
     public void getTasksIn2days(final TaskResponseListener listener) {
-        String url = BASE_URL + "/task/getTaskByUserIn2days/" + "tamminh";
+        String url = BASE_URL + "/task/getTaskByUserIn2days/" + NET_ID;
         JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, url, null,
                 new Response.Listener<JSONArray>() {
                     @Override
@@ -140,14 +140,14 @@ public class TaskApiService {
         requestQueue.add(personalTasksRequest);
     }
 
-    public void getLastPersonalTask(final TaskResponseListener listener) { // For later to get the last task id
-        String url = BASE_URL + "/personalTask/getLastPersonalTask/" + NET_ID;
+    public void getLastPersonalTask(final TaskResponseListener listener) {
+        String url = BASE_URL + "/personalTask/getLastPersonalTaskID/" + NET_ID;
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
-                            int id = response.getInt("personalTaskId");
+                            long id = response.getInt("lastTaskId");
                             List<Object> idList = new ArrayList<>();
                             idList.add(id);
                             listener.onResponse(idList);
@@ -170,23 +170,46 @@ public class TaskApiService {
     }
 
     public void createPersonalTask(PersonalTask task) {
-        String url = BASE_URL + "/personalTask/addPersonalTask/" + NET_ID + "?title=" + 16 + "&description=" + task.getDescription() + "&dueDateTimestamp=" + task.getDueDate(); // TODO: hardcoded for now taskid for now
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, null,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        Log.d("Response: ", response.toString());
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        String errorMessage = error.getMessage() != null ? error.getMessage() : "Unknown error";
-                        Log.e("API Error", errorMessage);
-                    }
-                });
+        // Fetch the last task ID
+        getLastPersonalTask(new TaskResponseListener() {
+            @Override
+            public void onResponse(List<Object> response) {
+                if (response != null && !response.isEmpty()) {
+                    int lastTaskId = (int) response.get(0);
+                    long newTaskId = lastTaskId + 1;
 
-        requestQueue.add(jsonObjectRequest);
+                    // Construct the URL with the new task ID
+                    String url = BASE_URL + "/personalTask/addPersonalTask/" + NET_ID +
+                            "?taskId=" + newTaskId +
+                            "&title=" + task.getTitle() +
+                            "&description=" + task.getDescription() +
+                            "&dueDateTimestamp=" + task.getDueDate();
+
+                    // Create the new task
+                    JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, null,
+                            new Response.Listener<JSONObject>() {
+                                @Override
+                                public void onResponse(JSONObject response) {
+                                    Log.d("Response: ", response.toString());
+                                }
+                            },
+                            new Response.ErrorListener() {
+                                @Override
+                                public void onErrorResponse(VolleyError error) {
+                                    String errorMessage = error.getMessage() != null ? error.getMessage() : "Unknown error";
+                                    Log.e("API Error", errorMessage);
+                                }
+                            });
+
+                    requestQueue.add(jsonObjectRequest);
+                }
+            }
+
+            @Override
+            public void onError(String message) {
+                Log.e("API Error", message);
+            }
+        });
     }
 
     public void updatePersonalTask(PersonalTask task) {
@@ -196,8 +219,8 @@ public class TaskApiService {
         }
         task.setId(1); //TODO: hardcoded for now
         String url = BASE_URL + "/personalTask/updatePersonalTask/" + NET_ID +
-//                "?taskId=" + task.getId() +
-                "?taskId=" + 1 + //TODO: hardcoded for now
+                "?taskId=" + task.getId() +
+//                "?taskId=" + 1 + //TODO: hardcoded for now
                 "&title=" + task.getTitle() +
                 "&description=" + task.getDescription() +
                 "&dueDateTimestamp=" + task.getDueDate(); // Unix timestamp
@@ -222,9 +245,9 @@ public class TaskApiService {
 
 
     public void deletePersonalTask(PersonalTask task, final TaskResponseListener listener) {
-        task.setId(2); //TODO: hardcoded for now
-        String url = BASE_URL + "/personalTask/deletePersonalTask/" + NET_ID + "/" + task.getId();
-        String url1="coms-3090-042.class.las.iastate.edu:8080/personalTask/deletePersonalTask/autrin?taskId=6";
+//        task.setId(2); //TODO: hardcoded for now
+        String url = BASE_URL + "/personalTask/deletePersonalTask/" + NET_ID;
+//        String url1="coms-3090-042.class.las.iastate.edu:8080/personalTask/deletePersonalTask/autrin?taskId=6";
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.DELETE, url, null,
                 new Response.Listener<JSONObject>() {
@@ -237,7 +260,7 @@ public class TaskApiService {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        String errorMessage = error.getMessage() != null ? error.getMessage() : "Unknown error";
+                        String errorMessage = error.getMessage() != null ? error.getMessage() : "Unknown error in deletePersonalTask()";
                         Log.e("API Error", errorMessage);
                     }
                 });
