@@ -1,19 +1,18 @@
 package coms309.backEnd.demo.controller;
 
-import coms309.backEnd.demo.entity.Faculty;
-import coms309.backEnd.demo.entity.Profile;
-import coms309.backEnd.demo.entity.User;
-import coms309.backEnd.demo.entity.UserType;
-import coms309.backEnd.demo.repository.ProfileRepository;
+import coms309.backEnd.demo.DTO.FacultyDTO;
+import coms309.backEnd.demo.entity.*;
+import coms309.backEnd.demo.repository.DepartmentRepository;
+import coms309.backEnd.demo.repository.FacultyRepository;
 import coms309.backEnd.demo.repository.UserRepository;
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import java.util.HashMap;
+import java.util.Map;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,8 +24,12 @@ public class UserController {
     @Autowired
     private final UserRepository userRepository;
 
-    public UserController(UserRepository userRepository) {
+    @Autowired
+    private final DepartmentRepository departmentRepository;
+
+    public UserController(UserRepository userRepository, FacultyRepository facultyRepository, DepartmentRepository departmentRepository) {
         this.userRepository = userRepository;
+        this.departmentRepository = departmentRepository;
     }
 
     @GetMapping("/{netId}")
@@ -43,21 +46,56 @@ public class UserController {
         Optional<User> userOptional = userRepository.findUserByNetId(user.getNetId());
         if (userOptional.isPresent())
             return ResponseEntity.status(400).body("NetID already exists.");
+        Faculty faculty = null;
 
         Profile profile = new Profile();
-        profile.setLinkedinUrl("No LinkedIn is set.");
-        profile.setExternalUrl("No url is set.");
         user.setProfile(profile);
         profile.setUser(user);
-
-        // Handle Teacher Sign Up
-//        if (user.getUserType().equals("FACULTY"))
-//            Faculty faculty = new Faculty();
 
         // Save user (will cascade and save profile as well)
         userRepository.save(user);
 
         return ResponseEntity.status(200).body("User is successfully registered.");
+    }
+
+    @PostMapping("/faculty")
+    public ResponseEntity<Map<String, String>> signupFaculty(@RequestBody FacultyDTO facultyDTO) {
+        Map<String, String> response = new HashMap<>();
+
+        // Check if user already exists by netId
+        if (userRepository.existsByNetId(facultyDTO.getNetId())) {
+            response.put("message", "User with this NetId already exists.");
+            return ResponseEntity.badRequest().body(response);
+        }
+
+        // Create new User entity
+        User user = new User(
+                facultyDTO.getNetId(),
+                facultyDTO.getFirstName(),
+                facultyDTO.getLastName(),
+                facultyDTO.getEmail(),
+                facultyDTO.getHashedPassword(),  // Assuming password is already hashed
+                UserType.FACULTY
+        );
+
+        user.setProfilePictureUrl(facultyDTO.getProfilePictureUrl());
+
+        Profile profile = new Profile();
+        user.setProfile(profile);
+        profile.setUser(user);
+
+        // Retrieve the Department by ID and create Faculty entity
+        Department department = departmentRepository.findByName(facultyDTO.getDepartment())
+                .orElseThrow(() -> new IllegalStateException("Department does not exist"));
+
+        Faculty faculty = new Faculty(facultyDTO.getTitle(), user, department);
+        user.setFaculty(faculty);  // Set the faculty for bidirectional relationship
+
+        // Save both User and Faculty
+        userRepository.save(user);  // Cascade will save Faculty
+
+        response.put("message", "Faculty signup successful.");
+        return ResponseEntity.ok(response);
     }
 
     @Transactional
@@ -93,7 +131,7 @@ public class UserController {
                 .body("User with NetID " + netId + " has been deleted successfully.");
     }
 
-    @GetMapping("/AllStudents")
+    @GetMapping("/allStudents")
     public ResponseEntity<List<User>> getAllStudents(){
         Optional<List<User>> allStudents = userRepository.findAllUserByUserType(UserType.STUDENT);
         if(allStudents.isEmpty()){
@@ -101,6 +139,5 @@ public class UserController {
         }
         List<User> listOfAllStudent = allStudents.get();
         return ResponseEntity.ok(listOfAllStudent);
-
     }
 }

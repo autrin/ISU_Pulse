@@ -15,9 +15,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-/**
- * This controller is for admin to add new schedule(course and section)
- */
 @RestController
 @RequestMapping("/schedule")
 public class ScheduleController {

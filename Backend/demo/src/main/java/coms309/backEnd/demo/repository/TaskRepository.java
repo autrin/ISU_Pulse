@@ -5,6 +5,8 @@ import coms309.backEnd.demo.entity.Schedule;
 import coms309.backEnd.demo.entity.Task;
 import coms309.backEnd.demo.entity.TaskType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.Date;
 import java.util.List;
@@ -14,4 +16,7 @@ public interface TaskRepository extends JpaRepository<Task,Long> {
 //    public List<Task> findAllByCourse(Course course);
 //    public List<Task> findAllByTaskType(TaskType taskType);
     public List<Task> findAllBySchedule(Schedule schedule);
+
+    @Query("SELECT t FROM Task t WHERE t.schedule.id = :scheduleId ORDER BY t.dueDate DESC")
+    List<Task> findAllByScheduleIdOrderByDueDateDesc(@Param("scheduleId") long scheduleId);
 }

@@ -3,6 +3,7 @@ package coms309.backEnd.demo.controller;
 import coms309.backEnd.demo.entity.*;
 import coms309.backEnd.demo.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,59 +39,20 @@ public class TaskController {
         this.scheduleRepository = scheduleRepository;
     }
 
-//    @GetMapping("/getTasksByCourse")
-//    public ResponseEntity<List<Task>> getTaskByCourse(@PathVariable int cId ){
-//        Optional<Course> curCourse = courseRepository.findById(cId);
-//        if(curCourse.isEmpty()){
-//            return  ResponseEntity.internalServerError().build();
-//        }
-//
-//        List<Task> tasklist = taskRepository.findAllByCourse(curCourse.get());
-//        return ResponseEntity.ok(tasklist);
-//    }
-//
-//    @GetMapping("/getTaskByUserIn2days/{sId}")
-//    public ResponseEntity<List<Task>> getTaskByCourse(@PathVariable String sId){
-//        //
-//        Date currentDate = new Date();
-//        Calendar calendar = Calendar.getInstance();
-//        calendar.setTime(currentDate);
-//        calendar.add(Calendar.DATE, 2);
-//        Date tomorrowDate = calendar.getTime();
-//        //
-//        Optional<User> curUser = userRepository.findById(sId);
-//        if(curUser.isEmpty()){
-//            return  ResponseEntity.internalServerError().build();
-//        }
-//        List<Enroll> curEnroll = enrollRepository.findAllByStudent(curUser.get());
-//        List<Task> taskin2days = new ArrayList<>();
-//        for(Enroll en : curEnroll){
-//            Course cou = en.getCourse();
-//            List<Task> listTaskOfOneCourse = taskRepository.findAllByCourse(cou);
-//            for(Task task : listTaskOfOneCourse){
-//                if (task.getDueDate() != null &&
-//                        !task.getDueDate().before(currentDate) &&
-//                        !task.getDueDate().after(tomorrowDate)) {
-//                    taskin2days.add(task);
-//                }
-//            }
-//        }
-//        return ResponseEntity.ok(taskin2days);
-//    }
 
     @GetMapping("/getTaskByUserIn2days/{netId}")
     public ResponseEntity<List<Task>> getTaskByCourse(@PathVariable String netId){
-        //
         Date currentDate = new Date();
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(currentDate);
         calendar.add(Calendar.DATE, 2);
         Date tomorrowDate = calendar.getTime();
-        //
+
         Optional<User> curUser = userRepository.findUserByNetId(netId);
         if(curUser.isEmpty()){
             return  ResponseEntity.internalServerError().build();
         }
+        
         User user = curUser.get();
         List<Enroll> curEnroll = user.getEnrollList();
         List<Task> taskList = new ArrayList<>();
@@ -106,10 +68,74 @@ public class TaskController {
             }
         }
         return ResponseEntity.ok(taskList);
-
-
-
     }
 
+    @GetMapping("/scheduleTask/{scheduleId}")
+    public ResponseEntity<List<Task>> fetchTasksBySchedule(@PathVariable long scheduleId) {
+        List<Task> tasksOfSchedule = taskRepository.findAllByScheduleIdOrderByDueDateDesc(scheduleId);
+        return ResponseEntity.ok(tasksOfSchedule);
+    }
 
+    @PostMapping("/scheduleTask/{scheduleId}")
+    public ResponseEntity<Task> createScheduleTask(@PathVariable long scheduleId, @RequestBody Task task) {
+        // Find the schedule by ID
+        Optional<Schedule> scheduleOptional = scheduleRepository.findById(scheduleId);
+
+        if (!scheduleOptional.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+
+        // Assign the found schedule to the task and save the task
+        Schedule schedule = scheduleOptional.get();
+        task.setSchedule(schedule);
+        taskRepository.save(task);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(task);
+    }
+
+    @PutMapping("/scheduleTask/{scheduleId}/task/{taskId}")
+    public ResponseEntity<Task> updateTask(
+            @PathVariable long scheduleId,
+            @PathVariable long taskId,
+            @RequestBody Task updatedTask) {
+
+        // Find the schedule by ID
+        Optional<Schedule> scheduleOptional = scheduleRepository.findById(scheduleId);
+        if (!scheduleOptional.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+
+        // Find the task by ID and ensure it belongs to the given schedule
+        Optional<Task> taskOptional = taskRepository.findById(taskId);
+        if (!taskOptional.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+
+        Task existingTask = taskOptional.get();
+
+        // Check if the task's schedule matches the provided schedule
+        if (existingTask.getSchedule().getId() != scheduleId) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(null);
+        }
+
+        // Update only the fields that are provided in the request
+        if (updatedTask.getTitle() != null) {
+            existingTask.setTitle(updatedTask.getTitle());
+        }
+        if (updatedTask.getDescription() != null) {
+            existingTask.setDescription(updatedTask.getDescription());
+        }
+        if (updatedTask.getDueDate() != null) {
+            existingTask.setDueDate(updatedTask.getDueDate());
+        }
+        if (updatedTask.getTaskType() != null) {
+            existingTask.setTaskType(updatedTask.getTaskType());
+        }
+
+        // Save the updated task
+        taskRepository.save(existingTask);
+
+        return ResponseEntity.status(HttpStatus.OK).body(existingTask);
+    }
 }
