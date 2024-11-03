@@ -1,5 +1,7 @@
 package com.coms309.isu_pulse_frontend.loginsignup;
 
+import static androidx.core.content.SharedPreferencesKt.edit;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -8,6 +10,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.content.SharedPreferences;
 
 // Other necessary imports
 import com.coms309.isu_pulse_frontend.MainActivity;
@@ -67,10 +70,15 @@ public class LoginActivity extends AppCompatActivity {
                             String storedHashedPassword = result.getString("hashedPassword");
 
                             if (storedHashedPassword.equals(hashPassword)) {
+                                // Save netId to SharedPreferences
+                                SharedPreferences sharedPreferences = getSharedPreferences("UserSession", MODE_PRIVATE);
+                                SharedPreferences.Editor editor = sharedPreferences.edit();
+                                editor.putString("netId", netIdInput);
+                                editor.apply();
                                 // Passwords match, login successful
-                                Toast.makeText(LoginActivity.this, "Login successful", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(LoginActivity.this, "Login successful", Toast.LENGTH_SHORT).show(); // TODO: You can comment this later
 
-//                                    // Proceed to the main activity
+                                // Proceed to the main activity
                                 Intent intent = new Intent(LoginActivity.this, ProfileActivity.class);
                                 startActivity(intent);
                                 finish();
