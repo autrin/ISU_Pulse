@@ -12,5 +12,11 @@ public class UserSession {
         SharedPreferences sharedPreferences = context.getSharedPreferences("UserSession", Context.MODE_PRIVATE);
         this.netId = sharedPreferences.getString("netId", null);
     }
-    
+
+    public static synchronized UserSession getInstance(Context context) {
+        if (instance == null) {
+            instance = new UserSession(context);
+        }
+        return instance;
+    }
 }
