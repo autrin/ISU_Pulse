@@ -2,6 +2,7 @@ package com.coms309.isu_pulse_frontend.api;
 
 import android.content.Context;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -118,8 +119,12 @@ public class TaskApiService {
                                 Date sqlDate = new Date(utilDate.getTime()); // Convert to java.sql.Date
                                 long dueDateMillis = sqlDate.getTime();// Convert java.sql.Date to a long (milliseconds since epoch)
 
-//                                String userNetId = jsonObject.getString("userNetId");
-                                String userNetId = "tamminh";
+                                String userNetId = jsonObject.getString("userNetId");
+                                if (!userNetId.equals(netId)) {
+                                    Toast.makeText(context, "userNetId mismatch between the json obj and userSession", Toast.LENGTH_SHORT).show();
+                                    Log.e("getPersonalTasks API Error", "userNetId mismatch between the json obj and userSession");
+                                }
+//                                String userNetId = "tamminh";
                                 PersonalTask task = new PersonalTask(1, title, description, dueDateMillis, userNetId); //TODO: Hardcoded taskid for now
                                 tasks.add(task);
                             } catch (Exception e) {
