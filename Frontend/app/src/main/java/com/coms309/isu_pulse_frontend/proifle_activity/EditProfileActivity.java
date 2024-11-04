@@ -107,7 +107,9 @@ public class EditProfileActivity extends AppCompatActivity {
         String oldPasswordinput = Objects.requireNonNull(oldPassword.getEditText()).getText().toString().trim();
         String hashPassword = PasswordHasher.hashPassword(oldPasswordinput);
 
-        if (netIdinput.isEmpty() || oldPasswordinput.isEmpty()) {
+        if (!netIdinput.equals(userNetId)) {
+            Toast.makeText(EditProfileActivity.this, "Net ID is wrong", Toast.LENGTH_SHORT).show();
+        } else if (netIdinput.isEmpty() || oldPasswordinput.isEmpty()) {
             Toast.makeText(EditProfileActivity.this, "Please enter all fields", Toast.LENGTH_SHORT).show();
         } else {
             AuthenticationService apiService = new AuthenticationService();
@@ -166,6 +168,8 @@ public class EditProfileActivity extends AppCompatActivity {
         }
 
         String netIdValue = Objects.requireNonNull(netid.getEditText()).getText().toString();
+        if (!netIdValue.equals(userNetId))
+            Toast.makeText(EditProfileActivity.this, "Net ID does not match", Toast.LENGTH_SHORT).show();
 
         // Update password
         apiService.updateUserPassword(hashPassword, EditProfileActivity.this, new UpdateAccount.VolleyCallback() {  // Deleted netIdValue
