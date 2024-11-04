@@ -12,7 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,33 +37,25 @@ public class FriendRequestConroller {
 
 
     @GetMapping("/receivedRequest/{netId}")
-    public ResponseEntity<List<User>> getAllFriendRequest(@PathVariable String netId){
+    public ResponseEntity<List<FriendRequest>> getAllFriendRequest(@PathVariable String netId){
         Optional<User> curReceiver = userRepository.findUserByNetId(netId);
         if (curReceiver.isEmpty()) {
             return  ResponseEntity.internalServerError().build();
         }
         User receiver = curReceiver.get();
         List<FriendRequest> receivedRequests = friendRequestRepository.findAllByReceiverAndStatus(receiver,RequestStatus.PENDING);
-        List<User> listOfSenders = new ArrayList<>();
-       for(FriendRequest friendRequest : receivedRequests){
-           listOfSenders.add(friendRequest.getSender());
-       }
-        return ResponseEntity.ok(listOfSenders);
+        return ResponseEntity.ok(receivedRequests);
     }
 
     @GetMapping("/sentRequest/{netId}")
-    public ResponseEntity<List<User>> getAllSentRequest(@PathVariable String netId){
+    public ResponseEntity<List<FriendRequest>> getAllSentRequest(@PathVariable String netId){
         Optional<User> curSender = userRepository.findUserByNetId(netId);
         if (curSender.isEmpty()) {
             return  ResponseEntity.internalServerError().build();
         }
         User sender = curSender.get();
         List<FriendRequest> sentRequest = friendRequestRepository.findAllBySenderAndStatus(sender, RequestStatus.PENDING);
-        List<User> listOfReceiver = new ArrayList<>();
-        for(FriendRequest friendRequest : sentRequest){
-            listOfReceiver.add(friendRequest.getReceiver());
-        }
-        return ResponseEntity.ok(listOfReceiver);
+        return ResponseEntity.ok(sentRequest);
     }
 
     @PostMapping("/request")
