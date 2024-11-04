@@ -1,9 +1,11 @@
 package coms309.backEnd.demo.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
 @Entity
@@ -12,11 +14,12 @@ public class Message {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column
-    private String userName;
-
     @Lob
     private String content;
+
+    @OneToMany(mappedBy = "message", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<ChatSection> chatSections;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "sent")
@@ -25,8 +28,4 @@ public class Message {
 
     public Message() {};
 
-    public Message(String userName, String content) {
-        this.userName = userName;
-        this.content = content;
-    }
 }
