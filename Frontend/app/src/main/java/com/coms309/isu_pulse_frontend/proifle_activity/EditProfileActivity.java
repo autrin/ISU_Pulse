@@ -171,7 +171,7 @@ public class EditProfileActivity extends AppCompatActivity {
 
         String netIdValue = Objects.requireNonNull(netid.getEditText()).getText().toString();
         if (!netIdValue.equals(userNetId))
-            Toast.makeText(EditProfileActivity.this, "Net ID does not match", Toast.LENGTH_SHORT).show();
+            Toast.makeText(EditProfileActivity.this, "Net ID is wrong", Toast.LENGTH_SHORT).show();
 
         // Update password
         apiService.updateUserPassword(hashPassword, EditProfileActivity.this, new UpdateAccount.VolleyCallback() {  // Deleted netIdValue
