@@ -70,11 +70,9 @@ public class LoginActivity extends AppCompatActivity {
                             String storedHashedPassword = result.getString("hashedPassword");
 
                             if (storedHashedPassword.equals(hashPassword)) {
-                                // Save netId to SharedPreferences
-                                SharedPreferences sharedPreferences = getSharedPreferences("UserSession", MODE_PRIVATE);
-                                SharedPreferences.Editor editor = sharedPreferences.edit();
-                                editor.putString("netId", netIdInput);
-                                editor.apply();
+                                // Save netId using UserSession
+                                UserSession.getInstance(LoginActivity.this).setNetId(netIdInput, LoginActivity.this);
+
                                 // Passwords match, login successful
                                 Toast.makeText(LoginActivity.this, "Login successful", Toast.LENGTH_SHORT).show(); // TODO: You can comment this later
 
