@@ -3,6 +3,7 @@ package com.coms309.isu_pulse_frontend.api;
 import static com.coms309.isu_pulse_frontend.api.Constants.BASE_URL;
 
 import android.content.Context;
+import android.net.Uri;
 import android.util.Log;
 
 import com.android.volley.Request;
@@ -39,13 +40,14 @@ public class UpdateAccount {
             final VolleyCallback callback
     ) {
         String netId = UserSession.getInstance(context).getNetId(); // Retrieve the netId dynamically
-        String url = BASE_URL + "users/updatepw/" + netId + "?newPassword=" + newPassword;
+        String url = BASE_URL + "users/updatepw/" + netId + "?newPassword=" + Uri.encode(newPassword);
         RequestQueue queue = Volley.newRequestQueue(context);
 
         StringRequest putRequest = new StringRequest(
                 Request.Method.PUT, url,
                 callback::onSuccess,
                 error -> {
+                    Log.e("UpdatePasswordError", "Error response: " + error.toString());
                     callback.onError(error.toString());
                     error.printStackTrace();
                 }
