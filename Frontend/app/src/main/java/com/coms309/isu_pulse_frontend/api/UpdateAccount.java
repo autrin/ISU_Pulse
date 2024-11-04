@@ -13,6 +13,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
+import com.coms309.isu_pulse_frontend.loginsignup.UserSession;
 import com.coms309.isu_pulse_frontend.model.Profile;
 import com.google.gson.Gson;
 
@@ -32,11 +33,12 @@ public class UpdateAccount {
     }
 
     public void updateUserPassword(
-            String netId,
+//            String netId,
             String newPassword,
             Context context,
             final VolleyCallback callback
     ) {
+        String netId = UserSession.getInstance(context).getNetId(); // Retrieve the netId dynamically
         String url = BASE_URL + "users/updatepw/" + netId + "?newPassword=" + newPassword;
         RequestQueue queue = Volley.newRequestQueue(context);
 
@@ -52,7 +54,8 @@ public class UpdateAccount {
     }
 
     public static void fetchProfileData(Context context, final ProfileCallback callback) {
-        String url = BASE_URL + "profile/userTest"; //TODO: need to use the actual user's netId later
+        String netId = UserSession.getInstance(context).getNetId();  // Retrieve netId dynamically
+        String url = BASE_URL + "profile/" + netId; //TODO: need to use the actual user's netId later
         RequestQueue queue = Volley.newRequestQueue(context);
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
@@ -77,13 +80,14 @@ public class UpdateAccount {
     }
 
     public void updateProfile(
-            String netId,
+//            String netId,
             String description,
             String externalUrl,
             String linkedinUrl,
             Context context,
             final VolleyCallback callback
     ) {
+        String netId = UserSession.getInstance(context).getNetId();  // Retrieve netId dynamically
         // Construct the URL with query parameters for PUT request
         String url = BASE_URL + "profile/" + netId
                 + "?description=" + description
