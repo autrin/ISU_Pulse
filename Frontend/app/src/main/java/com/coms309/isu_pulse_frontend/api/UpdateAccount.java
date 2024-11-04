@@ -40,7 +40,8 @@ public class UpdateAccount {
             final VolleyCallback callback
     ) {
         String netId = UserSession.getInstance(context).getNetId(); // Retrieve the netId dynamically
-        String url = BASE_URL + "users/updatepw/" + netId + "?newPassword=" + Uri.encode(newPassword);
+        Log.d("UpdatePassword", "NetId: " + netId + ", New Password: " + newPassword);
+        String url = BASE_URL + "users/updatepw/" + netId + "?newPassword=" + newPassword; // can use Uri.encode(newPassword);
         RequestQueue queue = Volley.newRequestQueue(context);
 
         StringRequest putRequest = new StringRequest(
@@ -57,7 +58,7 @@ public class UpdateAccount {
 
     public static void fetchProfileData(Context context, final ProfileCallback callback) {
         String netId = UserSession.getInstance(context).getNetId();  // Retrieve netId dynamically
-        String url = BASE_URL + "profile/" + netId; //TODO: need to use the actual user's netId later
+        String url = BASE_URL + "profile/" + netId;
         RequestQueue queue = Volley.newRequestQueue(context);
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
