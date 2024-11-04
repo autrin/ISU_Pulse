@@ -114,7 +114,7 @@ public class EditProfileActivity extends AppCompatActivity {
             Toast.makeText(EditProfileActivity.this, "Please enter all fields", Toast.LENGTH_SHORT).show();
         } else {
             AuthenticationService apiService = new AuthenticationService();
-            apiService.checkUserExists(netIdinput, EditProfileActivity.this, new AuthenticationService.VolleyCallback() {
+            apiService.checkUserExists(userNetId, EditProfileActivity.this, new AuthenticationService.VolleyCallback() {
                 @Override
                 public void onSuccess(JSONObject result) {
                     try {
