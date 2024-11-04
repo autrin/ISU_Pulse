@@ -111,6 +111,7 @@ public class TaskApiService {
                         for (int i = 0; i < response.length(); i++) {
                             try {
                                 JSONObject jsonObject = response.getJSONObject(i);
+                                int taskId = jsonObject.getInt("id");
                                 String title = jsonObject.getString("title");
                                 String description = jsonObject.getString("description");
                                 String dueDateString = jsonObject.getString("dueDate");  // Fetch date as a string
@@ -119,13 +120,12 @@ public class TaskApiService {
                                 Date sqlDate = new Date(utilDate.getTime()); // Convert to java.sql.Date
                                 long dueDateMillis = sqlDate.getTime();// Convert java.sql.Date to a long (milliseconds since epoch)
 
-                                String userNetId = jsonObject.getString("userNetId");
+                                String userNetId = jsonObject.getJSONObject("user").getString("netId");
                                 if (!userNetId.equals(netId)) {
                                     Toast.makeText(context, "userNetId mismatch between the json obj and userSession", Toast.LENGTH_SHORT).show();
                                     Log.e("getPersonalTasks API Error", "userNetId mismatch between the json obj and userSession");
                                 }
-//                                String userNetId = "tamminh";
-                                PersonalTask task = new PersonalTask(1, title, description, dueDateMillis, userNetId); //TODO: Hardcoded taskid for now
+                                PersonalTask task = new PersonalTask(taskId, title, description, dueDateMillis, userNetId);
                                 tasks.add(task);
                             } catch (Exception e) {
                                 e.printStackTrace();
@@ -148,77 +148,62 @@ public class TaskApiService {
         requestQueue.add(personalTasksRequest);
     }
 
-    public void getLastPersonalTask(final TaskResponseListener listener) {
-        String url = BASE_URL + "/personalTask/getLastPersonalTaskID/" + netId;
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null,
+//    public void getLastPersonalTask(final TaskResponseListener listener) {
+//        String url = BASE_URL + "/personalTask/getLastPersonalTaskID/" + netId;
+//        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null,
+//                new Response.Listener<JSONObject>() {
+//                    @Override
+//                    public void onResponse(JSONObject response) {
+//                        try {
+//                            long id = response.getInt("lastTaskId");
+//                            List<Object> idList = new ArrayList<>();
+//                            idList.add(id);
+//                            listener.onResponse(idList);
+//                        } catch (Exception e) {
+//                            e.printStackTrace();
+//                            listener.onError("Failed to parse the response from the server.");
+//                        }
+//                    }
+//                },
+//                new Response.ErrorListener() {
+//                    @Override
+//                    public void onErrorResponse(VolleyError error) {
+//                        String errorMessage = error.getMessage() != null ? error.getMessage() : "Unknown error occurred while fetching the last task ID.";
+//                        Log.e("API Error", errorMessage);
+//                        listener.onError("Error fetching the last task ID: " + errorMessage);
+//                    }
+//                });
+//
+//        requestQueue.add(jsonObjectRequest);
+//    }
+
+    public void createPersonalTask(PersonalTask task) {
+        // Construct the URL with netId, title, description, and dueDateTimestamp
+        String url = BASE_URL + "/personalTask/addPersonalTask/" + netId +
+                "?title=" + task.getTitle() +
+                "&description=" + task.getDescription() +
+                "&dueDateTimestamp=" + task.getDueDate();
+
+        // Create the new task
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, null,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        try {
-                            long id = response.getInt("lastTaskId");
-                            List<Object> idList = new ArrayList<>();
-                            idList.add(id);
-                            listener.onResponse(idList);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            listener.onError("Failed to parse the response from the server.");
-                        }
+                        Log.d("Response: ", response.toString());
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        String errorMessage = error.getMessage() != null ? error.getMessage() : "Unknown error occurred while fetching the last task ID.";
+                        String errorMessage = error.getMessage() != null ? error.getMessage() : "Unknown error";
                         Log.e("API Error", errorMessage);
-                        listener.onError("Error fetching the last task ID: " + errorMessage);
                     }
                 });
 
+        // Add the request to the request queue
         requestQueue.add(jsonObjectRequest);
     }
 
-    public void createPersonalTask(PersonalTask task) {
-        // Fetch the last task ID
-        getLastPersonalTask(new TaskResponseListener() {
-            @Override
-            public void onResponse(List<Object> response) {
-                if (response != null && !response.isEmpty()) {
-                    int lastTaskId = (int) response.get(0);
-                    long newTaskId = lastTaskId + 1;
-
-                    // Construct the URL with the new task ID
-                    String url = BASE_URL + "/personalTask/addPersonalTask/" + netId +
-                            "?taskId=" + newTaskId +
-                            "&title=" + task.getTitle() +
-                            "&description=" + task.getDescription() +
-                            "&dueDateTimestamp=" + task.getDueDate();
-
-                    // Create the new task
-                    JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, null,
-                            new Response.Listener<JSONObject>() {
-                                @Override
-                                public void onResponse(JSONObject response) {
-                                    Log.d("Response: ", response.toString());
-                                }
-                            },
-                            new Response.ErrorListener() {
-                                @Override
-                                public void onErrorResponse(VolleyError error) {
-                                    String errorMessage = error.getMessage() != null ? error.getMessage() : "Unknown error";
-                                    Log.e("API Error", errorMessage);
-                                }
-                            });
-
-                    requestQueue.add(jsonObjectRequest);
-                }
-            }
-
-            @Override
-            public void onError(String message) {
-                Log.e("API Error", message);
-            }
-        });
-    }
 
     public void updatePersonalTask(PersonalTask task) {
         if (task.getId() == 0) { // ! Do I need to check for null?
