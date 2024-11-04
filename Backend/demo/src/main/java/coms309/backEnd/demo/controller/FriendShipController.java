@@ -59,6 +59,7 @@ public class FriendShipController {
         User user = curUser.get();
         List<FriendShip> friendShips = user.getFriendShips();
         List<User> friendList = getFriendsfromFriendships(friendShips,user);
+
         friendList.sort(new Comparator<User>() {
             @Override
             public int compare(User user1, User user2) {
@@ -66,7 +67,7 @@ public class FriendShipController {
                 if (firstNameComparison != 0) {
                     return firstNameComparison;
                 } else{
-                    return user1.getLastName().compareTo(user2.getLastName());
+                    return user1.getLastName().compareToIgnoreCase(user2.getLastName());
                 }
 
             }
@@ -105,15 +106,7 @@ public class FriendShipController {
             }
         }
         return ResponseEntity.ok(isFriend);
-
-
-
-
-
-
     }
-
-
 
     @GetMapping("/sameFriends")
     public ResponseEntity<List<User>> displayingFriendsInCommon(
