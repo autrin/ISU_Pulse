@@ -62,6 +62,10 @@ public class User {
     @JsonIgnore
     private List<FriendShip> friendshipsAsUser2;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<ChatSection> chatSections;
+
 
     public User() {
     }
