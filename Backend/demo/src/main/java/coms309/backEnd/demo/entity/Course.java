@@ -27,7 +27,6 @@ public class Course {
 
     @ManyToOne
     @JoinColumn
-    @JsonIgnore
     private Department department;
 
     @OneToMany(mappedBy = "course")

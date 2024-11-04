@@ -18,7 +18,6 @@ public class Teach {
     @JoinColumn
     private Schedule schedule;
 
-
     // Constructors
     public Teach() {
     }
