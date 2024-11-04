@@ -49,6 +49,10 @@ public class Schedule {
     @JsonIgnore
     private Teach teach;
 
+    @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<Announcement> announcements;
+
     public Schedule() {
     }
 }
