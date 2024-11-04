@@ -2,6 +2,7 @@ package com.coms309.isu_pulse_frontend.proifle_activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -149,6 +150,7 @@ public class EditProfileActivity extends AppCompatActivity {
 
         if (!checkcredential) {
             Toast.makeText(EditProfileActivity.this, "Please check credentials", Toast.LENGTH_SHORT).show();
+            Log.e("CredentialCheck", "Credentials were not verified.");
             return;
         }
 
