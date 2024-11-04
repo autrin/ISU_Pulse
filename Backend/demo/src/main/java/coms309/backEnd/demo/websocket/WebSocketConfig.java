@@ -1,4 +1,4 @@
-package coms309.backEnd.demo.config;
+package coms309.backEnd.demo.websocket;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
