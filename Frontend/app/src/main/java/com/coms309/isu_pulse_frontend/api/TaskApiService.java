@@ -235,6 +235,7 @@ public class TaskApiService {
         requestQueue.add(jsonObjectRequest);
     }
 
+
     public void deletePersonalTask(PersonalTask task, final TaskResponseListener listener) {
         String url = BASE_URL + "/personalTask/deletePersonalTask/" + netId + "?taskId=" + task.getId();
 
