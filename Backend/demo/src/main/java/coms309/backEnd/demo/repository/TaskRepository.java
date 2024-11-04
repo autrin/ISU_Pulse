@@ -17,6 +17,6 @@ public interface TaskRepository extends JpaRepository<Task,Long> {
 //    public List<Task> findAllByTaskType(TaskType taskType);
     public List<Task> findAllBySchedule(Schedule schedule);
 
-    @Query("SELECT t FROM Task t WHERE t.schedule.id = :scheduleId ORDER BY t.dueDate DESC")
-    List<Task> findAllByScheduleIdOrderByDueDateDesc(@Param("scheduleId") long scheduleId);
+    @Query("SELECT t FROM Task t WHERE t.schedule.id = :scheduleId AND t.dueDate > CURRENT_TIMESTAMP ORDER BY t.dueDate ASC")
+    List<Task> findUpcomingTasksByScheduleId(@Param("scheduleId") long scheduleId);
 }
