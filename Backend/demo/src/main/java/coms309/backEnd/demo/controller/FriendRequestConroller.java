@@ -108,7 +108,7 @@ public class FriendRequestConroller {
         Optional<User> curSender = userRepository.findUserByNetId(senderNetId);
         if (curSender.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("User with ID " + receiverNetId  + " not found.");
+                    .body("User with ID " + senderNetId  + " not found.");
         }
         User sender = curSender.get();
 
@@ -153,7 +153,7 @@ public class FriendRequestConroller {
         Optional<User> curSender = userRepository.findUserByNetId(senderNetId);
         if (curSender.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("User with ID " + receiverNetId  + " not found.");
+                    .body("User with ID " + senderNetId  + " not found.");
         }
         User sender = curSender.get();
 
@@ -194,7 +194,7 @@ public class FriendRequestConroller {
         Optional<User> curSender = userRepository.findUserByNetId(senderNetId);
         if (curSender.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("User with ID " + receiverNetId  + " not found.");
+                    .body("User with ID " + senderNetId  + " not found.");
         }
         User sender = curSender.get();
 
