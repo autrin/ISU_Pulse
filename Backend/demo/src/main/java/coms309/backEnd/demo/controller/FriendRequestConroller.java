@@ -92,7 +92,7 @@ public class FriendRequestConroller {
         return ResponseEntity.ok("Friend request sent.");
     }
 
-    @PutMapping("/accept")
+    @DeleteMapping("/accept")
     public ResponseEntity<String> acceptFriendRequest (
             @RequestParam String receiverNetId,
             @RequestParam String senderNetId
@@ -126,18 +126,17 @@ public class FriendRequestConroller {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body("You can not modify this friend request");
         }
-        // Set the friend request status into "Accepted" and save it in the friendRequestRepository
-        friendRequest.setStatus(RequestStatus.ACCEPTED);
-        friendRequestRepository.save(friendRequest);
 
         //Create the FriendShip Object and add it into the FriendShip table
         FriendShip friendShip = new FriendShip(friendRequest.getSender(), friendRequest.getReceiver());
         friendShipRepository.save(friendShip);
 
+        // After creating the friendship between 2 user, delete it in the friendRequestRepository
+        friendRequestRepository.delete(friendRequest);
         return ResponseEntity.ok("Friend request accepted");
     }
 
-    @PutMapping("/reject")
+    @DeleteMapping("/reject")
     public ResponseEntity<String> declineFriendRequest (
             @RequestParam String receiverNetId,
             @RequestParam String senderNetId
@@ -171,10 +170,8 @@ public class FriendRequestConroller {
                     .body("You can not modify this friend request");
         }
 
-        // Set the friend request status into "Rejected" and save it in friendRequestRepository
-        friendRequest.setStatus(RequestStatus.REJECTED);
-        friendRequestRepository.save(friendRequest);
-
+        // Delete it in friendRequestRepository
+        friendRequestRepository.delete(friendRequest);
         return ResponseEntity.ok("Friend request rejected");
     }
 

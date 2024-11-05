@@ -5,6 +5,7 @@ import coms309.backEnd.demo.entity.User;
 import coms309.backEnd.demo.repository.FriendShipRepository;
 import coms309.backEnd.demo.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -93,19 +94,11 @@ public class FriendShipController {
         }
         User user2 = curUser2.get();
 
-        // Get the friendShip lists of one users
-        List<FriendShip> friendShipListUser1 = user1.getFriendShips();
-        List<User> friendListUser1 = getFriendsfromFriendships(friendShipListUser1,user1);
-
-        // Then check if in the list of friend of one user, there is user 2 or not
-        boolean isFriend = false;
-        for(User friend : friendListUser1){
-            if (user2.getId() == friend.getId()) {
-                isFriend = true;
-                break;
-            }
+        Optional<FriendShip> friendShip = friendShipRepository.findFriendShipBetweenUsers(user1, user2);
+        if(friendShip.isEmpty()){
+            return ResponseEntity.ok(false);
         }
-        return ResponseEntity.ok(isFriend);
+        return ResponseEntity.ok(true);
     }
 
     @GetMapping("/sameFriends")
@@ -157,4 +150,36 @@ public class FriendShipController {
         List<User> listOfSuggestedFriends = userRepository.findUsersNotFriendsWith(user.getId());
         return ResponseEntity.ok(listOfSuggestedFriends);
     }
+
+    @DeleteMapping("/unfriend")
+    public ResponseEntity<String> unfriend(
+            @RequestParam String userNetId1,
+            @RequestParam String userNetId2) {
+
+        // Check if 2 users exist
+        Optional<User> curUser1 = userRepository.findUserByNetId(userNetId1);
+        if (curUser1.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("User with ID " + userNetId1 + " not found.");
+        }
+        User user1 = curUser1.get();
+
+        Optional<User> curUser2 = userRepository.findUserByNetId(userNetId2);
+        if (curUser2.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("User with ID " + userNetId2 + " not found.");
+        }
+        User user2 = curUser2.get();
+
+        // Check if the friendship between 2 users exists or not
+        Optional<FriendShip> friendship = friendShipRepository.findFriendShipBetweenUsers(user1, user2);
+        if (friendship.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Friendship between " + userNetId1 + " and " + userNetId2 + " does not exist.");
+        }
+
+        friendShipRepository.delete(friendship.get());
+        return ResponseEntity.ok("Unfriended successfully.");
+    }
+
 }
