@@ -242,13 +242,12 @@ public class TaskApiService {
     }
 
     public void deleteCourseTask(CourseTask task, final TaskResponseListener listener) {
-        String url = BASE_URL + "/deleteCourseTask/" + netId + "/" + task.gettId();
+        String url = BASE_URL + "/deleteCourseTask/" + netId + "/" + task.getId();
         JSONObject body = new JSONObject();
         try {
             body.put("title", task.getTitle());
             body.put("description", task.getDescription());
             body.put("dueDate", task.getDueDate().toString());
-            body.put("courseId", task.getCourse().getcId());
         } catch (Exception e) {
             e.printStackTrace();
         }
