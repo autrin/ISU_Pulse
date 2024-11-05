@@ -20,7 +20,7 @@ public class Announcement {
     private Schedule schedule;
 
     @ManyToOne
-    @JoinColumn(name = "faculty_id", nullable = false)
+    @JoinColumn(nullable = false)
     private Faculty faculty;
 
     public Announcement() {

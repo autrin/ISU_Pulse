@@ -10,15 +10,12 @@ import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
 @EnableWebSocket
 public class WebSocketConfig implements WebSocketConfigurer {
 
-//    @Autowired
-//    private AnnouncementWebSocketHandler announcementWebSocketHandler;
+    @Autowired
+    private AnnouncementWebSocketHandler announcementWebSocketHandler;
 
-//    @Autowired
-//    private final ChatWebSocketHandler chatWebSocketHandler;
-    //
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-//        registry.addHandler(announcementWebSocketHandler, "/ws/announcement");
-        // registry.addHandler(chatWebSocketHandler, "/ws/chat");
+        registry.addHandler(announcementWebSocketHandler, "/ws/announcement")
+                .setAllowedOrigins("*"); // Optional: Use only if you need SockJS support
     }
 }

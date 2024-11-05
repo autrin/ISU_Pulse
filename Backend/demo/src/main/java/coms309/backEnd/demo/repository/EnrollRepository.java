@@ -16,4 +16,6 @@ public interface EnrollRepository extends JpaRepository<Enroll, Long> {
 //   public Schedule findByEnroll(Enroll enroll);
     @Query("SELECT e.student FROM Enroll e WHERE e.schedule.id = :scheduleId")
     public List<User> findStudentsBySchedule(long scheduleId);
+
+    public List<Enroll> findBySchedule(Schedule schedule);
 }
