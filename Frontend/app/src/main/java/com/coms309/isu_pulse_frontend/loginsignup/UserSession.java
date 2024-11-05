@@ -7,10 +7,12 @@ public class UserSession {
 
     private static UserSession instance;
     private String netId;
+    private String userType;
 
     private UserSession(Context context) {
         SharedPreferences sharedPreferences = context.getSharedPreferences("UserSession", Context.MODE_PRIVATE);
         this.netId = sharedPreferences.getString("netId", null);
+        this.userType = sharedPreferences.getString("userType", null);
     }
 
     public static synchronized UserSession getInstance(Context context) {
@@ -24,12 +26,23 @@ public class UserSession {
         return netId;
     }
 
-    // New method to set the netId and save it in SharedPreferences
+    public String getUserType() {
+        return userType;
+    }
+
     public void setNetId(String netId, Context context) {
         this.netId = netId;
         SharedPreferences sharedPreferences = context.getSharedPreferences("UserSession", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("netId", netId);
+        editor.apply();
+    }
+
+    public void setUserType(String userType, Context context) {
+        this.userType = userType;
+        SharedPreferences sharedPreferences = context.getSharedPreferences("UserSession", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("userType", userType);
         editor.apply();
     }
 
