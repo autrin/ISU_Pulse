@@ -146,4 +146,15 @@ public class FriendShipController {
         }
         return ResponseEntity.ok(friendsInCommon);
     }
+
+    @GetMapping("/friendSuggestion/{netId}")
+    public ResponseEntity<List<User>> getFriendSuggestion(@PathVariable String netId){
+        Optional<User> curUser = userRepository.findUserByNetId(netId);
+        if(curUser.isEmpty()){
+            return  ResponseEntity.internalServerError().build();
+        }
+        User user = curUser.get();
+        List<User> listOfSuggestedFriends = userRepository.findUsersNotFriendsWith(user.getId());
+        return ResponseEntity.ok(listOfSuggestedFriends);
+    }
 }
