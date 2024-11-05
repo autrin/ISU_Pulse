@@ -34,8 +34,8 @@ public class ScheduleController {
 
     /**
      * This functions takes the list of enrollList and return the list of schedule
-     * @param enrollList
-     * @return
+     * @param enrollList the list of enrollList that one user takes
+     * @return scheduleList the list of schedule(including courses and recurring times of the specific section)
      */
     private List<Schedule> getScheduleList(List<Enroll> enrollList){
         List<Schedule> scheduleList = new ArrayList<>();
