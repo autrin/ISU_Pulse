@@ -70,7 +70,7 @@ public class LoginActivity extends AppCompatActivity {
                             String storedHashedPassword = result.getString("hashedPassword");
 
                             if (storedHashedPassword.equals(hashPassword)) {
-                                // Save netId using UserSession
+                                // Save netId and userType using UserSession
                                 UserSession.getInstance(LoginActivity.this).setNetId(netIdInput, LoginActivity.this);
                                 UserSession.getInstance(LoginActivity.this).setUserType(result.getString("user_type"), LoginActivity.this);
 
@@ -87,7 +87,7 @@ public class LoginActivity extends AppCompatActivity {
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
-                            Toast.makeText(LoginActivity.this, "Error parsing response", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(LoginActivity.this, "Error parsing response in onSuccess in LoginActivity", Toast.LENGTH_SHORT).show();
                         }
                     }
 
