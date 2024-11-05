@@ -72,6 +72,7 @@ public class LoginActivity extends AppCompatActivity {
                             if (storedHashedPassword.equals(hashPassword)) {
                                 // Save netId using UserSession
                                 UserSession.getInstance(LoginActivity.this).setNetId(netIdInput, LoginActivity.this);
+                                UserSession.getInstance(LoginActivity.this).setUserType(result.getString("userType"), LoginActivity.this);
 
                                 // Passwords match, login successful
                                 Toast.makeText(LoginActivity.this, "Login successful", Toast.LENGTH_SHORT).show(); // TODO: You can comment this later
