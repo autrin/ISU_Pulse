@@ -6,7 +6,7 @@
     android:padding="16dp">
 
     <CheckBox
-        android:id="@+id/checkBoxannouncement"
+        android:id="@+id/checkBoxAnnouncement"
         android:layout_width="37dp"
         android:layout_height="37dp" />
 
@@ -28,7 +28,7 @@
         android:textSize="16sp" />
 
     <TextView
-        android:id="@+id/announcement_timestamp "
+        android:id="@+id/announcement_timestamp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:focusableInTouchMode="true"
