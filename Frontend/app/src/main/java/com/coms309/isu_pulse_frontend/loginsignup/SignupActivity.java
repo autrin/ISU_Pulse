@@ -96,13 +96,10 @@ public class SignupActivity extends AppCompatActivity {
             String firstNameInput = firstname.getText().toString();
             String lastNameInput = lastname.getText().toString();
             String emailInput = email.getText().toString();
-            String netIdInput = netId.getText().toString();
+            String netIdInput = netId.getText().toString().replaceAll("[^a-zA-Z0-9]", ""); // Sanitize netIdInput to remove invalid characters
             String passwordInput = password.getText().toString();
             String hashedPassword = PasswordHasher.hashPassword(passwordInput);
             String retypePasswordInput = retypepassword.getText().toString();
-
-            // Sanitize netIdInput to remove any invalid characters
-            netIdInput = netIdInput.replaceAll("[^a-zA-Z0-9]", "");
 
             if (firstNameInput.isEmpty() || lastNameInput.isEmpty() || emailInput.isEmpty() || netIdInput.isEmpty() || passwordInput.isEmpty() || retypePasswordInput.isEmpty()) {
                 Toast.makeText(SignupActivity.this, "Please enter all fields", Toast.LENGTH_SHORT).show();
@@ -111,6 +108,7 @@ public class SignupActivity extends AppCompatActivity {
             } else if (!passwordInput.equals(retypePasswordInput)) {
                 Toast.makeText(SignupActivity.this, "Passwords do not match", Toast.LENGTH_SHORT).show();
             } else if (imageUri == null) {
+                // Pass netIdInput directly to the API and UserSession without additional variables
                 apiService.registerNewUser(
                         netIdInput,
                         firstNameInput,
@@ -123,9 +121,10 @@ public class SignupActivity extends AppCompatActivity {
                         new AuthenticationService.VolleyCallback() {
                             @Override
                             public void onSuccess(JSONObject result) {
+                                // Save netId using UserSession
+                                UserSession.getInstance(SignupActivity.this).setNetId(netIdInput, SignupActivity.this);
                                 Toast.makeText(SignupActivity.this, "Signup successful!", Toast.LENGTH_SHORT).show();
-                                Intent intent = new Intent(SignupActivity.this, ProfileActivity.class);
-                                startActivity(intent);
+                                startActivity(new Intent(SignupActivity.this, ProfileActivity.class));
                             }
 
                             @Override
@@ -135,12 +134,12 @@ public class SignupActivity extends AppCompatActivity {
                         }
                 );
             } else {
-                String finalNetIdInput = netIdInput;
+                // Use netIdInput directly in uploadImageToFirebase and API calls
                 uploadImageToFirebase(netIdInput, (downloadUrl) -> {
                     if (downloadUrl != null) {
                         // Proceed with signup using the download URL
                         apiService.registerNewUser(
-                                finalNetIdInput,
+                                netIdInput,
                                 firstNameInput,
                                 lastNameInput,
                                 emailInput,
@@ -151,9 +150,10 @@ public class SignupActivity extends AppCompatActivity {
                                 new AuthenticationService.VolleyCallback() {
                                     @Override
                                     public void onSuccess(JSONObject result) {
+                                        // Save netId using UserSession
+                                        UserSession.getInstance(SignupActivity.this).setNetId(netIdInput, SignupActivity.this);
                                         Toast.makeText(SignupActivity.this, "Signup successful!", Toast.LENGTH_SHORT).show();
-                                        Intent intent = new Intent(SignupActivity.this, ProfileActivity.class);
-                                        startActivity(intent);
+                                        startActivity(new Intent(SignupActivity.this, ProfileActivity.class));
                                     }
 
                                     @Override
@@ -162,8 +162,8 @@ public class SignupActivity extends AppCompatActivity {
                                     }
                                 }
                         );
-                        } else {
-                                Toast.makeText(SignupActivity.this, "Failed to get download URL", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(SignupActivity.this, "Failed to get download URL", Toast.LENGTH_SHORT).show();
                     }
                 });
             }
