@@ -3,6 +3,7 @@ package com.coms309.isu_pulse_frontend.api;
 import static com.coms309.isu_pulse_frontend.api.Constants.BASE_URL;
 
 import android.content.Context;
+import android.net.Uri;
 import android.util.Log;
 
 import com.android.volley.Request;
@@ -13,6 +14,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
+import com.coms309.isu_pulse_frontend.loginsignup.UserSession;
 import com.coms309.isu_pulse_frontend.model.Profile;
 import com.google.gson.Gson;
 
@@ -32,18 +34,21 @@ public class UpdateAccount {
     }
 
     public void updateUserPassword(
-            String netId,
+//            String netId,
             String newPassword,
             Context context,
             final VolleyCallback callback
     ) {
-        String url = BASE_URL + "users/updatepw/" + netId + "?newPassword=" + newPassword;
+        String netId = UserSession.getInstance(context).getNetId(); // Retrieve the netId dynamically
+        Log.d("UpdatePassword", "NetId: " + netId + ", New Password: " + newPassword);
+        String url = BASE_URL + "users/updatepw/" + netId + "?newPassword=" + newPassword; // can use Uri.encode(newPassword);
         RequestQueue queue = Volley.newRequestQueue(context);
 
         StringRequest putRequest = new StringRequest(
                 Request.Method.PUT, url,
                 callback::onSuccess,
                 error -> {
+                    Log.e("UpdatePasswordError", "Error response: " + error.toString());
                     callback.onError(error.toString());
                     error.printStackTrace();
                 }
@@ -52,7 +57,8 @@ public class UpdateAccount {
     }
 
     public static void fetchProfileData(Context context, final ProfileCallback callback) {
-        String url = BASE_URL + "profile/userTest"; //TODO: need to use the actual user's netId later
+        String netId = UserSession.getInstance(context).getNetId();  // Retrieve netId dynamically
+        String url = BASE_URL + "profile/" + netId;
         RequestQueue queue = Volley.newRequestQueue(context);
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
@@ -77,13 +83,14 @@ public class UpdateAccount {
     }
 
     public void updateProfile(
-            String netId,
+//            String netId,
             String description,
             String externalUrl,
             String linkedinUrl,
             Context context,
             final VolleyCallback callback
     ) {
+        String netId = UserSession.getInstance(context).getNetId();  // Retrieve netId dynamically
         // Construct the URL with query parameters for PUT request
         String url = BASE_URL + "profile/" + netId
                 + "?description=" + description

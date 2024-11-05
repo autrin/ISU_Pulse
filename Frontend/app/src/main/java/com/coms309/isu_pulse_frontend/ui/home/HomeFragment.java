@@ -100,7 +100,7 @@ public class HomeFragment extends Fragment {
     }
 
     public void populateTasksDue() {
-        taskApiService.getTasksDueToday(new TaskApiService.TaskResponseListener() {
+        taskApiService.getTasksIn2days(new TaskApiService.TaskResponseListener() {
             public void onResponse(List<Object> tasks) {
                 tasksDueToday.clear();
                 tasksDueToday.addAll(tasks);
