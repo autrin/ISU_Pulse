@@ -59,7 +59,11 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskVi
             PersonalTask personalTask = (PersonalTask) task;
             holder.title.setText(personalTask.getTitle());
             holder.description.setText(personalTask.getDescription());
-            holder.dueDate.setText(new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date(personalTask.getDueDate() * 1000)));
+
+            // Convert dueDate from milliseconds to date string
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+            String formattedDate = dateFormat.format(new Date(personalTask.getDueDate()));
+            holder.dueDate.setText(formattedDate);
         }
 
         holder.buttonEditTask.setOnClickListener(new View.OnClickListener() {

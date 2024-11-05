@@ -4,6 +4,7 @@ import static com.coms309.isu_pulse_frontend.api.Constants.BASE_URL;
 
 import android.content.Context;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -12,6 +13,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.coms309.isu_pulse_frontend.loginsignup.UserSession;
 import com.coms309.isu_pulse_frontend.ui.home.Course;
 import com.coms309.isu_pulse_frontend.ui.home.CourseTask;
 import com.coms309.isu_pulse_frontend.ui.home.Department;
@@ -28,14 +30,14 @@ import java.util.Locale;
 
 public class TaskApiService {
 
-    //    private static final String BASE_URL = "http://coms-3090-042.class.las.iastate.edu:8080";
-    private static final String NET_ID = "tamminh";
+    private String netId;
     private Context context;
     private RequestQueue requestQueue;
 
     public TaskApiService(Context context) {
         this.context = context;
         requestQueue = Volley.newRequestQueue(context);
+        this.netId = UserSession.getInstance(context).getNetId();
     }
 
     public interface TaskResponseListener {
@@ -43,8 +45,8 @@ public class TaskApiService {
         void onError(String message);
     }
 
-    public void getTasksDueToday(final TaskResponseListener listener) {
-        String url = BASE_URL + "/task/getTaskByUserIn2days/" + "tamminh";
+    public void getTasksIn2days(final TaskResponseListener listener) {
+        String url = BASE_URL + "/task/getTaskByUserIn2days/" + netId;
         JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, url, null,
                 new Response.Listener<JSONArray>() {
                     @Override
@@ -100,7 +102,7 @@ public class TaskApiService {
     }
 
     private void fetchPersonalTasks(final List<Object> tasks, final TaskResponseListener listener) {
-        String personalTasksUrl = BASE_URL + "/personalTask/getPersonalTasks/" + NET_ID;
+        String personalTasksUrl = BASE_URL + "/personalTask/getPersonalTasks/" + netId;
         JsonArrayRequest personalTasksRequest = new JsonArrayRequest(Request.Method.GET, personalTasksUrl, null,
                 new Response.Listener<JSONArray>() {
                     @Override
@@ -109,6 +111,7 @@ public class TaskApiService {
                         for (int i = 0; i < response.length(); i++) {
                             try {
                                 JSONObject jsonObject = response.getJSONObject(i);
+                                int taskId = jsonObject.getInt("id");
                                 String title = jsonObject.getString("title");
                                 String description = jsonObject.getString("description");
                                 String dueDateString = jsonObject.getString("dueDate");  // Fetch date as a string
@@ -117,9 +120,12 @@ public class TaskApiService {
                                 Date sqlDate = new Date(utilDate.getTime()); // Convert to java.sql.Date
                                 long dueDateMillis = sqlDate.getTime();// Convert java.sql.Date to a long (milliseconds since epoch)
 
-//                                String userNetId = jsonObject.getString("userNetId");
-                                String userNetId = "tamminh";
-                                PersonalTask task = new PersonalTask(1, title, description, dueDateMillis, userNetId); //TODO: Hardcoded taskid for now
+                                String userNetId = jsonObject.getJSONObject("user").getString("netId");
+                                if (!userNetId.equals(netId)) {
+                                    Toast.makeText(context, "userNetId mismatch between the json obj and userSession", Toast.LENGTH_SHORT).show();
+                                    Log.e("getPersonalTasks API Error", "userNetId mismatch between the json obj and userSession");
+                                }
+                                PersonalTask task = new PersonalTask(taskId, title, description, dueDateMillis, userNetId);
                                 tasks.add(task);
                             } catch (Exception e) {
                                 e.printStackTrace();
@@ -142,37 +148,43 @@ public class TaskApiService {
         requestQueue.add(personalTasksRequest);
     }
 
-    public void getLastPersonalTask(final TaskResponseListener listener) { // For later to get the last task id
-        String url = BASE_URL + "/personalTask/getLastPersonalTask/" + NET_ID;
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        try {
-                            int id = response.getInt("personalTaskId");
-                            List<Object> idList = new ArrayList<>();
-                            idList.add(id);
-                            listener.onResponse(idList);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            listener.onError("Failed to parse response");
-                        }
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        String errorMessage = error.getMessage() != null ? error.getMessage() : "Unknown error";
-                        Log.e("API Error", errorMessage);
-                        listener.onError(errorMessage);
-                    }
-                });
-
-        requestQueue.add(jsonObjectRequest);
-    }
+//    public void getLastPersonalTask(final TaskResponseListener listener) {
+//        String url = BASE_URL + "/personalTask/getLastPersonalTaskID/" + netId;
+//        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null,
+//                new Response.Listener<JSONObject>() {
+//                    @Override
+//                    public void onResponse(JSONObject response) {
+//                        try {
+//                            long id = response.getInt("lastTaskId");
+//                            List<Object> idList = new ArrayList<>();
+//                            idList.add(id);
+//                            listener.onResponse(idList);
+//                        } catch (Exception e) {
+//                            e.printStackTrace();
+//                            listener.onError("Failed to parse the response from the server.");
+//                        }
+//                    }
+//                },
+//                new Response.ErrorListener() {
+//                    @Override
+//                    public void onErrorResponse(VolleyError error) {
+//                        String errorMessage = error.getMessage() != null ? error.getMessage() : "Unknown error occurred while fetching the last task ID.";
+//                        Log.e("API Error", errorMessage);
+//                        listener.onError("Error fetching the last task ID: " + errorMessage);
+//                    }
+//                });
+//
+//        requestQueue.add(jsonObjectRequest);
+//    }
 
     public void createPersonalTask(PersonalTask task) {
-        String url = BASE_URL + "/personalTask/addPersonalTask/" + NET_ID + "?title=" + 16 + "&description=" + task.getDescription() + "&dueDateTimestamp=" + task.getDueDate(); // TODO: hardcoded for now taskid for now
+        // Construct the URL with netId, title, description, and dueDateTimestamp
+        String url = BASE_URL + "/personalTask/addPersonalTask/" + netId +
+                "?title=" + task.getTitle() +
+                "&description=" + task.getDescription() +
+                "&dueDateTimestamp=" + task.getDueDate();
+
+        // Create the new task
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, null,
                 new Response.Listener<JSONObject>() {
                     @Override
@@ -188,18 +200,18 @@ public class TaskApiService {
                     }
                 });
 
+        // Add the request to the request queue
         requestQueue.add(jsonObjectRequest);
     }
 
     public void updatePersonalTask(PersonalTask task) {
-        if (task.getId() == 0) {
+        if (task.getId() == 0) { // ! Do I need to check for null?
             Log.e("API Error", "Task ID cannot be null or empty for updating.");
             return;
         }
-        task.setId(1); //TODO: hardcoded for now
-        String url = BASE_URL + "/personalTask/updatePersonalTask/" + NET_ID +
-//                "?taskId=" + task.getId() +
-                "?taskId=" + 1 + //TODO: hardcoded for now
+
+        String url = BASE_URL + "/personalTask/updatePersonalTask/" + netId +
+                "?taskId=" + task.getId() +
                 "&title=" + task.getTitle() +
                 "&description=" + task.getDescription() +
                 "&dueDateTimestamp=" + task.getDueDate(); // Unix timestamp
@@ -224,9 +236,7 @@ public class TaskApiService {
 
 
     public void deletePersonalTask(PersonalTask task, final TaskResponseListener listener) {
-        task.setId(2); //TODO: hardcoded for now
-        String url = BASE_URL + "/personalTask/deletePersonalTask/" + NET_ID + "/" + task.getId();
-        String url1="coms-3090-042.class.las.iastate.edu:8080/personalTask/deletePersonalTask/autrin?taskId=6";
+        String url = BASE_URL + "/personalTask/deletePersonalTask/" + netId + "?taskId=" + task.getId();
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.DELETE, url, null,
                 new Response.Listener<JSONObject>() {
@@ -239,7 +249,7 @@ public class TaskApiService {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        String errorMessage = error.getMessage() != null ? error.getMessage() : "Unknown error";
+                        String errorMessage = error.getMessage() != null ? error.getMessage() : "Unknown error in deletePersonalTask()";
                         Log.e("API Error", errorMessage);
                     }
                 });
@@ -247,10 +257,8 @@ public class TaskApiService {
         requestQueue.add(jsonObjectRequest);
     }
 
-
-
     public void deleteCourseTask(CourseTask task, final TaskResponseListener listener) {
-        String url = BASE_URL + "/deleteCourseTask/" + NET_ID + "/" + task.gettId();
+        String url = BASE_URL + "/deleteCourseTask/" + netId + "/" + task.gettId();
         JSONObject body = new JSONObject();
         try {
             body.put("title", task.getTitle());

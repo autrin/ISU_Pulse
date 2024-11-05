@@ -71,8 +71,8 @@ public class TaskController {
     }
 
     @GetMapping("/scheduleTask/{scheduleId}")
-    public ResponseEntity<List<Task>> fetchTasksBySchedule(@PathVariable long scheduleId) {
-        List<Task> tasksOfSchedule = taskRepository.findAllByScheduleIdOrderByDueDateDesc(scheduleId);
+    public ResponseEntity<List<Task>> fetchUpcomingTasksBySchedule(@PathVariable long scheduleId) {
+        List<Task> tasksOfSchedule = taskRepository.findUpcomingTasksByScheduleId(scheduleId);
         return ResponseEntity.ok(tasksOfSchedule);
     }
 

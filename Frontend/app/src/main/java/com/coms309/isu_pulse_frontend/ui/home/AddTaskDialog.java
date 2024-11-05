@@ -1,6 +1,7 @@
 // AddTaskDialog.java
 package com.coms309.isu_pulse_frontend.ui.home;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,20 +16,31 @@ import androidx.fragment.app.DialogFragment;
 import com.coms309.isu_pulse_frontend.R;
 import com.coms309.isu_pulse_frontend.adapters.TaskListAdapter;
 import com.coms309.isu_pulse_frontend.api.TaskApiService;
+import com.coms309.isu_pulse_frontend.loginsignup.UserSession;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 public class AddTaskDialog extends DialogFragment {
 
     private TaskApiService taskApiService;
     private TaskListAdapter taskListAdapter;
     private HomeFragment homeFragment;
+    private String netId;
 
     public AddTaskDialog(TaskApiService taskApiService, TaskListAdapter taskListAdapter, HomeFragment homeFragment) {
         this.taskApiService = taskApiService;
         this.taskListAdapter = taskListAdapter;
         this.homeFragment = homeFragment;
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        // Initialize netId after fragment is attached to context
+        netId = UserSession.getInstance(context).getNetId();
     }
 
     @Nullable
@@ -47,14 +59,14 @@ public class AddTaskDialog extends DialogFragment {
                 String title = editTextTitle.getText().toString();
                 String description = editTextDescription.getText().toString();
                 String dueDateString = editTextDueDate.getText().toString();
-                long dueDateTimestamp = 0;
+                Long dueDateTimestamp = null;
                 try {
-                    dueDateTimestamp = new SimpleDateFormat("yyyy-MM-dd").parse(dueDateString).getTime() / 1000;
+                    dueDateTimestamp = new SimpleDateFormat("yyyy-MM-dd").parse(dueDateString).getTime();
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
 
-                PersonalTask newTask = new PersonalTask(1, title, description, dueDateTimestamp, "n001");
+                PersonalTask newTask = new PersonalTask(1, title, description, dueDateTimestamp, netId);
                 taskApiService.createPersonalTask(newTask);
                 homeFragment.addNewTask(newTask);
                 dismiss();
@@ -65,7 +77,7 @@ public class AddTaskDialog extends DialogFragment {
          *                     @Override
          *                     public void onResponse(String lastTaskId) {
          *                         String newTaskId = String.valueOf(Integer.parseInt(lastTaskId) + 1);
-         *                         PersonalTask newTask = new PersonalTask(newTaskId, title, description, dueDateTimestamp, "n001");
+         *                         PersonalTask newTask = new PersonalTask(newTaskId, title, description, dueDateTimestamp, netId);
          *                         taskApiService.createPersonalTask(newTask);
          *                         homeFragment.addNewTask(newTask);
          *                         dismiss();

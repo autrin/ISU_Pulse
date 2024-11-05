@@ -14,6 +14,7 @@ import com.bumptech.glide.Glide;
 import com.coms309.isu_pulse_frontend.MainActivity;
 import com.coms309.isu_pulse_frontend.R;
 import com.coms309.isu_pulse_frontend.course_functional.CourseView;
+import com.coms309.isu_pulse_frontend.loginsignup.UserSession;
 import com.coms309.isu_pulse_frontend.model.Profile;
 import com.coms309.isu_pulse_frontend.api.UpdateAccount;
 import com.google.android.material.appbar.MaterialToolbar;
@@ -79,8 +80,12 @@ public class ProfileActivity extends AppCompatActivity {
         });
 
         logout.setOnClickListener(v -> {
-            Intent intent = new Intent(ProfileActivity.this, MainActivity.class);
+            // Clear session data
+            UserSession.getInstance(ProfileActivity.this).clearSession(ProfileActivity.this);
+
+            Intent intent = new Intent(ProfileActivity.this, MainActivity.class); //TODO: Question Is this supposed to be MainActivity?
             startActivity(intent);
+            finish(); // Added this line too
         });
 
         fetchProfileData();
