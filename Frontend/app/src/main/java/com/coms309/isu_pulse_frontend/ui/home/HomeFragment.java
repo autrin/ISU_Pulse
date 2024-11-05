@@ -20,6 +20,7 @@ import com.coms309.isu_pulse_frontend.adapters.TaskListAdapter;
 import com.coms309.isu_pulse_frontend.adapters.WeeklyCalendarAdapter;
 import com.coms309.isu_pulse_frontend.api.TaskApiService;
 import com.coms309.isu_pulse_frontend.databinding.FragmentHomeBinding;
+import com.coms309.isu_pulse_frontend.loginsignup.UserSession;
 
 import java.util.ArrayList;
 import java.util.Arrays;
