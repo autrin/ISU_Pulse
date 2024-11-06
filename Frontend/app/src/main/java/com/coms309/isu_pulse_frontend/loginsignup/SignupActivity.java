@@ -237,14 +237,14 @@ public class SignupActivity extends AppCompatActivity {
 
 
     private void showImagePickerOptions() {
-        String[] options = {"Take Photo", "Choose from Gallery"};
+        String[] options = {"Take Photo", "Choose from Profile"};
         androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(this);
         builder.setTitle("Choose your profile picture");
         builder.setItems(options, (dialog, which) -> {
             if (which == 0) {
                 dispatchTakePictureIntent();
             } else if (which == 1) {
-                pickImageFromGallery();
+                pickImageFromProfile();
             }
         });
         builder.show();
@@ -267,7 +267,7 @@ public class SignupActivity extends AppCompatActivity {
         }
     }
 
-    private void pickImageFromGallery() {
+    private void pickImageFromProfile() {
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         startActivityForResult(intent, REQUEST_IMAGE_PICK);
     }

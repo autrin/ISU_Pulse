@@ -1,18 +1,18 @@
 <resources>
     <!-- App Name -->
-    <string name="app_name">ISU_Pulse_Frontend</string>
+    <string name="app_name">ISU Pulse</string>
 
     <!-- Navigation Drawer -->
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="nav_header_title">Android Studio</string>
-    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_title">%1$s %2$s</string> <!--This is supposed to be the First name and last name-->
+    <string name="nav_header_subtitle">%1$s</string> <!--This is supposed to be the email address -->
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
 
     <!-- Menu Items -->
-    <string name="menu_home">Home</string>
-    <string name="menu_gallery">Gallery</string>
+    <string name="menu_dashboard">Dashboard</string>
+    <string name="menu_profile">Profile</string>
     <string name="menu_courses">Courses</string>
 
     <!-- User Roles -->

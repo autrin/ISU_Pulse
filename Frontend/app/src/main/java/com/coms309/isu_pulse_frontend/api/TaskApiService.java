@@ -187,7 +187,6 @@ public class TaskApiService {
         requestQueue.add(jsonObjectRequest);
     }
 
-
     public void updatePersonalTask(PersonalTask task) {
         if (task.getId() == 0) { // ! Do I need to check for null?
             Log.e("API Error", "Task ID cannot be null or empty for updating.");

@@ -1,24 +1,22 @@
 package coms309.backEnd.demo.websocket;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import coms309.backEnd.demo.websocket.announcement.AnnouncementWebSocketHandler;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.socket.config.annotation.EnableWebSocket;
-import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
-import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
+import org.springframework.web.socket.config.annotation.*;
 
 @Configuration
 @EnableWebSocket
 public class WebSocketConfig implements WebSocketConfigurer {
 
-//    @Autowired
-//    private AnnouncementWebSocketHandler announcementWebSocketHandler;
+    private final AnnouncementWebSocketHandler announcementWebSocketHandler;
 
-//    @Autowired
-//    private final ChatWebSocketHandler chatWebSocketHandler;
-    //
+    public WebSocketConfig(AnnouncementWebSocketHandler announcementWebSocketHandler) {
+        this.announcementWebSocketHandler = announcementWebSocketHandler;
+    }
+
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-//        registry.addHandler(announcementWebSocketHandler, "/ws/announcement");
-        // registry.addHandler(chatWebSocketHandler, "/ws/chat");
+        registry.addHandler(announcementWebSocketHandler, "/ws/announcement")
+                .setAllowedOrigins("*"); // In production, specify allowed origins
     }
 }

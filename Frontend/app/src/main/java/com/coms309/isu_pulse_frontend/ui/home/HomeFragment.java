@@ -16,6 +16,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.coms309.isu_pulse_frontend.adapters.AnnouncementListAdapter;
 import com.coms309.isu_pulse_frontend.adapters.TaskListAdapter;
 import com.coms309.isu_pulse_frontend.adapters.WeeklyCalendarAdapter;
 import com.coms309.isu_pulse_frontend.api.TaskApiService;
@@ -33,10 +34,14 @@ public class HomeFragment extends Fragment {
     private TextView textViewAnnouncementTitle;
     private TaskListAdapter taskAdapter;
     private Button buttonAddTask;
+    private RecyclerView recyclerViewCalendar;
+    private RecyclerView recylcerViewTasksDueToday;
+    private RecyclerView recyclerViewAnnouncements;
+    private AnnouncementListAdapter announcementAdapter;
 
     private List<Object> tasksDueToday = new ArrayList<>();
     private List<String> events = new ArrayList<>();
-    private List<String> announcements = new ArrayList<>();
+    private List<Object> announcements = new ArrayList<>();
     private ListView listviwTasksDueToday;
     private TaskApiService taskApiService;
 
@@ -58,7 +63,7 @@ public class HomeFragment extends Fragment {
         textViewTasksDueTodayTitle.setTextSize(25);
         textViewTasksDueTodayTitle.setTypeface(null, Typeface.BOLD);
 
-        RecyclerView recyclerViewCalendar = binding.recyclerViewWeeklyCalendar;
+        recyclerViewCalendar = binding.recyclerViewWeeklyCalendar;
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
         layoutManager.setReverseLayout(false);
         recyclerViewCalendar.setLayoutManager(layoutManager);
@@ -67,11 +72,12 @@ public class HomeFragment extends Fragment {
         WeeklyCalendarAdapter calendarAdapter = new WeeklyCalendarAdapter(days, tasksDueToday, events);
         recyclerViewCalendar.setAdapter(calendarAdapter);
 
-        RecyclerView recylcerViewTasksDueToday = binding.recylcerViewTasksDueToday;
+        recylcerViewTasksDueToday = binding.recylcerViewTasksDueToday;
         LinearLayoutManager layoutManagerTasks = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
         recylcerViewTasksDueToday.setLayoutManager(layoutManagerTasks);
 
         taskApiService = new TaskApiService(getContext());
+
         taskAdapter = new TaskListAdapter(tasksDueToday, taskApiService, calendarAdapter); // Pass the TaskApiService instance
         recylcerViewTasksDueToday.setAdapter(taskAdapter);
 
@@ -85,6 +91,13 @@ public class HomeFragment extends Fragment {
         });
 
         populateTasksDue();
+
+        recyclerViewAnnouncements = binding.recylcerViewAnnouncements;
+        LinearLayoutManager layoutManagerAnnouncements = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
+        recyclerViewAnnouncements.setLayoutManager(layoutManagerAnnouncements);
+
+        announcementAdapter = new AnnouncementListAdapter(announcements, calendarAdapter);
+        recyclerViewAnnouncements.setAdapter(announcementAdapter);
 
         return root;
     }

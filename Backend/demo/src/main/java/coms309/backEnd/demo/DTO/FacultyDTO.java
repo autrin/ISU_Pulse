@@ -2,7 +2,6 @@ package coms309.backEnd.demo.DTO;
 
 import lombok.Data;
 
-// FacultySignupDTO.java
 @Data
 public class FacultyDTO {
     private String netId;
