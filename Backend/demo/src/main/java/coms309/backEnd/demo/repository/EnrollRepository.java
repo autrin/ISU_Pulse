@@ -8,12 +8,11 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface EnrollRepository extends JpaRepository<Enroll, Long> {
-//    public List<Enroll> findAllByStudentid(String sId);
-//    public Enroll findByStudentidAndCourseid(@Param("studentid") String sId, @Param("courseid") int courseId);
-//    public List<Enroll> findAllByStudent(User user);
-//   public Schedule findByEnroll(Enroll enroll);
     @Query("SELECT e.student FROM Enroll e WHERE e.schedule.id = :scheduleId")
     public List<User> findStudentsBySchedule(long scheduleId);
+    public List<Enroll> findBySchedule(Schedule schedule);
+    public List<Enroll> findByStudent(User user);
 }
