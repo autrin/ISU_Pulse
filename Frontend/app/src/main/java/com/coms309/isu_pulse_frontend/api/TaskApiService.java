@@ -1,5 +1,7 @@
 package com.coms309.isu_pulse_frontend.api;
 
+import static com.coms309.isu_pulse_frontend.api.Constants.BASE_URL;
+
 import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
@@ -28,8 +30,6 @@ import java.util.Locale;
 
 public class TaskApiService {
 
-    private static final String BASE_URL = "http://coms-3090-042.class.las.iastate.edu:8080";
-    //    private static final String NET_ID = "tamminh";
     private String netId;
     private Context context;
     private RequestQueue requestQueue;
@@ -203,7 +203,6 @@ public class TaskApiService {
         // Add the request to the request queue
         requestQueue.add(jsonObjectRequest);
     }
-
 
     public void updatePersonalTask(PersonalTask task) {
         if (task.getId() == 0) { // ! Do I need to check for null?
