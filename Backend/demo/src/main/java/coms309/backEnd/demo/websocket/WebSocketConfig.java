@@ -1,5 +1,6 @@
 package coms309.backEnd.demo.websocket;
 
+import coms309.backEnd.demo.websocket.announcement.AnnouncementWebSocketHandler;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.config.annotation.*;
 

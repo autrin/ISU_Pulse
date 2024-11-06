@@ -1,15 +1,16 @@
-package coms309.backEnd.demo.websocket;
+package coms309.backEnd.demo.websocket.announcement;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import coms309.backEnd.demo.DTO.AnnouncementDTO;
 import coms309.backEnd.demo.entity.*;
 import coms309.backEnd.demo.repository.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.web.socket.*;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.web.socket.CloseStatus;
+import org.springframework.web.socket.TextMessage;
+import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import java.net.URI;
