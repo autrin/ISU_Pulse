@@ -34,10 +34,8 @@ public class CourseDetailFragment extends Fragment {
         binding = FragmentCourseDetailBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        // Retrieve courseId if necessary
         if (getArguments() != null) {
-            courseId = getArguments().getLong("courseId");
-            // Example title setting for course
+            courseId = getArguments().getLong("courseId", -1);
             binding.courseTitle.setText("Course ID: " + courseId);
         }
 
