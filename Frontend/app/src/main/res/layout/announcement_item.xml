@@ -5,11 +5,11 @@
     android:orientation="vertical"
     android:padding="16dp">
 
-    <CheckBox
-        android:id="@+id/checkBoxAnnouncement"
-        android:layout_width="37dp"
-        android:layout_height="37dp"
-        android:checked="false" />
+    <!--    <CheckBox-->
+    <!--        android:id="@+id/checkBoxAnnouncement"-->
+    <!--        android:layout_width="37dp"-->
+    <!--        android:layout_height="37dp"-->
+    <!--        android:checked="false" />-->
 
     <TextView
         android:id="@+id/announcement_content"
