@@ -30,10 +30,6 @@ public class UserSession {
         return userType;
     }
 
-    public String getUserRole() {
-        return userType; // Using userType as the role identifier
-    }
-
     public void setNetId(String netId, Context context) {
         this.netId = netId;
         SharedPreferences sharedPreferences = context.getSharedPreferences("UserSession", Context.MODE_PRIVATE);

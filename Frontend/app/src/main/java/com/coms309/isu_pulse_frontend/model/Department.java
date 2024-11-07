@@ -1,4 +1,4 @@
-package com.coms309.isu_pulse_frontend.ui.home;
+package com.coms309.isu_pulse_frontend.model;
 
 public class Department {
     private String name;

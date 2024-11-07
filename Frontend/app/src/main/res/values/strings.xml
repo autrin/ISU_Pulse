@@ -31,4 +31,9 @@
     <!-- Uncomment if you decide to use the Guest button
     <string name="guest">Guest</string>
     -->
+    <string-array name="course_detail_options">
+        <item>Announcements</item>
+        <item>People</item>
+        <item>Tasks</item>
+    </string-array>
 </resources>

@@ -1,4 +1,4 @@
-package com.coms309.isu_pulse_frontend.ui.home;
+package com.coms309.isu_pulse_frontend.model;
 
 public class Course {
     private String code;
@@ -7,9 +7,16 @@ public class Course {
     private int credits;
     private int numSections;
     private Department department;
-    private int cId;
+    private long cId;
+    private String section;
 
-    public Course(String code, String title, String description, int credits, int numSections, Department department, int cId) {
+    public Course(long id, String title, String section) {
+        this.cId = id;
+        this.title = title;
+        this.section = section;
+    }
+
+    public Course(String code, String title, String description, int credits, int numSections, Department department, long cId) {
         this.code = code;
         this.title = title;
         this.description = description;
@@ -19,7 +26,7 @@ public class Course {
         this.cId = cId;
     }
 
-    public Course(String code, String title, String description, int credits, int numSections, String name, String location, int did, int cid) {
+    public Course(String code, String title, String description, int credits, int numSections, String name, String location, int did, long cid) {
         this.code = code;
         this.title = title;
         this.description = description;
@@ -77,11 +84,21 @@ public class Course {
     public void setDepartment(Department department) {
         this.department = department;
     }
-    public int getcId() {
+
+    public long getcId() {
         return cId;
     }
-    public void setcId(int cId) {
+
+    public void setcId(long cId) {
         this.cId = cId;
+    }
+
+    public String getSection() {
+        return section;
+    }
+
+    public void setSection(String section) {
+        this.section = section;
     }
 
 }

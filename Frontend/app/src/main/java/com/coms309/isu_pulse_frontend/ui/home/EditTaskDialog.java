@@ -15,6 +15,7 @@ import com.coms309.isu_pulse_frontend.R;
 import com.coms309.isu_pulse_frontend.adapters.TaskListAdapter;
 import com.coms309.isu_pulse_frontend.adapters.WeeklyCalendarAdapter;
 import com.coms309.isu_pulse_frontend.api.TaskApiService;
+import com.coms309.isu_pulse_frontend.model.PersonalTask;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

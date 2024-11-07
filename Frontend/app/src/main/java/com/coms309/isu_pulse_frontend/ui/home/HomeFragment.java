@@ -15,7 +15,6 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.coms309.isu_pulse_frontend.R;
 import com.coms309.isu_pulse_frontend.adapters.AnnouncementListAdapter;
 import com.coms309.isu_pulse_frontend.adapters.TaskListAdapter;
 import com.coms309.isu_pulse_frontend.adapters.WeeklyCalendarAdapter;
@@ -23,6 +22,7 @@ import com.coms309.isu_pulse_frontend.api.TaskApiService;
 import com.coms309.isu_pulse_frontend.databinding.FragmentHomeBinding;
 import com.coms309.isu_pulse_frontend.loginsignup.UserSession;
 import com.coms309.isu_pulse_frontend.model.Announcement;
+import com.coms309.isu_pulse_frontend.model.PersonalTask;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -53,7 +53,7 @@ public class HomeFragment extends Fragment {
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
         // Set Dashboard title based on user role
-        String userRole = UserSession.getInstance(getContext()).getUserRole();
+        String userRole = UserSession.getInstance(getContext()).getUserType();
         TextView dashboardTitle = binding.dashboardTitle;
         if ("TEACHER".equals(userRole)) {
             dashboardTitle.setText("Teacher Dashboard");
@@ -104,11 +104,11 @@ public class HomeFragment extends Fragment {
         recyclerViewAnnouncements = binding.recyclerViewAnnouncements;
         LinearLayoutManager layoutManagerAnnouncements = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
         recyclerViewAnnouncements.setLayoutManager(layoutManagerAnnouncements);
-        announcementAdapter = new AnnouncementListAdapter(announcements);
+        announcementAdapter = new AnnouncementListAdapter(announcements, "TEACHER".equals(UserSession.getInstance(getContext()).getUserType()));
         recyclerViewAnnouncements.setAdapter(announcementAdapter);
 
         // Commented out for now to avoid errors related to missing methods in TaskApiService
-        // populateAnnouncements();
+        populateAnnouncements();
 
         return root;
     }
@@ -163,7 +163,7 @@ public class HomeFragment extends Fragment {
         // Temporary placeholder code
         announcements.clear();
         // For now, manually add a sample announcement to avoid UI breakage
-        announcements.add(new Announcement(1L, "Sample Announcement", 1L, "facultyNetId", "2024-11-07T10:00:00.000-06:00", false));
+        announcements.add(new Announcement(1L, "Sample Announcement", 1L, "facultyNetId", "2024-11-07T10:00:00.000-06:00", "CourseName"));
         announcementAdapter.notifyDataSetChanged();
     }
 

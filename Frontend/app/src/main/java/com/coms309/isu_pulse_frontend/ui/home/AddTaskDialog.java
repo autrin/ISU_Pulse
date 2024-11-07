@@ -17,11 +17,10 @@ import com.coms309.isu_pulse_frontend.R;
 import com.coms309.isu_pulse_frontend.adapters.TaskListAdapter;
 import com.coms309.isu_pulse_frontend.api.TaskApiService;
 import com.coms309.isu_pulse_frontend.loginsignup.UserSession;
+import com.coms309.isu_pulse_frontend.model.PersonalTask;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
 
 public class AddTaskDialog extends DialogFragment {
 

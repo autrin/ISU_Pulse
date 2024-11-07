@@ -4,22 +4,19 @@
     tools:showIn="navigation_view">
 
     <group android:checkableBehavior="single">
+        <!-- Dashboard remains as-is -->
         <item
             android:id="@+id/nav_home"
             android:icon="@drawable/ic_menu_camera"
             android:title="Dashboard" />
+
+        <!-- Courses item to navigate to the Courses list page -->
         <item
             android:id="@+id/nav_courses"
             android:icon="@drawable/ic_menu_courses"
             android:title="Courses" />
-        <item
-            android:id="@+id/nav_announcements"
-            android:icon="@drawable/ic_menu_profile"
-            android:title="Announcements" />
-        <item
-            android:id="@+id/nav_tasks"
-            android:icon="@drawable/ic_launcher_background"
-            android:title="Tasks" />
+
+        <!-- Profile remains as-is -->
         <item
             android:id="@+id/nav_profile"
             android:icon="@drawable/ic_menu_profile"

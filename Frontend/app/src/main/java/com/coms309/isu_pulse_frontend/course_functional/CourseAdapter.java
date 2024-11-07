@@ -7,7 +7,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 import com.coms309.isu_pulse_frontend.R;
-import com.coms309.isu_pulse_frontend.ui.home.Course;
+import com.coms309.isu_pulse_frontend.model.Course;
 import java.util.List;
 
 public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseViewHolder> {

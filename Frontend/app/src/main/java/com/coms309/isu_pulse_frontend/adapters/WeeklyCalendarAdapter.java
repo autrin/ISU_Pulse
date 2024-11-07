@@ -9,8 +9,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.coms309.isu_pulse_frontend.R;
-import com.coms309.isu_pulse_frontend.ui.home.CourseTask;
-import com.coms309.isu_pulse_frontend.ui.home.PersonalTask;
+import com.coms309.isu_pulse_frontend.model.CourseTask;
+import com.coms309.isu_pulse_frontend.model.PersonalTask;
 import com.coms309.isu_pulse_frontend.viewholders.ViewHolder;
 
 import java.util.List;
