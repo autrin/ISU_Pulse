@@ -13,7 +13,7 @@ import com.coms309.isu_pulse_frontend.model.Course;
 
 import java.util.List;
 
-public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseViewHolder> {
+public class CourseListAdapter extends RecyclerView.Adapter<CourseListAdapter.CourseViewHolder> {
 
     private List<Course> courses;
     private OnCourseClickListener onCourseClickListener;
@@ -22,7 +22,7 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseView
         void onCourseClick(Long courseId);
     }
 
-    public CourseAdapter(List<Course> courses, OnCourseClickListener onCourseClickListener) {
+    public CourseListAdapter(List<Course> courses, OnCourseClickListener onCourseClickListener) {
         this.courses = courses;
         this.onCourseClickListener = onCourseClickListener;
     }
