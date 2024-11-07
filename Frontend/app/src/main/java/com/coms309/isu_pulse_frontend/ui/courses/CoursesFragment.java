@@ -4,10 +4,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
@@ -16,7 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.coms309.isu_pulse_frontend.R;
-import com.coms309.isu_pulse_frontend.adapters.CourseAdapter;
+import com.coms309.isu_pulse_frontend.adapters.CourseListAdapter;
 import com.coms309.isu_pulse_frontend.databinding.FragmentCoursesBinding;
 import com.coms309.isu_pulse_frontend.model.Course;
 
@@ -42,7 +40,7 @@ public class CoursesFragment extends Fragment {
 
         // Use sample data instead of getCourses()
         List<Course> sampleCourses = getSampleCourses();
-        CourseAdapter adapter = new CourseAdapter(sampleCourses, this::navigateToCourseDetail);
+        CourseListAdapter adapter = new CourseListAdapter(sampleCourses, this::navigateToCourseDetail);
         recyclerView.setAdapter(adapter);
 
         return root;
