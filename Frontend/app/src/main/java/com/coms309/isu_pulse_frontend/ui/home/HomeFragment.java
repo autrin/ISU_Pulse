@@ -15,7 +15,6 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.coms309.isu_pulse_frontend.R;
 import com.coms309.isu_pulse_frontend.adapters.AnnouncementListAdapter;
 import com.coms309.isu_pulse_frontend.adapters.TaskListAdapter;
 import com.coms309.isu_pulse_frontend.adapters.WeeklyCalendarAdapter;
@@ -23,6 +22,7 @@ import com.coms309.isu_pulse_frontend.api.TaskApiService;
 import com.coms309.isu_pulse_frontend.databinding.FragmentHomeBinding;
 import com.coms309.isu_pulse_frontend.loginsignup.UserSession;
 import com.coms309.isu_pulse_frontend.model.Announcement;
+import com.coms309.isu_pulse_frontend.model.PersonalTask;
 
 import java.util.ArrayList;
 import java.util.Arrays;

@@ -1,6 +1,4 @@
-package com.coms309.isu_pulse_frontend.ui.home;
-
-import com.coms309.isu_pulse_frontend.model.Course;
+package com.coms309.isu_pulse_frontend.model;
 
 import java.sql.Date;
 

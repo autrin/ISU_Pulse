@@ -1,7 +1,5 @@
 package com.coms309.isu_pulse_frontend.model;
 
-import com.coms309.isu_pulse_frontend.ui.home.Department;
-
 public class Course {
     private String code;
     private String title;
