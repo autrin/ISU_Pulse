@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
             // User is already logged in; proceed to profile activity
             Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
             startActivity(intent);
-            finish(); // Close MainActivity
+            finish();
             return;
         } else {
             // No saved session; show login screen
@@ -52,20 +52,14 @@ public class MainActivity extends AppCompatActivity {
             signInButton = findViewById(R.id.signInButton);
             signUpButton = findViewById(R.id.signUpButton);
 
-            signInButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-                    startActivity(intent);
-                }
+            signInButton.setOnClickListener(view -> {
+                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                startActivity(intent);
             });
 
-            signUpButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Intent intent = new Intent(MainActivity.this, SignupActivity.class);
-                    startActivity(intent);
-                }
+            signUpButton.setOnClickListener(view -> {
+                Intent intent = new Intent(MainActivity.this, SignupActivity.class);
+                startActivity(intent);
             });
         }
 
@@ -73,18 +67,16 @@ public class MainActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         setSupportActionBar(binding.appBarMain.toolbar);
-        binding.appBarMain.fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        binding.appBarMain.fab.setOnClickListener(view ->
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null)
-                        .setAnchorView(R.id.fab).show();
-            }
-        });
+                        .setAnchorView(R.id.fab).show()
+        );
+
         DrawerLayout drawer = binding.drawerLayout;
         navigationView = binding.navView;
 
-        // Passing each menu ID as a set of Ids because each menu should be considered as top-level destinations
+        // Passing each menu ID as a set of IDs because each menu should be considered as top-level destinations
         mAppBarConfiguration = new AppBarConfiguration.Builder(
                 R.id.nav_home, R.id.nav_Profile, R.id.nav_courses)
                 .setOpenableLayout(drawer)
@@ -95,16 +87,16 @@ public class MainActivity extends AppCompatActivity {
 
         // Check user role and set up navigation view accordingly
         String userRole = UserSession.getInstance(this).getUserRole();
-        if (userRole.equals("TEACHER")) {
+        if ("TEACHER".equals(userRole)) {
             setupTeacherMenu();
         } else {
             setupStudentMenu();
         }
+
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
@@ -112,8 +104,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onSupportNavigateUp() {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
-        return NavigationUI.navigateUp(navController, mAppBarConfiguration)
-                || super.onSupportNavigateUp();
+        return NavigationUI.navigateUp(navController, mAppBarConfiguration) || super.onSupportNavigateUp();
     }
 
     // Define teacher-specific menu setup
@@ -128,5 +119,10 @@ public class MainActivity extends AppCompatActivity {
         Menu menu = navigationView.getMenu();
         menu.clear();
         getMenuInflater().inflate(R.menu.student_main_drawer, menu); // Custom menu for students
+    }
+
+    // Getter for navigationView (for testing purposes)
+    public NavigationView getNavigationView() {
+        return navigationView;
     }
 }
