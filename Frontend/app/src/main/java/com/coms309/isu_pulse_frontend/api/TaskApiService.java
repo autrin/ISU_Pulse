@@ -14,9 +14,7 @@ import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.coms309.isu_pulse_frontend.loginsignup.UserSession;
-import com.coms309.isu_pulse_frontend.ui.home.Course;
 import com.coms309.isu_pulse_frontend.ui.home.CourseTask;
-import com.coms309.isu_pulse_frontend.ui.home.Department;
 import com.coms309.isu_pulse_frontend.ui.home.PersonalTask;
 
 import org.json.JSONArray;
