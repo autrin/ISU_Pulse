@@ -7,7 +7,6 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -16,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.coms309.isu_pulse_frontend.R;
 import com.coms309.isu_pulse_frontend.adapters.CourseListAdapter;
 import com.coms309.isu_pulse_frontend.databinding.FragmentCoursesBinding;
+import com.coms309.isu_pulse_frontend.loginsignup.UserSession;
 import com.coms309.isu_pulse_frontend.model.Course;
 
 import java.util.ArrayList;
@@ -28,11 +28,11 @@ public class CoursesFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        CoursesViewModel coursesViewModel =
-                new ViewModelProvider(this).get(CoursesViewModel.class);
-
         binding = FragmentCoursesBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
+
+        // Get the user role
+        String userRole = UserSession.getInstance(getContext()).getUserType();
 
         // Set up RecyclerView
         recyclerView = binding.recyclerViewCourses;
@@ -40,13 +40,13 @@ public class CoursesFragment extends Fragment {
 
         // Use sample data instead of getCourses()
         List<Course> sampleCourses = getSampleCourses();
-        CourseListAdapter adapter = new CourseListAdapter(sampleCourses, this::navigateToCourseDetail);
+        CourseListAdapter adapter = new CourseListAdapter(sampleCourses, userRole, this::navigateToCourseDetail);
         recyclerView.setAdapter(adapter);
 
         return root;
     }
 
-    // Function to navigate to CourseDetailFragment
+    // Function to navigate to CourseDetailFragment, only used by teachers
     private void navigateToCourseDetail(Long courseId) {
         Bundle args = new Bundle();
         args.putLong("courseId", courseId);
@@ -73,4 +73,5 @@ public class CoursesFragment extends Fragment {
         return courses;
     }
 }
+
 
