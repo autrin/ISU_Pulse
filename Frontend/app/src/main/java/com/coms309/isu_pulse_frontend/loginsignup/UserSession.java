@@ -30,6 +30,10 @@ public class UserSession {
         return userType;
     }
 
+    public String getUserRole() {
+        return userType; // Using userType as the role identifier
+    }
+
     public void setNetId(String netId, Context context) {
         this.netId = netId;
         SharedPreferences sharedPreferences = context.getSharedPreferences("UserSession", Context.MODE_PRIVATE);
@@ -50,7 +54,9 @@ public class UserSession {
         SharedPreferences sharedPreferences = context.getSharedPreferences("UserSession", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.remove("netId");
+        editor.remove("userType"); // Also clear the user type for consistency
         editor.apply();
         netId = null;
+        userType = null;
     }
 }
