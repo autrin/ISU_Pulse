@@ -60,7 +60,7 @@ public class CourseView extends AppCompatActivity implements CourseAdapter.OnCou
 
     private String getCurrentStudentId() {
         SharedPreferences prefs = getSharedPreferences("UserPrefs", MODE_PRIVATE);
-        return prefs.getString("studentId", "bachnguyen"); // Default to "bachnguyen" if not found
+        return prefs.getString("studentId", "bachnguyen"); // Default to "bachnguyen" if not found // TODO: fix this. it should not be a harcoded id
     }
 
     private void fetchEnrolledCourses(String sId) {

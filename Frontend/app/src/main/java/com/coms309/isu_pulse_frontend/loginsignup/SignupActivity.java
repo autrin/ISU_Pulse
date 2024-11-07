@@ -39,6 +39,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -123,6 +124,9 @@ public class SignupActivity extends AppCompatActivity {
                             public void onSuccess(JSONObject result) {
                                 // Save netId using UserSession
                                 UserSession.getInstance(SignupActivity.this).setNetId(netIdInput, SignupActivity.this);
+                                // Save user type using UserSession
+                                UserSession.getInstance(SignupActivity.this).setUserType(result.optString("user_type"), SignupActivity.this);
+
                                 Toast.makeText(SignupActivity.this, "Signup successful!", Toast.LENGTH_SHORT).show();
                                 startActivity(new Intent(SignupActivity.this, ProfileActivity.class));
                             }
@@ -150,10 +154,18 @@ public class SignupActivity extends AppCompatActivity {
                                 new AuthenticationService.VolleyCallback() {
                                     @Override
                                     public void onSuccess(JSONObject result) {
-                                        // Save netId using UserSession
-                                        UserSession.getInstance(SignupActivity.this).setNetId(netIdInput, SignupActivity.this);
-                                        Toast.makeText(SignupActivity.this, "Signup successful!", Toast.LENGTH_SHORT).show();
-                                        startActivity(new Intent(SignupActivity.this, ProfileActivity.class));
+                                        try {
+                                            // Save netId using UserSession
+                                            UserSession.getInstance(SignupActivity.this).setNetId(netIdInput, SignupActivity.this);
+                                            // Save user type using UserSession
+                                            UserSession.getInstance(SignupActivity.this).setUserType(result.getString("user_type"), SignupActivity.this);
+
+                                            Toast.makeText(SignupActivity.this, "Signup successful!", Toast.LENGTH_SHORT).show();
+                                            startActivity(new Intent(SignupActivity.this, ProfileActivity.class));
+                                        } catch (JSONException e) {
+                                            e.printStackTrace();
+                                            Toast.makeText(SignupActivity.this, "Error parsing response in onSuccess in SignupActivity", Toast.LENGTH_SHORT).show();
+                                        }
                                     }
 
                                     @Override

@@ -57,30 +57,13 @@ public class TaskApiService {
                             try {
                                 JSONObject jsonObject = response.getJSONObject(i);
                                 // Extract task details
-                                String tId = jsonObject.getString("tId");
-                                int section = jsonObject.getInt("section");
+                                long id = jsonObject.getLong("id");
                                 String title = jsonObject.getString("title");
                                 String description = jsonObject.getString("description");
                                 Date dueDate = Date.valueOf(jsonObject.getString("dueDate").split("T")[0]);
                                 String taskType = jsonObject.getString("taskType");
 
-                                // Extract course details
-                                JSONObject courseJson = jsonObject.getJSONObject("course");
-                                String courseCode = courseJson.getString("code");
-                                String courseTitle = courseJson.getString("title");
-                                String courseDescription = courseJson.getString("description");
-                                int courseCredits = courseJson.getInt("credits");
-                                int courseNumSections = courseJson.getInt("numSections");
-
-                                // Extract department details
-                                JSONObject departmentJson = courseJson.getJSONObject("department");
-                                String departmentName = departmentJson.getString("name");
-                                String departmentLocation = departmentJson.getString("location");
-                                int departmentId = departmentJson.getInt("did");
-
-                                Department department = new Department(departmentName, departmentLocation, departmentId);
-                                Course course = new Course(courseCode, courseTitle, courseDescription, courseCredits, courseNumSections, department, courseJson.getInt("cid"));
-                                CourseTask task = new CourseTask(tId, section, title, description, dueDate, taskType, course, department);
+                                CourseTask task = new CourseTask(id, title, description, dueDate, taskType);
                                 tasks.add(task);
                             } catch (Exception e) {
                                 e.printStackTrace();
@@ -258,13 +241,12 @@ public class TaskApiService {
     }
 
     public void deleteCourseTask(CourseTask task, final TaskResponseListener listener) {
-        String url = BASE_URL + "/deleteCourseTask/" + netId + "/" + task.gettId();
+        String url = BASE_URL + "/deleteCourseTask/" + netId + "/" + task.getId();
         JSONObject body = new JSONObject();
         try {
             body.put("title", task.getTitle());
             body.put("description", task.getDescription());
             body.put("dueDate", task.getDueDate().toString());
-            body.put("courseId", task.getCourse().getcId());
         } catch (Exception e) {
             e.printStackTrace();
         }
