@@ -108,7 +108,7 @@ public class HomeFragment extends Fragment {
         recyclerViewAnnouncements.setAdapter(announcementAdapter);
 
         // Commented out for now to avoid errors related to missing methods in TaskApiService
-        // populateAnnouncements();
+        populateAnnouncements();
 
         return root;
     }
