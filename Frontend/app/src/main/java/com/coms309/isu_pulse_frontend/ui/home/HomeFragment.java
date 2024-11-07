@@ -7,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -16,12 +15,14 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.coms309.isu_pulse_frontend.R;
 import com.coms309.isu_pulse_frontend.adapters.AnnouncementListAdapter;
 import com.coms309.isu_pulse_frontend.adapters.TaskListAdapter;
 import com.coms309.isu_pulse_frontend.adapters.WeeklyCalendarAdapter;
 import com.coms309.isu_pulse_frontend.api.TaskApiService;
 import com.coms309.isu_pulse_frontend.databinding.FragmentHomeBinding;
 import com.coms309.isu_pulse_frontend.loginsignup.UserSession;
+import com.coms309.isu_pulse_frontend.model.Announcement;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,14 +36,13 @@ public class HomeFragment extends Fragment {
     private TaskListAdapter taskAdapter;
     private Button buttonAddTask;
     private RecyclerView recyclerViewCalendar;
-    private RecyclerView recylcerViewTasksDueToday;
+    private RecyclerView recyclerViewTasksDueToday;
     private RecyclerView recyclerViewAnnouncements;
     private AnnouncementListAdapter announcementAdapter;
 
     private List<Object> tasksDueToday = new ArrayList<>();
     private List<String> events = new ArrayList<>();
-    private List<Object> announcements = new ArrayList<>();
-    private ListView listviwTasksDueToday;
+    private List<Announcement> announcements = new ArrayList<>(); // Use Announcement model for announcements
     private TaskApiService taskApiService;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -53,34 +53,35 @@ public class HomeFragment extends Fragment {
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        textViewAnnouncementTitle = binding.TextViewAnnouncementTitle;
+        // Set up Announcement title
+        textViewAnnouncementTitle = binding.announcementTitle;
         textViewAnnouncementTitle.setText("Announcements");
         textViewAnnouncementTitle.setTextSize(25);
         textViewAnnouncementTitle.setTypeface(null, Typeface.BOLD);
 
+        // Set up Tasks Due Today title
         textViewTasksDueTodayTitle = binding.textViewTasksDueToday;
         textViewTasksDueTodayTitle.setText("Tasks Due Today");
         textViewTasksDueTodayTitle.setTextSize(25);
         textViewTasksDueTodayTitle.setTypeface(null, Typeface.BOLD);
 
+        // Set up Weekly Calendar RecyclerView
         recyclerViewCalendar = binding.recyclerViewWeeklyCalendar;
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
-        layoutManager.setReverseLayout(false);
         recyclerViewCalendar.setLayoutManager(layoutManager);
-
         List<String> days = Arrays.asList("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday");
         WeeklyCalendarAdapter calendarAdapter = new WeeklyCalendarAdapter(days, tasksDueToday, events);
         recyclerViewCalendar.setAdapter(calendarAdapter);
 
-        recylcerViewTasksDueToday = binding.recylcerViewTasksDueToday;
+        // Set up Tasks Due Today RecyclerView
+        recyclerViewTasksDueToday = binding.recyclerViewTasksDueToday;
         LinearLayoutManager layoutManagerTasks = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
-        recylcerViewTasksDueToday.setLayoutManager(layoutManagerTasks);
-
+        recyclerViewTasksDueToday.setLayoutManager(layoutManagerTasks);
         taskApiService = new TaskApiService(getContext());
+        taskAdapter = new TaskListAdapter(tasksDueToday, taskApiService, calendarAdapter);
+        recyclerViewTasksDueToday.setAdapter(taskAdapter);
 
-        taskAdapter = new TaskListAdapter(tasksDueToday, taskApiService, calendarAdapter); // Pass the TaskApiService instance
-        recylcerViewTasksDueToday.setAdapter(taskAdapter);
-
+        // Add Task Button setup
         buttonAddTask = binding.buttonAddTask;
         buttonAddTask.setText("Add Task");
         buttonAddTask.setOnClickListener(new View.OnClickListener() {
@@ -92,12 +93,14 @@ public class HomeFragment extends Fragment {
 
         populateTasksDue();
 
-        recyclerViewAnnouncements = binding.recylcerViewAnnouncements;
+        // Set up Announcements RecyclerView
+        recyclerViewAnnouncements = binding.recyclerViewAnnouncements;
         LinearLayoutManager layoutManagerAnnouncements = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
         recyclerViewAnnouncements.setLayoutManager(layoutManagerAnnouncements);
-
-        announcementAdapter = new AnnouncementListAdapter(announcements, calendarAdapter);
+        announcementAdapter = new AnnouncementListAdapter(announcements);
         recyclerViewAnnouncements.setAdapter(announcementAdapter);
+
+        populateAnnouncements(); // Load announcements from API
 
         return root;
     }
@@ -113,18 +116,36 @@ public class HomeFragment extends Fragment {
         binding = null;
     }
 
-    public void populateTasksDue() {
+    private void populateTasksDue() {
         taskApiService.getTasksIn2days(new TaskApiService.TaskResponseListener() {
+            @Override
             public void onResponse(List<Object> tasks) {
                 tasksDueToday.clear();
                 tasksDueToday.addAll(tasks);
                 taskAdapter.notifyDataSetChanged();
-                binding.recyclerViewWeeklyCalendar.getAdapter().notifyDataSetChanged(); // ?
+                recyclerViewCalendar.getAdapter().notifyDataSetChanged();
             }
 
+            @Override
             public void onError(String message) {
-                String errorMessage = message != null ? message : "Unknown error";
-                Log.e("API Error", errorMessage);
+                Log.e("API Error", message != null ? message : "Unknown error");
+            }
+        });
+    }
+
+    private void populateAnnouncements() {
+        // Call to the API to get announcements for the current course/schedule
+        taskApiService.getAnnouncements(new TaskApiService.AnnouncementResponseListener() {
+            @Override
+            public void onResponse(List<Announcement> fetchedAnnouncements) {
+                announcements.clear();
+                announcements.addAll(fetchedAnnouncements);
+                announcementAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onError(String message) {
+                Log.e("API Error", message != null ? message : "Unknown error");
             }
         });
     }
@@ -132,7 +153,7 @@ public class HomeFragment extends Fragment {
     public void addNewTask(PersonalTask newTask) {
         tasksDueToday.add(newTask);
         taskAdapter.notifyItemInserted(tasksDueToday.size() - 1);
-        binding.recylcerViewTasksDueToday.scrollToPosition(tasksDueToday.size() - 1);
-        binding.recyclerViewWeeklyCalendar.getAdapter().notifyDataSetChanged();
+        recyclerViewTasksDueToday.scrollToPosition(tasksDueToday.size() - 1);
+        recyclerViewCalendar.getAdapter().notifyDataSetChanged();
     }
 }
