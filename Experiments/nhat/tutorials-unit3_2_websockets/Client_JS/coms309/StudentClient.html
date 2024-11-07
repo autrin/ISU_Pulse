@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Student Announcement Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+        }
+        #container {
+            width: 80%;
+            margin: auto;
+            padding: 20px;
+            background-color: #fff;
+            margin-top: 50px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        #connectionSection, #announcementSection {
+            margin-bottom: 30px;
+        }
+        #announcementList {
+            list-style-type: none;
+            padding: 0;
+        }
+        .announcementItem {
+            padding: 15px;
+            border-bottom: 1px solid #ddd;
+        }
+        .announcementHeader {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .announcementTimestamp {
+            color: #888;
+            font-size: 0.9em;
+        }
+        .messages {
+            color: green;
+            margin-top: 10px;
+        }
+        .errors {
+            color: red;
+            margin-top: 10px;
+        }
+        input[type="text"] {
+            padding: 8px;
+            width: 200px;
+            margin-right: 10px;
+        }
+        button {
+            padding: 8px 15px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <h2>Student Announcement Dashboard</h2>
+        
+        <!-- Connection Section -->
+        <div id="connectionSection">
+            <label for="netId">Net ID:</label>
+            <input type="text" id="netId" placeholder="Enter your Net ID">
+            <button onclick="connectStudent()">Connect as Student</button>
+            <div id="connectionStatus"></div>
+        </div>
+        
+        <!-- Announcement Section -->
+        <div id="announcementSection" style="display:none;">
+            <h3>Announcements</h3>
+            <ul id="announcementList"></ul>
+            <div id="feedback"></div>
+        </div>
+    </div>
+
+    <script>
+        let studentWs;
+
+        /**
+         * Establishes a WebSocket connection as a student.
+         */
+        function connectStudent() {
+            const netId = document.getElementById('netId').value.trim();
+            const connectionStatus = document.getElementById('connectionStatus');
+            const announcementSection = document.getElementById('announcementSection');
+            const feedback = document.getElementById('feedback');
+
+            // Clear previous feedback messages
+            connectionStatus.innerHTML = '';
+            feedback.innerHTML = '';
+
+            if (!netId) {
+                alert('Please enter your Net ID.');
+                return;
+            }
+
+            const wsUrl = `ws://localhost:8080/ws/announcement?netId=${encodeURIComponent(netId)}&userType=STUDENT`;
+            studentWs = new WebSocket(wsUrl);
+
+            studentWs.onopen = function(event) {
+                connectionStatus.innerHTML = `<span class="messages">Connected as Student: ${netId}</span>`;
+                announcementSection.style.display = 'block';
+            };
+
+            studentWs.onmessage = function(event) {
+                try {
+                    const data = JSON.parse(event.data);
+                    console.log('Received message:', data); // For debugging
+
+                    switch(data.action) {
+                        case 'history':
+                            handleHistoryMessage(data.announcements);
+                            break;
+                        case 'new':
+                            handleNewAnnouncement(data);
+                            break;
+                        case 'confirmation':
+                            displayFeedback(data.message, 'messages');
+                            break;
+                        case 'error':
+                            displayFeedback(data.message, 'errors');
+                            break;
+                        default:
+                            console.warn('Unknown action:', data.action);
+                    }
+                } catch (e) {
+                    console.error('Failed to parse message:', event.data);
+                    displayFeedback('Received invalid message format.', 'errors');
+                }
+            };
+
+            studentWs.onclose = function(event) {
+                connectionStatus.innerHTML = `<span class="errors">Disconnected from WebSocket server.</span>`;
+                announcementSection.style.display = 'none';
+            };
+
+            studentWs.onerror = function(event) {
+                console.error('WebSocket error:', event);
+                displayFeedback('WebSocket encountered an error.', 'errors');
+            };
+        }
+
+        /**
+         * Handles the 'history' action by displaying all announcements.
+         * @param {Array} announcements - Array of AnnouncementDTO objects.
+         */
+        function handleHistoryMessage(announcements) {
+            const announcementList = document.getElementById('announcementList');
+            announcementList.innerHTML = ''; // Clear existing announcements
+
+            if (announcements.length === 0) {
+                announcementList.innerHTML = '<li>No announcements available.</li>';
+                return;
+            }
+
+            announcements.forEach(function(announcement) {
+                const listItem = document.createElement('li');
+                listItem.className = 'announcementItem';
+
+                const header = document.createElement('div');
+                header.className = 'announcementHeader';
+                header.textContent = `From: ${announcement.facultyNetId}`;
+
+                const timestamp = document.createElement('div');
+                timestamp.className = 'announcementTimestamp';
+                timestamp.textContent = `Posted on: ${formatTimestamp(announcement.timestamp)}`;
+
+                const content = document.createElement('div');
+                content.textContent = `"${announcement.content}"`;
+
+                listItem.appendChild(header);
+                listItem.appendChild(timestamp);
+                listItem.appendChild(content);
+                announcementList.appendChild(listItem);
+            });
+        }
+
+        /**
+         * Handles the 'new' action by appending a new announcement.
+         * @param {Object} data - The entire message object containing action and announcement.
+         */
+        function handleNewAnnouncement(data) {
+            const announcement = data.announcement; // Access the nested announcement object
+
+            if (!announcement) {
+                console.warn('No announcement data found in the new message.');
+                return;
+            }
+
+            const announcementList = document.getElementById('announcementList');
+
+            // If no announcements exist, initialize the list
+            if (announcementList.children.length === 0) {
+                const noAnnounceItem = document.createElement('li');
+                noAnnounceItem.textContent = 'No announcements available.';
+                announcementList.appendChild(noAnnounceItem);
+            }
+
+            const listItem = document.createElement('li');
+            listItem.className = 'announcementItem';
+
+            const header = document.createElement('div');
+            header.className = 'announcementHeader';
+            header.textContent = `From: ${announcement.facultyNetId}`;
+
+            const timestamp = document.createElement('div');
+            timestamp.className = 'announcementTimestamp';
+            timestamp.textContent = `Posted on: ${formatTimestamp(announcement.timestamp)}`;
+
+            const content = document.createElement('div');
+            content.textContent = `"${announcement.content}"`;
+
+            listItem.appendChild(header);
+            listItem.appendChild(timestamp);
+            listItem.appendChild(content);
+            announcementList.insertBefore(listItem, announcementList.firstChild); // Add to top
+        }
+
+        /**
+         * Displays feedback messages to the user.
+         * @param {String} message - The message to display.
+         * @param {String} type - The type of message ('messages' or 'errors').
+         */
+        function displayFeedback(message, type) {
+            const feedback = document.getElementById('feedback');
+            feedback.innerHTML = `<span class="${type}">${message}</span>`;
+            setTimeout(() => {
+                feedback.innerHTML = '';
+            }, 5000); // Clear message after 5 seconds
+        }
+
+        /**
+         * Formats the timestamp to a readable string.
+         * @param {String} timestamp - The ISO 8601 timestamp string.
+         * @returns {String} - Formatted timestamp.
+         */
+        function formatTimestamp(timestamp) {
+            const date = new Date(timestamp);
+            return date.toLocaleString();
+        }
+    </script>
+</body>
+</html>

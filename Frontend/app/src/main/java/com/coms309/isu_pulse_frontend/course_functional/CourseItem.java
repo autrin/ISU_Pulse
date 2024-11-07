@@ -11,7 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.coms309.isu_pulse_frontend.R;
 import com.coms309.isu_pulse_frontend.api.CourseService;
-import com.coms309.isu_pulse_frontend.ui.home.Course;
+import com.coms309.isu_pulse_frontend.model.Course;
 
 public class CourseItem extends AppCompatActivity {
     private ImageButton deleteButton;

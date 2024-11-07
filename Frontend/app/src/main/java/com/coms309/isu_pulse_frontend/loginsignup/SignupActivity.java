@@ -26,6 +26,7 @@ import android.widget.Toast;
 import com.coms309.isu_pulse_frontend.MainActivity;
 import com.coms309.isu_pulse_frontend.R;
 import com.coms309.isu_pulse_frontend.api.AuthenticationService;
+import com.coms309.isu_pulse_frontend.model.Profile;
 import com.coms309.isu_pulse_frontend.proifle_activity.ProfileActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -38,6 +39,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -95,13 +97,10 @@ public class SignupActivity extends AppCompatActivity {
             String firstNameInput = firstname.getText().toString();
             String lastNameInput = lastname.getText().toString();
             String emailInput = email.getText().toString();
-            String netIdInput = netId.getText().toString();
+            String netIdInput = netId.getText().toString().replaceAll("[^a-zA-Z0-9]", ""); // Sanitize netIdInput to remove invalid characters
             String passwordInput = password.getText().toString();
             String hashedPassword = PasswordHasher.hashPassword(passwordInput);
             String retypePasswordInput = retypepassword.getText().toString();
-
-            // Sanitize netIdInput to remove any invalid characters
-            netIdInput = netIdInput.replaceAll("[^a-zA-Z0-9]", "");
 
             if (firstNameInput.isEmpty() || lastNameInput.isEmpty() || emailInput.isEmpty() || netIdInput.isEmpty() || passwordInput.isEmpty() || retypePasswordInput.isEmpty()) {
                 Toast.makeText(SignupActivity.this, "Please enter all fields", Toast.LENGTH_SHORT).show();
@@ -110,6 +109,7 @@ public class SignupActivity extends AppCompatActivity {
             } else if (!passwordInput.equals(retypePasswordInput)) {
                 Toast.makeText(SignupActivity.this, "Passwords do not match", Toast.LENGTH_SHORT).show();
             } else if (imageUri == null) {
+                // Pass netIdInput directly to the API and UserSession without additional variables
                 apiService.registerNewUser(
                         netIdInput,
                         firstNameInput,
@@ -122,9 +122,13 @@ public class SignupActivity extends AppCompatActivity {
                         new AuthenticationService.VolleyCallback() {
                             @Override
                             public void onSuccess(JSONObject result) {
+                                // Save netId using UserSession
+                                UserSession.getInstance(SignupActivity.this).setNetId(netIdInput, SignupActivity.this);
+                                // Save user type using UserSession
+                                UserSession.getInstance(SignupActivity.this).setUserType(result.optString("user_type"), SignupActivity.this);
+
                                 Toast.makeText(SignupActivity.this, "Signup successful!", Toast.LENGTH_SHORT).show();
-                                Intent intent = new Intent(SignupActivity.this, ProfileActivity.class);
-                                startActivity(intent);
+                                startActivity(new Intent(SignupActivity.this, ProfileActivity.class));
                             }
 
                             @Override
@@ -134,12 +138,12 @@ public class SignupActivity extends AppCompatActivity {
                         }
                 );
             } else {
-                String finalNetIdInput = netIdInput;
+                // Use netIdInput directly in uploadImageToFirebase and API calls
                 uploadImageToFirebase(netIdInput, (downloadUrl) -> {
                     if (downloadUrl != null) {
                         // Proceed with signup using the download URL
                         apiService.registerNewUser(
-                                finalNetIdInput,
+                                netIdInput,
                                 firstNameInput,
                                 lastNameInput,
                                 emailInput,
@@ -150,9 +154,18 @@ public class SignupActivity extends AppCompatActivity {
                                 new AuthenticationService.VolleyCallback() {
                                     @Override
                                     public void onSuccess(JSONObject result) {
-                                        Toast.makeText(SignupActivity.this, "Signup successful!", Toast.LENGTH_SHORT).show();
-                                        Intent intent = new Intent(SignupActivity.this, ProfileActivity.class);
-                                        startActivity(intent);
+                                        try {
+                                            // Save netId using UserSession
+                                            UserSession.getInstance(SignupActivity.this).setNetId(netIdInput, SignupActivity.this);
+                                            // Save user type using UserSession
+                                            UserSession.getInstance(SignupActivity.this).setUserType(result.getString("user_type"), SignupActivity.this);
+
+                                            Toast.makeText(SignupActivity.this, "Signup successful!", Toast.LENGTH_SHORT).show();
+                                            startActivity(new Intent(SignupActivity.this, ProfileActivity.class));
+                                        } catch (JSONException e) {
+                                            e.printStackTrace();
+                                            Toast.makeText(SignupActivity.this, "Error parsing response in onSuccess in SignupActivity", Toast.LENGTH_SHORT).show();
+                                        }
                                     }
 
                                     @Override
@@ -161,8 +174,8 @@ public class SignupActivity extends AppCompatActivity {
                                     }
                                 }
                         );
-                        } else {
-                                Toast.makeText(SignupActivity.this, "Failed to get download URL", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(SignupActivity.this, "Failed to get download URL", Toast.LENGTH_SHORT).show();
                     }
                 });
             }
@@ -224,14 +237,14 @@ public class SignupActivity extends AppCompatActivity {
 
 
     private void showImagePickerOptions() {
-        String[] options = {"Take Photo", "Choose from Gallery"};
+        String[] options = {"Take Photo", "Choose from Profile"};
         androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(this);
         builder.setTitle("Choose your profile picture");
         builder.setItems(options, (dialog, which) -> {
             if (which == 0) {
                 dispatchTakePictureIntent();
             } else if (which == 1) {
-                pickImageFromGallery();
+                pickImageFromProfile();
             }
         });
         builder.show();
@@ -254,7 +267,7 @@ public class SignupActivity extends AppCompatActivity {
         }
     }
 
-    private void pickImageFromGallery() {
+    private void pickImageFromProfile() {
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         startActivityForResult(intent, REQUEST_IMAGE_PICK);
     }

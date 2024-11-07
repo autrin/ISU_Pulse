@@ -52,11 +52,19 @@ dependencies {
     implementation(libs.volley)
     implementation(libs.firebase.storage)
     implementation(libs.firebase.auth)
-    testImplementation(libs.junit)
     implementation(libs.glide)
     annotationProcessor(libs.glide.compiler)
+
+    // Unit test dependencies
+    testImplementation(libs.junit)
+    testImplementation("org.robolectric:robolectric:4.9") // Robolectric for unit tests
+    testImplementation("androidx.test.ext:junit:1.1.5")
+    testImplementation("androidx.test:core:1.4.0")
+
+    // Android instrumentation test dependencies
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
+
     implementation("com.google.code.gson:gson:2.8.8")
 }
 

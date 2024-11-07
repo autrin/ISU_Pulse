@@ -13,11 +13,10 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.android.volley.toolbox.Volley;
 import com.coms309.isu_pulse_frontend.R;
 import com.coms309.isu_pulse_frontend.api.TaskApiService;
-import com.coms309.isu_pulse_frontend.ui.home.CourseTask;
-import com.coms309.isu_pulse_frontend.ui.home.PersonalTask;
+import com.coms309.isu_pulse_frontend.model.CourseTask;
+import com.coms309.isu_pulse_frontend.model.PersonalTask;
 import com.coms309.isu_pulse_frontend.viewholders.ViewHolder;
 import com.coms309.isu_pulse_frontend.ui.home.EditTaskDialog;
 
@@ -59,7 +58,11 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskVi
             PersonalTask personalTask = (PersonalTask) task;
             holder.title.setText(personalTask.getTitle());
             holder.description.setText(personalTask.getDescription());
-            holder.dueDate.setText(new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date(personalTask.getDueDate() * 1000)));
+
+            // Convert dueDate from milliseconds to date string
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+            String formattedDate = dateFormat.format(new Date(personalTask.getDueDate()));
+            holder.dueDate.setText(formattedDate);
         }
 
         holder.buttonEditTask.setOnClickListener(new View.OnClickListener() {

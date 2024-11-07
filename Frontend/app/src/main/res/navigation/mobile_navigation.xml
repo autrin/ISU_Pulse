@@ -8,18 +8,29 @@
     <fragment
         android:id="@+id/nav_home"
         android:name="com.coms309.isu_pulse_frontend.ui.home.HomeFragment"
-        android:label="@string/menu_home"
+        android:label="@string/menu_dashboard"
         tools:layout="@layout/fragment_home" />
 
     <fragment
-        android:id="@+id/nav_gallery"
+        android:id="@+id/nav_Profile"
         android:name="com.coms309.isu_pulse_frontend.ui.profile.ProfileFragment"
-        android:label="@string/menu_gallery"
-        tools:layout="@layout/fragment_gallery" />
+        android:label="@string/menu_profile"
+        tools:layout="@layout/fragment_profile" />
 
     <fragment
-        android:id="@+id/nav_slideshow"
-        android:name="com.coms309.isu_pulse_frontend.ui.slideshow.SlideshowFragment"
-        android:label="@string/menu_slideshow"
-        tools:layout="@layout/fragment_slideshow" />
+        android:id="@+id/nav_courses"
+        android:name="com.coms309.isu_pulse_frontend.ui.courses.CoursesFragment"
+        android:label="@string/menu_courses"
+        tools:layout="@layout/fragment_courses">
+        <action
+            android:id="@+id/action_coursesFragment_to_courseDetailFragment"
+            app:destination="@id/nav_course_detail" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_course_detail"
+        android:name="com.coms309.isu_pulse_frontend.ui.courses.CourseDetailFragment"
+        android:label="Course Details"
+        tools:layout="@layout/fragment_course_detail" />
+
 </navigation>

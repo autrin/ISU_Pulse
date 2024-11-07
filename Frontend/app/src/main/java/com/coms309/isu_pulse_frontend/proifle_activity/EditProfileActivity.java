@@ -2,6 +2,7 @@ package com.coms309.isu_pulse_frontend.proifle_activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -17,6 +18,7 @@ import com.coms309.isu_pulse_frontend.loginsignup.SignupActivity;
 import com.coms309.isu_pulse_frontend.model.Profile;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputLayout;
+import com.coms309.isu_pulse_frontend.loginsignup.UserSession;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -36,11 +38,16 @@ public class EditProfileActivity extends AppCompatActivity {
     private MaterialButton updateProfileButton;
     private boolean checkcredential = false;
     private Profile existingProfile;
+    private String userNetId; // Declare variable for net_id
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.update_profile);
+
+        // Initialize UserSession and get the user's net_id
+        UserSession session = UserSession.getInstance(this);
+        userNetId = session.getNetId(); // Fetch the net_id from session
 
         // Initialize UI elements
         backButton = findViewById(R.id.backButton);
@@ -101,11 +108,13 @@ public class EditProfileActivity extends AppCompatActivity {
         String oldPasswordinput = Objects.requireNonNull(oldPassword.getEditText()).getText().toString().trim();
         String hashPassword = PasswordHasher.hashPassword(oldPasswordinput);
 
-        if (netIdinput.isEmpty() || oldPasswordinput.isEmpty()) {
+        if (!netIdinput.equals(userNetId)) {
+            Toast.makeText(EditProfileActivity.this, "Net ID is wrong", Toast.LENGTH_SHORT).show();
+        } else if (netIdinput.isEmpty() || oldPasswordinput.isEmpty()) {
             Toast.makeText(EditProfileActivity.this, "Please enter all fields", Toast.LENGTH_SHORT).show();
         } else {
             AuthenticationService apiService = new AuthenticationService();
-            apiService.checkUserExists(netIdinput, EditProfileActivity.this, new AuthenticationService.VolleyCallback() {
+            apiService.checkUserExists(userNetId, EditProfileActivity.this, new AuthenticationService.VolleyCallback() {
                 @Override
                 public void onSuccess(JSONObject result) {
                     try {
@@ -141,6 +150,7 @@ public class EditProfileActivity extends AppCompatActivity {
 
         if (!checkcredential) {
             Toast.makeText(EditProfileActivity.this, "Please check credentials", Toast.LENGTH_SHORT).show();
+            Log.e("CredentialCheck", "Credentials were not verified.");
             return;
         }
 
@@ -160,9 +170,11 @@ public class EditProfileActivity extends AppCompatActivity {
         }
 
         String netIdValue = Objects.requireNonNull(netid.getEditText()).getText().toString();
+        if (!netIdValue.equals(userNetId))
+            Toast.makeText(EditProfileActivity.this, "Net ID is wrong", Toast.LENGTH_SHORT).show();
 
         // Update password
-        apiService.updateUserPassword(netIdValue, hashPassword, EditProfileActivity.this, new UpdateAccount.VolleyCallback() {
+        apiService.updateUserPassword(hashPassword, EditProfileActivity.this, new UpdateAccount.VolleyCallback() {  // Deleted netIdValue
             @Override
             public void onSuccess(String result) {
                 Toast.makeText(EditProfileActivity.this, "Password updated successfully", Toast.LENGTH_SHORT).show();
@@ -175,7 +187,7 @@ public class EditProfileActivity extends AppCompatActivity {
         });
 
         // Update profile with description, LinkedIn, and external URL
-        apiService.updateProfile("userTest", descriptionInput, externalUrlInput, linkedinUrlInput, EditProfileActivity.this, new UpdateAccount.VolleyCallback() {
+        apiService.updateProfile(descriptionInput, externalUrlInput, linkedinUrlInput, EditProfileActivity.this, new UpdateAccount.VolleyCallback() { // Deleted userNetId
             @Override
             public void onSuccess(String result) {
                 Toast.makeText(EditProfileActivity.this, "Profile updated successfully", Toast.LENGTH_SHORT).show();

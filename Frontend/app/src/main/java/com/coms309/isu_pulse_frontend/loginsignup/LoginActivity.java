@@ -1,5 +1,7 @@
 package com.coms309.isu_pulse_frontend.loginsignup;
 
+import static androidx.core.content.SharedPreferencesKt.edit;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -8,6 +10,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.content.SharedPreferences;
 
 // Other necessary imports
 import com.coms309.isu_pulse_frontend.MainActivity;
@@ -67,10 +70,14 @@ public class LoginActivity extends AppCompatActivity {
                             String storedHashedPassword = result.getString("hashedPassword");
 
                             if (storedHashedPassword.equals(hashPassword)) {
-                                // Passwords match, login successful
-                                Toast.makeText(LoginActivity.this, "Login successful", Toast.LENGTH_SHORT).show();
+                                // Save netId and userType using UserSession
+                                UserSession.getInstance(LoginActivity.this).setNetId(netIdInput, LoginActivity.this);
+                                UserSession.getInstance(LoginActivity.this).setUserType(result.getString("user_type"), LoginActivity.this);
 
-//                                    // Proceed to the main activity
+                                // Passwords match, login successful
+                                Toast.makeText(LoginActivity.this, "Login successful", Toast.LENGTH_SHORT).show(); // TODO: You can comment this later
+
+                                // Proceed to the main activity
                                 Intent intent = new Intent(LoginActivity.this, ProfileActivity.class);
                                 startActivity(intent);
                                 finish();
@@ -80,7 +87,7 @@ public class LoginActivity extends AppCompatActivity {
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
-                            Toast.makeText(LoginActivity.this, "Error parsing response", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(LoginActivity.this, "Error parsing response in onSuccess in LoginActivity", Toast.LENGTH_SHORT).show();
                         }
                     }
 

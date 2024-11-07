@@ -19,7 +19,6 @@ public class AuthenticationService {
     // Define a callback interface to handle the asynchronous response
     public interface VolleyCallback {
         void onSuccess(JSONObject result);
-
         void onError(String message);
     }
 

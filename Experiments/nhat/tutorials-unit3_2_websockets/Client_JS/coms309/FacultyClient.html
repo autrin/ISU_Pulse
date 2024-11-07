@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Faculty WebSocket Test</title>
+</head>
+<body>
+    <h2>Faculty WebSocket Test</h2>
+    <div>
+        <label for="netId">Net ID:</label>
+        <input type="text" id="netId" placeholder="Enter your Net ID">
+        <button onclick="connectFaculty()">Connect as Faculty</button>
+    </div>
+    <div id="facultyControls" style="display:none;">
+        <h3>Post Announcement</h3>
+        <label for="scheduleId">Schedule ID:</label>
+        <input type="text" id="scheduleId" placeholder="Enter Schedule ID">
+        <br>
+        <label for="content">Content:</label>
+        <input type="text" id="content" placeholder="Enter Announcement Content">
+        <br>
+        <button onclick="postAnnouncement()">Post Announcement</button>
+
+        <h3>Update Announcement</h3>
+        <label for="updateAnnouncementId">Announcement ID:</label>
+        <input type="text" id="updateAnnouncementId" placeholder="Enter Announcement ID">
+        <br>
+        <label for="updateContent">New Content:</label>
+        <input type="text" id="updateContent" placeholder="Enter New Content">
+        <br>
+        <button onclick="updateAnnouncement()">Update Announcement</button>
+
+        <h3>Delete Announcement</h3>
+        <label for="deleteAnnouncementId">Announcement ID:</label>
+        <input type="text" id="deleteAnnouncementId" placeholder="Enter Announcement ID">
+        <br>
+        <button onclick="deleteAnnouncement()">Delete Announcement</button>
+    </div>
+    <div>
+        <h3>Messages</h3>
+        <textarea id="facultyMessages" rows="10" cols="100" readonly></textarea>
+    </div>
+
+    <script>
+        var facultyWs;
+
+        function connectFaculty() {
+            var netId = document.getElementById('netId').value;
+            if (!netId) {
+                alert('Please enter your Net ID.');
+                return;
+            }
+
+            var wsUrl = 'ws://localhost:8080/ws/announcement?netId=' + encodeURIComponent(netId) + '&userType=FACULTY';
+            facultyWs = new WebSocket(wsUrl);
+
+            facultyWs.onopen = function(event) {
+                logFacultyMessage('Connected as Faculty: ' + netId);
+                document.getElementById('facultyControls').style.display = 'block';
+            };
+
+            facultyWs.onmessage = function(event) {
+                logFacultyMessage('Received: ' + event.data);
+            };
+
+            facultyWs.onclose = function(event) {
+                logFacultyMessage('Disconnected from WebSocket server.');
+                document.getElementById('facultyControls').style.display = 'none';
+            };
+
+            facultyWs.onerror = function(event) {
+                logFacultyMessage('WebSocket error: ' + event);
+            };
+        }
+
+        function postAnnouncement() {
+            var scheduleId = document.getElementById('scheduleId').value;
+            var content = document.getElementById('content').value;
+
+            if (!scheduleId || !content) {
+                alert('Please enter both Schedule ID and Announcement Content.');
+                return;
+            }
+
+            var message = {
+                action: 'post',
+                scheduleId: scheduleId,
+                content: content
+            };
+
+            facultyWs.send(JSON.stringify(message));
+            logFacultyMessage('Posted announcement to Schedule ' + scheduleId + ': "' + content + '"');
+        }
+
+        function updateAnnouncement() {
+            var announcementId = document.getElementById('updateAnnouncementId').value;
+            var newContent = document.getElementById('updateContent').value;
+
+            if (!announcementId || !newContent) {
+                alert('Please enter both Announcement ID and New Content.');
+                return;
+            }
+
+            var message = {
+                action: 'update',
+                announcementId: announcementId,
+                content: newContent
+            };
+
+            facultyWs.send(JSON.stringify(message));
+            logFacultyMessage('Updated announcement ID ' + announcementId + ' with new content: "' + newContent + '"');
+        }
+
+        function deleteAnnouncement() {
+            var announcementId = document.getElementById('deleteAnnouncementId').value;
+
+            if (!announcementId) {
+                alert('Please enter Announcement ID.');
+                return;
+            }
+
+            var message = {
+                action: 'delete',
+                announcementId: announcementId
+            };
+
+            facultyWs.send(JSON.stringify(message));
+            logFacultyMessage('Deleted announcement ID ' + announcementId);
+        }
+
+        function logFacultyMessage(message) {
+            var messages = document.getElementById('facultyMessages');
+            messages.value += message + '\n';
+            messages.scrollTop = messages.scrollHeight;
+        }
+    </script>
+</body>
+</html>

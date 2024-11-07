@@ -1,9 +1,9 @@
-package com.coms309.isu_pulse_frontend.ui.home;
+package com.coms309.isu_pulse_frontend.model;
 
 import java.sql.Date;
 
 public class CourseTask {
-    private String tId;
+    private long id;
     private int section;
     private String title;
     private String description;
@@ -12,15 +12,13 @@ public class CourseTask {
     private Course course;
     private Department department;
 
-    public CourseTask(String tId, int section, String title, String description, Date dueDate, String taskType, Course course, Department department) {
-        this.tId = tId;
+    public CourseTask(long id, String title, String description, Date dueDate, String taskType) {
+        this.id = id;
         this.section = section;
         this.title = title;
         this.description = description;
         this.dueDate = dueDate;
         this.taskType = taskType;
-        this.course = course;
-        this.department = department;
     }
 
     public String getTaskType() {
@@ -39,20 +37,8 @@ public class CourseTask {
         return title;
     }
 
-    public int getSection() {
-        return section;
+    public long getId() {
+        return id;
     }
 
-    public String gettId() {
-        return tId;
-    }
-
-
-    public Course getCourse() {
-        return course;
-    }
-
-    public Department getDepartment() {
-        return department;
-    }
 }

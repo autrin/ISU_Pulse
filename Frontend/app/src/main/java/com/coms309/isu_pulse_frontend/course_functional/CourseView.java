@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.coms309.isu_pulse_frontend.R;
 import com.coms309.isu_pulse_frontend.api.CourseService;
 import com.coms309.isu_pulse_frontend.proifle_activity.ProfileActivity;
-import com.coms309.isu_pulse_frontend.ui.home.Course;
+import com.coms309.isu_pulse_frontend.model.Course;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,7 +60,7 @@ public class CourseView extends AppCompatActivity implements CourseAdapter.OnCou
 
     private String getCurrentStudentId() {
         SharedPreferences prefs = getSharedPreferences("UserPrefs", MODE_PRIVATE);
-        return prefs.getString("studentId", "bachnguyen"); // Default to "bachnguyen" if not found
+        return prefs.getString("studentId", "bachnguyen"); // Default to "bachnguyen" if not found // TODO: fix this. it should not be a harcoded id
     }
 
     private void fetchEnrolledCourses(String sId) {

@@ -15,12 +15,13 @@ import com.coms309.isu_pulse_frontend.R;
 import com.coms309.isu_pulse_frontend.adapters.TaskListAdapter;
 import com.coms309.isu_pulse_frontend.adapters.WeeklyCalendarAdapter;
 import com.coms309.isu_pulse_frontend.api.TaskApiService;
-import com.coms309.isu_pulse_frontend.ui.home.PersonalTask;
+import com.coms309.isu_pulse_frontend.model.PersonalTask;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+
 public class EditTaskDialog extends DialogFragment {
 
     private TaskApiService taskApiService;
@@ -49,7 +50,7 @@ public class EditTaskDialog extends DialogFragment {
             PersonalTask personalTask = (PersonalTask) task;
             editTextTitle.setText(personalTask.getTitle());
             editTextDescription.setText(personalTask.getDescription());
-            editTextDueDate.setText(new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date(personalTask.getDueDate() * 1000)));
+            editTextDueDate.setText(new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date(personalTask.getDueDate())));
         }
 
         buttonSubmit.setOnClickListener(new View.OnClickListener() {
@@ -58,9 +59,9 @@ public class EditTaskDialog extends DialogFragment {
                 String title = editTextTitle.getText().toString();
                 String description = editTextDescription.getText().toString();
                 String dueDateString = editTextDueDate.getText().toString();
-                long dueDateTimestamp = 0;
+                Long dueDateTimestamp = null;
                 try {
-                    dueDateTimestamp = new SimpleDateFormat("yyyy-MM-dd").parse(dueDateString).getTime() / 1000;
+                    dueDateTimestamp = new SimpleDateFormat("yyyy-MM-dd").parse(dueDateString).getTime();
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
