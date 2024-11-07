@@ -17,13 +17,15 @@ public class CourseListAdapter extends RecyclerView.Adapter<CourseListAdapter.Co
 
     private List<Course> courses;
     private OnCourseClickListener onCourseClickListener;
+    private String userRole;
 
     public interface OnCourseClickListener {
         void onCourseClick(Long courseId);
     }
 
-    public CourseListAdapter(List<Course> courses, OnCourseClickListener onCourseClickListener) {
+    public CourseListAdapter(List<Course> courses, String userRole, OnCourseClickListener onCourseClickListener) {
         this.courses = courses;
+        this.userRole = userRole;
         this.onCourseClickListener = onCourseClickListener;
     }
 
@@ -38,7 +40,12 @@ public class CourseListAdapter extends RecyclerView.Adapter<CourseListAdapter.Co
     public void onBindViewHolder(@NonNull CourseViewHolder holder, int position) {
         Course course = courses.get(position);
         holder.courseTitle.setText(course.getTitle() + " - Section " + course.getSection());
-        holder.itemView.setOnClickListener(v -> onCourseClickListener.onCourseClick(course.getcId()));
+        // Only set click listener if user is a teacher
+        if ("TEACHER".equals(userRole)) {
+            holder.itemView.setOnClickListener(v -> onCourseClickListener.onCourseClick(course.getcId()));
+        } else {
+            holder.itemView.setOnClickListener(null); // Prevent click for students
+        }
     }
 
     @Override
