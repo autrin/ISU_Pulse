@@ -13,7 +13,7 @@ public class PersonalTask {
     // This is the id for personal task
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private long id;
 
     private String title;
 

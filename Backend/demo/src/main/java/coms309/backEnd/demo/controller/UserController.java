@@ -11,10 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.List;
-import java.util.Optional;
+
+import java.util.*;
 
 @RestController
 @RequestMapping("/users")
@@ -138,6 +136,17 @@ public class UserController {
             return  ResponseEntity.internalServerError().build();
         }
         List<User> listOfAllStudent = allStudents.get();
+        listOfAllStudent.sort(new Comparator<User>() {
+            @Override
+            public int compare(User user1, User user2) {
+                int firstNameComparison = user1.getFirstName().compareToIgnoreCase(user2.getFirstName());
+                if (firstNameComparison != 0) {
+                    return firstNameComparison;
+                } else{
+                    return user1.getLastName().compareToIgnoreCase(user2.getLastName());
+                }
+            }
+        });
         return ResponseEntity.ok(listOfAllStudent);
     }
 }

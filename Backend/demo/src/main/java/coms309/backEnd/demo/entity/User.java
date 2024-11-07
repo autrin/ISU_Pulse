@@ -63,6 +63,7 @@ public class User {
     private List<FriendShip> friendshipsAsUser2;
 
 
+
     public User() {
     }
 
