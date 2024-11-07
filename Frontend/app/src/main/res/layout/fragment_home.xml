@@ -5,27 +5,31 @@
     android:layout_height="match_parent"
     tools:context=".ui.home.HomeFragment">
 
+    <!-- Dashboard Title -->
     <TextView
         android:id="@+id/dashboardTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Teacher Dashboard"
         android:textSize="24sp"
         android:textStyle="bold"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:padding="16dp" />
+        android:paddingTop="16dp"
+        android:layout_marginStart="24dp" />
 
+    <!-- Announcements Title -->
     <TextView
         android:id="@+id/announcementTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Announcements"
         android:textSize="18sp"
-        android:padding="8dp"
+        android:paddingTop="8dp"
+        android:layout_marginStart="24dp"
         app:layout_constraintTop_toBottomOf="@id/dashboardTitle"
         app:layout_constraintStart_toStartOf="parent" />
 
+    <!-- RecyclerView for Announcements -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewAnnouncements"
         android:layout_width="match_parent"
@@ -34,35 +38,40 @@
         app:layout_constraintStart_toStartOf="parent"
         android:padding="8dp" />
 
+    <!-- Tasks Due Today Title -->
     <TextView
         android:id="@+id/textViewTasksDueToday"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="Tasks Due Today"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:layout_marginStart="24dp"
         app:layout_constraintTop_toBottomOf="@id/recyclerViewAnnouncements"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.072"
-        app:layout_constraintVertical_bias="0.278" />
+        app:layout_constraintStart_toStartOf="parent" />
 
+    <!-- Add Task Button -->
     <Button
         android:id="@+id/buttonAddTask"
         android:layout_width="116dp"
         android:layout_height="41dp"
+        android:text="Add Task"
         app:layout_constraintTop_toBottomOf="@id/textViewTasksDueToday"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@id/textViewTasksDueToday"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.945"
-        app:layout_constraintVertical_bias="0.314" />
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintVertical_bias="0.5" />
 
+    <!-- RecyclerView for Tasks Due Today -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewTasksDueToday"
-        android:layout_width="411dp"
+        android:layout_width="match_parent"
         android:layout_height="211dp"
         app:layout_constraintTop_toBottomOf="@id/buttonAddTask"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
+    <!-- Weekly Calendar RecyclerView -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewWeeklyCalendar"
         android:layout_width="match_parent"
@@ -70,7 +79,6 @@
         android:orientation="horizontal"
         app:layout_constraintTop_toBottomOf="@id/recyclerViewTasksDueToday"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
