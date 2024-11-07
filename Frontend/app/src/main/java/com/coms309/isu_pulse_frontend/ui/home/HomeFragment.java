@@ -93,14 +93,15 @@ public class HomeFragment extends Fragment {
 
         populateTasksDue();
 
-        // Set up Announcements RecyclerView
+        // Set up Announcements RecyclerView (without populating announcements from API for now)
         recyclerViewAnnouncements = binding.recyclerViewAnnouncements;
         LinearLayoutManager layoutManagerAnnouncements = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
         recyclerViewAnnouncements.setLayoutManager(layoutManagerAnnouncements);
         announcementAdapter = new AnnouncementListAdapter(announcements);
         recyclerViewAnnouncements.setAdapter(announcementAdapter);
 
-        populateAnnouncements(); // Load announcements from API
+        // Commented out for now to avoid errors related to missing methods in TaskApiService
+        // populateAnnouncements();
 
         return root;
     }
@@ -133,21 +134,30 @@ public class HomeFragment extends Fragment {
         });
     }
 
+    // Placeholder populateAnnouncements method to avoid errors
     private void populateAnnouncements() {
-        // Call to the API to get announcements for the current course/schedule
-        taskApiService.getAnnouncements(new TaskApiService.AnnouncementResponseListener() {
-            @Override
-            public void onResponse(List<Announcement> fetchedAnnouncements) {
-                announcements.clear();
-                announcements.addAll(fetchedAnnouncements);
-                announcementAdapter.notifyDataSetChanged();
-            }
+        /**
+         *         // Call to the API to get announcements for the current course/schedule
+         *         taskApiService.getAnnouncements(new TaskApiService.AnnouncementResponseListener() {
+         *             @Override
+         *             public void onResponse(List<Announcement> fetchedAnnouncements) {
+         *                 announcements.clear();
+         *                 announcements.addAll(fetchedAnnouncements);
+         *                 announcementAdapter.notifyDataSetChanged();
+         *             }
+         *
+         *             @Override
+         *             public void onError(String message) {
+         *                 Log.e("API Error", message != null ? message : "Unknown error");
+         *             }
+         *         });
+         */
 
-            @Override
-            public void onError(String message) {
-                Log.e("API Error", message != null ? message : "Unknown error");
-            }
-        });
+        // Temporary placeholder code
+        announcements.clear();
+        // For now, manually add a sample announcement to avoid UI breakage
+        announcements.add(new Announcement(1L, "Sample Announcement", 1L, "facultyNetId", "2024-11-07T10:00:00.000-06:00", false));
+        announcementAdapter.notifyDataSetChanged();
     }
 
     public void addNewTask(PersonalTask newTask) {
