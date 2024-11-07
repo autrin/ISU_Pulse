@@ -3,8 +3,6 @@ package com.coms309.isu_pulse_frontend.adapters;
 import static androidx.test.InstrumentationRegistry.getContext;
 import static org.junit.Assert.assertEquals;
 
-import android.widget.TextView;
-
 import com.coms309.isu_pulse_frontend.loginsignup.UserSession;
 import com.coms309.isu_pulse_frontend.model.Announcement;
 
@@ -20,7 +18,7 @@ public class AnnouncementListAdapterTest {
         // Create a list of announcements with all necessary fields
         List<Announcement> announcements = new ArrayList<>();
         announcements.add(new Announcement(101L, "Test Announcement", 1L, "kopper.cs", "2024-11-06T10:00:00", "Com S 227"));
-        String userRole = UserSession.getInstance(getContext()).getUserRole();
+        String userRole = UserSession.getInstance(getContext()).getUserType();
         // Initialize the adapter with the list of announcements
         AnnouncementListAdapter adapter = new AnnouncementListAdapter(announcements, "TEACHER".equals(userRole));
 
