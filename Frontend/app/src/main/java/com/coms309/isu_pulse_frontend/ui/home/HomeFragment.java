@@ -52,7 +52,14 @@ public class HomeFragment extends Fragment {
 
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
-
+        // Set Dashboard title based on user role
+        String userRole = UserSession.getInstance(getContext()).getUserRole();
+        TextView dashboardTitle = binding.dashboardTitle;
+        if ("TEACHER".equals(userRole)) {
+            dashboardTitle.setText("Teacher Dashboard");
+        } else {
+            dashboardTitle.setText("Student Dashboard");
+        }
         // Set up Announcement title
         textViewAnnouncementTitle = binding.announcementTitle;
         textViewAnnouncementTitle.setText("Announcements");
