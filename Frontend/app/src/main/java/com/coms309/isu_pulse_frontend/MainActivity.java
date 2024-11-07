@@ -10,6 +10,7 @@ import android.widget.Button;
 import com.coms309.isu_pulse_frontend.databinding.ActivityMainBinding;
 import com.coms309.isu_pulse_frontend.loginsignup.LoginActivity;
 import com.coms309.isu_pulse_frontend.loginsignup.SignupActivity;
+import com.coms309.isu_pulse_frontend.loginsignup.UserSession;
 import com.coms309.isu_pulse_frontend.proifle_activity.ProfileActivity;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
@@ -27,22 +28,22 @@ public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
     private Button signInButton;
     private Button signUpButton;
+    private NavigationView navigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        setContentView(R.layout.intro);
-//        setContentView(R.layout.profile);
 
         // Check if the user is already logged in
         SharedPreferences sharedPreferences = getSharedPreferences("UserSession", MODE_PRIVATE);
         String netId = sharedPreferences.getString("netId", null);
 
         if (netId != null) {
-            // User is already logged in; proceed to profile activity //TODO navigate to Home
+            // User is already logged in; proceed to profile activity
             Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
             startActivity(intent);
             finish(); // Close MainActivity
+            return;
         } else {
             // No saved session; show login screen
             setContentView(R.layout.intro);
@@ -81,9 +82,9 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         DrawerLayout drawer = binding.drawerLayout;
-        NavigationView navigationView = binding.navView;
-//         Passing each menu ID as a set of Ids because each
-//         menu should be considered as top level destinations.
+        navigationView = binding.navView;
+
+        // Passing each menu ID as a set of Ids because each menu should be considered as top-level destinations
         mAppBarConfiguration = new AppBarConfiguration.Builder(
                 R.id.nav_home, R.id.nav_Profile, R.id.nav_courses)
                 .setOpenableLayout(drawer)
@@ -91,6 +92,14 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
+
+        // Check user role and set up navigation view accordingly
+        String userRole = UserSession.getInstance(this).getUserRole();
+        if (userRole.equals("TEACHER")) {
+            setupTeacherMenu();
+        } else {
+            setupStudentMenu();
+        }
     }
 
     @Override
@@ -105,5 +114,19 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
         return NavigationUI.navigateUp(navController, mAppBarConfiguration)
                 || super.onSupportNavigateUp();
+    }
+
+    // Define teacher-specific menu setup
+    private void setupTeacherMenu() {
+        Menu menu = navigationView.getMenu();
+        menu.clear();
+        getMenuInflater().inflate(R.menu.teacher_main_drawer, menu); // Custom menu for teachers
+    }
+
+    // Define student-specific menu setup
+    private void setupStudentMenu() {
+        Menu menu = navigationView.getMenu();
+        menu.clear();
+        getMenuInflater().inflate(R.menu.student_main_drawer, menu); // Custom menu for students
     }
 }
