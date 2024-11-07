@@ -104,7 +104,7 @@ public class HomeFragment extends Fragment {
         recyclerViewAnnouncements = binding.recyclerViewAnnouncements;
         LinearLayoutManager layoutManagerAnnouncements = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
         recyclerViewAnnouncements.setLayoutManager(layoutManagerAnnouncements);
-        announcementAdapter = new AnnouncementListAdapter(announcements);
+        announcementAdapter = new AnnouncementListAdapter(announcements, "TEACHER".equals(UserSession.getInstance(getContext()).getUserRole()));
         recyclerViewAnnouncements.setAdapter(announcementAdapter);
 
         // Commented out for now to avoid errors related to missing methods in TaskApiService
@@ -163,7 +163,7 @@ public class HomeFragment extends Fragment {
         // Temporary placeholder code
         announcements.clear();
         // For now, manually add a sample announcement to avoid UI breakage
-        announcements.add(new Announcement(1L, "Sample Announcement", 1L, "facultyNetId", "2024-11-07T10:00:00.000-06:00", false));
+        announcements.add(new Announcement(1L, "Sample Announcement", 1L, "facultyNetId", "2024-11-07T10:00:00.000-06:00", "CourseName"));
         announcementAdapter.notifyDataSetChanged();
     }
 
