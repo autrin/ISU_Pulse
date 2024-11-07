@@ -10,15 +10,13 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.coms309.isu_pulse_frontend.ui.home.Course;
+import com.coms309.isu_pulse_frontend.model.Course;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class CourseService {
     private RequestQueue requestQueue;
@@ -104,7 +102,7 @@ public class CourseService {
         requestQueue.add(stringRequest);
     }
 
-    public void removeEnroll(String studentId, int courseId, final RemoveEnrollCallback callback) {
+    public void removeEnroll(String studentId, long courseId, final RemoveEnrollCallback callback) {
         String url = BASE_URL + "enroll/removeEnroll/" + studentId + "?c_id=" + courseId;
 
         StringRequest stringRequest = new StringRequest(Request.Method.DELETE, url,
