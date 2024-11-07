@@ -4,6 +4,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -39,18 +40,17 @@ public class AnnouncementListAdapter extends RecyclerView.Adapter<AnnouncementLi
     public void onBindViewHolder(@NonNull AnnouncementViewHolder holder, int position) {
         Announcement announcement = announcements.get(position);
 
-        // Set the content, course name (if applicable), and timestamp
+        // Set announcement details
         holder.announcementContent.setText(announcement.getContent());
+        holder.announcementCourse.setText(announcement.getCourseName());
+        holder.announcementTimestamp.setText(formatDate(announcement.getTimestamp()));
 
-        if (announcement.getCourseName() != null) {
-            holder.announcementCourse.setText(announcement.getCourseName());
-            holder.announcementCourse.setVisibility(View.VISIBLE);
+        // Show buttons only for teachers
+        if (isTeacherView) {
+            holder.teacherActionsLayout.setVisibility(View.VISIBLE);
         } else {
-            holder.announcementCourse.setVisibility(isTeacherView ? View.VISIBLE : View.GONE); // is this correct? should it ever be GONE and not VISIBLE?
+            holder.teacherActionsLayout.setVisibility(View.GONE);
         }
-
-        String formattedDate = formatDate(announcement.getTimestamp());
-        holder.announcementTimestamp.setText(formattedDate);
 
 //        // Set the seen status and handle checkbox changes
 //        holder.announcementSeenCheckbox.setOnCheckedChangeListener(null); // Clear previous listener
@@ -80,14 +80,17 @@ public class AnnouncementListAdapter extends RecyclerView.Adapter<AnnouncementLi
 
     public static class AnnouncementViewHolder extends RecyclerView.ViewHolder {
         TextView announcementContent, announcementTimestamp, announcementCourse;
-        CheckBox announcementSeenCheckbox;
+        //        CheckBox announcementSeenCheckbox;
+        LinearLayout teacherActionsLayout; // Layout containing Update and Delete buttons
 
         public AnnouncementViewHolder(@NonNull View itemView) {
             super(itemView);
             announcementContent = itemView.findViewById(R.id.announcement_content);
             announcementTimestamp = itemView.findViewById(R.id.announcement_timestamp);
             announcementCourse = itemView.findViewById(R.id.announcement_course);
-            announcementSeenCheckbox = itemView.findViewById(R.id.checkBoxAnnouncement);
+//            announcementSeenCheckbox = itemView.findViewById(R.id.checkBoxAnnouncement);
+            teacherActionsLayout = itemView.findViewById(R.id.teacher_actions_layout); // Reference to buttons layout
+
         }
     }
 }
