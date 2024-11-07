@@ -7,16 +7,19 @@ public class Announcement {
     private Long scheduleId;
     private String facultyNetId;
     private String timestamp;
-    private boolean seenStatus;  // Optional, relevant for frontend display
+    //    private boolean seenStatus;  // Optional, relevant for frontend display
+    private String courseName;
 
-    public Announcement(Long id, String content, Long scheduleId, String facultyNetId, String timestamp, boolean seenStatus) {
+    public Announcement(Long id, String content, Long scheduleId, String facultyNetId, String timestamp, String courseName) {
         this.id = id;
         this.content = content;
         this.scheduleId = scheduleId;
         this.facultyNetId = facultyNetId;
         this.timestamp = timestamp;
-        this.seenStatus = seenStatus;
+//        this.seenStatus = seenStatus;
+        this.courseName = courseName;
     }
+
 
     // Getters and Setters
     public Long getId() {
@@ -59,11 +62,19 @@ public class Announcement {
         this.timestamp = timestamp;
     }
 
-    public boolean isSeenStatus() {
-        return seenStatus;
+    public String getCourseName() {
+        return courseName;
     }
 
-    public void setSeenStatus(boolean seenStatus) {
-        this.seenStatus = seenStatus;
+    public void setCourseName(String courseName) {
+        this.courseName = courseName;
     }
+
+//    public boolean isSeenStatus() {
+//        return seenStatus;
+//    }
+//
+//    public void setSeenStatus(boolean seenStatus) {
+//        this.seenStatus = seenStatus;
+//    }
 }
