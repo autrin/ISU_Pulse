@@ -35,6 +35,6 @@ public class MainActivityTest {
         // Use the public getter method to access navigationView
         Menu menu = activity.getNavigationView().getMenu();
         assertNotNull(menu.findItem(R.id.nav_home));  // Ensure 'Dashboard' is present
-        assertNotNull(menu.findItem(R.id.nav_Profile));  // Ensure 'Profile' is present
+        assertNotNull(menu.findItem(R.id.nav_profile));  // Ensure 'Profile' is present
     }
 }
