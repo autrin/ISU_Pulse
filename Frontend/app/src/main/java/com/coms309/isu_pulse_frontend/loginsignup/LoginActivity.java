@@ -1,7 +1,5 @@
 package com.coms309.isu_pulse_frontend.loginsignup;
 
-import static androidx.core.content.SharedPreferencesKt.edit;
-
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -10,13 +8,11 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.content.SharedPreferences;
 
 // Other necessary imports
 import com.coms309.isu_pulse_frontend.MainActivity;
 import com.coms309.isu_pulse_frontend.R;
 import com.coms309.isu_pulse_frontend.api.AuthenticationService;
-import com.coms309.isu_pulse_frontend.proifle_activity.ProfileActivity;
 
 
 import org.json.JSONException;
