@@ -11,6 +11,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.Volley;
+import com.coms309.isu_pulse_frontend.model.Announcement;
 import com.coms309.isu_pulse_frontend.model.Course;
 import com.coms309.isu_pulse_frontend.model.Schedule;
 
@@ -66,7 +67,7 @@ public class FacultyApiService {
     }
 
     private Schedule parseSchedule(JSONObject jsonObject) throws Exception {
-        // Parse JSON into a Schedule object. Adjust field names as per your JSON structure.
+        long scheduleId = jsonObject.getLong("id");
         JSONObject courseObj = jsonObject.getJSONObject("course");
         Course course = new Course(
                 courseObj.getLong("id"),
@@ -74,6 +75,7 @@ public class FacultyApiService {
                 courseObj.getString("code")
         );
         return new Schedule(
+                scheduleId,
                 course,
                 jsonObject.getString("section"),
                 jsonObject.getString("recurringPattern"),
@@ -82,9 +84,50 @@ public class FacultyApiService {
         );
     }
 
+
     public interface ScheduleResponseListener {
         void onResponse(List<Schedule> schedules);
 
         void onError(String message);
     }
+
+//    public void getAnnouncementsBySchedule(long scheduleId, final AnnouncementResponseListener listener) {
+//        String url = BASE_URL + "announcements/schedule/" + scheduleId;
+//
+//        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(
+//                Request.Method.GET,
+//                url,
+//                null,
+//                new Response.Listener<JSONArray>() {
+//                    @Override
+//                    public void onResponse(JSONArray response) {
+//                        List<Announcement> announcements = new ArrayList<>();
+//                        try {
+//                            for (int i = 0; i < response.length(); i++) {
+//                                JSONObject announcementObj = response.getJSONObject(i);
+//                                Announcement announcement = new Announcement(
+//                                        announcementObj.getLong("id"),
+//                                        announcementObj.getString("content"),
+//                                        announcementObj.getLong("scheduleId"),
+//                                        announcementObj.getString("facultyNetId"),
+//                                        announcementObj.getString("timestamp"),
+//                                        ""
+//                                );
+//                                announcements.add(announcement);
+//                            }
+//                            listener.onResponse(announcements);
+//                        } catch (JSONException e) {
+//                            Log.e(TAG, "Error parsing announcements", e);
+//                            listener.onError("Parsing error");
+//                        }
+//                    }
+//                },
+//                error -> listener.onError("Network error")
+//        );
+//
+//        requestQueue.add(jsonArrayRequest);
+//    }
+
+
+
 }
