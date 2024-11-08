@@ -29,28 +29,40 @@ public class AnnouncementListAdapter extends RecyclerView.Adapter<AnnouncementLi
     }
 
     @NonNull
+//    @Override
+//    public AnnouncementViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+//        int layoutRes = isTeacherView ? R.layout.teacher_announcement : R.layout.announcement_item;
+//        View view = LayoutInflater.from(parent.getContext()).inflate(layoutRes, parent, false);
+//        return new AnnouncementViewHolder(view, isTeacherView);
+//    }
     @Override
     public AnnouncementViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        int layoutRes = isTeacherView ? R.layout.teacher_announcement : R.layout.announcement_item;
-        View view = LayoutInflater.from(parent.getContext()).inflate(layoutRes, parent, false);
-        return new AnnouncementViewHolder(view);
+        // Use announcement_item.xml for displaying each announcement item
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.announcement_item, parent, false);
+        return new AnnouncementViewHolder(view, false);
     }
 
     @Override
     public void onBindViewHolder(@NonNull AnnouncementViewHolder holder, int position) {
         Announcement announcement = announcements.get(position);
 
-        // Set announcement details
-        holder.announcementContent.setText(announcement.getContent());
-        holder.announcementCourse.setText(announcement.getCourseName());
-        holder.announcementTimestamp.setText(formatDate(announcement.getTimestamp()));
+        if (holder.announcementContent != null) {
+            holder.announcementContent.setText(announcement.getContent());
+        }
+        if (holder.announcementCourse != null) {
+            holder.announcementCourse.setText(announcement.getCourseName());
+        }
+        if (holder.announcementTimestamp != null) {
+            holder.announcementTimestamp.setText(formatDate(announcement.getTimestamp()));
+        }
 
         // Show buttons only for teachers
-        if (isTeacherView) {
+        if (isTeacherView && holder.teacherActionsLayout != null) {
             holder.teacherActionsLayout.setVisibility(View.VISIBLE);
-        } else {
+        } else if (holder.teacherActionsLayout != null) {
             holder.teacherActionsLayout.setVisibility(View.GONE);
         }
+
 
 //        // Set the seen status and handle checkbox changes
 //        holder.announcementSeenCheckbox.setOnCheckedChangeListener(null); // Clear previous listener
@@ -80,17 +92,23 @@ public class AnnouncementListAdapter extends RecyclerView.Adapter<AnnouncementLi
 
     public static class AnnouncementViewHolder extends RecyclerView.ViewHolder {
         TextView announcementContent, announcementTimestamp, announcementCourse;
-        //        CheckBox announcementSeenCheckbox;
-        LinearLayout teacherActionsLayout; // Layout containing Update and Delete buttons
+        LinearLayout teacherActionsLayout;
 
-        public AnnouncementViewHolder(@NonNull View itemView) {
+        public AnnouncementViewHolder(@NonNull View itemView, boolean isTeacherView) {
             super(itemView);
-            announcementContent = itemView.findViewById(R.id.announcement_content);
-            announcementTimestamp = itemView.findViewById(R.id.announcement_timestamp);
-            announcementCourse = itemView.findViewById(R.id.announcement_course);
-//            announcementSeenCheckbox = itemView.findViewById(R.id.checkBoxAnnouncement);
-            teacherActionsLayout = itemView.findViewById(R.id.teacher_actions_layout); // Reference to buttons layout
 
+            if (isTeacherView) {
+                // Initialize views for teacher layout
+                announcementContent = itemView.findViewById(R.id.editTextAnnouncementContent);
+                teacherActionsLayout = itemView.findViewById(R.id.teacher_actions_layout);
+                // Other teacher-specific fields can be added here if needed
+            } else {
+                // Initialize views for student layout
+                announcementContent = itemView.findViewById(R.id.announcement_content);
+                announcementTimestamp = itemView.findViewById(R.id.announcement_timestamp);
+                announcementCourse = itemView.findViewById(R.id.announcement_course);
+            }
         }
     }
+
 }
