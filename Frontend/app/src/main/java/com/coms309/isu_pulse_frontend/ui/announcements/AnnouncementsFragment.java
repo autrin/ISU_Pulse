@@ -44,14 +44,16 @@ public class AnnouncementsFragment extends Fragment {
         announcementList = new ArrayList<>();
         announcementList.add(new Announcement(2L, "Exam postponed to next week", 3L, "facultyNetID", "2024-11-05T10:00:00", "Sample Course"));
 
-        adapter = new AnnouncementListAdapter(announcementList, "FACULTY".equals(UserSession.getInstance(getContext()).getUserType()));
+        // Use announcement_item.xml layout in adapter, not teacher_announcement.xml
+        adapter = new AnnouncementListAdapter(announcementList, false); // Set to false to exclude teacher-specific layout
         recyclerView.setAdapter(adapter);
 
         Button postButton = view.findViewById(R.id.buttonSubmitAnnouncement);
         postButton.setOnClickListener(v -> {
-            //TODO Handle post announcement action
+            // TODO: Handle post announcement action
         });
 
         return view;
     }
+
 }
