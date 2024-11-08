@@ -44,7 +44,7 @@ public class AnnouncementsFragment extends Fragment {
         announcementList = new ArrayList<>();
         announcementList.add(new Announcement(2L, "Exam postponed to next week", 3L, "facultyNetID", "2024-11-05T10:00:00", "Sample Course"));
 
-        adapter = new AnnouncementListAdapter(announcementList, "TEACHER".equals(UserSession.getInstance(getContext()).getUserType()));
+        adapter = new AnnouncementListAdapter(announcementList, "FACULTY".equals(UserSession.getInstance(getContext()).getUserType()));
         recyclerView.setAdapter(adapter);
 
         Button postButton = view.findViewById(R.id.buttonSubmitAnnouncement);

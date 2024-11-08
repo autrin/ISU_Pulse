@@ -75,7 +75,7 @@ public class CoursesFragment extends Fragment {
     // Function to navigate to CourseDetailFragment, only used by teachers
     private void navigateToCourseDetail(Long courseId) {
         String userRole = UserSession.getInstance(getContext()).getUserType();
-        if ("TEACHER".equals(userRole)) {
+        if ("FACULTY".equals(userRole)) {
             Bundle args = new Bundle();
             args.putLong("courseId", courseId);
 

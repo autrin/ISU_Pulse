@@ -55,7 +55,7 @@ public class HomeFragment extends Fragment {
         // Set Dashboard title based on user role
         String userRole = UserSession.getInstance(getContext()).getUserType();
         TextView dashboardTitle = binding.dashboardTitle;
-        if ("TEACHER".equals(userRole)) {
+        if ("FACULTY".equals(userRole)) {
             dashboardTitle.setText("Teacher Dashboard");
         } else {
             dashboardTitle.setText("Student Dashboard");
@@ -104,7 +104,7 @@ public class HomeFragment extends Fragment {
         recyclerViewAnnouncements = binding.recyclerViewAnnouncements;
         LinearLayoutManager layoutManagerAnnouncements = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
         recyclerViewAnnouncements.setLayoutManager(layoutManagerAnnouncements);
-        announcementAdapter = new AnnouncementListAdapter(announcements, "TEACHER".equals(UserSession.getInstance(getContext()).getUserType()));
+        announcementAdapter = new AnnouncementListAdapter(announcements, "FACULTY".equals(UserSession.getInstance(getContext()).getUserType()));
         recyclerViewAnnouncements.setAdapter(announcementAdapter);
 
         // Commented out for now to avoid errors related to missing methods in TaskApiService

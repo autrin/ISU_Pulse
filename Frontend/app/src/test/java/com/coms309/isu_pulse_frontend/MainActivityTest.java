@@ -29,7 +29,7 @@ public class MainActivityTest {
     @Test
     public void testTeacherMenuVisibility() {
         // Simulate teacher login
-        UserSession.getInstance(context).setUserType("TEACHER", context);
+        UserSession.getInstance(context).setUserType("FACULTY", context);
         MainActivity activity = Robolectric.setupActivity(MainActivity.class);
 
         // Use the public getter method to access navigationView

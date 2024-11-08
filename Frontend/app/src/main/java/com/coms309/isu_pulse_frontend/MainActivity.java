@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
 
             // Set up AppBarConfiguration based on user role
             String userRole = UserSession.getInstance(this).getUserType();
-            if ("TEACHER".equals(userRole)) {
+            if ("FACULTY".equals(userRole)) {
                 mAppBarConfiguration = new AppBarConfiguration.Builder(
                         R.id.nav_home, R.id.nav_profile, R.id.nav_courses)
                         .setOpenableLayout(drawer)

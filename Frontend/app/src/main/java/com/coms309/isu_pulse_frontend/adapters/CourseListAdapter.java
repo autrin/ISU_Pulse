@@ -41,7 +41,7 @@ public class CourseListAdapter extends RecyclerView.Adapter<CourseListAdapter.Co
         Course course = courses.get(position);
         holder.courseTitle.setText(course.getTitle() + " - Section " + course.getSection());
         // Only set click listener if user is a teacher
-        if ("TEACHER".equals(userRole)) {
+        if ("FACULTY".equals(userRole)) {
             holder.itemView.setOnClickListener(v -> onCourseClickListener.onCourseClick(course.getcId()));
         } else {
             holder.itemView.setOnClickListener(null); // Prevent click for students
