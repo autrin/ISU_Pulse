@@ -51,6 +51,7 @@ public class HomeFragment extends Fragment implements AnnouncementWebSocketClien
     private List<Announcement> announcementList = new ArrayList<>(); // Use Announcement model for announcements
     private TaskApiService taskApiService;
     private AnnouncementWebSocketClient announcementClient;
+    private static final String TAG = "HomeFragment";
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -181,65 +182,40 @@ public class HomeFragment extends Fragment implements AnnouncementWebSocketClien
     @Override
     public void onStart() {
         super.onStart();
-        if (announcementClient == null) {
-            String netId = UserSession.getInstance(getContext()).getNetId();
-            String userType = UserSession.getInstance(getContext()).getUserType();
-
-            announcementClient = new AnnouncementWebSocketClient(this);
-            announcementClient.connectWebSocket(netId, userType);
-        }
+        UserSession.getInstance(getContext()).getWebSocketClient().setListener(this); // Set WebSocket listener
     }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        if (announcementClient != null) {
-            announcementClient.disconnectWebSocket();
-            announcementClient = null;
-        }
-        binding = null; // Avoid memory leaks by releasing the binding reference
-    }
-
 
     @Override
     public void onMessageReceived(String message) {
         try {
-            // Try to parse the message as a JSON object
             JSONObject jsonMessage = new JSONObject(message);
             String action = jsonMessage.getString("action");
 
             switch (action) {
                 case "history":
-                    // Handle announcement history
                     handleHistoryAction(jsonMessage);
                     break;
                 case "new":
-                    // Handle a new announcement
                     handleNewAnnouncement(jsonMessage);
                     break;
                 case "confirmation":
-                    String confirmationMessage = jsonMessage.getString("message");
-                    Log.d("WebSocket", "Confirmation: " + confirmationMessage);
+                    handleConfirmation(jsonMessage);
                     break;
                 case "error":
-                    String errorMessage = jsonMessage.getString("message");
-                    Log.e("WebSocket", "Error: " + errorMessage);
+                    handleError(jsonMessage);
                     break;
                 default:
-                    Log.w("WebSocket", "Unknown action: " + action);
-                    break;
+                    Log.w(TAG, "Unknown action: " + action);
             }
         } catch (JSONException e) {
-            // If parsing fails, it may be a simple text message
-            Log.d("WebSocket", "Received non-JSON message: " + message);
+            Log.d(TAG, "Received non-JSON message: " + message);
         }
     }
 
     private void handleHistoryAction(JSONObject jsonMessage) throws JSONException {
         JSONArray announcementsArray = jsonMessage.getJSONArray("announcements");
-        announcementList.clear();  // Clear any existing announcements
+        announcementList.clear();
 
-        // Loop through each announcement in the JSON array and add it to the list
         for (int i = 0; i < announcementsArray.length(); i++) {
             JSONObject announcementJson = announcementsArray.getJSONObject(i);
             Announcement announcement = new Announcement(
@@ -250,28 +226,25 @@ public class HomeFragment extends Fragment implements AnnouncementWebSocketClien
                     announcementJson.getString("timestamp"),
                     ""
             );
-            announcementList.add(announcement);  // Add each announcement to the list
+            announcementList.add(announcement);
         }
 
-        // Notify the adapter that the data set has changed to update the RecyclerView
         announcementAdapter.notifyDataSetChanged();
     }
 
     private void handleNewAnnouncement(JSONObject jsonMessage) throws JSONException {
-        JSONObject newAnnouncementJson = jsonMessage.getJSONObject("announcement");
+        JSONObject announcementJson = jsonMessage.getJSONObject("announcement");
         Announcement newAnnouncement = new Announcement(
-                newAnnouncementJson.getLong("id"),
-                newAnnouncementJson.getString("content"),
-                newAnnouncementJson.getLong("scheduleId"),
-                newAnnouncementJson.getString("facultyNetId"),
-                newAnnouncementJson.getString("timestamp"),
+                announcementJson.getLong("id"),
+                announcementJson.getString("content"),
+                announcementJson.getLong("scheduleId"),
+                announcementJson.getString("facultyNetId"),
+                announcementJson.getString("timestamp"),
                 ""
         );
 
-        // Add the new announcement at the top of the list
         announcementList.add(0, newAnnouncement);
         announcementAdapter.notifyItemInserted(0);
-        recyclerViewAnnouncements.scrollToPosition(0);  // Scroll to the top to show the new announcement
     }
 
     private void handleConfirmation(JSONObject jsonMessage) throws JSONException {
@@ -281,8 +254,19 @@ public class HomeFragment extends Fragment implements AnnouncementWebSocketClien
 
     private void handleError(JSONObject jsonMessage) throws JSONException {
         String errorMessage = jsonMessage.getString("message");
-        Log.e("WebSocket", "Error: " + errorMessage);
+        Log.e(TAG, "Error: " + errorMessage);
         Toast.makeText(getContext(), "Error: " + errorMessage, Toast.LENGTH_SHORT).show();
+    }
+
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (announcementClient != null) {
+            announcementClient.disconnectWebSocket();
+            announcementClient = null;
+        }
+        binding = null; // Avoid memory leaks by releasing the binding reference
     }
 
 }
