@@ -40,13 +40,14 @@ public class CourseListAdapter extends RecyclerView.Adapter<CourseListAdapter.Co
     @Override
     public void onBindViewHolder(@NonNull CourseViewHolder holder, int position) {
         Course course = courses.get(position);
-        holder.courseTitle.setText(course.getTitle() + " - Section " + course.getSection());
-        // Only set click listener if user is a teacher
-        if ("FACULTY".equals(userRole)) {
-            holder.itemView.setOnClickListener(v -> onCourseClickListener.onCourseClick(course.getcId()));
-        } else {
-            holder.itemView.setOnClickListener(null); // Prevent click for students
-        }
+        holder.courseTitle.setText(course.getTitle());
+        holder.courseSection.setText("Section " + course.getSection());
+
+        holder.itemView.setOnClickListener(v -> {
+            if (onCourseClickListener != null) {
+                onCourseClickListener.onCourseClick(course.getcId());
+            }
+        });
     }
 
     @Override
@@ -54,12 +55,15 @@ public class CourseListAdapter extends RecyclerView.Adapter<CourseListAdapter.Co
         return courses.size();
     }
 
+
     public static class CourseViewHolder extends RecyclerView.ViewHolder {
-        TextView courseTitle;
+        TextView courseTitle, courseSection;
 
         public CourseViewHolder(@NonNull View itemView) {
             super(itemView);
             courseTitle = itemView.findViewById(R.id.courseTitle);
+            courseSection = itemView.findViewById(R.id.courseSection);
         }
     }
+
 }
