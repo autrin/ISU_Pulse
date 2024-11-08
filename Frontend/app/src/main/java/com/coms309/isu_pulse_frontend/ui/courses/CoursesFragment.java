@@ -38,9 +38,10 @@ public class CoursesFragment extends Fragment implements AnnouncementWebSocketCl
     private RecyclerView recyclerView;
     private CourseListAdapter adapter;
     private List<Course> courses = new ArrayList<>();
-    private List<Announcement> courseAnnouncements = new ArrayList<>(); // Temporary list for announcements
+    private List<Announcement> announcementList = new ArrayList<>(); // Temporary list for announcements
     private TextView emptyStateTextView;
     private AnnouncementWebSocketClient announcementClient;
+    private static final String TAG = "CoursesFragment";
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -136,43 +137,34 @@ public class CoursesFragment extends Fragment implements AnnouncementWebSocketCl
     @Override
     public void onMessageReceived(String message) {
         try {
-            // Try to parse the message as a JSON object
             JSONObject jsonMessage = new JSONObject(message);
             String action = jsonMessage.getString("action");
 
             switch (action) {
                 case "history":
-                    // Handle announcement history
                     handleHistoryAction(jsonMessage);
                     break;
                 case "new":
-                    // Handle a new announcement
                     handleNewAnnouncement(jsonMessage);
                     break;
                 case "confirmation":
-                    String confirmationMessage = jsonMessage.getString("message");
-                    Log.d("WebSocket", "Confirmation: " + confirmationMessage);
+                    handleConfirmation(jsonMessage);
                     break;
                 case "error":
-                    String errorMessage = jsonMessage.getString("message");
-                    Log.e("WebSocket", "Error: " + errorMessage);
+                    handleError(jsonMessage);
                     break;
                 default:
-                    Log.w("WebSocket", "Unknown action: " + action);
-                    break;
+                    Log.w(TAG, "Unknown action: " + action);
             }
         } catch (JSONException e) {
-            // If parsing fails, it may be a simple text message
-            Log.d("WebSocket", "Received non-JSON message: " + message);
+            Log.d(TAG, "Received non-JSON message: " + message);
         }
     }
 
-    // Handle the "history" action
     private void handleHistoryAction(JSONObject jsonMessage) throws JSONException {
         JSONArray announcementsArray = jsonMessage.getJSONArray("announcements");
-        courseAnnouncements.clear();
+        announcementList.clear();
 
-        // Parse announcements and add them to the list
         for (int i = 0; i < announcementsArray.length(); i++) {
             JSONObject announcementJson = announcementsArray.getJSONObject(i);
             Announcement announcement = new Announcement(
@@ -183,25 +175,36 @@ public class CoursesFragment extends Fragment implements AnnouncementWebSocketCl
                     announcementJson.getString("timestamp"),
                     ""
             );
-            courseAnnouncements.add(announcement);
+            announcementList.add(announcement);
         }
 
-        Log.d("WebSocket", "Received announcement history: " + courseAnnouncements.size() + " items");
+        adapter.notifyDataSetChanged();
     }
 
-    // Handle the "new" action
     private void handleNewAnnouncement(JSONObject jsonMessage) throws JSONException {
-        JSONObject newAnnouncementJson = jsonMessage.getJSONObject("announcement");
+        JSONObject announcementJson = jsonMessage.getJSONObject("announcement");
         Announcement newAnnouncement = new Announcement(
-                newAnnouncementJson.getLong("id"),
-                newAnnouncementJson.getString("content"),
-                newAnnouncementJson.getLong("scheduleId"),
-                newAnnouncementJson.getString("facultyNetId"),
-                newAnnouncementJson.getString("timestamp"),
+                announcementJson.getLong("id"),
+                announcementJson.getString("content"),
+                announcementJson.getLong("scheduleId"),
+                announcementJson.getString("facultyNetId"),
+                announcementJson.getString("timestamp"),
                 ""
         );
 
-        courseAnnouncements.add(0, newAnnouncement);  // Add to top of the list for new announcements
-        Log.d("WebSocket", "New announcement received: " + newAnnouncement.getContent());
+        announcementList.add(0, newAnnouncement);
+        adapter.notifyItemInserted(0);
     }
+
+    private void handleConfirmation(JSONObject jsonMessage) throws JSONException {
+        String confirmationMessage = jsonMessage.getString("message");
+        Toast.makeText(getContext(), "Confirmation: " + confirmationMessage, Toast.LENGTH_SHORT).show();
+    }
+
+    private void handleError(JSONObject jsonMessage) throws JSONException {
+        String errorMessage = jsonMessage.getString("message");
+        Log.e(TAG, "Error: " + errorMessage);
+        Toast.makeText(getContext(), "Error: " + errorMessage, Toast.LENGTH_SHORT).show();
+    }
+
 }
