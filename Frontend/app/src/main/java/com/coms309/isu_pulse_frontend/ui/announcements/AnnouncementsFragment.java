@@ -5,6 +5,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -52,10 +55,51 @@ public class AnnouncementsFragment extends Fragment {
 
         Button postButton = view.findViewById(R.id.buttonSubmitAnnouncement);
         postButton.setOnClickListener(v -> {
-            // TODO: Handle post announcement action
+            Long scheduleId = getArguments() != null ? getArguments().getLong("courseId") : null;
+            String content = ((EditText) view.findViewById(R.id.editTextAnnouncementContent)).getText().toString();
+
+            if (scheduleId == null || content.isEmpty()) {
+                Toast.makeText(getContext(), "Please enter announcement content.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // Send the post request through WebSocket
+            announcementClient.postAnnouncement(scheduleId, content);
+
+            // Clear the input field after sending the announcement
+            ((EditText) view.findViewById(R.id.editTextAnnouncementContent)).setText("");
         });
 
+
         return view;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        // Initialize WebSocket client with faculty netId and userType
+        String netId = UserSession.getInstance(getContext()).getNetId();
+        announcementClient = new AnnouncementWebSocketClient();
+        announcementClient.connectWebSocket(netId, "FACULTY");
+    }
+
+    private void postAnnouncement(long scheduleId, String content) {
+        announcementClient.postAnnouncement(scheduleId, content);
+    }
+
+    private void updateAnnouncement(long announcementId, String content) {
+        announcementClient.updateAnnouncement(announcementId, content);
+    }
+
+    private void deleteAnnouncement(long announcementId) {
+        announcementClient.deleteAnnouncement(announcementId);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        announcementClient.disconnectWebSocket();
     }
 
 }
