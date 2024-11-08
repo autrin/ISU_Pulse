@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.coms309.isu_pulse_frontend.R;
 import com.coms309.isu_pulse_frontend.adapters.AnnouncementListAdapter;
+import com.coms309.isu_pulse_frontend.api.AnnouncementWebSocketClient;
 import com.coms309.isu_pulse_frontend.loginsignup.UserSession;
 import com.coms309.isu_pulse_frontend.model.Announcement;
 
@@ -23,6 +24,7 @@ public class AnnouncementsFragment extends Fragment {
     private RecyclerView recyclerView;
     private AnnouncementListAdapter adapter;
     private List<Announcement> announcementList;
+    private AnnouncementWebSocketClient announcementClient;
 
     public static AnnouncementsFragment newInstance(Long courseId) {
         AnnouncementsFragment fragment = new AnnouncementsFragment();
