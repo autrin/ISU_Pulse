@@ -66,6 +66,9 @@ dependencies {
     androidTestImplementation(libs.espresso.core)
 
     implementation("com.google.code.gson:gson:2.8.8")
+
+    implementation("org.java-websocket:Java-WebSocket:1.5.2")
+
 }
 
 // Apply the Google Services plugin at the bottom of the file
