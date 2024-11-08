@@ -100,12 +100,15 @@ public class HomeFragment extends Fragment {
 
         populateTasksDue();
 
-        // Set up Announcements RecyclerView (without populating announcements from API for now)
+        // Set up Announcements RecyclerView (for Home/Dashboard view)
         recyclerViewAnnouncements = binding.recyclerViewAnnouncements;
         LinearLayoutManager layoutManagerAnnouncements = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
         recyclerViewAnnouncements.setLayoutManager(layoutManagerAnnouncements);
-        announcementAdapter = new AnnouncementListAdapter(announcements, "FACULTY".equals(UserSession.getInstance(getContext()).getUserType()));
+
+        // Pass 'false' for the isCourseView parameter since this is the dashboard
+        announcementAdapter = new AnnouncementListAdapter(announcements, false);
         recyclerViewAnnouncements.setAdapter(announcementAdapter);
+
 
         // Commented out for now to avoid errors related to missing methods in TaskApiService
         populateAnnouncements();
