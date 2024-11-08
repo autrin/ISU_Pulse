@@ -4,6 +4,8 @@ import android.util.Log;
 
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -66,17 +68,38 @@ public class AnnouncementWebSocketClient {
         this.listener = listener;
     }
 
+    public void postAnnouncement(long scheduleId, String content) {
+        sendActionMessage("post", scheduleId, content, null);
+    }
+
+    public void updateAnnouncement(long announcementId, String content) {
+        sendActionMessage("update", null, content, announcementId);
+    }
+
+    public void deleteAnnouncement(long announcementId) {
+        sendActionMessage("delete", null, null, announcementId);
+    }
+
     public void disconnectWebSocket() {
         if (webSocketClient != null) {
             webSocketClient.close();
         }
     }
 
-    public void sendMessage(String action, long scheduleId, String content) {
-        String message = "{\"action\":\"" + action + "\",\"scheduleId\":" + scheduleId + ",\"content\":\"" + content + "\"}";
-        if (webSocketClient != null && webSocketClient.isOpen()) {
-            webSocketClient.send(message);
-            Log.d(TAG, "Message sent: " + message);
+    private void sendActionMessage(String action, Long scheduleId, String content, Long announcementId) {
+        try {
+            JSONObject message = new JSONObject();
+            message.put("action", action);
+            if (scheduleId != null) message.put("scheduleId", scheduleId);
+            if (content != null) message.put("content", content);
+            if (announcementId != null) message.put("announcementId", announcementId);
+            if (webSocketClient != null && webSocketClient.isOpen()) {
+                webSocketClient.send(message.toString());
+                Log.d(TAG, "Sent message: " + message.toString());
+            }
+        } catch (JSONException e) {
+            Log.e(TAG, "Error creating JSON message", e);
         }
     }
+
 }
