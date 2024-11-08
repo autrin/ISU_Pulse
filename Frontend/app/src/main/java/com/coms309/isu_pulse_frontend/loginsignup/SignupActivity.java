@@ -125,7 +125,7 @@ public class SignupActivity extends AppCompatActivity {
                                 // Save netId using UserSession
                                 UserSession.getInstance(SignupActivity.this).setNetId(netIdInput, SignupActivity.this);
                                 // Save user type using UserSession
-                                UserSession.getInstance(SignupActivity.this).setUserType(result.optString("user_type"), SignupActivity.this);
+                                UserSession.getInstance(SignupActivity.this).setUserType(result.optString("userType"), SignupActivity.this);
 
                                 Toast.makeText(SignupActivity.this, "Signup successful!", Toast.LENGTH_SHORT).show();
                                 startActivity(new Intent(SignupActivity.this, ProfileActivity.class));
@@ -158,7 +158,7 @@ public class SignupActivity extends AppCompatActivity {
                                             // Save netId using UserSession
                                             UserSession.getInstance(SignupActivity.this).setNetId(netIdInput, SignupActivity.this);
                                             // Save user type using UserSession
-                                            UserSession.getInstance(SignupActivity.this).setUserType(result.getString("user_type"), SignupActivity.this);
+                                            UserSession.getInstance(SignupActivity.this).setUserType(result.getString("userType"), SignupActivity.this);
 
                                             Toast.makeText(SignupActivity.this, "Signup successful!", Toast.LENGTH_SHORT).show();
                                             startActivity(new Intent(SignupActivity.this, ProfileActivity.class));
