@@ -44,7 +44,7 @@ public class AnnouncementsFragment extends Fragment implements AnnouncementWebSo
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.teacher_announcement, container, false);
+        View view = inflater.inflate(R.layout.fragment_announcements, container, false);
 
         recyclerView = view.findViewById(R.id.recyclerViewAnnouncements);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -52,21 +52,6 @@ public class AnnouncementsFragment extends Fragment implements AnnouncementWebSo
         announcementList = new ArrayList<>();
         adapter = new AnnouncementListAdapter(announcementList, false);
         recyclerView.setAdapter(adapter);
-
-        Button postButton = view.findViewById(R.id.buttonSubmitAnnouncement);
-        postButton.setOnClickListener(v -> {
-            // TODO: Handle post announcement action
-            Long scheduleId = getArguments() != null ? getArguments().getLong("courseId") : null;
-            String content = ((EditText) view.findViewById(R.id.editTextAnnouncementContent)).getText().toString();
-
-            if (scheduleId == null || content.isEmpty()) {
-                Toast.makeText(getContext(), "Please enter announcement content.", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            announcementClient.sendMessage("post", scheduleId, content);
-            ((EditText) view.findViewById(R.id.editTextAnnouncementContent)).setText("");
-        });
 
         // Initialize and connect the WebSocket
         String netId = UserSession.getInstance(getContext()).getNetId();
@@ -80,63 +65,76 @@ public class AnnouncementsFragment extends Fragment implements AnnouncementWebSo
     @Override
     public void onMessageReceived(String message) {
         try {
+            // Try to parse the message as a JSON object
             JSONObject jsonMessage = new JSONObject(message);
             String action = jsonMessage.getString("action");
 
             switch (action) {
                 case "history":
-                    JSONArray announcementsArray = jsonMessage.getJSONArray("announcements");
-                    announcementList.clear();
-
-                    for (int i = 0; i < announcementsArray.length(); i++) {
-                        JSONObject announcementJson = announcementsArray.getJSONObject(i);
-                        Announcement announcement = new Announcement(
-                                announcementJson.getLong("id"),
-                                announcementJson.getString("content"),
-                                announcementJson.getLong("scheduleId"),
-                                announcementJson.getString("facultyNetId"),
-                                announcementJson.getString("timestamp"),
-                                ""
-                        );
-                        announcementList.add(announcement);
-                    }
-                    adapter.notifyDataSetChanged();
+                    // Handle announcement history
+                    handleHistoryAction(jsonMessage);
                     break;
-
                 case "new":
-                    JSONObject newAnnouncementJson = jsonMessage.getJSONObject("announcement");
-                    Announcement newAnnouncement = new Announcement(
-                            newAnnouncementJson.getLong("id"),
-                            newAnnouncementJson.getString("content"),
-                            newAnnouncementJson.getLong("scheduleId"),
-                            newAnnouncementJson.getString("facultyNetId"),
-                            newAnnouncementJson.getString("timestamp"),
-                            ""
-                    );
-                    announcementList.add(0, newAnnouncement); // Add at the top of the list
-                    adapter.notifyItemInserted(0);
-                    recyclerView.scrollToPosition(0);
+                    // Handle a new announcement
+                    handleNewAnnouncement(jsonMessage);
                     break;
-
                 case "confirmation":
                     String confirmationMessage = jsonMessage.getString("message");
-                    Toast.makeText(getContext(), "Confirmation: " + confirmationMessage, Toast.LENGTH_SHORT).show();
+                    Log.d("WebSocket", "Confirmation: " + confirmationMessage);
                     break;
-
                 case "error":
                     String errorMessage = jsonMessage.getString("message");
                     Log.e("WebSocket", "Error: " + errorMessage);
                     break;
-
                 default:
-                    Log.w("WebSocket", "Unknown action received: " + action);
+                    Log.w("WebSocket", "Unknown action: " + action);
                     break;
             }
         } catch (JSONException e) {
-            Log.e("WebSocket", "JSON parsing error", e);
+            // If parsing fails, it may be a simple text message
+            Log.d("WebSocket", "Received non-JSON message: " + message);
         }
     }
 
+
+    private void handleHistoryAction(JSONObject jsonMessage) throws JSONException {
+        JSONArray announcementsArray = jsonMessage.getJSONArray("announcements");
+        announcementList.clear();  // Clear any existing announcements
+
+        // Loop through each announcement in the JSON array and add it to the list
+        for (int i = 0; i < announcementsArray.length(); i++) {
+            JSONObject announcementJson = announcementsArray.getJSONObject(i);
+            Announcement announcement = new Announcement(
+                    announcementJson.getLong("id"),
+                    announcementJson.getString("content"),
+                    announcementJson.getLong("scheduleId"),
+                    announcementJson.getString("facultyNetId"),
+                    announcementJson.getString("timestamp"),
+                    ""
+            );
+            announcementList.add(announcement);  // Add each announcement to the list
+        }
+
+        // Notify the adapter that the data set has changed to update the RecyclerView
+        adapter.notifyDataSetChanged();
+    }
+
+    private void handleNewAnnouncement(JSONObject jsonMessage) throws JSONException {
+        JSONObject newAnnouncementJson = jsonMessage.getJSONObject("announcement");
+        Announcement newAnnouncement = new Announcement(
+                newAnnouncementJson.getLong("id"),
+                newAnnouncementJson.getString("content"),
+                newAnnouncementJson.getLong("scheduleId"),
+                newAnnouncementJson.getString("facultyNetId"),
+                newAnnouncementJson.getString("timestamp"),
+                ""
+        );
+
+        // Add the new announcement at the top of the list
+        announcementList.add(0, newAnnouncement);
+        adapter.notifyItemInserted(0);
+        recyclerView.scrollToPosition(0);  // Scroll to the top to show the new announcement
+    }
 
     @Override
     public void onDestroyView() {
