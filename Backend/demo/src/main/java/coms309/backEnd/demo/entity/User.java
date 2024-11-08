@@ -62,6 +62,13 @@ public class User {
     @JsonIgnore
     private List<FriendShip> friendshipsAsUser2;
 
+    @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<ChatMessage> sentMessages;
+
+    @OneToMany(mappedBy = "recipient", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<ChatMessage> receivedMessages;
 
 
     public User() {

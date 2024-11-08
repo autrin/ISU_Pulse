@@ -19,8 +19,8 @@ public class Faculty {
     private String title;
 
     @OneToOne
-    @JoinColumn
     @JsonIgnore
+    @JoinColumn
     private User user;
 
     @ManyToOne

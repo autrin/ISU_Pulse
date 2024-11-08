@@ -12,8 +12,8 @@ public class Profile {
     private long id;
 
     @OneToOne
-    @JoinColumn
     @JsonIgnore
+    @JoinColumn
     private User user;
 
     private String linkedinUrl = "No LinkedIn";
