@@ -11,11 +11,11 @@
         android:label="@string/menu_dashboard"
         tools:layout="@layout/fragment_home" />
 
-    <fragment
-        android:id="@+id/nav_Profile"
-        android:name="com.coms309.isu_pulse_frontend.ui.profile.ProfileFragment"
-        android:label="@string/menu_profile"
-        tools:layout="@layout/fragment_profile" />
+    <!--    <action-->
+    <!--        android:id="@+id/nav_profile"-->
+    <!--        app:destination="@id/nav_profile"-->
+    <!--        app:launchSingleTop="true"-->
+    <!--        android:label="@string/menu_profile"/>-->
 
     <fragment
         android:id="@+id/nav_courses"
