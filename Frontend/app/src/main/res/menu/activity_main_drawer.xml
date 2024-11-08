@@ -9,7 +9,7 @@
             android:icon="@drawable/ic_menu_camera"
             android:title="@string/menu_dashboard" />
         <item
-            android:id="@+id/nav_Profile"
+            android:id="@+id/nav_profile"
             android:icon="@drawable/ic_menu_profile"
             android:title="@string/menu_profile" />
         <item
