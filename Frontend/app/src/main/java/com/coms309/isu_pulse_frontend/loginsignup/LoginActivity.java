@@ -72,14 +72,17 @@ public class LoginActivity extends AppCompatActivity {
                             if (storedHashedPassword.equals(hashPassword)) {
                                 // Save netId and userType using UserSession
                                 UserSession.getInstance(LoginActivity.this).setNetId(netIdInput, LoginActivity.this);
-                                UserSession.getInstance(LoginActivity.this).setUserType(result.getString("user_type"), LoginActivity.this);
+                                UserSession.getInstance(LoginActivity.this).setUserType(result.getString("userType"), LoginActivity.this);
 
                                 // Passwords match, login successful
                                 Toast.makeText(LoginActivity.this, "Login successful", Toast.LENGTH_SHORT).show(); // TODO: You can comment this later
 
                                 // Proceed to the main activity
-                                Intent intent = new Intent(LoginActivity.this, ProfileActivity.class);
+                                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                intent.putExtra("navigateToHome", true);  // Add this flag if you want to open Home by default
+                                intent.putExtra("userRole", result.getString("userType"));  // Pass the user role
                                 startActivity(intent);
+
                                 finish();
                             } else {
                                 // Passwords don't match
