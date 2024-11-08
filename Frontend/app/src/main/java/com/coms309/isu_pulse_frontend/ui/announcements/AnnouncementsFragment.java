@@ -1,13 +1,13 @@
 package com.coms309.isu_pulse_frontend.ui.announcements;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -19,10 +19,14 @@ import com.coms309.isu_pulse_frontend.api.AnnouncementWebSocketClient;
 import com.coms309.isu_pulse_frontend.loginsignup.UserSession;
 import com.coms309.isu_pulse_frontend.model.Announcement;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public class AnnouncementsFragment extends Fragment {
+public class AnnouncementsFragment extends Fragment implements AnnouncementWebSocketClient.WebSocketListener {
 
     private RecyclerView recyclerView;
     private AnnouncementListAdapter adapter;
@@ -45,16 +49,13 @@ public class AnnouncementsFragment extends Fragment {
         recyclerView = view.findViewById(R.id.recyclerViewAnnouncements);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        // Sample announcements for UI testing
         announcementList = new ArrayList<>();
-        announcementList.add(new Announcement(2L, "Exam postponed to next week", 3L, "facultyNetID", "2024-11-05T10:00:00", "Sample Course"));
-
-        // Use announcement_item.xml layout in adapter, not teacher_announcement.xml
-        adapter = new AnnouncementListAdapter(announcementList, false); // Set to false to exclude teacher-specific layout
+        adapter = new AnnouncementListAdapter(announcementList, false);
         recyclerView.setAdapter(adapter);
 
         Button postButton = view.findViewById(R.id.buttonSubmitAnnouncement);
         postButton.setOnClickListener(v -> {
+            // TODO: Handle post announcement action
             Long scheduleId = getArguments() != null ? getArguments().getLong("courseId") : null;
             String content = ((EditText) view.findViewById(R.id.editTextAnnouncementContent)).getText().toString();
 
@@ -63,43 +64,85 @@ public class AnnouncementsFragment extends Fragment {
                 return;
             }
 
-            // Send the post request through WebSocket
-            announcementClient.postAnnouncement(scheduleId, content);
-
-            // Clear the input field after sending the announcement
+            announcementClient.sendMessage("post", scheduleId, content);
             ((EditText) view.findViewById(R.id.editTextAnnouncementContent)).setText("");
         });
 
+        // Initialize and connect the WebSocket
+        String netId = UserSession.getInstance(getContext()).getNetId();
+        String userType = UserSession.getInstance(getContext()).getUserType();
+        announcementClient = new AnnouncementWebSocketClient(this);
+        announcementClient.connectWebSocket(netId, userType);
 
         return view;
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public void onMessageReceived(String message) {
+        try {
+            JSONObject jsonMessage = new JSONObject(message);
+            String action = jsonMessage.getString("action");
 
-        // Initialize WebSocket client with faculty netId and userType
-        String netId = UserSession.getInstance(getContext()).getNetId();
-        announcementClient = new AnnouncementWebSocketClient();
-        announcementClient.connectWebSocket(netId, "FACULTY");
+            switch (action) {
+                case "history":
+                    JSONArray announcementsArray = jsonMessage.getJSONArray("announcements");
+                    announcementList.clear();
+
+                    for (int i = 0; i < announcementsArray.length(); i++) {
+                        JSONObject announcementJson = announcementsArray.getJSONObject(i);
+                        Announcement announcement = new Announcement(
+                                announcementJson.getLong("id"),
+                                announcementJson.getString("content"),
+                                announcementJson.getLong("scheduleId"),
+                                announcementJson.getString("facultyNetId"),
+                                announcementJson.getString("timestamp"),
+                                ""
+                        );
+                        announcementList.add(announcement);
+                    }
+                    adapter.notifyDataSetChanged();
+                    break;
+
+                case "new":
+                    JSONObject newAnnouncementJson = jsonMessage.getJSONObject("announcement");
+                    Announcement newAnnouncement = new Announcement(
+                            newAnnouncementJson.getLong("id"),
+                            newAnnouncementJson.getString("content"),
+                            newAnnouncementJson.getLong("scheduleId"),
+                            newAnnouncementJson.getString("facultyNetId"),
+                            newAnnouncementJson.getString("timestamp"),
+                            ""
+                    );
+                    announcementList.add(0, newAnnouncement); // Add at the top of the list
+                    adapter.notifyItemInserted(0);
+                    recyclerView.scrollToPosition(0);
+                    break;
+
+                case "confirmation":
+                    String confirmationMessage = jsonMessage.getString("message");
+                    Toast.makeText(getContext(), "Confirmation: " + confirmationMessage, Toast.LENGTH_SHORT).show();
+                    break;
+
+                case "error":
+                    String errorMessage = jsonMessage.getString("message");
+                    Log.e("WebSocket", "Error: " + errorMessage);
+                    break;
+
+                default:
+                    Log.w("WebSocket", "Unknown action received: " + action);
+                    break;
+            }
+        } catch (JSONException e) {
+            Log.e("WebSocket", "JSON parsing error", e);
+        }
     }
 
-    private void postAnnouncement(long scheduleId, String content) {
-        announcementClient.postAnnouncement(scheduleId, content);
-    }
-
-    private void updateAnnouncement(long announcementId, String content) {
-        announcementClient.updateAnnouncement(announcementId, content);
-    }
-
-    private void deleteAnnouncement(long announcementId) {
-        announcementClient.deleteAnnouncement(announcementId);
-    }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-        announcementClient.disconnectWebSocket();
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (announcementClient != null) {
+            announcementClient.disconnectWebSocket();
+        }
     }
-
 }
