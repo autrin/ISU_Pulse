@@ -120,9 +120,9 @@ public class ProfileActivity extends AppCompatActivity {
                 .load(imageUrl)
                 .into(profileImage);
         // Load the same image into navHeaderImage (ImageView)
-        Glide.with(this)
-                .load(imageUrl)
-                .into(navHeaderImage);
+//        Glide.with(this)
+//                .load(imageUrl)
+//                .into(navHeaderImage);
         firstNameTextView.setText(profile.getFirstName());
         lastNameTextView.setText(profile.getLastName());
         linkedinUrlTextView.setText(profile.getProfile().getLinkedinUrl());
