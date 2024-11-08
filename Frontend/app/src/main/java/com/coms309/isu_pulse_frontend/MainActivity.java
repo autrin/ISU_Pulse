@@ -10,7 +10,7 @@ import com.coms309.isu_pulse_frontend.databinding.ActivityMainBinding;
 import com.coms309.isu_pulse_frontend.loginsignup.LoginActivity;
 import com.coms309.isu_pulse_frontend.loginsignup.SignupActivity;
 import com.coms309.isu_pulse_frontend.loginsignup.UserSession;
-import com.coms309.isu_pulse_frontend.proifle_activity.ProfileActivity;
+import com.coms309.isu_pulse_frontend.ui.profile.ProfileActivity;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -56,25 +56,18 @@ public class MainActivity extends AppCompatActivity {
             DrawerLayout drawer = binding.drawerLayout;
             navigationView = binding.navView;
 
-            // Passing each menu ID as a set of IDs because each menu should be considered as top-level destinations
-//            mAppBarConfiguration = new AppBarConfiguration.Builder(
-//                    R.id.nav_home, R.id.nav_Profile, R.id.nav_courses)
-//                    .setOpenableLayout(drawer)
-//                    .build();
-            // Check user role and set up navigation view accordingly
+            // Set up AppBarConfiguration based on user role
             String userRole = UserSession.getInstance(this).getUserType();
             if ("TEACHER".equals(userRole)) {
-                // Teacher: Include Courses page in the menu
                 mAppBarConfiguration = new AppBarConfiguration.Builder(
-                        R.id.nav_home, R.id.nav_Profile, R.id.nav_courses)  // Include Courses for Teacher
-                        .setOpenableLayout(binding.drawerLayout)
+                        R.id.nav_home, R.id.nav_profile, R.id.nav_courses)
+                        .setOpenableLayout(drawer)
                         .build();
                 setupTeacherMenu();
             } else {
-                // Student: Exclude Courses page from the menu
                 mAppBarConfiguration = new AppBarConfiguration.Builder(
-                        R.id.nav_home, R.id.nav_Profile)  // Exclude Courses for Student
-                        .setOpenableLayout(binding.drawerLayout)
+                        R.id.nav_home, R.id.nav_profile)
+                        .setOpenableLayout(drawer)
                         .build();
                 setupStudentMenu();
             }
@@ -83,22 +76,24 @@ public class MainActivity extends AppCompatActivity {
             NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
             NavigationUI.setupWithNavController(navigationView, navController);
 
-            // Check user role and set up navigation view accordingly
-//            String userRole = UserSession.getInstance(this).getUserType();
-            if ("TEACHER".equals(userRole)) {
-                setupTeacherMenu();
-            } else {
-                setupStudentMenu();
-            }
+            // Override navigation for specific items
+            navigationView.setNavigationItemSelectedListener(item -> {
+                int itemId = item.getItemId();
+                if (itemId == R.id.nav_profile) {
+                    // Launch ProfileActivity directly with an Intent
+                    Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
+                    startActivity(intent);
+                    return true;
+                } else {
+                    // For other items, allow NavController to handle them
+                    return NavigationUI.onNavDestinationSelected(item, navController) || super.onOptionsItemSelected(item);
+                }
+            });
 
             // Set the default fragment only if navigating from login with the "navigateToHome" flag
             if (getIntent().getBooleanExtra("navigateToHome", false)) {
                 navController.navigate(R.id.nav_home);
-            } else {
-                // Default to home fragment when there’s no intent from login
-                navController.navigate(R.id.nav_home);
             }
-
 
         } else {
             // No saved session; show login screen
@@ -119,7 +114,6 @@ public class MainActivity extends AppCompatActivity {
             });
         }
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
