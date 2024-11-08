@@ -20,6 +20,7 @@ public class Faculty {
 
     @OneToOne
     @JoinColumn
+    @JsonIgnore
     private User user;
 
     @ManyToOne
@@ -27,6 +28,7 @@ public class Faculty {
     private Department department;
 
     @OneToMany(mappedBy = "faculty", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private List<Teach> teachList;
 
     @OneToMany(mappedBy = "faculty", cascade = CascadeType.ALL, orphanRemoval = true)
