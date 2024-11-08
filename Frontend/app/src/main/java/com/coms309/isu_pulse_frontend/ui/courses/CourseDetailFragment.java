@@ -1,10 +1,12 @@
 package com.coms309.isu_pulse_frontend.ui.courses;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -12,15 +14,20 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.coms309.isu_pulse_frontend.R;
+import com.coms309.isu_pulse_frontend.api.FacultyApiService;
 import com.coms309.isu_pulse_frontend.databinding.FragmentCourseDetailBinding;
 import com.coms309.isu_pulse_frontend.loginsignup.UserSession;
+import com.coms309.isu_pulse_frontend.model.Announcement;
 import com.coms309.isu_pulse_frontend.ui.announcements.AnnouncementsFragment;
 import com.coms309.isu_pulse_frontend.ui.announcements.TeacherAnnouncementsFragment;
+
+import java.util.List;
 
 public class CourseDetailFragment extends Fragment {
 
     private FragmentCourseDetailBinding binding;
     private long courseId;
+    private static final String TAG = "CourseDetailFragment";
 
     public static CourseDetailFragment newInstance(Long courseId) {
         CourseDetailFragment fragment = new CourseDetailFragment();
@@ -79,19 +86,19 @@ public class CourseDetailFragment extends Fragment {
 
     private void showAnnouncementsFragment() {
         Fragment fragment;
-
-        // Check user role to decide which fragment to load
         String userRole = UserSession.getInstance(getContext()).getUserType();
+
         if ("FACULTY".equals(userRole)) {
-            fragment = new TeacherAnnouncementsFragment();
+            fragment = TeacherAnnouncementsFragment.newInstance(courseId);
         } else {
-            fragment = AnnouncementsFragment.newInstance(courseId);  // If you need to pass courseId for students
+            fragment = AnnouncementsFragment.newInstance(courseId);
         }
 
         getChildFragmentManager().beginTransaction()
                 .replace(R.id.courseDetailContent, fragment)
                 .commit();
     }
+
 
     // Uncomment these methods and the corresponding code in `onItemSelected`
     // once PeopleFragment and TasksFragment are implemented
@@ -117,4 +124,6 @@ public class CourseDetailFragment extends Fragment {
         transaction.addToBackStack(null); // Optional: adds the transaction to the back stack
         transaction.commit();
     }
+
+
 }
