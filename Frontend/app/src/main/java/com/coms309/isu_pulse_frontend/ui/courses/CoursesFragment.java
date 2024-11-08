@@ -1,5 +1,7 @@
 package com.coms309.isu_pulse_frontend.ui.courses;
 
+import static com.coms309.isu_pulse_frontend.api.Constants.BASE_URL;
+
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,7 +17,11 @@ import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.volley.Request;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.Volley;
 import com.coms309.isu_pulse_frontend.R;
+import com.coms309.isu_pulse_frontend.adapters.AnnouncementListAdapter;
 import com.coms309.isu_pulse_frontend.adapters.CourseListAdapter;
 import com.coms309.isu_pulse_frontend.api.AnnouncementWebSocketClient;
 import com.coms309.isu_pulse_frontend.api.FacultyApiService;
@@ -35,13 +41,14 @@ import java.util.List;
 public class CoursesFragment extends Fragment implements AnnouncementWebSocketClient.WebSocketListener {
 
     private FragmentCoursesBinding binding;
-    private RecyclerView recyclerView;
-    private CourseListAdapter adapter;
+    private RecyclerView courseRecyclerView, announcementRecyclerView;
+    private CourseListAdapter courseAdapter;
+    private AnnouncementListAdapter announcementAdapter;
     private List<Course> courses = new ArrayList<>();
-    private List<Announcement> announcementList = new ArrayList<>(); // Temporary list for announcements
+    private List<Announcement> announcementList = new ArrayList<>();
     private TextView emptyStateTextView;
     private AnnouncementWebSocketClient announcementClient;
-    private static final String TAG = "CoursesFragment";
+    private static final String TAG = "AnnouncementWebSocket";
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -51,18 +58,23 @@ public class CoursesFragment extends Fragment implements AnnouncementWebSocketCl
         // Get the user role
         String userRole = UserSession.getInstance(getContext()).getUserType();
 
-        // Set up RecyclerView
-        recyclerView = binding.recyclerViewCourses;
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        adapter = new CourseListAdapter(courses, userRole, this::navigateToCourseDetail);
-        recyclerView.setAdapter(adapter);
+        // Set up Course RecyclerView
+        courseRecyclerView = binding.recyclerViewCourses;
+        courseRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        courseAdapter = new CourseListAdapter(courses, userRole, this::navigateToCourseDetail);
+        courseRecyclerView.setAdapter(courseAdapter);
+
+        // Set up Announcement RecyclerView (Separate from Courses)
+        announcementRecyclerView = binding.recyclerViewAnnouncements;
+        announcementRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        announcementAdapter = new AnnouncementListAdapter(announcementList, false);
+        announcementRecyclerView.setAdapter(announcementAdapter);
 
         // Empty state view
         emptyStateTextView = binding.emptyStateTextView;
 
         // Fetch courses from backend
         fetchCoursesFromBackend();
-
         return root;
     }
 
@@ -77,16 +89,19 @@ public class CoursesFragment extends Fragment implements AnnouncementWebSocketCl
                 courses.clear();
                 for (Schedule schedule : schedules) {
                     courses.add(schedule.getCourse());
+
+                    // Fetch announcements for each course's scheduleId
+                    fetchAnnouncementsFromAPI(schedule.getCourse().getcId());
                 }
-                adapter.notifyDataSetChanged();
+                courseAdapter.notifyDataSetChanged();
 
                 // Show empty state if no courses are found
                 if (courses.isEmpty()) {
                     emptyStateTextView.setVisibility(View.VISIBLE);
-                    recyclerView.setVisibility(View.GONE);
+                    courseRecyclerView.setVisibility(View.GONE);
                 } else {
                     emptyStateTextView.setVisibility(View.GONE);
-                    recyclerView.setVisibility(View.VISIBLE);
+                    courseRecyclerView.setVisibility(View.VISIBLE);
                 }
             }
 
@@ -94,10 +109,11 @@ public class CoursesFragment extends Fragment implements AnnouncementWebSocketCl
             public void onError(String message) {
                 Toast.makeText(getContext(), "Error fetching courses: " + message, Toast.LENGTH_SHORT).show();
                 emptyStateTextView.setVisibility(View.VISIBLE);
-                recyclerView.setVisibility(View.GONE);
+                courseRecyclerView.setVisibility(View.GONE);
             }
         });
     }
+
 
     // Navigate to CourseDetailFragment
     private void navigateToCourseDetail(Long courseId) {
@@ -115,14 +131,16 @@ public class CoursesFragment extends Fragment implements AnnouncementWebSocketCl
     @Override
     public void onStart() {
         super.onStart();
-        if (announcementClient == null) {
-            String netId = UserSession.getInstance(getContext()).getNetId();
-            String userType = UserSession.getInstance(getContext()).getUserType();
-
-            announcementClient = new AnnouncementWebSocketClient(this);
-            announcementClient.connectWebSocket(netId, userType);
+        AnnouncementWebSocketClient webSocketClient = UserSession.getInstance(getContext()).getWebSocketClient();
+        if (webSocketClient != null) {
+            webSocketClient.setListener(this);
+        } else {
+            // Handle case where the WebSocket client is not initialized
+            Log.e(TAG, "WebSocket client is not initialized");
+            Toast.makeText(getContext(), "WebSocket client is not initialized", Toast.LENGTH_SHORT).show();
         }
     }
+
 
     @Override
     public void onDestroyView() {
@@ -178,7 +196,7 @@ public class CoursesFragment extends Fragment implements AnnouncementWebSocketCl
             announcementList.add(announcement);
         }
 
-        adapter.notifyDataSetChanged();
+        announcementAdapter.notifyDataSetChanged();
     }
 
     private void handleNewAnnouncement(JSONObject jsonMessage) throws JSONException {
@@ -193,7 +211,7 @@ public class CoursesFragment extends Fragment implements AnnouncementWebSocketCl
         );
 
         announcementList.add(0, newAnnouncement);
-        adapter.notifyItemInserted(0);
+        announcementAdapter.notifyItemInserted(0);
     }
 
     private void handleConfirmation(JSONObject jsonMessage) throws JSONException {
@@ -205,6 +223,54 @@ public class CoursesFragment extends Fragment implements AnnouncementWebSocketCl
         String errorMessage = jsonMessage.getString("message");
         Log.e(TAG, "Error: " + errorMessage);
         Toast.makeText(getContext(), "Error: " + errorMessage, Toast.LENGTH_SHORT).show();
+    }
+
+    //    private void loadAnnouncementsForSchedule(long scheduleId) {
+//        FacultyApiService apiService = new FacultyApiService(getContext());
+//        apiService.getAnnouncementsBySchedule(scheduleId, new FacultyApiService.AnnouncementResponseListener() {
+//            @Override
+//            public void onResponse(List<Announcement> announcements) {
+//                announcementList.clear();
+//                announcementList.addAll(announcements);
+//                announcementAdapter.notifyDataSetChanged();
+//            }
+//
+//            @Override
+//            public void onError(String message) {
+//                Log.e(TAG, "Error loading announcements: " + message);
+//                Toast.makeText(getContext(), "Error loading announcements", Toast.LENGTH_SHORT).show();
+//            }
+//        });
+//    }
+    private void fetchAnnouncementsFromAPI(Long scheduleId) {
+        String url = BASE_URL + "announcements/schedule/" + scheduleId;
+
+        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(
+                Request.Method.GET, url, null,
+                response -> {
+                    announcementList.clear();
+                    for (int i = 0; i < response.length(); i++) {
+                        try {
+                            JSONObject announcementJson = response.getJSONObject(i);
+                            Announcement announcement = new Announcement(
+                                    announcementJson.getLong("id"),
+                                    announcementJson.getString("content"),
+                                    announcementJson.getLong("scheduleId"),
+                                    announcementJson.getString("facultyNetId"),
+                                    announcementJson.getString("timestamp"),
+                                    ""
+                            );
+                            announcementList.add(announcement);
+                        } catch (JSONException e) {
+                            Log.e(TAG, "Error parsing announcement JSON", e);
+                        }
+                    }
+                    announcementAdapter.notifyDataSetChanged();
+                },
+                error -> Log.e(TAG, "Error fetching announcements from API", error)
+        );
+
+        Volley.newRequestQueue(getContext()).add(jsonArrayRequest);
     }
 
 }
