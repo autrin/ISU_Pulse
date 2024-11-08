@@ -1,4 +1,4 @@
-package com.coms309.isu_pulse_frontend.proifle_activity;
+package com.coms309.isu_pulse_frontend.ui.profile;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,9 +12,7 @@ import com.android.volley.VolleyError;
 import com.coms309.isu_pulse_frontend.R;
 import com.coms309.isu_pulse_frontend.api.AuthenticationService;
 import com.coms309.isu_pulse_frontend.api.UpdateAccount;
-import com.coms309.isu_pulse_frontend.loginsignup.LoginActivity;
 import com.coms309.isu_pulse_frontend.loginsignup.PasswordHasher;
-import com.coms309.isu_pulse_frontend.loginsignup.SignupActivity;
 import com.coms309.isu_pulse_frontend.model.Profile;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputLayout;
