@@ -1,7 +1,5 @@
 package com.coms309.isu_pulse_frontend.loginsignup;
 
-import static androidx.core.content.SharedPreferencesKt.edit;
-
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -10,13 +8,11 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.content.SharedPreferences;
 
 // Other necessary imports
 import com.coms309.isu_pulse_frontend.MainActivity;
 import com.coms309.isu_pulse_frontend.R;
 import com.coms309.isu_pulse_frontend.api.AuthenticationService;
-import com.coms309.isu_pulse_frontend.proifle_activity.ProfileActivity;
 
 
 import org.json.JSONException;
@@ -72,14 +68,17 @@ public class LoginActivity extends AppCompatActivity {
                             if (storedHashedPassword.equals(hashPassword)) {
                                 // Save netId and userType using UserSession
                                 UserSession.getInstance(LoginActivity.this).setNetId(netIdInput, LoginActivity.this);
-                                UserSession.getInstance(LoginActivity.this).setUserType(result.getString("user_type"), LoginActivity.this);
+                                UserSession.getInstance(LoginActivity.this).setUserType(result.getString("userType"), LoginActivity.this);
 
                                 // Passwords match, login successful
                                 Toast.makeText(LoginActivity.this, "Login successful", Toast.LENGTH_SHORT).show(); // TODO: You can comment this later
 
                                 // Proceed to the main activity
-                                Intent intent = new Intent(LoginActivity.this, ProfileActivity.class);
+                                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                intent.putExtra("navigateToHome", true);  // Add this flag if you want to open Home by default
+                                intent.putExtra("userRole", result.getString("userType"));  // Pass the user role
                                 startActivity(intent);
+
                                 finish();
                             } else {
                                 // Passwords don't match

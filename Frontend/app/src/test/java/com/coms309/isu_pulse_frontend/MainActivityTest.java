@@ -29,12 +29,12 @@ public class MainActivityTest {
     @Test
     public void testTeacherMenuVisibility() {
         // Simulate teacher login
-        UserSession.getInstance(context).setUserType("TEACHER", context);
+        UserSession.getInstance(context).setUserType("FACULTY", context);
         MainActivity activity = Robolectric.setupActivity(MainActivity.class);
 
         // Use the public getter method to access navigationView
         Menu menu = activity.getNavigationView().getMenu();
         assertNotNull(menu.findItem(R.id.nav_home));  // Ensure 'Dashboard' is present
-        assertNotNull(menu.findItem(R.id.nav_Profile));  // Ensure 'Profile' is present
+        assertNotNull(menu.findItem(R.id.nav_profile));  // Ensure 'Profile' is present
     }
 }

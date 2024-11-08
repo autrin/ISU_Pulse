@@ -38,10 +38,11 @@
             android:name=".loginsignup.SignupActivity"
             android:exported="false" />
         <activity
-            android:name=".proifle_activity.ProfileActivity"
-            android:exported="false" />
+            android:name=".ui.profile.ProfileActivity"
+            android:exported="false"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".proifle_activity.EditProfileActivity"
+            android:name=".ui.profile.EditProfileActivity"
             android:exported="false" />
         <activity
             android:name=".loginsignup.LoginActivity"

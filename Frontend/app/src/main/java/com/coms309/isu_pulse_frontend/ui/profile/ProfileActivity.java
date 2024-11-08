@@ -1,8 +1,7 @@
-package com.coms309.isu_pulse_frontend.proifle_activity;
+package com.coms309.isu_pulse_frontend.ui.profile;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -21,8 +20,6 @@ import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.android.material.navigation.NavigationView;
-
-import java.util.Objects;
 
 public class ProfileActivity extends AppCompatActivity {
 
@@ -47,10 +44,11 @@ public class ProfileActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        View profileView = getLayoutInflater().inflate(R.layout.profile, null);
+        setContentView(R.layout.profile);
 
         toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);  // Set toolbar as the app's action bar
+
         coursesTextView = findViewById(R.id.coursesLabelTextView);
         friendsTextView = findViewById(R.id.friendsLabelTextView);
         numcoursesTextView = findViewById(R.id.coursesCountTextView);
@@ -63,11 +61,11 @@ public class ProfileActivity extends AppCompatActivity {
         linkedinUrlTextView = findViewById(R.id.linkedinUrlTextView);
         externalUrlTextView = findViewById(R.id.externalUrlTextView);
         descriptionTextView = findViewById(R.id.descriptionTextView);
-        navigationView = findViewById(R.id.nav_view);
-        headerView = navigationView.getHeaderView(0);
-        navHeaderTitle = headerView.findViewById(R.id.nav_header_title);
-        navHeaderImage = headerView.findViewById(R.id.nav_header_image);
-        navHeaderEmail = headerView.findViewById(R.id.nav_header_email);
+//        navigationView = findViewById(R.id.nav_view);
+//        headerView = navigationView.getHeaderView(0);
+//        navHeaderTitle = headerView.findViewById(R.id.nav_header_title);
+//        navHeaderImage = headerView.findViewById(R.id.nav_header_image);
+//        navHeaderEmail = headerView.findViewById(R.id.nav_header_email);
 
         toolbar.setNavigationOnClickListener(v -> {
             Intent intent = new Intent(ProfileActivity.this, MainActivity.class);
@@ -80,12 +78,10 @@ public class ProfileActivity extends AppCompatActivity {
         });
 
         logout.setOnClickListener(v -> {
-            // Clear session data
             UserSession.getInstance(ProfileActivity.this).clearSession(ProfileActivity.this);
-
-            Intent intent = new Intent(ProfileActivity.this, MainActivity.class); //TODO: Question Is this supposed to be MainActivity?
+            Intent intent = new Intent(ProfileActivity.this, MainActivity.class);
             startActivity(intent);
-            finish(); // Added this line too
+            finish();
         });
 
         fetchProfileData();
@@ -124,16 +120,16 @@ public class ProfileActivity extends AppCompatActivity {
                 .load(imageUrl)
                 .into(profileImage);
         // Load the same image into navHeaderImage (ImageView)
-        Glide.with(this)
-                .load(imageUrl)
-                .into(navHeaderImage);
+//        Glide.with(this)
+//                .load(imageUrl)
+//                .into(navHeaderImage);
         firstNameTextView.setText(profile.getFirstName());
         lastNameTextView.setText(profile.getLastName());
         linkedinUrlTextView.setText(profile.getProfile().getLinkedinUrl());
         externalUrlTextView.setText(profile.getProfile().getExternalUrl());
         descriptionTextView.setText(profile.getProfile().getDescription());
-        navHeaderTitle.setText(String.format(getString(R.string.nav_header_title), profile.getFirstName(), profile.getLastName()));
-        String email = profile.getNetId() + "@iastate.edu";
-        navHeaderEmail.setText(email);
+//        navHeaderTitle.setText(String.format(getString(R.string.nav_header_title), profile.getFirstName(), profile.getLastName()));
+//        String email = profile.getNetId() + "@iastate.edu";
+//        navHeaderEmail.setText(email);
     }
 }
