@@ -182,8 +182,16 @@ public class HomeFragment extends Fragment implements AnnouncementWebSocketClien
     @Override
     public void onStart() {
         super.onStart();
-        UserSession.getInstance(getContext()).getWebSocketClient().setListener(this); // Set WebSocket listener
+        AnnouncementWebSocketClient webSocketClient = UserSession.getInstance(getContext()).getWebSocketClient();
+        if (webSocketClient != null) {
+            webSocketClient.setListener(this);
+        } else {
+            // Handle the case where the WebSocket client is not initialized
+            Log.e(TAG, "WebSocket client is not initialized");
+            Toast.makeText(getContext(), "WebSocket client is not initialized", Toast.LENGTH_SHORT).show();
+        }
     }
+
 
     @Override
     public void onMessageReceived(String message) {
