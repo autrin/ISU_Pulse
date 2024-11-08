@@ -14,22 +14,20 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.coms309.isu_pulse_frontend.R;
-import com.coms309.isu_pulse_frontend.api.FacultyApiService;
 import com.coms309.isu_pulse_frontend.databinding.FragmentCourseDetailBinding;
 import com.coms309.isu_pulse_frontend.loginsignup.UserSession;
-import com.coms309.isu_pulse_frontend.model.Announcement;
 import com.coms309.isu_pulse_frontend.ui.announcements.AnnouncementsFragment;
 import com.coms309.isu_pulse_frontend.ui.announcements.TeacherAnnouncementsFragment;
-
-import java.util.List;
 
 public class CourseDetailFragment extends Fragment {
 
     private FragmentCourseDetailBinding binding;
     private long courseId;
     private static final String TAG = "CourseDetailFragment";
+    private long scheduleId = 7L; // hardcoded schedule ID for testing
 
-    public static CourseDetailFragment newInstance(Long courseId) {
+    public static CourseDetailFragment newInstance(long courseId) {
+        courseId = 2L; // hardcoded course ID for testing
         CourseDetailFragment fragment = new CourseDetailFragment();
         Bundle args = new Bundle();
         args.putLong("courseId", courseId);
@@ -44,9 +42,20 @@ public class CourseDetailFragment extends Fragment {
         View root = binding.getRoot();
 
         if (getArguments() != null) {
-            courseId = getArguments().getLong("courseId", -1);
-            binding.courseTitle.setText("Course ID: " + courseId);
+//            courseId = getArguments().getLong("courseId", -1);
+//            binding.courseTitle.setText("Course ID: " + courseId);
+            scheduleId = getArguments().getLong("scheduleId", 7L); // hardcoded schedule ID for testing
+            binding.courseTitle.setText("Schedule ID: " + scheduleId); // Display schedule ID for reference
+            // Load announcements for this schedule
+//            loadAnnouncementsForSchedule(scheduleId);
         }
+
+        if (scheduleId == -1) {
+            Log.e(TAG, "Invalid scheduleId received");
+            Toast.makeText(getContext(), "Error: Invalid schedule ID", Toast.LENGTH_SHORT).show();
+            return root;
+        }
+        binding.courseTitle.setText("Schedule ID: " + scheduleId); // Display schedule ID for reference
 
         // Setup Dropdown (Spinner) listener
         binding.courseDetailDropdown.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -88,34 +97,20 @@ public class CourseDetailFragment extends Fragment {
         Fragment fragment;
         String userRole = UserSession.getInstance(getContext()).getUserType();
 
+        // Decide which fragment to show based on user type
         if ("FACULTY".equals(userRole)) {
-            fragment = TeacherAnnouncementsFragment.newInstance(courseId);
+            Toast.makeText(getContext(), "Showing Teacher Announcements Fragment", Toast.LENGTH_SHORT).show();
+            Log.d(TAG, "Showing Teacher Announcements Fragment. User Role: " + userRole);
+            fragment = TeacherAnnouncementsFragment.newInstance(scheduleId); // Ensure courseId is set correctly
         } else {
-            fragment = AnnouncementsFragment.newInstance(courseId);
+            fragment = AnnouncementsFragment.newInstance(scheduleId);
         }
 
+        // Replace the content with the selected fragment
         getChildFragmentManager().beginTransaction()
                 .replace(R.id.courseDetailContent, fragment)
                 .commit();
     }
-
-
-    // Uncomment these methods and the corresponding code in `onItemSelected`
-    // once PeopleFragment and TasksFragment are implemented
-
-    /*
-    // Helper method to show PeopleFragment
-    private void showPeopleFragment() {
-        PeopleFragment peopleFragment = PeopleFragment.newInstance(courseId);
-        replaceFragment(peopleFragment);
-    }
-
-    // Helper method to show TasksFragment
-    private void showTasksFragment() {
-        TasksFragment tasksFragment = TasksFragment.newInstance(courseId);
-        replaceFragment(tasksFragment);
-    }
-    */
 
     // Utility method to replace the current fragment in the container
     private void replaceFragment(Fragment fragment) {

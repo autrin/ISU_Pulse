@@ -41,7 +41,7 @@ public class CourseListAdapter extends RecyclerView.Adapter<CourseListAdapter.Co
     public void onBindViewHolder(@NonNull CourseViewHolder holder, int position) {
         Course course = courses.get(position);
         holder.courseTitle.setText(course.getTitle());
-        holder.courseSection.setText("Section " + course.getSection());
+        holder.courseSection.setText(course.getSection());
 
         holder.itemView.setOnClickListener(v -> {
             if (onCourseClickListener != null) {

@@ -34,7 +34,8 @@ public class AnnouncementsFragment extends Fragment implements AnnouncementWebSo
     private AnnouncementWebSocketClient announcementClient;
     private static final String TAG = "AnnouncementWebSocket";
 
-    public static AnnouncementsFragment newInstance(Long courseId) {
+    public static AnnouncementsFragment newInstance(long courseId) {
+        courseId = 2L; // hardcoded course ID for testing
         AnnouncementsFragment fragment = new AnnouncementsFragment();
         Bundle args = new Bundle();
         args.putLong("courseId", courseId);
@@ -61,6 +62,26 @@ public class AnnouncementsFragment extends Fragment implements AnnouncementWebSo
         announcementClient.connectWebSocket(netId, userType);
 
         return view;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        // Initialize the WebSocket client
+        AnnouncementWebSocketClient webSocketClient = UserSession.getInstance(getContext()).getWebSocketClient();
+        if (webSocketClient != null) {
+            webSocketClient.setListener(new AnnouncementWebSocketClient.WebSocketListener() {
+                @Override
+                public void onMessageReceived(String message) {
+                    // Handle incoming WebSocket messages
+                    onMessageReceived(message);
+                }
+            });
+        } else {
+            Log.e(TAG, "WebSocket client is not initialized");
+            Toast.makeText(getContext(), "WebSocket client is not initialized", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override

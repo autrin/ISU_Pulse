@@ -69,15 +69,15 @@ public class AnnouncementWebSocketClient {
     }
 
     public void postAnnouncement(long scheduleId, String content) {
-        sendActionMessage("post", scheduleId, content, null);
+        sendActionMessage("post", scheduleId, content, 0);
     }
 
     public void updateAnnouncement(long announcementId, String content) {
-        sendActionMessage("update", null, content, announcementId);
+        sendActionMessage("update", 0, content, announcementId);
     }
 
     public void deleteAnnouncement(long announcementId) {
-        sendActionMessage("delete", null, null, announcementId);
+        sendActionMessage("delete", 0, null, announcementId);
     }
 
     public void disconnectWebSocket() {
@@ -86,13 +86,13 @@ public class AnnouncementWebSocketClient {
         }
     }
 
-    private void sendActionMessage(String action, Long scheduleId, String content, Long announcementId) {
+    public void sendActionMessage(String action, long scheduleId, String content, long announcementId) {
         try {
             JSONObject message = new JSONObject();
             message.put("action", action);
-            if (scheduleId != null) message.put("scheduleId", scheduleId);
+            if (scheduleId != 0) message.put("scheduleId", 7); // hardcoded schedule ID for testing
             if (content != null) message.put("content", content);
-            if (announcementId != null) message.put("announcementId", announcementId);
+            if (announcementId != 0) message.put("announcementId", announcementId);
             if (webSocketClient != null && webSocketClient.isOpen()) {
                 webSocketClient.send(message.toString());
                 Log.d(TAG, "Sent message: " + message.toString());

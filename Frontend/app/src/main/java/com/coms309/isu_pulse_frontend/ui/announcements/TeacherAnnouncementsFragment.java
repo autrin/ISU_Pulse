@@ -17,12 +17,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.coms309.isu_pulse_frontend.R;
 import com.coms309.isu_pulse_frontend.adapters.AnnouncementListAdapter;
+import com.coms309.isu_pulse_frontend.api.AnnouncementResponseListener;
 import com.coms309.isu_pulse_frontend.api.AnnouncementWebSocketClient;
 import com.coms309.isu_pulse_frontend.api.FacultyApiService;
 import com.coms309.isu_pulse_frontend.loginsignup.UserSession;
 import com.coms309.isu_pulse_frontend.model.Announcement;
 import com.coms309.isu_pulse_frontend.model.Schedule;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -37,14 +39,26 @@ public class TeacherAnnouncementsFragment extends Fragment implements Announceme
     private AnnouncementWebSocketClient webSocketClient;
     private static final String TAG = "TeacherAnnouncementsFragment";
     private EditText announcementContent;
-    private long courseId = -1;
+    private long courseId = 2L; // hardcoded course ID for testing
+    private long scheduleId = 7L; // hardcoded schedule ID for testing
 
-    public static TeacherAnnouncementsFragment newInstance(Long courseId) {
+    public static TeacherAnnouncementsFragment newInstance(long scheduleId) {
         TeacherAnnouncementsFragment fragment = new TeacherAnnouncementsFragment();
         Bundle args = new Bundle();
-        args.putLong("courseId", courseId);
+        args.putLong("scheduleId", scheduleId);
         fragment.setArguments(args);
         return fragment;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // Fetch the scheduleId from the arguments
+        if (getArguments() != null) {
+            scheduleId = getArguments().getLong("scheduleId", -1);
+        }
+        // Fetch the scheduleId
+        getScheduleId();
     }
 
     @Nullable
@@ -52,8 +66,9 @@ public class TeacherAnnouncementsFragment extends Fragment implements Announceme
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Log.d(TAG, "onCreateView called");
         if (getArguments() != null) {
-            courseId = getArguments().getLong("courseId", -1);
+            scheduleId = getArguments().getLong("scheduleId", 7L); // hardcoded schedule ID for testing
         }
+
         View view = inflater.inflate(R.layout.teacher_announcement, container, false);
 
         recyclerView = view.findViewById(R.id.recyclerViewAnnouncements);
@@ -62,7 +77,13 @@ public class TeacherAnnouncementsFragment extends Fragment implements Announceme
         announcementList = new ArrayList<>();
         adapter = new AnnouncementListAdapter(announcementList, true);
         recyclerView.setAdapter(adapter);
-
+        // Load announcements for this schedule when the fragment starts
+        if (scheduleId != -1) {
+            loadAnnouncementsForSchedule(scheduleId);
+        } else {
+            Log.e("TeacherAnnouncementsFragment", "Error: Schedule ID is not available");
+            scheduleId = 7L; // hardcoded schedule ID for testing
+        }
         announcementContent = view.findViewById(R.id.editTextAnnouncementContent);
         Button submitButton = view.findViewById(R.id.buttonSubmitAnnouncement);
 
@@ -71,15 +92,16 @@ public class TeacherAnnouncementsFragment extends Fragment implements Announceme
             if (!content.isEmpty()) {
                 Log.d(TAG, "Submit button clicked with content: " + content);
 
-                // Replace scheduleId with an appropriate ID for the course
-                long scheduleId = getScheduleId(); // Ensure this method retrieves a valid ID
                 if (scheduleId != -1) {
-                    webSocketClient.sendActionMessage("new_announcement", scheduleId, content, null);
+//                    webSocketClient.sendActionMessage("new_announcement", scheduleId, content, null);
+                    // Proceed to send the announcement
+                    webSocketClient.postAnnouncement(scheduleId, content);
+                    Toast.makeText(getContext(), "Announcement sent!", Toast.LENGTH_SHORT).show();
                     Log.d(TAG, "Announcement sent with content: " + content);
-                    announcementContent.setText("");
+//                    announcementContent.setText("");
                 } else {
-                    Log.e(TAG, "Error: Course ID not available");
-                    Toast.makeText(getContext(), "Error: Course ID not available", Toast.LENGTH_SHORT).show();
+                    Log.e(TAG, "Error: Schedule ID not available yet");
+                    Toast.makeText(getContext(), "Schedule ID not available yet", Toast.LENGTH_SHORT).show();
                 }
             } else {
                 Log.w(TAG, "Empty content, not sending announcement");
@@ -91,6 +113,26 @@ public class TeacherAnnouncementsFragment extends Fragment implements Announceme
 
         return view;
     }
+
+    private void loadAnnouncementsForSchedule(long scheduleId) {
+        String netId = UserSession.getInstance(getContext()).getNetId();  // Retrieve netId dynamically
+        FacultyApiService apiService = new FacultyApiService(getContext());
+        apiService.getAnnouncementsBySchedule(scheduleId, netId, new AnnouncementResponseListener() {
+            @Override
+            public void onResponse(List<Announcement> announcements) {
+                // Update the announcement list and adapter
+                announcementList.clear();
+                announcementList.addAll(announcements);
+                adapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onError(String message) {
+                Toast.makeText(getContext(), "Error loading announcements: " + message, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
 
     private void initializeWebSocket() {
         // Fetch netId and userType from session or context
@@ -146,7 +188,7 @@ public class TeacherAnnouncementsFragment extends Fragment implements Announceme
 
     private long getScheduleId() {
         // Assume courseId is passed as an argument from CourseDetailFragment or stored in a class variable
-        long courseId = getArguments() != null ? getArguments().getLong("courseId", -1) : -1;
+        long courseId = getArguments() != null ? getArguments().getLong("courseId", 2L) : 2L; // hardcoded courseId for testing. default should be -1
 
         if (courseId == -1) {
             Log.e(TAG, "Invalid course ID");
@@ -185,13 +227,12 @@ public class TeacherAnnouncementsFragment extends Fragment implements Announceme
         if (scheduleId != -1) {
             // Proceed with sending the announcement
             String content = announcementContent.getText().toString();
-            webSocketClient.sendActionMessage("new_announcement", scheduleId, content, null);
+            webSocketClient.sendActionMessage("new_announcement", scheduleId, content, 0);
             Log.d(TAG, "Announcement sent with content: " + content);
         } else {
             Toast.makeText(getContext(), "Error: Schedule ID not available", Toast.LENGTH_SHORT).show();
         }
     }
-
 
     @Override
     public void onDestroyView() {
@@ -202,4 +243,95 @@ public class TeacherAnnouncementsFragment extends Fragment implements Announceme
             webSocketClient.disconnectWebSocket();
         }
     }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        // Initialize the WebSocket client
+        AnnouncementWebSocketClient webSocketClient = UserSession.getInstance(getContext()).getWebSocketClient();
+        if (webSocketClient != null) {
+            webSocketClient.setListener(new AnnouncementWebSocketClient.WebSocketListener() {
+                @Override
+                public void onMessageReceived(String message) {
+                    // Handle incoming WebSocket messages
+                    handleWebSocketMessage(message);
+                }
+            });
+        } else {
+            Log.e(TAG, "WebSocket client is not initialized");
+            Toast.makeText(getContext(), "WebSocket client is not initialized", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void handleWebSocketMessage(String message) {
+        try {
+            JSONObject jsonMessage = new JSONObject(message);
+            String action = jsonMessage.getString("action");
+
+            switch (action) {
+                case "history":
+                    handleHistoryAction(jsonMessage);
+                    break;
+                case "new":
+                    handleNewAnnouncement(jsonMessage);
+                    break;
+                case "confirmation":
+                    handleConfirmation(jsonMessage);
+                    break;
+                case "error":
+                    handleError(jsonMessage);
+                    break;
+                default:
+                    Log.w(TAG, "Unknown action: " + action);
+            }
+        } catch (JSONException e) {
+            Log.e(TAG, "Received non-JSON message: " + message, e);
+        }
+    }
+
+    // Example functions for handling each action:
+    private void handleHistoryAction(JSONObject jsonMessage) throws JSONException {
+        JSONArray announcementsArray = jsonMessage.getJSONArray("announcements");
+        announcementList.clear();
+        for (int i = 0; i < announcementsArray.length(); i++) {
+            JSONObject announcementJson = announcementsArray.getJSONObject(i);
+            Announcement announcement = new Announcement(
+                    announcementJson.getLong("id"),
+                    announcementJson.getString("content"),
+                    announcementJson.getLong("scheduleId"),
+                    announcementJson.getString("facultyNetId"),
+                    announcementJson.getString("timestamp"),
+                    ""
+            );
+            announcementList.add(announcement);
+        }
+        adapter.notifyDataSetChanged();
+    }
+
+    private void handleNewAnnouncement(JSONObject jsonMessage) throws JSONException {
+        JSONObject announcementJson = jsonMessage.getJSONObject("announcement");
+        Announcement newAnnouncement = new Announcement(
+                announcementJson.getLong("id"),
+                announcementJson.getString("content"),
+                announcementJson.getLong("scheduleId"),
+                announcementJson.getString("facultyNetId"),
+                announcementJson.getString("timestamp"),
+                ""
+        );
+        announcementList.add(0, newAnnouncement);
+        adapter.notifyItemInserted(0);
+    }
+
+    private void handleConfirmation(JSONObject jsonMessage) throws JSONException {
+        String confirmationMessage = jsonMessage.getString("message");
+        Toast.makeText(getContext(), "Confirmation: " + confirmationMessage, Toast.LENGTH_SHORT).show();
+    }
+
+    private void handleError(JSONObject jsonMessage) throws JSONException {
+        String errorMessage = jsonMessage.getString("message");
+        Log.e(TAG, "Error: " + errorMessage);
+        Toast.makeText(getContext(), "Error: " + errorMessage, Toast.LENGTH_SHORT).show();
+    }
+
 }
