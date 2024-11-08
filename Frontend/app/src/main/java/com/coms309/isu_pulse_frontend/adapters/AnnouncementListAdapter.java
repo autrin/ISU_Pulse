@@ -3,6 +3,7 @@ package com.coms309.isu_pulse_frontend.adapters;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -11,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.coms309.isu_pulse_frontend.R;
+import com.coms309.isu_pulse_frontend.loginsignup.UserSession;
 import com.coms309.isu_pulse_frontend.model.Announcement;
 
 import java.text.SimpleDateFormat;
@@ -55,10 +57,22 @@ public class AnnouncementListAdapter extends RecyclerView.Adapter<AnnouncementLi
         if (holder.announcementTimestamp != null) {
             holder.announcementTimestamp.setText(formatDate(announcement.getTimestamp()));
         }
+        String userType = UserSession.getInstance(holder.itemView.getContext()).getUserType();
 
         // Show buttons only for teachers
-        if (isTeacherView && holder.teacherActionsLayout != null) {
+        if ("FACULTY".equals(userType) && holder.teacherActionsLayout != null) {
             holder.teacherActionsLayout.setVisibility(View.VISIBLE);
+
+            // Set up click listeners for edit and delete buttons
+            holder.buttonUpdateAnnouncement.setOnClickListener(v -> {
+                // Handle update action
+                editAnnouncement(announcement);
+            });
+
+            holder.buttonDeleteAnnouncement.setOnClickListener(v -> {
+                // Handle delete action
+                deleteAnnouncement(announcement);
+            });
         } else if (holder.teacherActionsLayout != null) {
             holder.teacherActionsLayout.setVisibility(View.GONE);
         }
@@ -93,15 +107,17 @@ public class AnnouncementListAdapter extends RecyclerView.Adapter<AnnouncementLi
     public static class AnnouncementViewHolder extends RecyclerView.ViewHolder {
         TextView announcementContent, announcementTimestamp, announcementCourse;
         LinearLayout teacherActionsLayout;
+        Button buttonUpdateAnnouncement, buttonDeleteAnnouncement;
 
         public AnnouncementViewHolder(@NonNull View itemView, boolean isTeacherView) {
             super(itemView);
 
-            if (isTeacherView) {
+            if ("FACULTY".equals(UserSession.getInstance(itemView.getContext()).getUserType())) {
                 // Initialize views for teacher layout
                 announcementContent = itemView.findViewById(R.id.editTextAnnouncementContent);
                 teacherActionsLayout = itemView.findViewById(R.id.teacher_actions_layout);
-                // Other teacher-specific fields can be added here if needed
+                buttonUpdateAnnouncement = itemView.findViewById(R.id.button_update_announcement);
+                buttonDeleteAnnouncement = itemView.findViewById(R.id.button_delete_announcement);
             } else {
                 // Initialize views for student layout
                 announcementContent = itemView.findViewById(R.id.announcement_content);
