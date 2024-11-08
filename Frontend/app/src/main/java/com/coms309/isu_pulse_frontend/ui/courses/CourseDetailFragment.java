@@ -13,7 +13,9 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.coms309.isu_pulse_frontend.R;
 import com.coms309.isu_pulse_frontend.databinding.FragmentCourseDetailBinding;
+import com.coms309.isu_pulse_frontend.loginsignup.UserSession;
 import com.coms309.isu_pulse_frontend.ui.announcements.AnnouncementsFragment;
+import com.coms309.isu_pulse_frontend.ui.announcements.TeacherAnnouncementsFragment;
 
 public class CourseDetailFragment extends Fragment {
 
@@ -75,9 +77,17 @@ public class CourseDetailFragment extends Fragment {
         binding = null;
     }
 
-    // Helper method to show AnnouncementsFragment
     private void showAnnouncementsFragment() {
-        Fragment fragment = AnnouncementsFragment.newInstance(courseId);
+        Fragment fragment;
+
+        // Check user role to decide which fragment to load
+        String userRole = UserSession.getInstance(getContext()).getUserType();
+        if ("FACULTY".equals(userRole)) {
+            fragment = new TeacherAnnouncementsFragment();
+        } else {
+            fragment = AnnouncementsFragment.newInstance(courseId);  // If you need to pass courseId for students
+        }
+
         getChildFragmentManager().beginTransaction()
                 .replace(R.id.courseDetailContent, fragment)
                 .commit();
