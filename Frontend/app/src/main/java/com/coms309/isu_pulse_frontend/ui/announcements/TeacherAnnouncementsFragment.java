@@ -37,12 +37,23 @@ public class TeacherAnnouncementsFragment extends Fragment implements Announceme
     private AnnouncementWebSocketClient webSocketClient;
     private static final String TAG = "TeacherAnnouncementsFragment";
     private EditText announcementContent;
+    private long courseId = -1;
+
+    public static TeacherAnnouncementsFragment newInstance(Long courseId) {
+        TeacherAnnouncementsFragment fragment = new TeacherAnnouncementsFragment();
+        Bundle args = new Bundle();
+        args.putLong("courseId", courseId);
+        fragment.setArguments(args);
+        return fragment;
+    }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Log.d(TAG, "onCreateView called");
-
+        if (getArguments() != null) {
+            courseId = getArguments().getLong("courseId", -1);
+        }
         View view = inflater.inflate(R.layout.teacher_announcement, container, false);
 
         recyclerView = view.findViewById(R.id.recyclerViewAnnouncements);
@@ -63,7 +74,7 @@ public class TeacherAnnouncementsFragment extends Fragment implements Announceme
                 // Replace scheduleId with an appropriate ID for the course
                 long scheduleId = getScheduleId(); // Ensure this method retrieves a valid ID
                 if (scheduleId != -1) {
-                    webSocketClient.sendMessage("new_announcement", scheduleId, content);
+                    webSocketClient.sendActionMessage("new_announcement", scheduleId, content, null);
                     Log.d(TAG, "Announcement sent with content: " + content);
                     announcementContent.setText("");
                 } else {
@@ -174,7 +185,7 @@ public class TeacherAnnouncementsFragment extends Fragment implements Announceme
         if (scheduleId != -1) {
             // Proceed with sending the announcement
             String content = announcementContent.getText().toString();
-            webSocketClient.sendMessage("new_announcement", scheduleId, content);
+            webSocketClient.sendActionMessage("new_announcement", scheduleId, content, null);
             Log.d(TAG, "Announcement sent with content: " + content);
         } else {
             Toast.makeText(getContext(), "Error: Schedule ID not available", Toast.LENGTH_SHORT).show();
