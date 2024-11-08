@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.coms309.isu_pulse_frontend.R;
 import com.coms309.isu_pulse_frontend.api.CourseService;
-import com.coms309.isu_pulse_frontend.proifle_activity.ProfileActivity;
+import com.coms309.isu_pulse_frontend.ui.profile.ProfileActivity;
 import com.coms309.isu_pulse_frontend.model.Course;
 
 import java.util.ArrayList;
