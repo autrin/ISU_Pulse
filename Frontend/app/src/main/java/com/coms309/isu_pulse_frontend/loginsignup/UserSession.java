@@ -2,11 +2,11 @@ package com.coms309.isu_pulse_frontend.loginsignup;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import com.coms309.isu_pulse_frontend.api.AnnouncementWebSocketClient;
 
 public class UserSession {
-
     private static UserSession instance;
     private String netId;
     private String userType;
@@ -16,6 +16,7 @@ public class UserSession {
         SharedPreferences sharedPreferences = context.getSharedPreferences("UserSession", Context.MODE_PRIVATE);
         this.netId = sharedPreferences.getString("netId", null);
         this.userType = sharedPreferences.getString("userType", null);
+        initWebSocket();
     }
 
     public static synchronized UserSession getInstance(Context context) {
@@ -53,25 +54,18 @@ public class UserSession {
         SharedPreferences sharedPreferences = context.getSharedPreferences("UserSession", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.remove("netId");
-        editor.remove("userType"); // Also clear the user type for consistency
+        editor.remove("userType");
         editor.apply();
         netId = null;
         userType = null;
-
-        // Disconnect WebSocket on session clear
         disconnectWebSocket();
     }
 
-    // Method to initialize and connect the WebSocket client
-    public void initWebSocket(String netId, String userType) {
-        this.netId = netId;
-        this.userType = userType;
-
-        // Connect only if webSocketClient is null or disconnected
-        if (webSocketClient == null) {
+    private void initWebSocket() {
+        if (webSocketClient == null && netId != null && userType != null) {
             webSocketClient = new AnnouncementWebSocketClient(message -> {
-                // Handle the received message or update LiveData here
-                // Example: broadcast the message or use LiveData
+                // Handle message reception, update LiveData or broadcast as needed
+                Log.d("UserSession", "Message received: " + message);
             });
             webSocketClient.connectWebSocket(netId, userType);
         }
@@ -81,7 +75,6 @@ public class UserSession {
         return webSocketClient;
     }
 
-    // Method to disconnect WebSocket when the app is terminating
     public void disconnectWebSocket() {
         if (webSocketClient != null) {
             webSocketClient.disconnectWebSocket();
