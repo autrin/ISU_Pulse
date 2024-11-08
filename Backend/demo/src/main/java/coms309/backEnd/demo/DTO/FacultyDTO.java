@@ -8,7 +8,7 @@ public class FacultyDTO {
     private String firstName;
     private String lastName;
     private String email;
-    private String hashedPassword;  // Ensure password is hashed before saving
+    private String hashedPassword;
     private String title;
     private String department;
     private String userType;

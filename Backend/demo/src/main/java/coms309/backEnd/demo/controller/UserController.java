@@ -2,6 +2,7 @@ package coms309.backEnd.demo.controller;
 
 import coms309.backEnd.demo.DTO.FacultyDTO;
 import coms309.backEnd.demo.entity.*;
+import coms309.backEnd.demo.repository.ChatMessageRepository;
 import coms309.backEnd.demo.repository.DepartmentRepository;
 import coms309.backEnd.demo.repository.FacultyRepository;
 import coms309.backEnd.demo.repository.UserRepository;
@@ -25,9 +26,13 @@ public class UserController {
     @Autowired
     private final DepartmentRepository departmentRepository;
 
-    public UserController(UserRepository userRepository, FacultyRepository facultyRepository, DepartmentRepository departmentRepository) {
+    @Autowired
+    private final ChatMessageRepository chatMessageRepository;
+
+    public UserController(UserRepository userRepository, FacultyRepository facultyRepository, DepartmentRepository departmentRepository, ChatMessageRepository chatMessageRepository) {
         this.userRepository = userRepository;
         this.departmentRepository = departmentRepository;
+        this.chatMessageRepository = chatMessageRepository;
     }
 
     @GetMapping("/{netId}")
@@ -149,4 +154,16 @@ public class UserController {
         });
         return ResponseEntity.ok(listOfAllStudent);
     }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<User>> searchUserByName(@RequestParam String name) {
+        List<User> users = userRepository.findByFirstNameOrLastNameIgnoreCase(name);
+        if(users.isEmpty()){
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(users);
+    }
+
 }
+
+

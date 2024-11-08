@@ -60,7 +60,7 @@ public class ScheduleController {
     @GetMapping("/coursesInMutual")
     public ResponseEntity<List<Course>> getSameSchedule(
             @RequestParam String user1NetId,
-            @RequestParam String user2NetId ){
+            @RequestParam String user2NetId){
         // Check if user 1 exists or not
         Optional<User> curUser1 = userRepository.findUserByNetId(user1NetId);
         if(curUser1.isEmpty()){
