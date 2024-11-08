@@ -1,8 +1,10 @@
 package com.coms309.isu_pulse_frontend.ui.courses;
+
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -29,6 +31,7 @@ public class CoursesFragment extends Fragment {
     private RecyclerView recyclerView;
     private CourseListAdapter adapter;
     private List<Course> courses = new ArrayList<>();
+    private TextView emptyStateTextView; // Placeholder text for empty state
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -43,6 +46,9 @@ public class CoursesFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         adapter = new CourseListAdapter(courses, userRole, this::navigateToCourseDetail);
         recyclerView.setAdapter(adapter);
+
+        // Empty state view
+        emptyStateTextView = binding.emptyStateTextView; // Add this TextView in XML with the message "No courses available."
 
         // Fetch courses from backend
         fetchCoursesFromBackend();
@@ -60,14 +66,25 @@ public class CoursesFragment extends Fragment {
             public void onResponse(List<Schedule> schedules) {
                 courses.clear();
                 for (Schedule schedule : schedules) {
-                    courses.add(schedule.getCourse()); // Assuming each Schedule contains a Course object
+                    courses.add(schedule.getCourse());
                 }
                 adapter.notifyDataSetChanged();
+
+                // Show empty state if no courses are found
+                if (courses.isEmpty()) {
+                    emptyStateTextView.setVisibility(View.VISIBLE);
+                    recyclerView.setVisibility(View.GONE);
+                } else {
+                    emptyStateTextView.setVisibility(View.GONE);
+                    recyclerView.setVisibility(View.VISIBLE);
+                }
             }
 
             @Override
             public void onError(String message) {
                 Toast.makeText(getContext(), "Error fetching courses: " + message, Toast.LENGTH_SHORT).show();
+                emptyStateTextView.setVisibility(View.VISIBLE);
+                recyclerView.setVisibility(View.GONE);
             }
         });
     }
