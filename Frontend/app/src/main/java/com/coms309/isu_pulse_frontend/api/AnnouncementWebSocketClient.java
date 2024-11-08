@@ -48,9 +48,9 @@ public class AnnouncementWebSocketClient {
             @Override
             public void onClose(int code, String reason, boolean remote) {
                 Log.d(TAG, "WebSocket Closed: " + reason + " (Code: " + code + ")");
-                if (code == 1006) { // Check for abnormal closure
+                if (code == 1006) {
                     Log.d(TAG, "Attempting to reconnect...");
-                    connectWebSocket(netId, userType); // Attempt reconnection with valid netId and userType
+                    connectWebSocket(netId, userType);
                 }
             }
 
@@ -60,6 +60,10 @@ public class AnnouncementWebSocketClient {
             }
         };
         webSocketClient.connect();
+    }
+
+    public void setListener(WebSocketListener listener) {
+        this.listener = listener;
     }
 
     public void disconnectWebSocket() {
