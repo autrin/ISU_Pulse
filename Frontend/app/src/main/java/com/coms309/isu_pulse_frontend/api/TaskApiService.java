@@ -44,7 +44,7 @@ public class TaskApiService {
     }
 
     public void getTasksIn2days(final TaskResponseListener listener) {
-        String url = BASE_URL + "/task/getTaskByUserIn2days/" + netId;
+        String url = BASE_URL + "task/getTaskByUserIn2days/" + netId;
         JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, url, null,
                 new Response.Listener<JSONArray>() {
                     @Override
@@ -83,7 +83,7 @@ public class TaskApiService {
     }
 
     private void fetchPersonalTasks(final List<Object> tasks, final TaskResponseListener listener) {
-        String personalTasksUrl = BASE_URL + "/personalTask/getPersonalTasks/" + netId;
+        String personalTasksUrl = BASE_URL + "personalTask/getPersonalTasks/" + netId;
         JsonArrayRequest personalTasksRequest = new JsonArrayRequest(Request.Method.GET, personalTasksUrl, null,
                 new Response.Listener<JSONArray>() {
                     @Override
