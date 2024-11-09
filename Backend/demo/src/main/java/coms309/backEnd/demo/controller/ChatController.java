@@ -69,6 +69,8 @@ public class ChatController {
 //
 //        return ResponseEntity.ok("Message sent successfully.");
 //    }
+
+
     @GetMapping("/allLatestMessages/{netId}")
     public ResponseEntity<List<ChatMessage>> getUsersYouMessagingWith(@PathVariable String netId){
         // Find the user with the given netId
@@ -103,7 +105,7 @@ public class ChatController {
             latestMessages.add(chatMessage);
         }
 
-        // sorting
+        // Sort the message based on time
         latestMessages.sort(new Comparator<ChatMessage>() {
             @Override
             public int compare(ChatMessage chatMessage1, ChatMessage chatMessage2) {
