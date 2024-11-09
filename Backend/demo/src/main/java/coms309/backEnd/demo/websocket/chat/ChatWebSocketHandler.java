@@ -84,16 +84,16 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
         chatMessage.setTimestamp(chatMessageDTO.getTimestamp());  // Set timestamp before saving
         chatMessageRepository.save(chatMessage);
 
+
         // Forward the message to the recipient if they’re connected
         WebSocketSession recipientSession = activeSessions.get(chatMessageDTO.getRecipientNetId());
         if (recipientSession != null && recipientSession.isOpen()) {
             String messageJson = objectMapper.writeValueAsString(chatMessageDTO);
             sendMessage(recipientSession, messageJson);
         }
-        sendMessage(session, objectMapper.writeValueAsString(chatMessageDTO)); // Confirm to sender
+        // The server sends the message to the sender
+        sendMessage(session, objectMapper.writeValueAsString(chatMessageDTO));
     }
-
-
 
 
     @Override
@@ -104,7 +104,6 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
             logger.info("User {} disconnected from chat.", netId);
         }
     }
-
 
     private void sendChatHistoryToUser(WebSocketSession session, String senderNetId, String recipientNetId) {
         User sender = userRepository.findUserByNetId(senderNetId).orElse(null);
@@ -139,14 +138,6 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
         }
     }
 
-
-
-    /**
-     * Helper method to send a message to a WebSocket session.
-     *
-     * @param session WebSocketSession to send the message to
-     * @param message String message to send
-     */
     private void sendMessage(WebSocketSession session, String message) {
         try {
             if (session.isOpen()) {
@@ -157,33 +148,14 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
         }
     }
 
-    /**
-     * Helper method to retrieve senderNetId from WebSocketSession URI query parameters.
-     *
-     * @param session WebSocketSession
-     * @return senderNetId as a string
-     */
     private String getNetIdFromSession(WebSocketSession session) {
         return getQueryParam(session, "netId");
     }
 
-    /**
-     * Helper method to retrieve recipientNetId from WebSocketSession URI query parameters.
-     *
-     * @param session WebSocketSession
-     * @return recipientNetId as a string
-     */
     private String getRecipientNetIdFromSession(WebSocketSession session) {
         return getQueryParam(session, "recipientNetId");
     }
 
-    /**
-     * Utility method to get query parameter values from the session URI.
-     *
-     * @param session WebSocketSession
-     * @param paramName Name of the query parameter
-     * @return Value of the query parameter or null if not found
-     */
     private String getQueryParam(WebSocketSession session, String paramName) {
         URI uri = session.getUri();
         if (uri != null && uri.getQuery() != null) {
