@@ -3,6 +3,7 @@ package com.coms309.isu_pulse_frontend.loginsignup;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.coms309.isu_pulse_frontend.api.AnnouncementWebSocketClient;
 
@@ -12,6 +13,7 @@ public class UserSession {
     private long id;
     private String userType;
     private AnnouncementWebSocketClient webSocketClient;
+    private static final String TAG = "UserSession";
 
     private UserSession() {}
 
@@ -62,6 +64,7 @@ public class UserSession {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("netId", netId);
         editor.apply();
+        initWebSocket();
     }
 
     public void setUserType(String userType, Context context) {
@@ -70,6 +73,7 @@ public class UserSession {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("userType", userType);
         editor.apply();
+        initWebSocket();
     }
 
 
@@ -79,6 +83,8 @@ public class UserSession {
         editor.remove("netId");
         editor.apply();
         netId = null;
+        userType = null;
+        disconnectWebSocket();
     }
 
     private void initWebSocket() {
@@ -99,6 +105,7 @@ public class UserSession {
         if (webSocketClient != null) {
             webSocketClient.disconnectWebSocket();
             webSocketClient = null;
+            Log.d(TAG, "WebSocket disconnected");
         }
     }
 

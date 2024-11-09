@@ -48,11 +48,12 @@ public class HomeFragment extends Fragment implements AnnouncementWebSocketClien
 
     private List<Object> tasksDueToday = new ArrayList<>();
     private List<String> events = new ArrayList<>();
-    private List<Announcement> announcementList = new ArrayList<>(); // Use Announcement model for announcements
+    private List<Announcement> announcementList = new ArrayList<>();
     private TaskApiService taskApiService;
     private AnnouncementWebSocketClient announcementClient;
     private static final String TAG = "HomeFragment";
 
+    @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         HomeViewModel homeViewModel =
@@ -117,10 +118,8 @@ public class HomeFragment extends Fragment implements AnnouncementWebSocketClien
         announcementAdapter = new AnnouncementListAdapter(getContext(), announcementList, false);
         recyclerViewAnnouncements.setAdapter(announcementAdapter);
 
+        populateAnnouncements(); // Ensure announcements are fetched via WebSocket
 
-        // Commented out for now to avoid errors related to missing methods in TaskApiService
-        populateAnnouncements();
-        onStart();
         return root;
     }
 
@@ -146,28 +145,11 @@ public class HomeFragment extends Fragment implements AnnouncementWebSocketClien
         });
     }
 
-    // Placeholder populateAnnouncements method to avoid errors
+    // Remove or modify populateAnnouncements() based on your actual implementation
     private void populateAnnouncements() {
-        /**
-         *         // Call to the API to get announcements for the current course/schedule
-         *         taskApiService.getAnnouncements(new TaskApiService.AnnouncementResponseListener() {
-         *             @Override
-         *             public void onResponse(List<Announcement> fetchedAnnouncements) {
-         *                 announcements.clear();
-         *                 announcements.addAll(fetchedAnnouncements);
-         *                 announcementAdapter.notifyDataSetChanged();
-         *             }
-         *
-         *             @Override
-         *             public void onError(String message) {
-         *                 Log.e("API Error", message != null ? message : "Unknown error");
-         *             }
-         *         });
-         */
-
-        // Temporary placeholder code
+        // Ideally, fetch announcements via WebSocket or REST API
+        // For now, using placeholder data
         announcementList.clear();
-        // For now, manually add a sample announcement to avoid UI breakage
         announcementList.add(new Announcement(1L, "Sample Announcement", 1L, "facultyNetId", "2024-11-07T10:00:00.000-06:00", "CourseName"));
         announcementAdapter.notifyDataSetChanged();
     }
@@ -182,16 +164,18 @@ public class HomeFragment extends Fragment implements AnnouncementWebSocketClien
     @Override
     public void onStart() {
         super.onStart();
-        AnnouncementWebSocketClient webSocketClient = UserSession.getInstance(getContext()).getWebSocketClient();
-        if (webSocketClient != null) {
-            webSocketClient.setListener(this);
+        // Access the singleton with Context
+        UserSession userSession = UserSession.getInstance(getContext());
+        announcementClient = userSession.getWebSocketClient();
+        if (announcementClient != null) {
+            announcementClient.setListener(this);
+            Log.d(TAG, "WebSocket client set as listener.");
+            // Optionally, fetch initial announcements if needed
         } else {
-            // Handle the case where the WebSocket client is not initialized
             Log.e(TAG, "WebSocket client is not initialized");
             Toast.makeText(getContext(), "WebSocket client is not initialized", Toast.LENGTH_SHORT).show();
         }
     }
-
 
     @Override
     public void onMessageReceived(String message) {
@@ -266,7 +250,6 @@ public class HomeFragment extends Fragment implements AnnouncementWebSocketClien
         Toast.makeText(getContext(), "Error: " + errorMessage, Toast.LENGTH_SHORT).show();
     }
 
-
     @Override
     public void onDestroyView() {
         super.onDestroyView();
@@ -276,7 +259,4 @@ public class HomeFragment extends Fragment implements AnnouncementWebSocketClien
         }
         binding = null; // Avoid memory leaks by releasing the binding reference
     }
-
 }
-
-
