@@ -1,19 +1,27 @@
 package com.coms309.isu_pulse_frontend.adapters;
 
+import android.app.AlertDialog;
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.coms309.isu_pulse_frontend.R;
+import com.coms309.isu_pulse_frontend.api.AnnouncementWebSocketClient;
 import com.coms309.isu_pulse_frontend.loginsignup.UserSession;
 import com.coms309.isu_pulse_frontend.model.Announcement;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -24,22 +32,16 @@ public class AnnouncementListAdapter extends RecyclerView.Adapter<AnnouncementLi
 
     private List<Announcement> announcements;
     private boolean isTeacherView;
+    private Context context;
 
-    public AnnouncementListAdapter(List<Announcement> announcements, boolean isTeacherView) {
+    public AnnouncementListAdapter(Context context, List<Announcement> announcements, boolean isTeacherView) {
+        this.context = context;
         this.announcements = announcements;
         this.isTeacherView = isTeacherView;
     }
 
-    @NonNull
-//    @Override
-//    public AnnouncementViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-//        int layoutRes = isTeacherView ? R.layout.teacher_announcement : R.layout.announcement_item;
-//        View view = LayoutInflater.from(parent.getContext()).inflate(layoutRes, parent, false);
-//        return new AnnouncementViewHolder(view, isTeacherView);
-//    }
     @Override
     public AnnouncementViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        // Use announcement_item.xml for displaying each announcement item
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.announcement_item, parent, false);
         return new AnnouncementViewHolder(view, false);
     }
@@ -48,36 +50,21 @@ public class AnnouncementListAdapter extends RecyclerView.Adapter<AnnouncementLi
     public void onBindViewHolder(@NonNull AnnouncementViewHolder holder, int position) {
         Announcement announcement = announcements.get(position);
 
-        if (holder.announcementContent != null) {
-            holder.announcementContent.setText(announcement.getContent());
-        }
-        if (holder.announcementCourse != null) {
-            holder.announcementCourse.setText(announcement.getCourseName());
-        }
-        if (holder.announcementTimestamp != null) {
-            holder.announcementTimestamp.setText(formatDate(announcement.getTimestamp()));
-        }
+        holder.announcementContent.setText(announcement.getContent());
+        holder.announcementCourse.setText(announcement.getCourseName());
+        holder.announcementTimestamp.setText(formatDate(announcement.getTimestamp()));
+
         String userType = UserSession.getInstance(holder.itemView.getContext()).getUserType();
 
         // Show buttons only for teachers
-        if ("FACULTY".equals(userType) && holder.teacherActionsLayout != null) {
+        if ("FACULTY".equals(userType)) {
             holder.teacherActionsLayout.setVisibility(View.VISIBLE);
 
-            // Set up click listeners for edit and delete buttons
-            holder.buttonUpdateAnnouncement.setOnClickListener(v -> {
-                // Handle update action
-                editAnnouncement(announcement);
-            });
-
-            holder.buttonDeleteAnnouncement.setOnClickListener(v -> {
-                // Handle delete action
-                deleteAnnouncement(announcement);
-            });
-        } else if (holder.teacherActionsLayout != null) {
+            holder.buttonUpdateAnnouncement.setOnClickListener(v -> editAnnouncement(announcement, position));
+            holder.buttonDeleteAnnouncement.setOnClickListener(v -> deleteAnnouncement(announcement, position));
+        } else {
             holder.teacherActionsLayout.setVisibility(View.GONE);
         }
-
-
 //        // Set the seen status and handle checkbox changes
 //        holder.announcementSeenCheckbox.setOnCheckedChangeListener(null); // Clear previous listener
 //        holder.announcementSeenCheckbox.setChecked(announcement.isSeenStatus());
@@ -104,6 +91,51 @@ public class AnnouncementListAdapter extends RecyclerView.Adapter<AnnouncementLi
         }
     }
 
+    private void editAnnouncement(Announcement announcement, int position) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle("Edit Announcement");
+
+        final EditText input = new EditText(context);
+        input.setText(announcement.getContent());
+        builder.setView(input);
+
+        builder.setPositiveButton("Save", (dialog, which) -> {
+            String newContent = input.getText().toString();
+            if (!newContent.isEmpty()) {
+                announcement.setContent(newContent);
+                notifyItemChanged(position);
+
+                // Use WebSocket to send update
+                UserSession.getInstance(context).getWebSocketClient()
+                        .updateAnnouncement(announcement.getId(), newContent);
+                Toast.makeText(context, "Announcement updated", Toast.LENGTH_SHORT).show();
+            }
+        });
+        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
+
+        builder.show();
+    }
+
+    private void deleteAnnouncement(Announcement announcement, int position) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle("Delete Announcement");
+        builder.setMessage("Are you sure you want to delete this announcement?");
+
+        builder.setPositiveButton("Yes", (dialog, which) -> {
+            announcements.remove(position);
+            notifyItemRemoved(position);
+            notifyItemRangeChanged(position, announcements.size());
+
+            // Use WebSocket to send delete request
+            UserSession.getInstance(context).getWebSocketClient()
+                    .deleteAnnouncement(announcement.getId());
+            Toast.makeText(context, "Announcement deleted", Toast.LENGTH_SHORT).show();
+        });
+        builder.setNegativeButton("No", (dialog, which) -> dialog.cancel());
+
+        builder.show();
+    }
+
     public static class AnnouncementViewHolder extends RecyclerView.ViewHolder {
         TextView announcementContent, announcementTimestamp, announcementCourse;
         LinearLayout teacherActionsLayout;
@@ -114,7 +146,9 @@ public class AnnouncementListAdapter extends RecyclerView.Adapter<AnnouncementLi
 
             if ("FACULTY".equals(UserSession.getInstance(itemView.getContext()).getUserType())) {
                 // Initialize views for teacher layout
-                announcementContent = itemView.findViewById(R.id.editTextAnnouncementContent);
+                announcementContent = itemView.findViewById(R.id.announcement_content);
+                announcementTimestamp = itemView.findViewById(R.id.announcement_timestamp);
+                announcementCourse = itemView.findViewById(R.id.announcement_course);
                 teacherActionsLayout = itemView.findViewById(R.id.teacher_actions_layout);
                 buttonUpdateAnnouncement = itemView.findViewById(R.id.button_update_announcement);
                 buttonDeleteAnnouncement = itemView.findViewById(R.id.button_delete_announcement);
@@ -123,6 +157,7 @@ public class AnnouncementListAdapter extends RecyclerView.Adapter<AnnouncementLi
                 announcementContent = itemView.findViewById(R.id.announcement_content);
                 announcementTimestamp = itemView.findViewById(R.id.announcement_timestamp);
                 announcementCourse = itemView.findViewById(R.id.announcement_course);
+                teacherActionsLayout = itemView.findViewById(R.id.teacher_actions_layout);
             }
         }
     }

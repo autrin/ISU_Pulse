@@ -52,7 +52,7 @@ public class AnnouncementsFragment extends Fragment implements AnnouncementWebSo
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         announcementList = new ArrayList<>();
-        adapter = new AnnouncementListAdapter(announcementList, false);
+        adapter = new AnnouncementListAdapter(getContext(), announcementList, false);
         recyclerView.setAdapter(adapter);
 
         // Initialize and connect the WebSocket

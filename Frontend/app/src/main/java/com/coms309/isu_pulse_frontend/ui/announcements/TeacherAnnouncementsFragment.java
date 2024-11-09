@@ -75,7 +75,7 @@ public class TeacherAnnouncementsFragment extends Fragment implements Announceme
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         announcementList = new ArrayList<>();
-        adapter = new AnnouncementListAdapter(announcementList, true);
+        adapter = new AnnouncementListAdapter(getContext(), announcementList, true);
         recyclerView.setAdapter(adapter);
         // Load announcements for this schedule when the fragment starts
         if (scheduleId != -1) {

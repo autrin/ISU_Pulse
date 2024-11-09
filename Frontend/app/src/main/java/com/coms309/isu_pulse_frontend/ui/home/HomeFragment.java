@@ -114,7 +114,7 @@ public class HomeFragment extends Fragment implements AnnouncementWebSocketClien
         recyclerViewAnnouncements.setLayoutManager(layoutManagerAnnouncements);
 
         // Pass 'false' for the isCourseView parameter since this is the dashboard
-        announcementAdapter = new AnnouncementListAdapter(announcementList, false);
+        announcementAdapter = new AnnouncementListAdapter(getContext(), announcementList, false);
         recyclerViewAnnouncements.setAdapter(announcementAdapter);
 
 
