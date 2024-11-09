@@ -4,16 +4,20 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Button;
 
+import com.coms309.isu_pulse_frontend.chat_system.ChatList;
 import com.coms309.isu_pulse_frontend.databinding.ActivityMainBinding;
 import com.coms309.isu_pulse_frontend.loginsignup.LoginActivity;
 import com.coms309.isu_pulse_frontend.loginsignup.SignupActivity;
 import com.coms309.isu_pulse_frontend.loginsignup.UserSession;
-import com.coms309.isu_pulse_frontend.ui.profile.ProfileActivity;
+import com.coms309.isu_pulse_frontend.profile_activity.ProfileActivity;
+import com.coms309.isu_pulse_frontend.student_display.DisplayStudent;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.navigation.NavController;
@@ -38,25 +42,20 @@ public class MainActivity extends AppCompatActivity {
         String netId = sharedPreferences.getString("netId", null);
 
         if (netId != null) {
-            // User is already logged in; proceed to main activity layout
+            // User is logged in; set up main layout with navigation drawer
             binding = ActivityMainBinding.inflate(getLayoutInflater());
             setContentView(binding.getRoot());
 
-            // Set up Toolbar
             setSupportActionBar(binding.appBarMain.toolbar);
-
-            // Set up floating action button (if needed)
             binding.appBarMain.fab.setOnClickListener(view ->
                     Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                            .setAction("Action", null)
-                            .setAnchorView(R.id.fab).show()
+                            .setAction("Action", null).show()
             );
 
-            // Drawer and navigation setup
             DrawerLayout drawer = binding.drawerLayout;
             navigationView = binding.navView;
 
-            // Set up AppBarConfiguration based on user role
+            // Configure navigation based on user role
             String userRole = UserSession.getInstance(this).getUserType();
             if ("FACULTY".equals(userRole)) {
                 mAppBarConfiguration = new AppBarConfiguration.Builder(
@@ -76,42 +75,42 @@ public class MainActivity extends AppCompatActivity {
             NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
             NavigationUI.setupWithNavController(navigationView, navController);
 
-            // Override navigation for specific items
+            // Handle specific menu selections
             navigationView.setNavigationItemSelectedListener(item -> {
-                int itemId = item.getItemId();
-                if (itemId == R.id.nav_profile) {
-                    // Launch ProfileActivity directly with an Intent
-                    Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
-                    startActivity(intent);
+                int id = item.getItemId();
+                if (id == R.id.nav_students) {
+                    startActivity(new Intent(MainActivity.this, DisplayStudent.class));
+                    drawer.closeDrawers();
+                    return true;
+                } else if (id == R.id.nav_chatting) {
+                    startActivity(new Intent(MainActivity.this, ChatList.class));
+                    drawer.closeDrawers();
+                    return true;
+                } else if (id == R.id.nav_profile) {
+                    startActivity(new Intent(MainActivity.this, ProfileActivity.class));
+                    drawer.closeDrawers();
+                    return true;
+                } else if (id == R.id.nav_logout) {
+                    startActivity(new Intent(MainActivity.this, LoginActivity.class));
+                    drawer.closeDrawers();
                     return true;
                 } else {
-                    // For other items, allow NavController to handle them
                     return NavigationUI.onNavDestinationSelected(item, navController) || super.onOptionsItemSelected(item);
                 }
             });
 
-            // Set the default fragment only if navigating from login with the "navigateToHome" flag
             if (getIntent().getBooleanExtra("navigateToHome", false)) {
                 navController.navigate(R.id.nav_home);
             }
 
         } else {
-            // No saved session; show login screen
+            // No saved session; show login/sign-up screen
             setContentView(R.layout.intro);
-
-            // Initialize login and sign-up buttons only after setting the intro layout
             signInButton = findViewById(R.id.signInButton);
             signUpButton = findViewById(R.id.signUpButton);
 
-            signInButton.setOnClickListener(view -> {
-                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-                startActivity(intent);
-            });
-
-            signUpButton.setOnClickListener(view -> {
-                Intent intent = new Intent(MainActivity.this, SignupActivity.class);
-                startActivity(intent);
-            });
+            signInButton.setOnClickListener(view -> startActivity(new Intent(MainActivity.this, LoginActivity.class)));
+            signUpButton.setOnClickListener(view -> startActivity(new Intent(MainActivity.this, SignupActivity.class)));
         }
     }
 
@@ -127,22 +126,15 @@ public class MainActivity extends AppCompatActivity {
         return NavigationUI.navigateUp(navController, mAppBarConfiguration) || super.onSupportNavigateUp();
     }
 
-    // Define teacher-specific menu setup
     private void setupTeacherMenu() {
         Menu menu = navigationView.getMenu();
-        menu.clear();  // Clear existing menu items
-        getMenuInflater().inflate(R.menu.teacher_main_drawer, menu); // Custom menu for teachers
+        menu.clear();
+        getMenuInflater().inflate(R.menu.teacher_main_drawer, menu);
     }
 
-    // Define student-specific menu setup
     private void setupStudentMenu() {
         Menu menu = navigationView.getMenu();
-        menu.clear();  // Clear existing menu items
-        getMenuInflater().inflate(R.menu.student_main_drawer, menu); // Custom menu for students
-    }
-
-    // Getter for navigationView (for testing purposes)
-    public NavigationView getNavigationView() {
-        return navigationView;
+        menu.clear();
+        getMenuInflater().inflate(R.menu.student_main_drawer, menu);
     }
 }

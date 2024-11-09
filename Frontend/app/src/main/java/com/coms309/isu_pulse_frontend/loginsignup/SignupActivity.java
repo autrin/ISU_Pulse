@@ -24,7 +24,7 @@ import android.widget.Toast;
 
 import com.coms309.isu_pulse_frontend.R;
 import com.coms309.isu_pulse_frontend.api.AuthenticationService;
-import com.coms309.isu_pulse_frontend.ui.profile.ProfileActivity;
+import com.coms309.isu_pulse_frontend.profile_activity.ProfileActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp">
+
+    <!-- Profile Image -->
+    <ImageView
+        android:id="@+id/profile_image"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"
+        android:scaleType="centerCrop"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/isu_logo" />
+
+    <!-- First and Last Name -->
+    <TextView
+        android:id="@+id/name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/profile_image"
+        android:text="Name Placeholder"
+        android:textSize="16sp"
+        android:textColor="@android:color/black"
+        android:textStyle="bold" />
+
+    <!-- Last Message -->
+    <TextView
+        android:id="@+id/last_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/name"
+        android:layout_toEndOf="@id/profile_image"
+        android:text="Last message preview"
+        android:textColor="#888"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:textSize="14sp" />
+
+    <!-- Timestamp -->
+    <TextView
+        android:id="@+id/timestamp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignTop="@id/name"
+        android:text="22:55"
+        android:textSize="12sp"
+        android:textColor="#888" />
+
+    <Button
+        android:id="@+id/message_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@id/last_message"
+        android:text="Message" />
+</RelativeLayout>

@@ -8,9 +8,9 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
-import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.coms309.isu_pulse_frontend.model.Course;
+import com.coms309.isu_pulse_frontend.schedule.Schedule;
+import com.coms309.isu_pulse_frontend.ui.home.Course;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -31,7 +31,7 @@ public class CourseService {
     }
 
     public interface GetEnrolledCoursesCallback {
-        void onSuccess(List<Course> courses);
+        void onSuccess(List<Schedule> courses);
         void onError(String error);
     }
 
@@ -40,9 +40,13 @@ public class CourseService {
         void onError(String error);
     }
 
-    public void getEnrolledCourses(String studentId, final GetEnrolledCoursesCallback callback) {
-        String url = BASE_URL + "enroll/getEnroll/" + studentId;
+    public interface GetMutualCoursesCallback {
+        void onSuccess(List<Course> courses);
+        void onError(String error);
+    }
 
+    public void getMutualCourses(String user1NetId, String user2NetId, final GetMutualCoursesCallback callback) {
+        String url = BASE_URL + "schedule/coursesInMutual?user1NetId=" + user1NetId + "&user2NetId=" + user2NetId;
         JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, url, null,
                 new Response.Listener<JSONArray>() {
                     @Override
@@ -52,21 +56,61 @@ public class CourseService {
                             for (int i = 0; i < response.length(); i++) {
                                 JSONObject courseJson = response.getJSONObject(i);
                                 JSONObject departmentJson = courseJson.getJSONObject("department");
-
-                                Course course = new Course(
-                                        courseJson.getString("code"),
+                                Course course = new Course(courseJson.getString("code"),
                                         courseJson.getString("title"),
                                         courseJson.getString("description"),
                                         courseJson.getInt("credits"),
-                                        courseJson.getInt("numSections"),
                                         departmentJson.getString("name"),
-                                        departmentJson.getString("location"),
-                                        departmentJson.getInt("did"),
-                                        courseJson.getInt("cid")
-                                );
+                                        departmentJson.getString("location"));
                                 courses.add(course);
                             }
                             callback.onSuccess(courses);
+                        } catch (JSONException e) {
+                            callback.onError("Error parsing JSON response: " + e.getMessage());
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        callback.onError("Error fetching mutual courses: " + error.getMessage());
+                    }
+                });
+
+        requestQueue.add(jsonArrayRequest);
+
+    }
+
+    public void getEnrolledCoursesById(String studentId, final GetEnrolledCoursesCallback callback) {
+        String url = BASE_URL + "enroll/getEnroll/" + studentId;
+
+        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, url, null,
+                new Response.Listener<JSONArray>() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        List<Schedule> schedules = new ArrayList<>();
+                        try {
+                            for (int i = 0; i < response.length(); i++) {
+                                JSONObject scheduleJson = response.getJSONObject(i);
+                                JSONObject courseJson = scheduleJson.getJSONObject("course");
+                                JSONObject departmentJson = courseJson.getJSONObject("department");
+                                Course course = new Course(courseJson.getString("code"),
+                                        courseJson.getString("title"),
+                                        courseJson.getString("description"),
+                                        courseJson.getInt("credits"),
+                                        departmentJson.getString("name"),
+                                        departmentJson.getString("location"));
+
+                                Schedule schedule = new Schedule(
+                                        course,
+                                        scheduleJson.getString("section"),
+                                        scheduleJson.getString("recurringPattern"),
+                                        scheduleJson.getString("startTime"),
+                                        scheduleJson.getString("endTime")
+                                );
+                                schedules.add(schedule);
+                            }
+                            callback.onSuccess(schedules);
                         } catch (JSONException e) {
                             callback.onError("Error parsing JSON response: " + e.getMessage());
                         }
@@ -82,53 +126,53 @@ public class CourseService {
         requestQueue.add(jsonArrayRequest);
     }
 
-    public void enrollInCourse(String studentId, int courseId, final EnrollCallback callback) {
-        String url = BASE_URL + "enroll/addEnroll/" + studentId + "?course=" + courseId;
+//    public void enrollInCourse(String studentId, int courseId, final EnrollCallback callback) {
+//        String url = BASE_URL + "enroll/addEnroll/" + studentId + "?course=" + courseId;
+//
+//        StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
+//                new Response.Listener<String>() {
+//                    @Override
+//                    public void onResponse(String response) {
+//                        callback.onSuccess(response);
+//                    }
+//                },
+//                new Response.ErrorListener() {
+//                    @Override
+//                    public void onErrorResponse(VolleyError error) {
+//                        callback.onError("Error enrolling in course: " + error.getMessage());
+//                    }
+//                });
+//
+//        requestQueue.add(stringRequest);
+//    }
 
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        callback.onSuccess(response);
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        callback.onError("Error enrolling in course: " + error.getMessage());
-                    }
-                });
-
-        requestQueue.add(stringRequest);
-    }
-
-    public void removeEnroll(String studentId, long courseId, final RemoveEnrollCallback callback) {
-        String url = BASE_URL + "enroll/removeEnroll/" + studentId + "?c_id=" + courseId;
-
-        StringRequest stringRequest = new StringRequest(Request.Method.DELETE, url,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        callback.onSuccess(response);
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        String errorMsg = "Error removing enrollment: ";
-                        if (error.networkResponse != null && error.networkResponse.data != null) {
-                            try {
-                                errorMsg += new String(error.networkResponse.data, "UTF-8");
-                            } catch (Exception e) {
-                                errorMsg += "Unable to parse error response.";
-                            }
-                        } else {
-                            errorMsg += error.getMessage();
-                        }
-                        callback.onError(errorMsg);
-                    }
-                });
-
-        requestQueue.add(stringRequest);
-    }
+//    public void removeEnrollById(String studentId, int courseId, final RemoveEnrollCallback callback) {
+//        String url = BASE_URL + "enroll/removeEnroll/" + studentId + "?c_id=" + courseId;
+//
+//        StringRequest stringRequest = new StringRequest(Request.Method.DELETE, url,
+//                new Response.Listener<String>() {
+//                    @Override
+//                    public void onResponse(String response) {
+//                        callback.onSuccess(response);
+//                    }
+//                },
+//                new Response.ErrorListener() {
+//                    @Override
+//                    public void onErrorResponse(VolleyError error) {
+//                        String errorMsg = "Error removing enrollment: ";
+//                        if (error.networkResponse != null && error.networkResponse.data != null) {
+//                            try {
+//                                errorMsg += new String(error.networkResponse.data, "UTF-8");
+//                            } catch (Exception e) {
+//                                errorMsg += "Unable to parse error response.";
+//                            }
+//                        } else {
+//                            errorMsg += error.getMessage();
+//                        }
+//                        callback.onError(errorMsg);
+//                    }
+//                });
+//
+//        requestQueue.add(stringRequest);
+//    }
 }

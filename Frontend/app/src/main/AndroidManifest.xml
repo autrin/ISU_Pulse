@@ -38,17 +38,43 @@
             android:name=".loginsignup.SignupActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.profile.ProfileActivity"
-            android:exported="false"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:name=".profile_activity.ProfileActivity"
+            android:exported="false" />
         <activity
-            android:name=".ui.profile.EditProfileActivity"
+            android:name=".student_display.DisplayStudent"
+            android:exported="false" />
+        <activity
+            android:name=".chat_system.ChatList"
+            android:exported="false" />
+        <activity
+            android:name=".chat_system.ChatActivity"
+            android:exported="false" />
+        <activity
+            android:name=".profile_activity.EditProfileActivity"
+            android:exported="false" />
+        <activity
+            android:name=".friend_functional.FriendList"
+            android:exported="false" />
+        <activity
+            android:name=".friend_functional.FriendProfile"
+            android:exported="false" />
+        <activity
+            android:name=".friend_functional.FriendRequest"
+            android:exported="false" />
+        <activity
+            android:name=".friend_functional.FriendSuggestion"
+            android:exported="false" />
+        <activity
+            android:name=".friend_functional.FriendSentRequest"
             android:exported="false" />
         <activity
             android:name=".loginsignup.LoginActivity"
             android:exported="false" />
         <activity
             android:name=".course_functional.CourseView"
+            android:exported="false" />
+        <activity
+            android:name=".ui.home.HomeActivity"
             android:exported="false" />
         <activity
             android:name=".course_functional.CourseItem"

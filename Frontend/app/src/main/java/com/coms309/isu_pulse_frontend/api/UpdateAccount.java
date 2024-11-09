@@ -56,8 +56,7 @@ public class UpdateAccount {
         queue.add(putRequest);
     }
 
-    public static void fetchProfileData(Context context, final ProfileCallback callback) {
-        String netId = UserSession.getInstance(context).getNetId();  // Retrieve netId dynamically
+    public static void fetchProfileData(String netId, Context context, final ProfileCallback callback) {
         String url = BASE_URL + "profile/" + netId;
         RequestQueue queue = Volley.newRequestQueue(context);
 

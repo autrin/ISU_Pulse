@@ -36,6 +36,52 @@
             android:textColor="@color/black"
             android:textSize="16sp"
             android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/sectionTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="Section"
+            android:textColor="@color/black"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/creditsTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="Credits"
+            android:textColor="@color/black"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/recurringPatternTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="Recurring Pattern"
+            android:textColor="@color/black"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/startTimeTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="Start Time"
+            android:textColor="@color/black"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/endTimeTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="End Time"
+            android:textColor="@color/black"
+            android:textSize="14sp" />
+
     </LinearLayout>
 
     <ImageButton
@@ -44,5 +90,15 @@
         android:layout_height="wrap_content"
         android:background="@null"
         android:contentDescription="Delete Course"
-        android:src="@android:drawable/ic_delete" />
+        android:src="@android:drawable/ic_delete"
+        android:visibility="invisible"/>
+
+    <ImageButton
+        android:id="@+id/addButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@null"
+        android:contentDescription="Add Course"
+        android:src="@android:drawable/ic_input_add"
+        android:visibility="invisible"/>
 </LinearLayout>

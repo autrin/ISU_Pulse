@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="sort_alphabetically_options">
+        <item>Alphabetically (A-Z)</item>
+        <item>Alphabetically (Z-A)</item>
+    </string-array>
+</resources>

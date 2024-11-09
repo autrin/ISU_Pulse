@@ -9,14 +9,22 @@ import com.coms309.isu_pulse_frontend.api.AnnouncementWebSocketClient;
 public class UserSession {
     private static UserSession instance;
     private String netId;
+    private long id;
     private String userType;
     private AnnouncementWebSocketClient webSocketClient;
+
+    private UserSession() {}
 
     private UserSession(Context context) {
         SharedPreferences sharedPreferences = context.getSharedPreferences("UserSession", Context.MODE_PRIVATE);
         this.netId = sharedPreferences.getString("netId", null);
-        this.userType = sharedPreferences.getString("userType", null);
-        initWebSocket();
+    }
+
+    public static synchronized UserSession getInstance() {
+        if (instance == null) {
+            instance = new UserSession();
+        }
+        return instance;
     }
 
     public static synchronized UserSession getInstance(Context context) {
@@ -26,13 +34,27 @@ public class UserSession {
         return instance;
     }
 
+
+    public void setNetId(String netId) {
+        this.netId = netId;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
     public String getNetId() {
         return netId;
+    }
+
+    public long getId() {
+        return id;
     }
 
     public String getUserType() {
         return userType;
     }
+
 
     public void setNetId(String netId, Context context) {
         this.netId = netId;
@@ -50,15 +72,13 @@ public class UserSession {
         editor.apply();
     }
 
+
     public void clearSession(Context context) {
         SharedPreferences sharedPreferences = context.getSharedPreferences("UserSession", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.remove("netId");
-        editor.remove("userType");
         editor.apply();
         netId = null;
-        userType = null;
-        disconnectWebSocket();
     }
 
     private void initWebSocket() {
@@ -81,4 +101,5 @@ public class UserSession {
             webSocketClient = null;
         }
     }
+
 }

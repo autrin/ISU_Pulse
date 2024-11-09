@@ -32,51 +32,51 @@ public class AddCourse extends AppCompatActivity {
             startActivity(intent);
         });
 
-        addButton = findViewById(R.id.addButton);
-        addButton1 = findViewById(R.id.addButton1);
-        addButton2 = findViewById(R.id.addButton2);
-
-        addButton.setOnClickListener(view -> {
-            courseService.enrollInCourse("bachnguyen", 16, new CourseService.EnrollCallback() {
-                @Override
-                public void onSuccess(String message) {
-                    Toast.makeText(AddCourse.this, "Enrolled successfully!", Toast.LENGTH_SHORT).show();
-                }
-
-                @Override
-                public void onError(String error) {
-                    Toast.makeText(AddCourse.this, "Error: " + error, Toast.LENGTH_LONG).show();
-                }
-            });
-        });
-
-
-        addButton1.setOnClickListener(view -> {
-            courseService.enrollInCourse("bachnguyen", 15, new CourseService.EnrollCallback() {
-                @Override
-                public void onSuccess(String message) {
-                    Toast.makeText(AddCourse.this, "Enrolled successfully!", Toast.LENGTH_SHORT).show();
-                }
-
-                @Override
-                public void onError(String error) {
-                    Toast.makeText(AddCourse.this, "Error: " + error, Toast.LENGTH_LONG).show();
-                }
-            });
-        });
-
-        addButton2.setOnClickListener(view -> {
-            courseService.enrollInCourse("bachnguyen", 17, new CourseService.EnrollCallback() {
-                @Override
-                public void onSuccess(String message) {
-                    Toast.makeText(AddCourse.this, "Enrolled successfully!", Toast.LENGTH_SHORT).show();
-                }
-
-                @Override
-                public void onError(String error) {
-                    Toast.makeText(AddCourse.this, "Error: " + error, Toast.LENGTH_LONG).show();
-                }
-            });
-        });
+//        addButton = findViewById(R.id.addButton);
+//        addButton1 = findViewById(R.id.addButton1);
+//        addButton2 = findViewById(R.id.addButton2);
+//
+//        addButton.setOnClickListener(view -> {
+//            courseService.enrollInCourse("bachnguyen", 16, new CourseService.EnrollCallback() {
+//                @Override
+//                public void onSuccess(String message) {
+//                    Toast.makeText(AddCourse.this, "Enrolled successfully!", Toast.LENGTH_SHORT).show();
+//                }
+//
+//                @Override
+//                public void onError(String error) {
+//                    Toast.makeText(AddCourse.this, "Error: " + error, Toast.LENGTH_LONG).show();
+//                }
+//            });
+//        });
+//
+//
+//        addButton1.setOnClickListener(view -> {
+//            courseService.enrollInCourse("bachnguyen", 15, new CourseService.EnrollCallback() {
+//                @Override
+//                public void onSuccess(String message) {
+//                    Toast.makeText(AddCourse.this, "Enrolled successfully!", Toast.LENGTH_SHORT).show();
+//                }
+//
+//                @Override
+//                public void onError(String error) {
+//                    Toast.makeText(AddCourse.this, "Error: " + error, Toast.LENGTH_LONG).show();
+//                }
+//            });
+//        });
+//
+//        addButton2.setOnClickListener(view -> {
+//            courseService.enrollInCourse("bachnguyen", 17, new CourseService.EnrollCallback() {
+//                @Override
+//                public void onSuccess(String message) {
+//                    Toast.makeText(AddCourse.this, "Enrolled successfully!", Toast.LENGTH_SHORT).show();
+//                }
+//
+//                @Override
+//                public void onError(String error) {
+//                    Toast.makeText(AddCourse.this, "Error: " + error, Toast.LENGTH_LONG).show();
+//                }
+//            });
+//        });
     }
 }

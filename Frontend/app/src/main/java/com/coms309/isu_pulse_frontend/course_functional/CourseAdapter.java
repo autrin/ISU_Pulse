@@ -1,5 +1,6 @@
 package com.coms309.isu_pulse_frontend.course_functional;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -7,20 +8,19 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 import com.coms309.isu_pulse_frontend.R;
-import com.coms309.isu_pulse_frontend.model.Course;
+import com.coms309.isu_pulse_frontend.schedule.Schedule;
+import com.coms309.isu_pulse_frontend.ui.home.Course;
 import java.util.List;
 
 public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseViewHolder> {
-    private List<Course> courseList;
-    private OnCourseDeleteListener deleteListener;
+    private List<Schedule> courseList;
+    private Context context;
 
-    public interface OnCourseDeleteListener {
-        void onCourseDelete(int position, Course course);
-    }
 
-    public CourseAdapter(List<Course> courseList, OnCourseDeleteListener listener) {
+
+    public CourseAdapter(List<Schedule> courseList, Context context) {
         this.courseList = courseList;
-        this.deleteListener = listener;
+        this.context = context;
     }
 
     @Override
@@ -31,14 +31,15 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseView
 
     @Override
     public void onBindViewHolder(CourseViewHolder holder, int position) {
-        Course course = courseList.get(position);
-        holder.courseCodeTextView.setText(course.getCode());
-        holder.courseTitleTextView.setText(course.getTitle());
-        holder.deleteButton.setOnClickListener(v -> {
-            if (deleteListener != null) {
-                deleteListener.onCourseDelete(position, course);
-            }
-        });
+        Schedule course = courseList.get(position);
+        holder.courseCodeTextView.setText(course.getCourse().getCode());
+        holder.creditsTextView.setText(String.valueOf(course.getCourse().getCredits()));
+        holder.courseTitleTextView.setText(course.getCourse().getTitle());
+        holder.sectionTextView.setText(course.getSection());
+        holder.recurringPatternTextView.setText(course.getRecurringPattern());
+        holder.startTimeTextView.setText(course.getStartTime());
+        holder.endTimeTextView.setText(course.getEndTime());
+
     }
 
     @Override
@@ -49,13 +50,22 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseView
     static class CourseViewHolder extends RecyclerView.ViewHolder {
         TextView courseCodeTextView;
         TextView courseTitleTextView;
-        ImageButton deleteButton;
+        TextView creditsTextView;
+        TextView sectionTextView;
+        TextView recurringPatternTextView;
+        TextView startTimeTextView;
+        TextView endTimeTextView;
+
 
         CourseViewHolder(View itemView) {
             super(itemView);
             courseCodeTextView = itemView.findViewById(R.id.courseCodeTextView);
             courseTitleTextView = itemView.findViewById(R.id.courseNameTextView);
-            deleteButton = itemView.findViewById(R.id.deleteButton);
+            creditsTextView = itemView.findViewById(R.id.creditsTextView);
+            sectionTextView = itemView.findViewById(R.id.sectionTextView);
+            recurringPatternTextView = itemView.findViewById(R.id.recurringPatternTextView);
+            startTimeTextView = itemView.findViewById(R.id.startTimeTextView);
+            endTimeTextView = itemView.findViewById(R.id.endTimeTextView);
         }
     }
 }

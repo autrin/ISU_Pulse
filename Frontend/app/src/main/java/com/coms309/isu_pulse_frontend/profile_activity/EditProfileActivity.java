@@ -1,4 +1,4 @@
-package com.coms309.isu_pulse_frontend.ui.profile;
+package com.coms309.isu_pulse_frontend.profile_activity;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,7 +12,10 @@ import com.android.volley.VolleyError;
 import com.coms309.isu_pulse_frontend.R;
 import com.coms309.isu_pulse_frontend.api.AuthenticationService;
 import com.coms309.isu_pulse_frontend.api.UpdateAccount;
+import com.coms309.isu_pulse_frontend.loginsignup.LoginActivity;
+import com.coms309.isu_pulse_frontend.profile_activity.ProfileActivity;
 import com.coms309.isu_pulse_frontend.loginsignup.PasswordHasher;
+import com.coms309.isu_pulse_frontend.loginsignup.SignupActivity;
 import com.coms309.isu_pulse_frontend.model.Profile;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputLayout;
@@ -84,7 +87,7 @@ public class EditProfileActivity extends AppCompatActivity {
     }
 
     private void fetchProfileData() {
-        UpdateAccount.fetchProfileData(this, new UpdateAccount.ProfileCallback() {
+        UpdateAccount.fetchProfileData(String.valueOf(netid), this, new UpdateAccount.ProfileCallback() {
             @Override
             public void onSuccess(Profile profile) {
                 existingProfile = profile; // Initialize the existing profile

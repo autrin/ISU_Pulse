@@ -48,11 +48,15 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-crashlytics")
     implementation("com.google.firebase:firebase-appcheck")
+    implementation("com.google.firebase:firebase-messaging:24.0.3")
+    implementation("com.google.firebase:firebase-firestore:25.1.1")
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation(libs.navigation.ui)
     implementation(libs.volley)
     implementation(libs.firebase.storage)
     implementation(libs.firebase.auth)
     implementation(libs.glide)
+    implementation(libs.firebase.database)
     annotationProcessor(libs.glide.compiler)
 
     // Unit test dependencies

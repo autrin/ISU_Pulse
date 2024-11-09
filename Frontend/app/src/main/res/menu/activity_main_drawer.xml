@@ -6,12 +6,21 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_home"
-            android:title="@string/menu_dashboard" />
+            android:title="Home" />
         <item
-            android:id="@+id/nav_profile"
-            android:title="@string/menu_profile" />
+            android:id="@+id/nav_students"
+            android:title="Students" />
+        <item
+            android:id="@+id/nav_chatting"
+            android:title="Chat" />
         <item
             android:id="@+id/nav_courses"
-            android:title="@string/menu_courses" />
+            android:title="Courses" />
+        <item
+            android:id="@+id/nav_profile"
+            android:title="Profile" />
+        <item
+            android:id="@+id/nav_logout"
+            android:title="Log out" />
     </group>
 </menu>
