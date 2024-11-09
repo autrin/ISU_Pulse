@@ -2,15 +2,15 @@ package com.coms309.isu_pulse_frontend.model;
 
 public class Announcement {
 
-    private Long id;
+    private long id;
     private String content;
-    private Long scheduleId;
+    private long scheduleId;
     private String facultyNetId;
     private String timestamp;
     //    private boolean seenStatus;  // Optional, relevant for frontend display
     private String courseName;
 
-    public Announcement(Long id, String content, Long scheduleId, String facultyNetId, String timestamp, String courseName) {
+    public Announcement(Long id, String content, long scheduleId, String facultyNetId, String timestamp, String courseName) {
         this.id = id;
         this.content = content;
         this.scheduleId = scheduleId;
@@ -22,11 +22,11 @@ public class Announcement {
 
 
     // Getters and Setters
-    public Long getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -38,11 +38,11 @@ public class Announcement {
         this.content = content;
     }
 
-    public Long getScheduleId() {
+    public long getScheduleId() {
         return scheduleId;
     }
 
-    public void setScheduleId(Long scheduleId) {
+    public void setScheduleId(long scheduleId) {
         this.scheduleId = scheduleId;
     }
 

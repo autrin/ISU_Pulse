@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -18,17 +19,22 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.coms309.isu_pulse_frontend.adapters.AnnouncementListAdapter;
 import com.coms309.isu_pulse_frontend.adapters.TaskListAdapter;
 import com.coms309.isu_pulse_frontend.adapters.WeeklyCalendarAdapter;
+import com.coms309.isu_pulse_frontend.api.AnnouncementWebSocketClient;
 import com.coms309.isu_pulse_frontend.api.TaskApiService;
 import com.coms309.isu_pulse_frontend.databinding.FragmentHomeBinding;
 import com.coms309.isu_pulse_frontend.loginsignup.UserSession;
 import com.coms309.isu_pulse_frontend.model.Announcement;
 import com.coms309.isu_pulse_frontend.model.PersonalTask;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class HomeFragment extends Fragment {
+public class HomeFragment extends Fragment implements AnnouncementWebSocketClient.WebSocketListener {
 
     private FragmentHomeBinding binding;
     private TextView textViewTasksDueTodayTitle;
@@ -42,8 +48,10 @@ public class HomeFragment extends Fragment {
 
     private List<Object> tasksDueToday = new ArrayList<>();
     private List<String> events = new ArrayList<>();
-    private List<Announcement> announcements = new ArrayList<>(); // Use Announcement model for announcements
+    private List<Announcement> announcementList = new ArrayList<>(); // Use Announcement model for announcements
     private TaskApiService taskApiService;
+    private AnnouncementWebSocketClient announcementClient;
+    private static final String TAG = "HomeFragment";
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -106,25 +114,19 @@ public class HomeFragment extends Fragment {
         recyclerViewAnnouncements.setLayoutManager(layoutManagerAnnouncements);
 
         // Pass 'false' for the isCourseView parameter since this is the dashboard
-        announcementAdapter = new AnnouncementListAdapter(announcements, false);
+        announcementAdapter = new AnnouncementListAdapter(getContext(), announcementList, false);
         recyclerViewAnnouncements.setAdapter(announcementAdapter);
 
 
         // Commented out for now to avoid errors related to missing methods in TaskApiService
         populateAnnouncements();
-
+        onStart();
         return root;
     }
 
     private void openAddTaskDialog() {
         AddTaskDialog addTaskDialog = new AddTaskDialog(taskApiService, taskAdapter, this);
         addTaskDialog.show(getChildFragmentManager(), "Add Task Dialog");
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        binding = null;
     }
 
     private void populateTasksDue() {
@@ -164,9 +166,9 @@ public class HomeFragment extends Fragment {
          */
 
         // Temporary placeholder code
-        announcements.clear();
+        announcementList.clear();
         // For now, manually add a sample announcement to avoid UI breakage
-        announcements.add(new Announcement(1L, "Sample Announcement", 1L, "facultyNetId", "2024-11-07T10:00:00.000-06:00", "CourseName"));
+        announcementList.add(new Announcement(1L, "Sample Announcement", 1L, "facultyNetId", "2024-11-07T10:00:00.000-06:00", "CourseName"));
         announcementAdapter.notifyDataSetChanged();
     }
 
@@ -176,4 +178,105 @@ public class HomeFragment extends Fragment {
         recyclerViewTasksDueToday.scrollToPosition(tasksDueToday.size() - 1);
         recyclerViewCalendar.getAdapter().notifyDataSetChanged();
     }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        AnnouncementWebSocketClient webSocketClient = UserSession.getInstance(getContext()).getWebSocketClient();
+        if (webSocketClient != null) {
+            webSocketClient.setListener(this);
+        } else {
+            // Handle the case where the WebSocket client is not initialized
+            Log.e(TAG, "WebSocket client is not initialized");
+            Toast.makeText(getContext(), "WebSocket client is not initialized", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
+    @Override
+    public void onMessageReceived(String message) {
+        try {
+            JSONObject jsonMessage = new JSONObject(message);
+            String action = jsonMessage.getString("action");
+
+            switch (action) {
+                case "history":
+                    handleHistoryAction(jsonMessage);
+                    break;
+                case "new":
+                    handleNewAnnouncement(jsonMessage);
+                    break;
+                case "confirmation":
+                    handleConfirmation(jsonMessage);
+                    break;
+                case "error":
+                    handleError(jsonMessage);
+                    break;
+                default:
+                    Log.w(TAG, "Unknown action: " + action);
+            }
+        } catch (JSONException e) {
+            Log.d(TAG, "Received non-JSON message: " + message);
+        }
+    }
+
+    private void handleHistoryAction(JSONObject jsonMessage) throws JSONException {
+        JSONArray announcementsArray = jsonMessage.getJSONArray("announcements");
+        announcementList.clear();
+
+        for (int i = 0; i < announcementsArray.length(); i++) {
+            JSONObject announcementJson = announcementsArray.getJSONObject(i);
+            Announcement announcement = new Announcement(
+                    announcementJson.getLong("id"),
+                    announcementJson.getString("content"),
+                    announcementJson.getLong("scheduleId"),
+                    announcementJson.getString("facultyNetId"),
+                    announcementJson.getString("timestamp"),
+                    ""
+            );
+            announcementList.add(announcement);
+        }
+
+        announcementAdapter.notifyDataSetChanged();
+    }
+
+    private void handleNewAnnouncement(JSONObject jsonMessage) throws JSONException {
+        JSONObject announcementJson = jsonMessage.getJSONObject("announcement");
+        Announcement newAnnouncement = new Announcement(
+                announcementJson.getLong("id"),
+                announcementJson.getString("content"),
+                announcementJson.getLong("scheduleId"),
+                announcementJson.getString("facultyNetId"),
+                announcementJson.getString("timestamp"),
+                ""
+        );
+
+        announcementList.add(0, newAnnouncement);
+        announcementAdapter.notifyItemInserted(0);
+    }
+
+    private void handleConfirmation(JSONObject jsonMessage) throws JSONException {
+        String confirmationMessage = jsonMessage.getString("message");
+        Toast.makeText(getContext(), "Confirmation: " + confirmationMessage, Toast.LENGTH_SHORT).show();
+    }
+
+    private void handleError(JSONObject jsonMessage) throws JSONException {
+        String errorMessage = jsonMessage.getString("message");
+        Log.e(TAG, "Error: " + errorMessage);
+        Toast.makeText(getContext(), "Error: " + errorMessage, Toast.LENGTH_SHORT).show();
+    }
+
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (announcementClient != null) {
+            announcementClient.disconnectWebSocket();
+            announcementClient = null;
+        }
+        binding = null; // Avoid memory leaks by releasing the binding reference
+    }
+
 }
+
+

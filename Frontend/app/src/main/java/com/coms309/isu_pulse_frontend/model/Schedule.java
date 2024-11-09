@@ -8,6 +8,7 @@ public class Schedule {
     private String endTime;
     private Course course;
     private Department department;
+    private long scheduleId;
 
     public Schedule(Course course, Department department, String section, String recurringPattern, String startTime, String endTime) {
         this.course = course;
@@ -18,12 +19,21 @@ public class Schedule {
         this.endTime = endTime;
     }
 
-    public Schedule(Course course, String section, String recurringPattern, String startTime, String endTime) {
+    public Schedule(long scheduleId, Course course, String section, String recurringPattern, String startTime, String endTime) {
+        this.scheduleId = scheduleId;
         this.course = course;
         this.section = section;
         this.recurringPattern = recurringPattern;
         this.startTime = startTime;
         this.endTime = endTime;
+    }
+
+    public long getScheduleId() {
+        return scheduleId;
+    }
+
+    public void setScheduleId(long scheduleId) {
+        this.scheduleId = scheduleId;
     }
 
     public String getSection() {

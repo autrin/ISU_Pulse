@@ -31,6 +31,11 @@
         android:id="@+id/nav_course_detail"
         android:name="com.coms309.isu_pulse_frontend.ui.courses.CourseDetailFragment"
         android:label="Course Details"
-        tools:layout="@layout/fragment_course_detail" />
+        tools:layout="@layout/fragment_course_detail">
+        <argument
+            android:name="courseId"
+            app:argType="long"
+            android:defaultValue="2L" />
+    </fragment>
 
 </navigation>

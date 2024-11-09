@@ -1,6 +1,7 @@
 package com.coms309.isu_pulse_frontend.ui.courses;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.coms309.isu_pulse_frontend.R;
 import com.coms309.isu_pulse_frontend.adapters.CourseListAdapter;
+import com.coms309.isu_pulse_frontend.api.AnnouncementWebSocketClient;
 import com.coms309.isu_pulse_frontend.api.FacultyApiService;
 import com.coms309.isu_pulse_frontend.databinding.FragmentCoursesBinding;
 import com.coms309.isu_pulse_frontend.loginsignup.UserSession;
@@ -28,27 +30,18 @@ import java.util.List;
 public class CoursesFragment extends Fragment {
 
     private FragmentCoursesBinding binding;
-    private RecyclerView recyclerView;
-    private CourseListAdapter adapter;
+    private RecyclerView courseRecyclerView;
+    private CourseListAdapter courseAdapter;
     private List<Course> courses = new ArrayList<>();
-    private TextView emptyStateTextView; // Placeholder text for empty state
+    private TextView emptyStateTextView;
+    private static final String TAG = "CoursesFragment";
 
-    public View onCreateView(@NonNull LayoutInflater inflater,
-                             ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentCoursesBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        // Get the user role
-        String userRole = UserSession.getInstance(getContext()).getUserType();
-
-        // Set up RecyclerView
-        recyclerView = binding.recyclerViewCourses;
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        adapter = new CourseListAdapter(courses, userRole, this::navigateToCourseDetail);
-        recyclerView.setAdapter(adapter);
-
-        // Empty state view
-        emptyStateTextView = binding.emptyStateTextView; // Add this TextView in XML with the message "No courses available."
+        // Set up Course RecyclerView
+        setupRecyclerView();
 
         // Fetch courses from backend
         fetchCoursesFromBackend();
@@ -56,7 +49,16 @@ public class CoursesFragment extends Fragment {
         return root;
     }
 
-    // Function to fetch courses using FacultyApiService
+    private void setupRecyclerView() {
+        courseRecyclerView = binding.recyclerViewCourses;
+        courseRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        courseAdapter = new CourseListAdapter(courses, UserSession.getInstance(getContext()).getUserType(), this::navigateToCourseDetail);
+        courseRecyclerView.setAdapter(courseAdapter);
+
+        emptyStateTextView = binding.emptyStateTextView;
+    }
+
+    // Fetch courses from backend
     private void fetchCoursesFromBackend() {
         FacultyApiService facultyApiService = new FacultyApiService(getContext());
         String facultyNetId = UserSession.getInstance(getContext()).getNetId();
@@ -68,15 +70,15 @@ public class CoursesFragment extends Fragment {
                 for (Schedule schedule : schedules) {
                     courses.add(schedule.getCourse());
                 }
-                adapter.notifyDataSetChanged();
+                courseAdapter.notifyDataSetChanged();
 
                 // Show empty state if no courses are found
                 if (courses.isEmpty()) {
                     emptyStateTextView.setVisibility(View.VISIBLE);
-                    recyclerView.setVisibility(View.GONE);
+                    courseRecyclerView.setVisibility(View.GONE);
                 } else {
                     emptyStateTextView.setVisibility(View.GONE);
-                    recyclerView.setVisibility(View.VISIBLE);
+                    courseRecyclerView.setVisibility(View.VISIBLE);
                 }
             }
 
@@ -84,27 +86,32 @@ public class CoursesFragment extends Fragment {
             public void onError(String message) {
                 Toast.makeText(getContext(), "Error fetching courses: " + message, Toast.LENGTH_SHORT).show();
                 emptyStateTextView.setVisibility(View.VISIBLE);
-                recyclerView.setVisibility(View.GONE);
+                courseRecyclerView.setVisibility(View.GONE);
             }
         });
     }
 
-    // Function to navigate to CourseDetailFragment, only used by teachers
-    private void navigateToCourseDetail(Long courseId) {
-        String userRole = UserSession.getInstance(getContext()).getUserType();
-        if ("FACULTY".equals(userRole)) {
-            Bundle args = new Bundle();
-            args.putLong("courseId", courseId);
-
-            NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment_content_main);
-            navController.navigate(R.id.action_coursesFragment_to_courseDetailFragment, args);
+    // Navigate to CourseDetailFragment
+    private void navigateToCourseDetail(long scheduleId) {
+        scheduleId = 7L; // hardcoded schedule ID for testing
+        if (scheduleId == 0) {
+            Log.e(TAG, "scheduleId is null; cannot navigate to CourseDetailFragment");
+            Toast.makeText(getContext(), "Error: scheduleId is missing", Toast.LENGTH_SHORT).show();
+            return;
         }
+
+        Bundle args = new Bundle();
+        args.putLong("scheduleId", scheduleId); // Ensure the ID is passed
+
+        NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment_content_main);
+        navController.navigate(R.id.action_coursesFragment_to_courseDetailFragment, args);
     }
 
-    // Clean up binding
+
+
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        binding = null;
+        binding = null; // Avoid memory leaks
     }
 }
