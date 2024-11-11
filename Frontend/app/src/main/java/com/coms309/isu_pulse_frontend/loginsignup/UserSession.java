@@ -81,6 +81,7 @@ public class UserSession {
         SharedPreferences sharedPreferences = context.getSharedPreferences("UserSession", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.remove("netId");
+        editor.remove("userType");
         editor.apply();
         netId = null;
         userType = null;
