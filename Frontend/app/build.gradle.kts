@@ -72,6 +72,7 @@ dependencies {
     implementation("com.google.code.gson:gson:2.8.8")
 
     implementation("org.java-websocket:Java-WebSocket:1.5.2")
+    implementation("org.apache.httpcomponents:httpclient:4.5.13")
 
 }
 
