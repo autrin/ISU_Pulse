@@ -10,6 +10,8 @@ android-build:
   before_script:                    # change 'Frontend' to where you have 'gradlew'
     - export GRADLE_USER_HOME=`pwd`/.gradle
     - chmod +x ./Frontend/gradlew
+    - rm -rf Frontend/.gradle Frontend/app/build # Cleanup step added here
+    - cd Frontend
   script:
     - cd Frontend                   # change 'Frontend' to where you have 'gradlew' (do not add / in the beginning)
     - ./gradlew build
