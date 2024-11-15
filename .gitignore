@@ -58,10 +58,10 @@ gen-external-apklibs
 .mtj.tmp/
 
 # Package Files #
-# *.jar
+*.jar
 
 # Except for gradle-wrapper.jar
-# !/gradle/wrapper/gradle-wrapper.jar
+!/gradle/wrapper/gradle-wrapper.jar
 
 *.war
 *.nar
