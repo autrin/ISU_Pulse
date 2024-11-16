@@ -5,6 +5,8 @@ import static org.junit.Assert.assertNotNull;
 import android.content.Context;
 import android.view.Menu;
 
+import androidx.test.core.app.ApplicationProvider;
+
 import com.coms309.isu_pulse_frontend.loginsignup.UserSession;
 
 import org.junit.Before;
@@ -12,29 +14,32 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
-import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 @RunWith(RobolectricTestRunner.class)
-@Config(sdk = 28) // Specify an SDK version for Robolectric
+@Config(sdk = 35, manifest = Config.NONE) // Specify the SDK version
 public class MainActivityTest {
 
     private Context context;
 
     @Before
     public void setUp() {
-        context = RuntimeEnvironment.getApplication();
+        context = ApplicationProvider.getApplicationContext();
     }
 
     @Test
     public void testTeacherMenuVisibility() {
         // Simulate teacher login
         UserSession.getInstance(context).setUserType("FACULTY", context);
-        MainActivity activity = Robolectric.setupActivity(MainActivity.class);
+
+        // Initialize MainActivity using Robolectric
+        MainActivity activity = Robolectric.buildActivity(MainActivity.class).setup().get();
 
         // Use the public getter method to access navigationView
         Menu menu = activity.getNavigationView().getMenu();
-        assertNotNull(menu.findItem(R.id.nav_home));  // Ensure 'Dashboard' is present
-        assertNotNull(menu.findItem(R.id.nav_profile));  // Ensure 'Profile' is present
+
+        // Ensure menu items are present
+        assertNotNull("Dashboard menu item should be present", menu.findItem(R.id.nav_home));
+        assertNotNull("Profile menu item should be present", menu.findItem(R.id.nav_profile));
     }
 }
