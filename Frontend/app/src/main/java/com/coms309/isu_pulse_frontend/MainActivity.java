@@ -137,4 +137,8 @@ public class MainActivity extends AppCompatActivity {
         menu.clear();
         getMenuInflater().inflate(R.menu.student_main_drawer, menu);
     }
+
+    public NavigationView getNavigationView() {
+        return navigationView;
+    }
 }
