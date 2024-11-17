@@ -61,7 +61,7 @@ dependencies {
 
     // Unit test dependencies
     testImplementation(libs.junit)
-    testImplementation("org.robolectric:robolectric:4.9") // Robolectric for unit tests
+    testImplementation("org.robolectric:robolectric:4.10.3") // Robolectric for unit tests
     testImplementation("androidx.test.ext:junit:1.1.5")
     testImplementation("androidx.test:core:1.4.0")
 
@@ -72,8 +72,7 @@ dependencies {
     implementation("com.google.code.gson:gson:2.8.8")
 
     implementation("org.java-websocket:Java-WebSocket:1.5.2")
-    implementation("org.apache.httpcomponents:httpclient:4.5.13")
-
+    // implementation("org.apache.httpcomponents:httpclient:4.5.13")
 }
 
 // Apply the Google Services plugin at the bottom of the file

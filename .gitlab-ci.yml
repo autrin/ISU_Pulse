@@ -1,12 +1,12 @@
 stages:
   - androidbuild
-  - androidtest 
-  
+  - androidtest
+
 android-build:
   image: afirefly/android-ci:java17
   stage: androidbuild
   tags:
-   - autrin_tag                   # <-- change to your runner's tag
+    - autrin_tag                   # <-- change to your runner's tag
   before_script:                    # change 'Frontend' to where you have 'gradlew'
     - export GRADLE_USER_HOME=`pwd`/.gradle
     - chmod +x ./Frontend/gradlew
