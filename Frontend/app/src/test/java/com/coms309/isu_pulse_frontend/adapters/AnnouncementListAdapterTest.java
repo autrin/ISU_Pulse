@@ -7,10 +7,17 @@ import com.coms309.isu_pulse_frontend.loginsignup.UserSession;
 import com.coms309.isu_pulse_frontend.model.Announcement;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
+import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
 
 import java.util.ArrayList;
 import java.util.List;
 
+
+@RunWith(RobolectricTestRunner.class)
+@Config(sdk = 35, manifest = Config.NONE)
 public class AnnouncementListAdapterTest {
 
     @Test
