@@ -23,16 +23,31 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Service class for interacting with the Faculty API.
+ * This service provides methods to fetch faculty schedules and announcements.
+ */
 public class FacultyApiService {
 
     private static final String TAG = "FacultyApiService";
     private static final String BASE_URL_Faculty = BASE_URL + "faculty/schedules/";
     private RequestQueue requestQueue;
 
+    /**
+     * Constructs a new FacultyApiService with the provided context.
+     *
+     * @param context the application context
+     */
     public FacultyApiService(Context context) {
         this.requestQueue = Volley.newRequestQueue(context);
     }
 
+    /**
+     * Fetches faculty schedules for a given faculty member identified by their NetID.
+     *
+     * @param netId    the NetID of the faculty member
+     * @param listener the callback listener to handle the response
+     */
     public void getFacultySchedules(String netId, final ScheduleResponseListener listener) {
         String url = BASE_URL_Faculty + netId;
 
@@ -68,6 +83,13 @@ public class FacultyApiService {
         requestQueue.add(jsonArrayRequest);
     }
 
+    /**
+     * Parses a JSON object into a Schedule object.
+     *
+     * @param jsonObject the JSON object representing a schedule
+     * @return the parsed Schedule object
+     * @throws Exception if an error occurs during parsing
+     */
     private Schedule parseSchedule(JSONObject jsonObject) throws Exception {
         long scheduleId = jsonObject.getLong("id");
         JSONObject courseObj = jsonObject.getJSONObject("course");
@@ -86,13 +108,32 @@ public class FacultyApiService {
         );
     }
 
-
+    /**
+     * Listener interface for handling schedule responses.
+     */
     public interface ScheduleResponseListener {
+        /**
+         * Called when schedules are successfully fetched.
+         *
+         * @param schedules the list of schedules
+         */
         void onResponse(List<Schedule> schedules);
 
+        /**
+         * Called when an error occurs during the request.
+         *
+         * @param message the error message
+         */
         void onError(String message);
     }
 
+    /**
+     * Fetches announcements for a given schedule.
+     *
+     * @param scheduleId the ID of the schedule
+     * @param netId      the NetID of the user
+     * @param listener   the callback listener to handle the response
+     */
     public void getAnnouncementsBySchedule(long scheduleId, String netId, final AnnouncementResponseListener listener) {
         String url = BASE_URL + "announcements/schedule/" + scheduleId;
         JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(
@@ -112,7 +153,7 @@ public class FacultyApiService {
                             Announcement announcement = new Announcement(
                                     announcementObj.getLong("id"),
                                     announcementObj.getString("content"),
-                                    extractedScheduleId, // Corrected line
+                                    extractedScheduleId,
                                     netId,
                                     announcementObj.getString("timestamp"),
                                     ""
@@ -131,5 +172,22 @@ public class FacultyApiService {
         requestQueue.add(jsonArrayRequest);
     }
 
+    /**
+     * Listener interface for handling announcement responses.
+     */
+    public interface AnnouncementResponseListener {
+        /**
+         * Called when announcements are successfully fetched.
+         *
+         * @param announcements the list of announcements
+         */
+        void onResponse(List<Announcement> announcements);
 
+        /**
+         * Called when an error occurs during the request.
+         *
+         * @param message the error message
+         */
+        void onError(String message);
+    }
 }
