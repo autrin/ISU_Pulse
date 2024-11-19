@@ -5,6 +5,12 @@ import coms309.backEnd.demo.entity.ChatMessage;
 import coms309.backEnd.demo.entity.User;
 import coms309.backEnd.demo.repository.ChatMessageRepository;
 import coms309.backEnd.demo.repository.UserRepository;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,9 +29,27 @@ public class ChatController {
     @Autowired
     private UserRepository userRepository;
 
+    /**
+     * Retrieves the chat history between two users identified by their NetIDs.
+     *
+     * @param user1NetId The NetID of the first user.
+     * @param user2NetId The NetID of the second user.
+     * @return A list of chat messages exchanged between the two users.
+     */
+    @Operation(summary = "Get Chat History", description = "Retrieve the chat history between two users identified by their NetIDs.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Chat history retrieved successfully",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ChatMessageDTO.class))),
+            @ApiResponse(responseCode = "400", description = "Invalid user IDs provided",
+                    content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error",
+                    content = @Content)
+    })
     @GetMapping("/history")
     public ResponseEntity<List<ChatMessageDTO>> getChatHistory(
+            @Parameter(description = "The NetID of the first user", required = true)
             @RequestParam String user1NetId,
+            @Parameter(description = "The NetID of the second user", required = true)
             @RequestParam String user2NetId) {
 
         // Ensure both users exist in the database
@@ -70,9 +94,25 @@ public class ChatController {
 //        return ResponseEntity.ok("Message sent successfully.");
 //    }
 
-
+    /**
+     * Retrieves the latest chat messages between the specified user and all other users they have messaged with.
+     *
+     * @param netId The NetID of the user.
+     * @return A list of the latest chat messages with each user the specified user has interacted with.
+     */
+    @Operation(summary = "Get All Latest Messages", description = "Retrieve the latest chat messages between the specified user and all other users they have messaged with.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Latest messages retrieved successfully",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ChatMessage.class))),
+            @ApiResponse(responseCode = "400", description = "Invalid user ID provided",
+                    content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error",
+                    content = @Content)
+    })
     @GetMapping("/allLatestMessages/{netId}")
-    public ResponseEntity<List<ChatMessage>> getUsersYouMessagingWith(@PathVariable String netId){
+    public ResponseEntity<List<ChatMessage>> getUsersYouMessagingWith(
+            @Parameter(description = "The NetID of the user", required = true)
+            @PathVariable String netId){
         // Find the user with the given netId
         User user = userRepository.findUserByNetId(netId).orElse(null);
 
@@ -114,9 +154,30 @@ public class ChatController {
         });
         return ResponseEntity.ok(latestMessages);
     }
-
+        /**
+         * Retrieves the latest chat message between two users identified by their NetIDs.
+         *
+         * @param netIdUser1 The NetID of the first user.
+         * @param netIdUser2 The NetID of the second user.
+         * @return The latest chat message exchanged between the two users.
+         */
+        @Operation(summary = "Get Latest Message Between Two Users", description = "Retrieve the latest chat message between two users identified by their NetIDs.")
+        @ApiResponses(value = {
+                @ApiResponse(responseCode = "200", description = "Latest chat message retrieved successfully",
+                        content = @Content(mediaType = "application/json", schema = @Schema(implementation = ChatMessage.class))),
+                @ApiResponse(responseCode = "400", description = "Invalid user IDs provided",
+                        content = @Content),
+                @ApiResponse(responseCode = "404", description = "No chat messages found between the users",
+                        content = @Content),
+                @ApiResponse(responseCode = "500", description = "Internal server error",
+                        content = @Content)
+        })
         @GetMapping("/getLatestMessageBetween2User")
-        public ResponseEntity<ChatMessage> getLatestMessageBetween2User(@RequestParam String netIdUser1, @RequestParam String netIdUser2){
+        public ResponseEntity<ChatMessage> getLatestMessageBetween2User(
+                @Parameter(description = "The NetID of the first user", required = true)
+                @RequestParam String netIdUser1,
+                @Parameter(description = "The NetID of the second user", required = true)
+                @RequestParam String netIdUser2){
 
             // Check if these 2 users exist
             User user1 = userRepository.findUserByNetId(netIdUser1).orElse(null);

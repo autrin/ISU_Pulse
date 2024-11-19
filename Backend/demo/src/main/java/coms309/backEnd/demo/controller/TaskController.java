@@ -2,6 +2,11 @@ package coms309.backEnd.demo.controller;
 
 import coms309.backEnd.demo.entity.*;
 import coms309.backEnd.demo.repository.*;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -40,8 +45,19 @@ public class TaskController {
     }
 
 
+    /**
+     * Get tasks due in the next 2 days for a user.
+     *
+     * @param netId The NetID of the user.
+     * @return A list of tasks due in the next 2 days.
+     */
+    @Operation(summary = "Fetch tasks due in the next 2 days", description = "Retrieve all tasks due in the next 2 days for the specified user.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Tasks retrieved successfully", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "500", description = "User not found")
+    })
     @GetMapping("/getTaskByUserIn2days/{netId}")
-    public ResponseEntity<List<Task>> getTaskByCourse(@PathVariable String netId){
+    public ResponseEntity<List<Task>> getTaskByCourse(@Parameter(description = "NetID of the user", required = true) @PathVariable String netId){
         Date currentDate = new Date();
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(currentDate);
@@ -70,14 +86,38 @@ public class TaskController {
         return ResponseEntity.ok(taskList);
     }
 
+
+    /**
+     * Fetch upcoming tasks for a schedule.
+     *
+     * @param scheduleId The ID of the schedule.
+     * @return A list of upcoming tasks for the schedule.
+     */
+    @Operation(summary = "Fetch upcoming tasks by schedule", description = "Retrieve all upcoming tasks for a specific schedule.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Tasks retrieved successfully", content = @Content(mediaType = "application/json"))
+    })
     @GetMapping("/scheduleTask/{scheduleId}")
-    public ResponseEntity<List<Task>> fetchUpcomingTasksBySchedule(@PathVariable long scheduleId) {
+    public ResponseEntity<List<Task>> fetchUpcomingTasksBySchedule(@Parameter(description = "ID of the schedule", required = true) @PathVariable long scheduleId) {
         List<Task> tasksOfSchedule = taskRepository.findUpcomingTasksByScheduleId(scheduleId);
         return ResponseEntity.ok(tasksOfSchedule);
     }
 
+    /**
+     * Create a task for a specific schedule.
+     *
+     * @param scheduleId The ID of the schedule.
+     * @param task The task details.
+     * @return The created task.
+     */
+    @Operation(summary = "Create a task for a schedule", description = "Add a new task to a specific schedule.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Task created successfully", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "404", description = "Schedule not found")
+    })
     @PostMapping("/scheduleTask/{scheduleId}")
-    public ResponseEntity<Task> createScheduleTask(@PathVariable long scheduleId, @RequestBody Task task) {
+    public ResponseEntity<Task> createScheduleTask(@Parameter(description = "ID of the schedule", required = true) @PathVariable long scheduleId,
+                                                   @Parameter(description = "Details of the task to be created", required = true) @RequestBody Task task) {
         // Find the schedule by ID
         Optional<Schedule> scheduleOptional = scheduleRepository.findById(scheduleId);
 
@@ -93,10 +133,27 @@ public class TaskController {
         return ResponseEntity.status(HttpStatus.CREATED).body(task);
     }
 
+    /**
+     * Update an existing task for a schedule.
+     *
+     * @param scheduleId The ID of the schedule.
+     * @param taskId The ID of the task to update.
+     * @param updatedTask The updated task details.
+     * @return The updated task.
+     */
+    @Operation(summary = "Update a task for a schedule", description = "Modify the details of an existing task for a specific schedule.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Task updated successfully", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "404", description = "Schedule or task not found"),
+            @ApiResponse(responseCode = "400", description = "Task does not belong to the specified schedule")
+    })
     @PutMapping("/scheduleTask/{scheduleId}/task/{taskId}")
     public ResponseEntity<Task> updateTask(
+            @Parameter(description = "ID of the schedule", required = true)
             @PathVariable long scheduleId,
+            @Parameter(description = "ID of the task to update", required = true)
             @PathVariable long taskId,
+            @Parameter(description = "Updated task details", required = true)
             @RequestBody Task updatedTask) {
 
         // Find the schedule by ID

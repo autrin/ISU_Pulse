@@ -1,30 +1,55 @@
 package com.coms309.isu_pulse_frontend.loginsignup;
 
+/**
+ * This activity handles user login.
+ *
+ * @author ntbach
+ */
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-
-// Other necessary imports
 import com.coms309.isu_pulse_frontend.MainActivity;
 import com.coms309.isu_pulse_frontend.R;
 import com.coms309.isu_pulse_frontend.api.AuthenticationService;
-
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
+/**
+ * The LoginActivity handles user login.
+ */
 public class LoginActivity extends AppCompatActivity {
+
+    /**
+     * EditText for entering the user's NetID.
+     */
     private EditText netId;
+
+    /**
+     * EditText for entering the user's password.
+     */
     private EditText passWord;
+
+    /**
+     * TextView for the "Enter" button.
+     */
     private TextView enter;
+
+    /**
+     * TextView for the "Sign Up" button.
+     */
     private TextView signup;
 
-
+    /**
+     * Initializes the activity, sets up UI components, and handles user login.
+     * @param savedInstanceState If the activity is being re-initialized after
+     *     previously being shut down then this Bundle contains the data it most
+     *     recently supplied in {@link #onSaveInstanceState}.  <b><i>Note: Otherwise it is null.</i></b>
+     *
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
