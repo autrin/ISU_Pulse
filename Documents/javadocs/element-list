@@ -1,0 +1,16 @@
+com.coms309.isu_pulse_frontend
+com.coms309.isu_pulse_frontend.adapters
+com.coms309.isu_pulse_frontend.api
+com.coms309.isu_pulse_frontend.chat_system
+com.coms309.isu_pulse_frontend.course_functional
+com.coms309.isu_pulse_frontend.friend_functional
+com.coms309.isu_pulse_frontend.loginsignup
+com.coms309.isu_pulse_frontend.model
+com.coms309.isu_pulse_frontend.profile_activity
+com.coms309.isu_pulse_frontend.schedule
+com.coms309.isu_pulse_frontend.student_display
+com.coms309.isu_pulse_frontend.ui.announcements
+com.coms309.isu_pulse_frontend.ui.courses
+com.coms309.isu_pulse_frontend.ui.home
+com.coms309.isu_pulse_frontend.viewholders
+com.coms309.isu_pulse_frontend.web_socket
