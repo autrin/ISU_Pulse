@@ -6,6 +6,12 @@ import coms309.backEnd.demo.repository.ChatMessageRepository;
 import coms309.backEnd.demo.repository.DepartmentRepository;
 import coms309.backEnd.demo.repository.FacultyRepository;
 import coms309.backEnd.demo.repository.UserRepository;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,8 +41,14 @@ public class UserController {
         this.chatMessageRepository = chatMessageRepository;
     }
 
+    @Operation(summary = "Find a user by NetID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Found the user",
+                    content = { @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = User.class)) })
+    })
     @GetMapping("/{netId}")
-    public ResponseEntity<User> getUserByNetId(@PathVariable String netId) {
+    public ResponseEntity<User> getUserByNetId(@Parameter(description = "Find user by NetID") @PathVariable String netId) {
         Optional<User> userOptional = userRepository.findUserByNetId(netId);
         if (!userOptional.isPresent())
             throw new IllegalStateException("User doesn't exist.");
