@@ -6,6 +6,12 @@ import coms309.backEnd.demo.entity.User;
 import coms309.backEnd.demo.repository.FacultyRepository;
 import coms309.backEnd.demo.repository.TeachRepository;
 import coms309.backEnd.demo.repository.UserRepository;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,9 +34,23 @@ public class FacultyController {
         this.teachRepository = teachRepository;
         this.userRepository = userRepository;
     }
-
+    /**
+     * Retrieves the schedules associated with a faculty member identified by their NetID.
+     *
+     * @param netId The NetID of the faculty member.
+     * @return A list of schedules taught by the faculty member.
+     */
+    @Operation(summary = "Get Faculty Schedules", description = "Retrieve schedules associated with a faculty member identified by their NetID.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Schedules retrieved successfully",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = Schedule.class))),
+            @ApiResponse(responseCode = "404", description = "User not found or not a faculty member",
+                    content = @Content)
+    })
     @GetMapping("/schedules/{netId}")
-    public ResponseEntity<List<Schedule>> getFacultySchedules(@PathVariable String netId) {
+    public ResponseEntity<List<Schedule>> getFacultySchedules(
+            @Parameter(description = "The NetID of the faculty member", required = true)
+            @PathVariable String netId) {
         Optional<User> userOptional = userRepository.findUserByNetId(netId);
         if (!userOptional.isPresent())
             throw new IllegalStateException("User does not exist.");
