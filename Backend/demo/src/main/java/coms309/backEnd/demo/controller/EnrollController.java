@@ -9,6 +9,11 @@ import coms309.backEnd.demo.repository.CourseRepository;
 import coms309.backEnd.demo.repository.EnrollRepository;
 import coms309.backEnd.demo.repository.ScheduleRepository;
 import coms309.backEnd.demo.repository.UserRepository;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -40,8 +45,20 @@ public class EnrollController {
         this.scheduleRepository = scheduleRepository;
     }
 
+
+    /**
+     * Get the schedules a user is currently enrolled in.
+     *
+     * @param netId The NetID of the user.
+     * @return A list of schedules the user is enrolled in.
+     */
+    @Operation(summary = "Fetch enrolled schedules", description = "Retrieve all schedules (courses and sections) that the specified user is currently enrolled in.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Enrolled schedules retrieved successfully", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "500", description = "User not found")
+    })
     @GetMapping("/getEnroll/{netId}")
-    public ResponseEntity<List<Schedule>> getEnroll(@PathVariable String netId){
+    public ResponseEntity<List<Schedule>> getEnroll(@Parameter(description = "NetID of the user", required = true) @PathVariable String netId){
         Optional<User> curUser = userRepository.findUserByNetId(netId);
         // check if user exists or not
         if(curUser.isEmpty()){
@@ -57,15 +74,39 @@ public class EnrollController {
         return ResponseEntity.ok(scheduleList);
     }
 
+    /**
+     * Get all users enrolled in a specific schedule.
+     *
+     * @param scheduleId The ID of the schedule.
+     * @return A list of users enrolled in the schedule.
+     */
+    @Operation(summary = "Fetch users in a schedule", description = "Retrieve all users (students) enrolled in the specified schedule.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Users retrieved successfully", content = @Content(mediaType = "application/json"))
+    })
     @GetMapping("/getPeople/{scheduleId}")
-    public ResponseEntity<List<User>> fetchStudents(@PathVariable long scheduleId) {
+    public ResponseEntity<List<User>> fetchStudents(@Parameter(description = "ID of the schedule", required = true) @PathVariable long scheduleId) {
         List<User> people = enrollRepository.findStudentsBySchedule(scheduleId);
         return ResponseEntity.ok(people);
     }
 
+    /**
+     * Enroll a user in a specific schedule.
+     *
+     * @param netId      The NetID of the user.
+     * @param scheduleId The ID of the schedule.
+     * @return A success or error message.
+     */
+    @Operation(summary = "Enroll in a schedule", description = "Enroll the specified user in the given schedule.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Enrollment added successfully", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "404", description = "User or schedule not found")
+    })
     @PostMapping("/addEnroll/{netId}")
     public ResponseEntity<String> addEnroll(
+            @Parameter(description = "NetID of the user", required = true)
             @PathVariable String netId,
+            @Parameter(description = "ID of the schedule to enroll in", required = true)
             @RequestParam long scheduleId) {
         // check if user exists or not
         Optional<User> curUser = userRepository.findUserByNetId(netId);
@@ -84,9 +125,24 @@ public class EnrollController {
         return ResponseEntity.ok("Add enrollment successfully");
     }
 
+    /**
+     * Delete a user's enrollment from a specific schedule.
+     *
+     * @param netId    The NetID of the user.
+     * @param enrollId The ID of the enrollment to delete.
+     * @return A success or error message.
+     */
+    @Operation(summary = "Delete an enrollment", description = "Delete the specified enrollment for the given user.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Enrollment deleted successfully", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "404", description = "User or enrollment not found"),
+            @ApiResponse(responseCode = "403", description = "User not authorized to delete this enrollment")
+    })
     @DeleteMapping("/deleteEnroll/{netId}")
     public ResponseEntity<String> deleteEnroll(
+            @Parameter(description = "NetID of the user", required = true)
             @PathVariable String netId,
+            @Parameter(description = "ID of the enrollment to delete", required = true)
             @RequestParam long enrollId
     ){
         // check if user exists or not
