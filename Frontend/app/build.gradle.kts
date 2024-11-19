@@ -1,3 +1,5 @@
+import org.gradle.internal.impldep.org.eclipse.jgit.lib.ObjectChecker.author
+
 plugins {
     alias(libs.plugins.android.application)
     // id("com.android.application") // Removed this line
@@ -60,6 +62,9 @@ dependencies {
     implementation(libs.firebase.database)
     implementation(files("C:\\Users\\autri\\AppData\\Local\\Android\\Sdk\\platforms\\android-35\\android.jar"))
     annotationProcessor(libs.glide.compiler)
+//    implementation("com.some.dependency") {
+//        exclude(group = "com.google.android", module = "annotations") //
+//    }
 
     // Unit test dependencies
     testImplementation(libs.junit)
@@ -79,3 +84,25 @@ dependencies {
 
 // Apply the Google Services plugin at the bottom of the file
 apply(plugin = "com.google.gms.google-services")
+//configurations.all {
+//    exclude(group = "com.google.android", module = "annotations")
+//}
+
+
+//tasks.register("generateJavadocs", Javadoc::class) {
+//    val androidJar = File("${android.sdkDirectory}/platforms/android-${android.compileSdk}/android.jar")
+//
+//    source = android.sourceSets["main"].java.getSourceFiles()
+//    classpath = files(androidJar) + files(android.bootClasspath) + configurations["compileClasspath"]
+//    setDestinationDir(file("${buildDir}/docs/javadoc"))
+//
+//    isFailOnError = false // Prevent errors from stopping the task
+//
+//    options {
+//        encoding = "UTF-8"
+//        memberLevel = JavadocMemberLevel.PROTECTED
+//        author = true
+////        isVersion = true
+//        links("https://developer.android.com/reference/")
+//    }
+//}
