@@ -58,6 +58,7 @@ dependencies {
     implementation(libs.firebase.auth)
     implementation(libs.glide)
     implementation(libs.firebase.database)
+    implementation(files("C:\\Users\\autri\\AppData\\Local\\Android\\Sdk\\platforms\\android-35\\android.jar"))
     annotationProcessor(libs.glide.compiler)
 
     // Unit test dependencies
