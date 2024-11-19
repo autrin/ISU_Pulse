@@ -6,6 +6,12 @@ import coms309.backEnd.demo.repository.ChatMessageRepository;
 import coms309.backEnd.demo.repository.DepartmentRepository;
 import coms309.backEnd.demo.repository.FacultyRepository;
 import coms309.backEnd.demo.repository.UserRepository;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,8 +41,21 @@ public class UserController {
         this.chatMessageRepository = chatMessageRepository;
     }
 
+    /**
+     * Fetches a user by their NetID.
+     *
+     * @param netId The NetID of the user to fetch.
+     * @return The User entity if found, or an error message if not.
+     */
+    @Operation(summary = "Find a user by NetID", description = "Retrieve user details using their unique NetID.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "User found successfully",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = User.class))),
+            @ApiResponse(responseCode = "404", description = "User not found",
+                    content = @Content)
+    })
     @GetMapping("/{netId}")
-    public ResponseEntity<User> getUserByNetId(@PathVariable String netId) {
+    public ResponseEntity<User> getUserByNetId(@Parameter(description = "Unique NetID of the user") @PathVariable String netId) {
         Optional<User> userOptional = userRepository.findUserByNetId(netId);
         if (!userOptional.isPresent())
             throw new IllegalStateException("User doesn't exist.");
@@ -44,8 +63,22 @@ public class UserController {
         return ResponseEntity.status(200).body(user);
     }
 
+    /**
+     * Registers a new student user.
+     *
+     * @param user The user details to register.
+     * @return Success or error message.
+     */
+    @Operation(summary = "Register a new student", description = "Registers a new student user in the system.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "User registered successfully"),
+            @ApiResponse(responseCode = "400", description = "User already exists")
+    })
     @PostMapping
-    public ResponseEntity<String> registerNewStudent(@RequestBody User user){
+    public ResponseEntity<String> registerNewStudent(@io.swagger.v3.oas.annotations.parameters.RequestBody(
+            description = "The user object containing details like netId, name, email, and password for registration.",
+            content = @Content(schema = @Schema(implementation = User.class))
+    ) @RequestBody User user){
         Optional<User> userOptional = userRepository.findUserByNetId(user.getNetId());
         if (userOptional.isPresent())
             return ResponseEntity.status(400).body("NetID already exists.");
@@ -61,8 +94,16 @@ public class UserController {
         return ResponseEntity.status(200).body("User is successfully registered.");
     }
 
+    @Operation(summary = "Register a new faculty", description = "Registers a new faculty user in the system.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Faculty signup successful"),
+            @ApiResponse(responseCode = "400", description = "User with this NetID already exists")
+    })
     @PostMapping("/faculty")
-    public ResponseEntity<Map<String, String>> signupFaculty(@RequestBody FacultyDTO facultyDTO) {
+    public ResponseEntity<Map<String, String>> signupFaculty(@io.swagger.v3.oas.annotations.parameters.RequestBody(
+            description = "Faculty details for signup",
+            required = true,
+            content = @Content(schema = @Schema(implementation = FacultyDTO.class))) @RequestBody FacultyDTO facultyDTO) {
         Map<String, String> response = new HashMap<>();
 
         // Check if user already exists by netId
@@ -101,9 +142,15 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
+
+    @Operation(summary = "Update user password", description = "Allows a user to update their password.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Password updated successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid request or password is unchanged")
+    })
     @Transactional
     @PutMapping(path = "updatepw/{netId}")
-    public ResponseEntity<String> updateUserPassword(@PathVariable String netId,
+    public ResponseEntity<String> updateUserPassword(@Parameter(description = "NetID of the user", required = true) @PathVariable String netId,
                                                      @RequestParam(required = true) String newPassword) {
         Optional<User> userOptional = userRepository.findUserByNetId(netId);
         if (!userOptional.isPresent())
@@ -115,9 +162,14 @@ public class UserController {
         return ResponseEntity.status(200).body("User " + user.getNetId() + " has successfully changed password.");
     }
 
-    @DeleteMapping(path = "/{netId}")
+    @Operation(summary = "Delete user account", description = "Deletes a user account from the system.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "User deleted successfully"),
+            @ApiResponse(responseCode = "404", description = "User not found")
+    })
     @Transactional
-    public ResponseEntity<String> deleteUserAccount(@PathVariable String netId) {
+    @DeleteMapping(path = "/{netId}")
+    public ResponseEntity<String> deleteUserAccount(@Parameter(description = "NetID of the user to delete", required = true) @PathVariable String netId) {
         Optional<User> userOptional = userRepository.findUserByNetId(netId);
 
         if (!userOptional.isPresent()) {
@@ -134,6 +186,10 @@ public class UserController {
                 .body("User with NetID " + netId + " has been deleted successfully.");
     }
 
+    @Operation(summary = "Retrieve all students", description = "Fetches a list of all student users.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "List of all students retrieved")
+    })
     @GetMapping("/allStudents")
     public ResponseEntity<List<User>> getAllStudents(){
         Optional<List<User>> allStudents = userRepository.findAllUserByUserType(UserType.STUDENT);
@@ -155,15 +211,19 @@ public class UserController {
         return ResponseEntity.ok(listOfAllStudent);
     }
 
+    @Operation(summary = "Search user by name", description = "Searches for users by their first or last name.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Users matching the search criteria found"),
+            @ApiResponse(responseCode = "404", description = "No users found matching the search criteria")
+    })
     @GetMapping("/search")
-    public ResponseEntity<List<User>> searchUserByName(@RequestParam String name) {
+    public ResponseEntity<List<User>> searchUserByName(@Parameter(description = "Name to search by", required = true) @RequestParam String name) {
         List<User> users = userRepository.findByFirstNameOrLastNameIgnoreCase(name);
         if(users.isEmpty()){
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(users);
     }
-
 }
 
 

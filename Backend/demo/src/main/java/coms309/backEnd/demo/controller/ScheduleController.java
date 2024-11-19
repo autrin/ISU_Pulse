@@ -6,6 +6,12 @@ import coms309.backEnd.demo.entity.Schedule;
 import coms309.backEnd.demo.entity.User;
 import coms309.backEnd.demo.repository.ScheduleRepository;
 import coms309.backEnd.demo.repository.UserRepository;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -56,11 +62,17 @@ public class ScheduleController {
 //        List<Schedule> scheduleList = getScheduleList(enrollList);
 //        return ResponseEntity.ok(scheduleList);
 //    }
-
+    @Operation(summary = "Find courses in mutual between 2 users by NetID", description = "Retrieve courses in mutual using the NetIDs of 2 users.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Course in mutual found successfully",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = Course.class))),
+            @ApiResponse(responseCode = "404", description = "Course in mutual not found ",
+                    content = @Content)
+    })
     @GetMapping("/coursesInMutual")
     public ResponseEntity<List<Course>> getSameSchedule(
-            @RequestParam String user1NetId,
-            @RequestParam String user2NetId){
+            @Parameter(description = "The NetId of user 1") @RequestParam String user1NetId,
+            @Parameter(description = "The NetId of user 2") @RequestParam String user2NetId){
         // Check if user 1 exists or not
         Optional<User> curUser1 = userRepository.findUserByNetId(user1NetId);
         if(curUser1.isEmpty()){

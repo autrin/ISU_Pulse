@@ -4,6 +4,12 @@ import coms309.backEnd.demo.entity.FriendShip;
 import coms309.backEnd.demo.entity.User;
 import coms309.backEnd.demo.repository.FriendShipRepository;
 import coms309.backEnd.demo.repository.UserRepository;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,9 +44,23 @@ public class FriendShipController {
         }
         return friendlst;
     }
-
+    /**
+     * Retrieves the list of friends for a specific user identified by their NetID.
+     *
+     * @param netId The NetID of the user.
+     * @return A list of friends associated with the user.
+     */
+    @Operation(summary = "Get Friend List", description = "Retrieve the list of friends for a specific user by their NetID.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Friend list retrieved successfully",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = User.class))),
+            @ApiResponse(responseCode = "500", description = "Internal server error",
+                    content = @Content)
+    })
     @GetMapping("/friends/{netId}")
-    public ResponseEntity<List<User>> displayFriendList(@PathVariable String netId){
+    public ResponseEntity<List<User>> displayFriendList(
+            @Parameter(description = "The NetID of the user", required = true)
+            @PathVariable String netId){
         Optional<User> curUser = userRepository.findUserByNetId(netId);
         if(curUser.isEmpty()){
             return  ResponseEntity.internalServerError().build();
@@ -51,8 +71,25 @@ public class FriendShipController {
         return ResponseEntity.ok(friendList);
     }
 
+
+    /**
+     * Retrieves a sorted list of friends for a specific user identified by their NetID.
+     * The list is sorted alphabetically by first name and then by last name.
+     *
+     * @param netId The NetID of the user.
+     * @return A sorted list of friends associated with the user.
+     */
+    @Operation(summary = "Get Sorted Friend List", description = "Retrieve a sorted list of friends for a specific user by their NetID. The list is sorted alphabetically by first name and then by last name.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Sorted friend list retrieved successfully",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = User.class))),
+            @ApiResponse(responseCode = "500", description = "Internal server error",
+                    content = @Content)
+    })
     @GetMapping("/sortFriends/{netId}")
-    public ResponseEntity<List<User>> displayingSortedFriendList(@PathVariable String netId){
+    public ResponseEntity<List<User>> displayingSortedFriendList(
+            @Parameter(description = "The NetID of the user", required = true)
+            @PathVariable String netId){
         Optional<User> curUser = userRepository.findUserByNetId(netId);
         if(curUser.isEmpty()){
             return  ResponseEntity.internalServerError().build();
@@ -75,10 +112,25 @@ public class FriendShipController {
         });
         return ResponseEntity.ok(friendList);
     }
-
+    /**
+     * Checks if two users are friends based on their NetIDs.
+     *
+     * @param netIdUser1 The NetID of the first user.
+     * @param netIdUser2 The NetID of the second user.
+     * @return True if the users are friends, otherwise false.
+     */
+    @Operation(summary = "Check Friendship Status", description = "Determine if two users are friends based on their NetIDs.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Friendship status retrieved successfully",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = Boolean.class))),
+            @ApiResponse(responseCode = "500", description = "Internal server error",
+                    content = @Content)
+    })
     @GetMapping("/isFriend")
     public ResponseEntity<Boolean> checkIfTwoUsersAreFriends(
+            @Parameter(description = "The NetID of the first user", required = true)
             @RequestParam String netIdUser1,
+            @Parameter(description = "The NetID of the second user", required = true)
             @RequestParam String netIdUser2){
 
         // Check if user1 and user2 exists or not
@@ -101,9 +153,26 @@ public class FriendShipController {
         return ResponseEntity.ok(true);
     }
 
+
+    /**
+     * Retrieves a list of common friends between two users identified by their NetIDs.
+     *
+     * @param netIdUser1 The NetID of the first user.
+     * @param netIdUser2 The NetID of the second user.
+     * @return A list of users who are friends with both users.
+     */
+    @Operation(summary = "Get Common Friends", description = "Retrieve a list of common friends between two users identified by their NetIDs.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Common friends retrieved successfully",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = User.class))),
+            @ApiResponse(responseCode = "500", description = "Internal server error",
+                    content = @Content)
+    })
     @GetMapping("/sameFriends")
     public ResponseEntity<List<User>> displayingFriendsInCommon(
+            @Parameter(description = "The NetID of the first user", required = true)
             @RequestParam String netIdUser1,
+            @Parameter(description = "The NetID of the second user", required = true)
             @RequestParam String netIdUser2){
 
         Optional<User> curUser1 = userRepository.findUserByNetId(netIdUser1);
@@ -139,9 +208,23 @@ public class FriendShipController {
         }
         return ResponseEntity.ok(friendsInCommon);
     }
-
+    /**
+     * Provides a list of suggested friends for a specific user identified by their NetID.
+     *
+     * @param netId The NetID of the user.
+     * @return A list of users who are not friends with the specified user.
+     */
+    @Operation(summary = "Get Friend Suggestions", description = "Retrieve a list of suggested friends for a user identified by their NetID. Suggestions are users who are not already friends with the specified user.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Friend suggestions retrieved successfully",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = User.class))),
+            @ApiResponse(responseCode = "500", description = "Internal server error",
+                    content = @Content)
+    })
     @GetMapping("/friendSuggestion/{netId}")
-    public ResponseEntity<List<User>> getFriendSuggestion(@PathVariable String netId){
+    public ResponseEntity<List<User>> getFriendSuggestion(
+            @Parameter(description = "The NetID of the user", required = true)
+            @PathVariable String netId){
         Optional<User> curUser = userRepository.findUserByNetId(netId);
         if(curUser.isEmpty()){
             return  ResponseEntity.internalServerError().build();
@@ -151,9 +234,26 @@ public class FriendShipController {
         return ResponseEntity.ok(listOfSuggestedFriends);
     }
 
+
+    /**
+     * Removes a friendship between two users identified by their NetIDs.
+     *
+     * @param userNetId1 The NetID of the first user.
+     * @param userNetId2 The NetID of the second user.
+     * @return A confirmation message upon successful unfriending.
+     */
+    @Operation(summary = "Unfriend Users", description = "Remove a friendship between two users identified by their NetIDs.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Unfriended successfully",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = String.class))),
+            @ApiResponse(responseCode = "404", description = "User or Friendship not found",
+                    content = @Content)
+    })
     @DeleteMapping("/unfriend")
     public ResponseEntity<String> unfriend(
+            @Parameter(description = "The NetID of the first user", required = true)
             @RequestParam String userNetId1,
+            @Parameter(description = "The NetID of the second user", required = true)
             @RequestParam String userNetId2) {
 
         // Check if 2 users exist
