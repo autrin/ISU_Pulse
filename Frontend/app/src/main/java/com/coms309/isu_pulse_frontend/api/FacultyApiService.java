@@ -172,22 +172,4 @@ public class FacultyApiService {
         requestQueue.add(jsonArrayRequest);
     }
 
-    /**
-     * Listener interface for handling announcement responses.
-     */
-    public interface AnnouncementResponseListener {
-        /**
-         * Called when announcements are successfully fetched.
-         *
-         * @param announcements the list of announcements
-         */
-        void onResponse(List<Announcement> announcements);
-
-        /**
-         * Called when an error occurs during the request.
-         *
-         * @param message the error message
-         */
-        void onError(String message);
-    }
 }
