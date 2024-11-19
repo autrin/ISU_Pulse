@@ -60,12 +60,9 @@ dependencies {
     implementation(libs.firebase.auth)
     implementation(libs.glide)
     implementation(libs.firebase.database)
-    implementation(files("C:\\Users\\autri\\AppData\\Local\\Android\\Sdk\\platforms\\android-35\\android.jar"))
+//    implementation(files("C:\\Users\\autri\\AppData\\Local\\Android\\Sdk\\platforms\\android-35\\android.jar")) // there was an error for dependency for 2 classes.
+                                                                                                                    // So it is commented but it was used for javadocs
     annotationProcessor(libs.glide.compiler)
-//    implementation("com.some.dependency") {
-//        exclude(group = "com.google.android", module = "annotations") //
-//    }
-
     // Unit test dependencies
     testImplementation(libs.junit)
     testImplementation("org.robolectric:robolectric:4.10.3") // Robolectric for unit tests
@@ -84,25 +81,3 @@ dependencies {
 
 // Apply the Google Services plugin at the bottom of the file
 apply(plugin = "com.google.gms.google-services")
-//configurations.all {
-//    exclude(group = "com.google.android", module = "annotations")
-//}
-
-
-//tasks.register("generateJavadocs", Javadoc::class) {
-//    val androidJar = File("${android.sdkDirectory}/platforms/android-${android.compileSdk}/android.jar")
-//
-//    source = android.sourceSets["main"].java.getSourceFiles()
-//    classpath = files(androidJar) + files(android.bootClasspath) + configurations["compileClasspath"]
-//    setDestinationDir(file("${buildDir}/docs/javadoc"))
-//
-//    isFailOnError = false // Prevent errors from stopping the task
-//
-//    options {
-//        encoding = "UTF-8"
-//        memberLevel = JavadocMemberLevel.PROTECTED
-//        author = true
-////        isVersion = true
-//        links("https://developer.android.com/reference/")
-//    }
-//}
