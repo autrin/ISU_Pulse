@@ -9,8 +9,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.bumptech.glide.Glide;
 import com.coms309.isu_pulse_frontend.R;
+import com.coms309.isu_pulse_frontend.api.UpdateAccount;
 import com.coms309.isu_pulse_frontend.loginsignup.UserSession;
+import com.coms309.isu_pulse_frontend.model.Profile;
+
 import java.util.List;
 
 public class ChatViewAdapter extends RecyclerView.Adapter<ChatViewAdapter.MessageViewHolder> {
