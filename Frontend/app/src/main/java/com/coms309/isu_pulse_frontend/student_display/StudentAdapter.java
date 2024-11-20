@@ -12,11 +12,15 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.volley.VolleyError;
+import com.bumptech.glide.Glide;
 import com.coms309.isu_pulse_frontend.R;
 import com.coms309.isu_pulse_frontend.api.CourseService;
 import com.coms309.isu_pulse_frontend.api.FriendService;
+import com.coms309.isu_pulse_frontend.api.UpdateAccount;
 import com.coms309.isu_pulse_frontend.friend_functional.FriendProfile;
 import com.coms309.isu_pulse_frontend.loginsignup.UserSession;
+import com.coms309.isu_pulse_frontend.model.Profile;
 import com.coms309.isu_pulse_frontend.ui.home.Course;
 
 import java.util.List;
@@ -45,6 +49,22 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.StudentV
 
         FriendService friendService = new FriendService(context);
         CourseService courseService = new CourseService(context);
+
+        UpdateAccount.fetchProfileData(student.getNetId(), holder.itemView.getContext(), new UpdateAccount.ProfileCallback() {
+            @Override
+            public void onSuccess(Profile profile) {
+                String imageUrl = profile.getProfilePictureUrl();  // Assume the Profile class has a method to get profile picture URL
+                Glide.with(holder.itemView.getContext())
+                        .load(imageUrl)
+                        .into(holder.profileImageView);  // Set the profile image to the ImageView
+            }
+
+            @Override
+            public void onError(VolleyError error) {
+                // Handle the error, e.g., show a default image or log the error
+                holder.profileImageView.setImageResource(R.drawable.isu_logo);
+            }
+        });
 
         // Fetch mutual courses
         courseService.getMutualCourses(UserSession.getInstance().getNetId(), student.getNetId(),
