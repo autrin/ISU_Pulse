@@ -58,7 +58,7 @@ public class FriendSuggestionAdapter extends RecyclerView.Adapter<FriendSuggesti
                         int mutualCoursesCount = courses.size();
                         holder.mutualCoursesTextView.setText(mutualCoursesCount + " mutual courses");
 
-                        // Add popup functionality
+                        // Add popup for mutual courses
                         holder.mutualCoursesTextView.setOnClickListener(v -> {
                             View popupView = LayoutInflater.from(context).inflate(R.layout.popup_layout, null);
 
@@ -93,6 +93,36 @@ public class FriendSuggestionAdapter extends RecyclerView.Adapter<FriendSuggesti
                 response -> {
                     int mutualFriendsCount = response.length();
                     holder.mutualFriendsTextView.setText(mutualFriendsCount + " mutual friends");
+
+                    // Add popup for mutual friends
+                    holder.mutualFriendsTextView.setOnClickListener(v -> {
+                        View popupView = LayoutInflater.from(context).inflate(R.layout.popup_layout, null);
+
+                        // Create the PopupWindow
+                        PopupWindow popupWindow = new PopupWindow(popupView,
+                                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
+
+                        // Set data in popup
+                        TextView popupTitle = popupView.findViewById(R.id.popupTitle);
+                        TextView popupContent = popupView.findViewById(R.id.popupContent);
+
+                        popupTitle.setText("Mutual Friends");
+                        StringBuilder friendsBuilder = new StringBuilder();
+                        for (int i = 0; i < response.length(); i++) {
+                            try {
+                                friendsBuilder.append(response.getJSONObject(i).getString("firstName"))
+                                        .append(" ")
+                                        .append(response.getJSONObject(i).getString("lastName"))
+                                        .append("\n");
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        popupContent.setText(friendsBuilder.toString());
+
+                        // Show the popup window
+                        popupWindow.showAsDropDown(holder.mutualFriendsTextView, 0, 0);
+                    });
                 },
                 error -> holder.mutualFriendsTextView.setText("0 mutual friends"));
 
