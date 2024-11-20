@@ -341,13 +341,5 @@ public class ProfileActivity extends AppCompatActivity {
                 Toast.makeText(ProfileActivity.this, "Failed to fetch friends", Toast.LENGTH_SHORT).show();
             }
         });
-
-
     }
-
-
-
-
-
-
 }
