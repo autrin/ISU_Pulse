@@ -147,6 +147,8 @@ public class FriendAdapter extends RecyclerView.Adapter<FriendAdapter.FriendView
         holder.viewProfileButton.setOnClickListener(v -> {
             // Handle view profile button click
             Intent intent = new Intent(context, FriendProfile.class);
+            intent.putExtra("netId", friend.getNetId());
+            context.startActivity(intent);
         });
     }
 
