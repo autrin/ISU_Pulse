@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
@@ -136,6 +137,7 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.StudentV
 
     static class StudentViewHolder extends RecyclerView.ViewHolder {
         TextView nameTextView;
+        ImageView profileImageView;
         TextView viewProfileButton;
         TextView mutualFriendsTextView;
         TextView mutualCoursesTextView;
@@ -146,6 +148,7 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.StudentV
             viewProfileButton = itemView.findViewById(R.id.viewfriendbutton);
             mutualFriendsTextView = itemView.findViewById(R.id.mutual_friends);
             mutualCoursesTextView = itemView.findViewById(R.id.mutual_courses);
+            profileImageView = itemView.findViewById(R.id.friend_avatar);
         }
     }
 }
