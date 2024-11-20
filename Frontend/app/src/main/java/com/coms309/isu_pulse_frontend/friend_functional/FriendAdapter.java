@@ -1,6 +1,7 @@
 package com.coms309.isu_pulse_frontend.friend_functional;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -141,6 +142,14 @@ public class FriendAdapter extends RecyclerView.Adapter<FriendAdapter.FriendView
                 }
             });
         });
+
+        // View profile button functionality
+        holder.viewProfileButton.setOnClickListener(v -> {
+            // Handle view profile button click
+            Intent intent = new Intent(context, FriendProfile.class);
+            intent.putExtra("netId", friend.getNetId());
+            context.startActivity(intent);
+        });
     }
 
     @Override
@@ -152,6 +161,7 @@ public class FriendAdapter extends RecyclerView.Adapter<FriendAdapter.FriendView
         TextView friendName;
         TextView mutualFriendsTextView;
         TextView mutualCoursesTextView;
+        Button viewProfileButton;
         Button unfriendButton;
 
         public FriendViewHolder(@NonNull View itemView) {
@@ -159,6 +169,7 @@ public class FriendAdapter extends RecyclerView.Adapter<FriendAdapter.FriendView
             friendName = itemView.findViewById(R.id.friend_name);
             mutualFriendsTextView = itemView.findViewById(R.id.mutual_friends);
             mutualCoursesTextView = itemView.findViewById(R.id.mutual_courses);
+            viewProfileButton = itemView.findViewById(R.id.viewfriendbutton);
             unfriendButton = itemView.findViewById(R.id.unfriendbutton);
         }
     }
