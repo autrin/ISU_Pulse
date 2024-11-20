@@ -10,6 +10,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.volley.VolleyError;
 import com.bumptech.glide.Glide;
 import com.coms309.isu_pulse_frontend.R;
 import com.coms309.isu_pulse_frontend.api.UpdateAccount;
@@ -39,11 +40,41 @@ public class ChatViewAdapter extends RecyclerView.Adapter<ChatViewAdapter.Messag
             holder.textViewName.setText(chatMessage.getRecipientFullName());
             holder.textViewMessage.setText("You: " + chatMessage.getMessage());
             holder.textViewTimestamp.setText(chatMessage.getTimestamp());
+            UpdateAccount.fetchProfileData(UserSession.getInstance().getNetId(), holder.itemView.getContext(), new UpdateAccount.ProfileCallback() {
+                @Override
+                public void onSuccess(Profile profile) {
+                    String imageUrl = profile.getProfilePictureUrl();  // Assume the Profile class has a method to get profile picture URL
+                    Glide.with(holder.itemView.getContext())
+                            .load(imageUrl)
+                            .into(holder.imageViewProfile);  // Set the profile image to the ImageView
+                }
+
+                @Override
+                public void onError(VolleyError error) {
+                    // Handle the error, e.g., show a default image or log the error
+                    holder.imageViewProfile.setImageResource(R.drawable.isu_logo);
+                }
+            });
         }
         else {
             holder.textViewName.setText(chatMessage.getSenderFullName());
             holder.textViewMessage.setText(chatMessage.getMessage());
             holder.textViewTimestamp.setText(chatMessage.getTimestamp());
+            UpdateAccount.fetchProfileData(chatMessage.getSenderNetId(), holder.itemView.getContext(), new UpdateAccount.ProfileCallback() {
+                @Override
+                public void onSuccess(Profile profile) {
+                    String imageUrl = profile.getProfilePictureUrl();  // Assume the Profile class has a method to get profile picture URL
+                    Glide.with(holder.itemView.getContext())
+                            .load(imageUrl)
+                            .into(holder.imageViewProfile);  // Set the profile image to the ImageView
+                }
+
+                @Override
+                public void onError(VolleyError error) {
+                    // Handle the error, e.g., show a default image or log the error
+                    holder.imageViewProfile.setImageResource(R.drawable.isu_logo);
+                }
+            });
         }
 
         holder.buttonMessage.setOnClickListener(v -> {
