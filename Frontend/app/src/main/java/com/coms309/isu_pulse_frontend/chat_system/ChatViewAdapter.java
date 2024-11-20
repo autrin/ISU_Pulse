@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -60,6 +61,7 @@ public class ChatViewAdapter extends RecyclerView.Adapter<ChatViewAdapter.Messag
     static class MessageViewHolder extends RecyclerView.ViewHolder {
         TextView textViewName;
         TextView textViewMessage;
+        ImageView imageViewProfile;
         TextView textViewTimestamp;
         Button buttonMessage;
 
@@ -67,6 +69,7 @@ public class ChatViewAdapter extends RecyclerView.Adapter<ChatViewAdapter.Messag
             super(itemview);
             textViewName = itemview.findViewById(R.id.name);
             textViewMessage = itemview.findViewById(R.id.last_message);
+            imageViewProfile = itemview.findViewById(R.id.profile_image);
             textViewTimestamp = itemview.findViewById(R.id.timestamp);
             buttonMessage = itemview.findViewById(R.id.message_button);
         }
