@@ -1,6 +1,7 @@
 package com.coms309.isu_pulse_frontend.friend_functional;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -140,6 +141,12 @@ public class FriendAdapter extends RecyclerView.Adapter<FriendAdapter.FriendView
                     Toast.makeText(context, "Unfriend unsuccessfully", Toast.LENGTH_SHORT).show();
                 }
             });
+        });
+
+        // View profile button functionality
+        holder.viewProfileButton.setOnClickListener(v -> {
+            // Handle view profile button click
+            Intent intent = new Intent(context, FriendProfile.class);
         });
     }
 
