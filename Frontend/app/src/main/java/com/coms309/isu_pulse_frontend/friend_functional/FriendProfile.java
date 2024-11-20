@@ -25,6 +25,9 @@ import com.coms309.isu_pulse_frontend.model.Profile;
 import com.coms309.isu_pulse_frontend.profile_activity.ProfileActivity;
 import com.coms309.isu_pulse_frontend.schedule.Schedule;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+
 import java.util.List;
 
 public class FriendProfile extends AppCompatActivity {
@@ -86,10 +89,18 @@ public class FriendProfile extends AppCompatActivity {
         courseService = new CourseService(this);
         friendService = new FriendService(this);
 
-        // Add popup functionality for courses
-        View.OnClickListener showCoursesPopup = v -> showPopupCourses();
-        numcoursesTextView.setOnClickListener(showCoursesPopup);
-        coursesTextView.setOnClickListener(showCoursesPopup);
+        // Add popup functionality for courses and friends
+        View.OnClickListener showPopup = v -> {
+            if (v == numcoursesTextView || v == coursesTextView) {
+                showPopup("Courses Taking", "courses");
+            } else if (v == numfriendsTextView || v == friendsTextView) {
+                showPopup("Friends List", "friends");
+            }
+        };
+        numcoursesTextView.setOnClickListener(showPopup);
+        coursesTextView.setOnClickListener(showPopup);
+        numfriendsTextView.setOnClickListener(showPopup);
+        friendsTextView.setOnClickListener(showPopup);
     }
 
     @Override
@@ -173,37 +184,55 @@ public class FriendProfile extends AppCompatActivity {
         });
     }
 
-    private void showPopupCourses() {
+    private void showPopup(String title, String type) {
         String studentNetId = getIntent().getStringExtra("netId");
         if (studentNetId != null) {
-            courseService.getEnrolledCoursesById(studentNetId, new CourseService.GetEnrolledCoursesCallback() {
-                @Override
-                public void onSuccess(List<Schedule> courses) {
-                    View popupView = LayoutInflater.from(FriendProfile.this).inflate(R.layout.popup_layout, null);
-                    PopupWindow popupWindow = new PopupWindow(popupView,
-                            ViewGroup.LayoutParams.WRAP_CONTENT,
-                            ViewGroup.LayoutParams.WRAP_CONTENT,
-                            true);
+            View popupView = LayoutInflater.from(FriendProfile.this).inflate(R.layout.popup_layout, null);
+            PopupWindow popupWindow = new PopupWindow(popupView,
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    true);
 
-                    TextView popupTitle = popupView.findViewById(R.id.popupTitle);
-                    TextView popupContent = popupView.findViewById(R.id.popupContent);
+            TextView popupTitle = popupView.findViewById(R.id.popupTitle);
+            TextView popupContent = popupView.findViewById(R.id.popupContent);
 
-                    popupTitle.setText("Courses Taking");
-                    StringBuilder courseList = new StringBuilder();
-                    for (Schedule course : courses) {
-                        courseList.append(course.getCourse().getCode()).append("\n");
+            popupTitle.setText(title);
+
+            if (type.equals("courses")) {
+                courseService.getEnrolledCoursesById(studentNetId, new CourseService.GetEnrolledCoursesCallback() {
+                    @Override
+                    public void onSuccess(List<Schedule> courses) {
+                        StringBuilder courseList = new StringBuilder();
+                        for (Schedule course : courses) {
+                            courseList.append(course.getCourse().getCode()).append("\n");
+                        }
+                        popupContent.setText(courseList.toString());
                     }
-                    popupContent.setText(courseList.toString());
 
-                    // Show popup
-                    popupWindow.showAsDropDown(coursesTextView, 0, 0);
-                }
-
-                @Override
-                public void onError(String error) {
-                    Log.e("FriendProfile", "Error fetching courses for popup: " + error);
-                }
-            });
+                    @Override
+                    public void onError(String error) {
+                        Log.e("FriendProfile", "Error fetching courses for popup: " + error);
+                    }
+                });
+                popupWindow.showAsDropDown(coursesTextView, 0, 0);
+            } else if (type.equals("friends")) {
+                friendService.getFriendList(studentNetId, response -> {
+                    StringBuilder friendsList = new StringBuilder();
+                    for (int i = 0; i < response.length(); i++) {
+                        try {
+                            String firstName = response.getJSONObject(i).getString("firstName");
+                            String lastName = response.getJSONObject(i).getString("lastName");
+                            friendsList.append(firstName).append(" ").append(lastName).append("\n");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    popupContent.setText(friendsList.toString());
+                }, error -> {
+                    Log.e("FriendProfile", "Error fetching friends for popup: " + error.getMessage());
+                });
+                popupWindow.showAsDropDown(friendsTextView, 0, 0);
+            }
         }
     }
 }
