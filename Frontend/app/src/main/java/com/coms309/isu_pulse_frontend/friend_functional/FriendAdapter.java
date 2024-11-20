@@ -152,6 +152,7 @@ public class FriendAdapter extends RecyclerView.Adapter<FriendAdapter.FriendView
         TextView friendName;
         TextView mutualFriendsTextView;
         TextView mutualCoursesTextView;
+        Button viewProfileButton;
         Button unfriendButton;
 
         public FriendViewHolder(@NonNull View itemView) {
@@ -159,6 +160,7 @@ public class FriendAdapter extends RecyclerView.Adapter<FriendAdapter.FriendView
             friendName = itemView.findViewById(R.id.friend_name);
             mutualFriendsTextView = itemView.findViewById(R.id.mutual_friends);
             mutualCoursesTextView = itemView.findViewById(R.id.mutual_courses);
+            viewProfileButton = itemView.findViewById(R.id.viewfriendbutton);
             unfriendButton = itemView.findViewById(R.id.unfriendbutton);
         }
     }
