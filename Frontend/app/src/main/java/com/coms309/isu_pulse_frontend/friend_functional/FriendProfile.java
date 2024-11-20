@@ -3,14 +3,17 @@ package com.coms309.isu_pulse_frontend.friend_functional;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.bumptech.glide.Glide;
 import com.coms309.isu_pulse_frontend.R;
@@ -21,8 +24,6 @@ import com.coms309.isu_pulse_frontend.chat_system.ChatActivity;
 import com.coms309.isu_pulse_frontend.model.Profile;
 import com.coms309.isu_pulse_frontend.profile_activity.ProfileActivity;
 import com.coms309.isu_pulse_frontend.schedule.Schedule;
-
-import org.json.JSONArray;
 
 import java.util.List;
 
@@ -50,7 +51,7 @@ public class FriendProfile extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.friends_profile);
 
-        // Initialize all views using findViewById
+        // Initialize views
         backButton = findViewById(R.id.backButton);
         addFriendButton = findViewById(R.id.addFriendButton);
         pingFriendButton = findViewById(R.id.pingFriendButton);
@@ -60,7 +61,7 @@ public class FriendProfile extends AppCompatActivity {
         numfriendsTextView = findViewById(R.id.friendsCountTextView);
         profileImage = findViewById(R.id.profileImage);
 
-        // Initialize TextViews for first name, last name, username, etc.
+        // Initialize other text views
         firstNameTextView = findViewById(R.id.firstNameTextView);
         lastNameTextView = findViewById(R.id.lastNameTextView);
         usernameTextView = findViewById(R.id.usernameTextView);
@@ -68,11 +69,13 @@ public class FriendProfile extends AppCompatActivity {
         externalUrlTextView = findViewById(R.id.externalUrlTextView);
         descriptionTextView = findViewById(R.id.descriptionTextView);
 
+        // Set back button functionality
         backButton.setOnClickListener(v -> {
             Intent intent = new Intent(FriendProfile.this, ProfileActivity.class);
             startActivity(intent);
         });
 
+        // Set ping button functionality
         pingFriendButton.setOnClickListener(v -> {
             Intent intent = new Intent(FriendProfile.this, ChatActivity.class);
             intent.putExtra("netId", getIntent().getStringExtra("netId"));
@@ -82,14 +85,19 @@ public class FriendProfile extends AppCompatActivity {
         // Initialize service instances
         courseService = new CourseService(this);
         friendService = new FriendService(this);
+
+        // Add popup functionality for courses
+        View.OnClickListener showCoursesPopup = v -> showPopupCourses();
+        numcoursesTextView.setOnClickListener(showCoursesPopup);
+        coursesTextView.setOnClickListener(showCoursesPopup);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        fetchProfileData(); // Fetch the latest profile data when the activity is resumed
-        fetchEnrolledCourses(); // Fetch the latest number of courses when resumed
-        fetchFriends(); // Fetch the latest number of friends when resumed
+        fetchProfileData();
+        fetchEnrolledCourses();
+        fetchFriends();
     }
 
     public void fetchEnrolledCourses() {
@@ -111,48 +119,34 @@ public class FriendProfile extends AppCompatActivity {
                 public void onError(String error) {
                     runOnUiThread(() -> {
                         numcoursesTextView.setText("0");
-                        Log.e("ProfileActivity", "Error fetching enrolled courses: " + error);
+                        Log.e("FriendProfile", "Error fetching enrolled courses: " + error);
                     });
                 }
             });
         } else {
             numcoursesTextView.setText("0");
-            Log.e("ProfileActivity", "Student net ID not found");
+            Log.e("FriendProfile", "Student net ID not found");
         }
     }
 
     public void fetchFriends() {
         String studentNetId = getIntent().getStringExtra("netId");
         if (studentNetId != null) {
-            friendService.getFriendList(studentNetId, new Response.Listener<JSONArray>() {
-                @Override
-                public void onResponse(JSONArray response) {
-                    // Parse the response and update the number of friends in the UI
-                    runOnUiThread(() -> {
-                        numfriendsTextView.setText(String.valueOf(response.length()));
-                    });
-                }
-            }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    // Handle error
-                    numfriendsTextView.setText("0");
-                    Log.e("ProfileActivity", "Error fetching friends: " + error.getMessage());
-                }
+            friendService.getFriendList(studentNetId, response -> {
+                runOnUiThread(() -> numfriendsTextView.setText(String.valueOf(response.length())));
+            }, error -> {
+                numfriendsTextView.setText("0");
+                Log.e("FriendProfile", "Error fetching friends: " + error.getMessage());
             });
         } else {
             numfriendsTextView.setText("0");
-            Log.e("ProfileActivity", "Student net ID not found");
+            Log.e("FriendProfile", "Student net ID not found");
         }
     }
 
     public void updateUI(Profile profile) {
-        // Check if profile is not null before setting values
         if (profile != null) {
-            String imageUrl = profile.getProfilePictureUrl();
-            Glide.with(this)
-                    .load(imageUrl)
-                    .into(profileImage);
+            Glide.with(this).load(profile.getProfilePictureUrl()).into(profileImage);
             firstNameTextView.setText(profile.getFirstName());
             lastNameTextView.setText(profile.getLastName());
             usernameTextView.setText(profile.getNetId());
@@ -174,9 +168,42 @@ public class FriendProfile extends AppCompatActivity {
 
             @Override
             public void onError(VolleyError error) {
-                // Handle error
                 error.printStackTrace();
             }
         });
+    }
+
+    private void showPopupCourses() {
+        String studentNetId = getIntent().getStringExtra("netId");
+        if (studentNetId != null) {
+            courseService.getEnrolledCoursesById(studentNetId, new CourseService.GetEnrolledCoursesCallback() {
+                @Override
+                public void onSuccess(List<Schedule> courses) {
+                    View popupView = LayoutInflater.from(FriendProfile.this).inflate(R.layout.popup_layout, null);
+                    PopupWindow popupWindow = new PopupWindow(popupView,
+                            ViewGroup.LayoutParams.WRAP_CONTENT,
+                            ViewGroup.LayoutParams.WRAP_CONTENT,
+                            true);
+
+                    TextView popupTitle = popupView.findViewById(R.id.popupTitle);
+                    TextView popupContent = popupView.findViewById(R.id.popupContent);
+
+                    popupTitle.setText("Courses Taking");
+                    StringBuilder courseList = new StringBuilder();
+                    for (Schedule course : courses) {
+                        courseList.append(course.getCourse().getCode()).append("\n");
+                    }
+                    popupContent.setText(courseList.toString());
+
+                    // Show popup
+                    popupWindow.showAsDropDown(coursesTextView, 0, 0);
+                }
+
+                @Override
+                public void onError(String error) {
+                    Log.e("FriendProfile", "Error fetching courses for popup: " + error);
+                }
+            });
+        }
     }
 }
