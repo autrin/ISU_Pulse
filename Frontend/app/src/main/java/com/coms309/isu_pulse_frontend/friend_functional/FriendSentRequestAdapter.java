@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -48,12 +49,36 @@ public class FriendSentRequestAdapter extends RecyclerView.Adapter<FriendSentReq
 
         CourseService courseService = new CourseService(context);
 
+        // Fetch mutual courses
         courseService.getMutualCourses(senderNetId, receiverNetId,
                 new CourseService.GetMutualCoursesCallback() {
                     @Override
                     public void onSuccess(List<Course> courses) {
                         int mutualCoursesCount = courses.size();
                         holder.mutualCoursesTextView.setText(mutualCoursesCount + " mutual courses");
+
+                        // Add popup functionality
+                        holder.mutualCoursesTextView.setOnClickListener(v -> {
+                            View popupView = LayoutInflater.from(context).inflate(R.layout.popup_layout, null);
+
+                            // Create the PopupWindow
+                            PopupWindow popupWindow = new PopupWindow(popupView,
+                                    ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
+
+                            // Set data in popup
+                            TextView popupTitle = popupView.findViewById(R.id.popupTitle);
+                            TextView popupContent = popupView.findViewById(R.id.popupContent);
+
+                            popupTitle.setText("Mutual Courses");
+                            StringBuilder coursesBuilder = new StringBuilder();
+                            for (Course course : courses) {
+                                coursesBuilder.append(course.getCode()).append("\n");
+                            }
+                            popupContent.setText(coursesBuilder.toString());
+
+                            // Show the popup window
+                            popupWindow.showAsDropDown(holder.mutualCoursesTextView, 0, 0);
+                        });
                     }
 
                     @Override
@@ -62,6 +87,7 @@ public class FriendSentRequestAdapter extends RecyclerView.Adapter<FriendSentReq
                     }
                 });
 
+        // Fetch mutual friends
         friendService.getFriendsInCommon(senderNetId, receiverNetId,
                 response -> {
                     int mutualFriendsCount = response.length();
@@ -69,24 +95,22 @@ public class FriendSentRequestAdapter extends RecyclerView.Adapter<FriendSentReq
                 },
                 error -> holder.mutualFriendsTextView.setText("0 mutual friends"));
 
-        holder.unsendButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                friendService.unsendFriendRequest(senderNetId, receiverNetId, new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        Toast.makeText(context, "Friend request unsent successfully", Toast.LENGTH_SHORT).show();
-                        friendSentRequestList.remove(holder.getAdapterPosition());
-                        notifyItemRemoved(holder.getAdapterPosition());
-                        notifyItemRangeChanged(holder.getAdapterPosition(), friendSentRequestList.size());
-                    }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Toast.makeText(context, "Failed to request unsent unsuccessfully", Toast.LENGTH_SHORT).show();
-                    }
-                });
-            }
+        // Unsend friend request
+        holder.unsendButton.setOnClickListener(v -> {
+            friendService.unsendFriendRequest(senderNetId, receiverNetId, new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+                    Toast.makeText(context, "Friend request unsent successfully", Toast.LENGTH_SHORT).show();
+                    friendSentRequestList.remove(holder.getAdapterPosition());
+                    notifyItemRemoved(holder.getAdapterPosition());
+                    notifyItemRangeChanged(holder.getAdapterPosition(), friendSentRequestList.size());
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Toast.makeText(context, "Failed to unsend friend request", Toast.LENGTH_SHORT).show();
+                }
+            });
         });
     }
 
