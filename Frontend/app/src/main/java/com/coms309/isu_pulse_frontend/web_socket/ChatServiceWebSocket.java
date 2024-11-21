@@ -66,19 +66,6 @@ public class ChatServiceWebSocket {
             @Override
             public void onMessage(WebSocket webSocket, String text) {
                 Log.d(TAG, "Received message: " + text);
-//                if (listener != null) {
-//                    // Run on the main thread
-//                    try {
-//                        JSONObject jsonMessage = new JSONObject(text);
-//                        String content = jsonMessage.getString("content");
-//                        String timestamp = jsonMessage.getString("timestamp");
-//
-//                        // Pass only the content and timestamp to the listener
-//                        listener.onMessageReceived(content, timestamp);
-//                    } catch (JSONException e) {
-//                        Log.e(TAG, "Error parsing received message JSON", e);
-//                    }
-//                }
                 if (listener != null) {
                     // Run on the main thread
                     activity.runOnUiThread(() -> {
