@@ -60,6 +60,7 @@ dependencies {
     implementation(libs.firebase.auth)
     implementation(libs.glide)
     implementation(libs.firebase.database)
+    implementation(libs.espresso.contrib)
 //    implementation(files("C:\\Users\\autri\\AppData\\Local\\Android\\Sdk\\platforms\\android-35\\android.jar")) // there was an error for dependency for 2 classes.
                                                                                                                     // So it is commented but it was used for javadocs
     annotationProcessor(libs.glide.compiler)
