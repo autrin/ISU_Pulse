@@ -160,6 +160,11 @@ public class TaskApiService {
 //    }
 
     public void createPersonalTask(PersonalTask task) {
+        // Ensure task properties are non-null
+        if (task.getTitle() == null || task.getDescription() == null || task.getDueDate() == null) {
+            Log.e("API Error", "Task properties cannot be null");
+            return;
+        }
         // Construct the URL with netId, title, description, and dueDateTimestamp
         String url = BASE_URL + "personalTask/addPersonalTask/" + netId +
                 "?title=" + task.getTitle() +
