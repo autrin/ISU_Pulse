@@ -62,7 +62,7 @@ dependencies {
     implementation(libs.firebase.database)
     implementation(libs.espresso.contrib)
 //    implementation(files("C:\\Users\\autri\\AppData\\Local\\Android\\Sdk\\platforms\\android-35\\android.jar")) // there was an error for dependency for 2 classes.
-                                                                                                                    // So it is commented but it was used for javadocs
+    // So it is commented but it was used for javadocs
     annotationProcessor(libs.glide.compiler)
     // Unit test dependencies
     testImplementation(libs.junit)
@@ -78,6 +78,13 @@ dependencies {
 
     implementation("org.java-websocket:Java-WebSocket:1.5.2")
     // implementation("org.apache.httpcomponents:httpclient:4.5.13")
+}
+
+
+configurations {
+    all {
+        exclude(group = "com.google.protobuf", module = "protobuf-lite")
+    }
 }
 
 // Apply the Google Services plugin at the bottom of the file
