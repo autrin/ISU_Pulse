@@ -70,6 +70,15 @@ public class User {
     @JsonIgnore
     private List<ChatMessage> receivedMessages;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<Join> joins;
+
+    @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<GroupMessages> groupMessagesSent;
+
+
 
     public User() {
     }
