@@ -12,6 +12,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.coms309.isu_pulse_frontend.loginsignup.UserSession;
 import com.coms309.isu_pulse_frontend.model.CourseTask;
@@ -166,23 +167,23 @@ public class TaskApiService {
                 "&dueDateTimestamp=" + task.getDueDate();
 
         // Create the new task
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, null,
-                new Response.Listener<JSONObject>() {
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
+                new Response.Listener<String>() {
                     @Override
-                    public void onResponse(JSONObject response) {
-                        Log.d("Response: ", response.toString());
+                    public void onResponse(String response) {
+                        Log.d("Response: ", response);
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        String errorMessage = error.getMessage() != null ? error.getMessage() : "Unknown error";
+                        String errorMessage = error.getMessage() != null ? error.getMessage() : "Unknown error in CreatePersonalTask()";
                         Log.e("API Error", errorMessage);
                     }
                 });
 
         // Add the request to the request queue
-        requestQueue.add(jsonObjectRequest);
+        requestQueue.add(stringRequest);
     }
 
     public void updatePersonalTask(PersonalTask task) {
