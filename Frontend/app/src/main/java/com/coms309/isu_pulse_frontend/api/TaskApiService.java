@@ -130,7 +130,7 @@ public class TaskApiService {
     }
 
 //    public void getLastPersonalTask(final TaskResponseListener listener) {
-//        String url = BASE_URL + "/personalTask/getLastPersonalTaskID/" + netId;
+//        String url = BASE_URL + "personalTask/getLastPersonalTaskID/" + netId;
 //        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null,
 //                new Response.Listener<JSONObject>() {
 //                    @Override
@@ -160,7 +160,7 @@ public class TaskApiService {
 
     public void createPersonalTask(PersonalTask task) {
         // Construct the URL with netId, title, description, and dueDateTimestamp
-        String url = BASE_URL + "/personalTask/addPersonalTask/" + netId +
+        String url = BASE_URL + "personalTask/addPersonalTask/" + netId +
                 "?title=" + task.getTitle() +
                 "&description=" + task.getDescription() +
                 "&dueDateTimestamp=" + task.getDueDate();
@@ -191,7 +191,7 @@ public class TaskApiService {
             return;
         }
 
-        String url = BASE_URL + "/personalTask/updatePersonalTask/" + netId +
+        String url = BASE_URL + "personalTask/updatePersonalTask/" + netId +
                 "?taskId=" + task.getId() +
                 "&title=" + task.getTitle() +
                 "&description=" + task.getDescription() +
@@ -217,7 +217,7 @@ public class TaskApiService {
 
 
     public void deletePersonalTask(PersonalTask task, final TaskResponseListener listener) {
-        String url = BASE_URL + "/personalTask/deletePersonalTask/" + netId + "?taskId=" + task.getId();
+        String url = BASE_URL + "personalTask/deletePersonalTask/" + netId + "?taskId=" + task.getId();
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.DELETE, url, null,
                 new Response.Listener<JSONObject>() {
@@ -239,7 +239,7 @@ public class TaskApiService {
     }
 
     public void deleteCourseTask(CourseTask task, final TaskResponseListener listener) {
-        String url = BASE_URL + "/deleteCourseTask/" + netId + "/" + task.getId();
+        String url = BASE_URL + "deleteCourseTask/" + netId + "/" + task.getId();
         JSONObject body = new JSONObject();
         try {
             body.put("title", task.getTitle());
