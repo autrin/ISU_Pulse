@@ -54,11 +54,12 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "User not found",
                     content = @Content)
     })
+
     @GetMapping("/{netId}")
     public ResponseEntity<User> getUserByNetId(@Parameter(description = "Unique NetID of the user") @PathVariable String netId) {
         Optional<User> userOptional = userRepository.findUserByNetId(netId);
         if (!userOptional.isPresent())
-            throw new IllegalStateException("User doesn't exist.");
+            return ResponseEntity.status(404).body(null);
         User user = userOptional.get();
         return ResponseEntity.status(200).body(user);
     }
