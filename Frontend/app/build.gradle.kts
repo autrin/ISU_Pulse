@@ -17,11 +17,14 @@ android {
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
+        debug {
+            enableAndroidTestCoverage = true
+        }
+
         release {
             isMinifyEnabled = false
             proguardFiles(
@@ -68,6 +71,7 @@ dependencies {
     testImplementation("org.robolectric:robolectric:4.10.3") // Robolectric for unit tests
     testImplementation("androidx.test.ext:junit:1.1.5")
     testImplementation("androidx.test:core:1.4.0")
+    androidTestImplementation("androidx.test.espresso:espresso-contrib:3.4.0")
 
     // Android instrumentation test dependencies
     androidTestImplementation(libs.ext.junit)
