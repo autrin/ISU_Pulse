@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EditProfileActivity.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=0;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">debug</a> &gt; <a href="index.source.html" class="el_package">com.coms309.isu_pulse_frontend.profile_activity</a> &gt; <span class="el_source">EditProfileActivity.java</span></div><h1>EditProfileActivity.java</h1><pre class="source lang-java linenums">package com.coms309.isu_pulse_frontend.profile_activity;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.android.volley.VolleyError;
+import com.coms309.isu_pulse_frontend.R;
+import com.coms309.isu_pulse_frontend.api.AuthenticationService;
+import com.coms309.isu_pulse_frontend.api.UpdateAccount;
+import com.coms309.isu_pulse_frontend.loginsignup.LoginActivity;
+import com.coms309.isu_pulse_frontend.profile_activity.ProfileActivity;
+import com.coms309.isu_pulse_frontend.loginsignup.PasswordHasher;
+import com.coms309.isu_pulse_frontend.loginsignup.SignupActivity;
+import com.coms309.isu_pulse_frontend.model.Profile;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.textfield.TextInputLayout;
+import com.coms309.isu_pulse_frontend.loginsignup.UserSession;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.Objects;
+
+<span class="fc" id="L30">public class EditProfileActivity extends AppCompatActivity {</span>
+    private MaterialButton backButton;
+    private EditText netid;
+    private EditText oldPassword;
+    private EditText newPassword;
+    private EditText confirmNewPassword;
+    private EditText description;
+    private EditText linkedinUrl;
+    private EditText externalUrl;
+    private MaterialButton checkCredentialsButton;
+    private MaterialButton updateProfileButton;
+<span class="fc" id="L41">    private boolean checkcredential = false;</span>
+    private Profile existingProfile;
+    private String userNetId; // Declare variable for net_id
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+<span class="fc" id="L47">        super.onCreate(savedInstanceState);</span>
+<span class="fc" id="L48">        setContentView(R.layout.update_profile);</span>
+
+        // Initialize UserSession and get the user's net_id
+<span class="fc" id="L51">        UserSession session = UserSession.getInstance(this);</span>
+<span class="fc" id="L52">        userNetId = session.getNetId(); // Fetch the net_id from session</span>
+
+        // Initialize UI elements
+<span class="fc" id="L55">        backButton = findViewById(R.id.backButton);</span>
+
+<span class="fc" id="L57">        backButton.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View view) {
+<span class="nc" id="L60">                Intent intent = new Intent(EditProfileActivity.this, ProfileActivity.class);</span>
+<span class="nc" id="L61">                startActivity(intent);</span>
+<span class="nc" id="L62">            }</span>
+        });
+
+
+<span class="fc" id="L66">        netid = findViewById(R.id.netIdEditText);</span>
+<span class="fc" id="L67">        oldPassword = findViewById(R.id.oldPasswordEditText);</span>
+<span class="fc" id="L68">        newPassword = findViewById(R.id.newPasswordEditText);</span>
+<span class="fc" id="L69">        confirmNewPassword = findViewById(R.id.confirmNewPasswordEditText);</span>
+<span class="fc" id="L70">        description = findViewById(R.id.descriptionEditText);</span>
+<span class="fc" id="L71">        linkedinUrl = findViewById(R.id.linkedinUrlEditText);</span>
+<span class="fc" id="L72">        externalUrl = findViewById(R.id.externalUrlEditText);</span>
+<span class="fc" id="L73">        checkCredentialsButton = findViewById(R.id.checkCredentialsButton);</span>
+<span class="fc" id="L74">        updateProfileButton = findViewById(R.id.updateProfileButton);</span>
+
+        // Set listeners for buttons
+<span class="fc" id="L77">        backButton.setOnClickListener(view -&gt; {</span>
+<span class="nc" id="L78">            Intent intent = new Intent(EditProfileActivity.this, ProfileActivity.class);</span>
+<span class="nc" id="L79">            startActivity(intent);</span>
+<span class="nc" id="L80">        });</span>
+
+<span class="fc" id="L82">        checkCredentialsButton.setOnClickListener(view -&gt; checkCredentials());</span>
+
+<span class="fc" id="L84">        updateProfileButton.setOnClickListener(view -&gt; updateProfile());</span>
+
+        // Fetch existing profile data when the activity starts
+<span class="fc" id="L87">        fetchProfileData();</span>
+<span class="fc" id="L88">    }</span>
+
+    private void fetchProfileData() {
+<span class="fc" id="L91">        UpdateAccount.fetchProfileData(String.valueOf(netid), this, new UpdateAccount.ProfileCallback() {</span>
+            @Override
+            public void onSuccess(Profile profile) {
+<span class="nc" id="L94">                existingProfile = profile; // Initialize the existing profile</span>
+                // Set current profile data in the input fields
+<span class="nc" id="L96">                description.setText(profile.getProfile().getDescription());</span>
+<span class="nc" id="L97">                linkedinUrl.setText(profile.getProfile().getLinkedinUrl());</span>
+<span class="nc" id="L98">                externalUrl.setText(profile.getProfile().getExternalUrl());</span>
+<span class="nc" id="L99">            }</span>
+
+            @Override
+            public void onError(VolleyError error) {
+<span class="fc" id="L103">                error.printStackTrace();</span>
+<span class="fc" id="L104">            }</span>
+        });
+<span class="fc" id="L106">    }</span>
+
+    private void checkCredentials() {
+<span class="fc" id="L109">        String netIdinput = netid.getText().toString().trim();</span>
+<span class="fc" id="L110">        String oldPasswordinput = oldPassword.getText().toString().trim();</span>
+<span class="fc" id="L111">        String hashPassword = PasswordHasher.hashPassword(oldPasswordinput);</span>
+
+<span class="pc bpc" id="L113" title="1 of 2 branches missed.">        if (!netIdinput.equals(userNetId)) {</span>
+<span class="nc" id="L114">            Toast.makeText(EditProfileActivity.this, &quot;Net ID is wrong&quot;, Toast.LENGTH_SHORT).show();</span>
+<span class="pc bpc" id="L115" title="2 of 4 branches missed.">        } else if (netIdinput.isEmpty() || oldPasswordinput.isEmpty()) {</span>
+<span class="nc" id="L116">            Toast.makeText(EditProfileActivity.this, &quot;Please enter all fields&quot;, Toast.LENGTH_SHORT).show();</span>
+        } else {
+<span class="fc" id="L118">            AuthenticationService apiService = new AuthenticationService();</span>
+<span class="fc" id="L119">            apiService.checkUserExists(userNetId, EditProfileActivity.this, new AuthenticationService.VolleyCallback() {</span>
+                @Override
+                public void onSuccess(JSONObject result) {
+                    try {
+<span class="fc" id="L123">                        String storedHashedPassword = result.getString(&quot;hashedPassword&quot;);</span>
+<span class="pc bpc" id="L124" title="1 of 2 branches missed.">                        if (storedHashedPassword.equals(hashPassword)) {</span>
+<span class="fc" id="L125">                            Toast.makeText(EditProfileActivity.this, &quot;Correct Information&quot;, Toast.LENGTH_SHORT).show();</span>
+<span class="fc" id="L126">                            checkcredential = true;</span>
+                        } else {
+<span class="nc" id="L128">                            Toast.makeText(EditProfileActivity.this, &quot;Incorrect password&quot;, Toast.LENGTH_SHORT).show();</span>
+                        }
+<span class="nc" id="L130">                    } catch (JSONException e) {</span>
+<span class="nc" id="L131">                        e.printStackTrace();</span>
+<span class="nc" id="L132">                        Toast.makeText(EditProfileActivity.this, &quot;Error parsing response&quot;, Toast.LENGTH_SHORT).show();</span>
+<span class="fc" id="L133">                    }</span>
+<span class="fc" id="L134">                }</span>
+
+                @Override
+                public void onError(String message) {
+<span class="nc" id="L138">                    Toast.makeText(EditProfileActivity.this, &quot;User does not exist&quot;, Toast.LENGTH_SHORT).show();</span>
+<span class="nc" id="L139">                }</span>
+            });
+        }
+<span class="fc" id="L142">    }</span>
+
+    private void updateProfile() {
+<span class="fc" id="L145">        UpdateAccount apiService = new UpdateAccount();</span>
+<span class="fc" id="L146">        String newPasswordinput = newPassword.getText().toString().trim();</span>
+<span class="fc" id="L147">        String confirmNewPasswordinput = confirmNewPassword.getText().toString().trim();</span>
+<span class="fc" id="L148">        String hashPassword = PasswordHasher.hashPassword(newPasswordinput);</span>
+<span class="fc" id="L149">        String descriptionInput = description.getText().toString().trim();</span>
+<span class="fc" id="L150">        String linkedinUrlInput = linkedinUrl.getText().toString().trim();</span>
+<span class="fc" id="L151">        String externalUrlInput = externalUrl.getText().toString().trim();</span>
+
+<span class="pc bpc" id="L153" title="1 of 2 branches missed.">        if (!checkcredential) {</span>
+<span class="nc" id="L154">            Toast.makeText(EditProfileActivity.this, &quot;Please check credentials&quot;, Toast.LENGTH_SHORT).show();</span>
+<span class="nc" id="L155">            Log.e(&quot;CredentialCheck&quot;, &quot;Credentials were not verified.&quot;);</span>
+<span class="nc" id="L156">            return;</span>
+        }
+
+<span class="pc bpc" id="L159" title="2 of 4 branches missed.">        if (newPasswordinput.isEmpty() || confirmNewPasswordinput.isEmpty()) {</span>
+<span class="nc" id="L160">            Toast.makeText(EditProfileActivity.this, &quot;Please enter all fields&quot;, Toast.LENGTH_SHORT).show();</span>
+<span class="nc" id="L161">            return;</span>
+        }
+
+<span class="pc bpc" id="L164" title="1 of 2 branches missed.">        if (newPasswordinput.length() &lt; 8) {</span>
+<span class="nc" id="L165">            Toast.makeText(EditProfileActivity.this, &quot;Password must be at least 8 characters&quot;, Toast.LENGTH_SHORT).show();</span>
+<span class="nc" id="L166">            return;</span>
+        }
+
+<span class="pc bpc" id="L169" title="1 of 2 branches missed.">        if (!newPasswordinput.equals(confirmNewPasswordinput)) {</span>
+<span class="nc" id="L170">            Toast.makeText(EditProfileActivity.this, &quot;Passwords do not match&quot;, Toast.LENGTH_SHORT).show();</span>
+<span class="nc" id="L171">            return;</span>
+        }
+
+<span class="fc" id="L174">        String netIdValue = netid.getText().toString();</span>
+<span class="pc bpc" id="L175" title="1 of 2 branches missed.">        if (!netIdValue.equals(userNetId))</span>
+<span class="nc" id="L176">            Toast.makeText(EditProfileActivity.this, &quot;Net ID is wrong&quot;, Toast.LENGTH_SHORT).show();</span>
+
+        // Update password
+<span class="fc" id="L179">        apiService.updateUserPassword(hashPassword, EditProfileActivity.this, new UpdateAccount.VolleyCallback() {  // Deleted netIdValue</span>
+            @Override
+            public void onSuccess(String result) {
+<span class="fc" id="L182">                Toast.makeText(EditProfileActivity.this, &quot;Password updated successfully&quot;, Toast.LENGTH_SHORT).show();</span>
+<span class="fc" id="L183">            }</span>
+
+            @Override
+            public void onError(String message) {
+<span class="nc" id="L187">                Toast.makeText(EditProfileActivity.this, &quot;Password update failed&quot;, Toast.LENGTH_SHORT).show();</span>
+<span class="nc" id="L188">            }</span>
+        });
+
+        // Update profile with description, LinkedIn, and external URL
+<span class="fc" id="L192">        apiService.updateProfile(descriptionInput, externalUrlInput, linkedinUrlInput, EditProfileActivity.this, new UpdateAccount.VolleyCallback() { // Deleted userNetId</span>
+            @Override
+            public void onSuccess(String result) {
+<span class="fc" id="L195">                Toast.makeText(EditProfileActivity.this, &quot;Profile updated successfully&quot;, Toast.LENGTH_SHORT).show();</span>
+<span class="fc" id="L196">                Intent intent = new Intent(EditProfileActivity.this, ProfileActivity.class);</span>
+<span class="fc" id="L197">                startActivity(intent);</span>
+<span class="fc" id="L198">            }</span>
+
+            @Override
+            public void onError(String message) {
+<span class="nc" id="L202">                Toast.makeText(EditProfileActivity.this, &quot;Profile update failed&quot;, Toast.LENGTH_SHORT).show();</span>
+<span class="nc" id="L203">            }</span>
+        });
+<span class="fc" id="L205">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span>Generated by the Android Gradle plugin 8.6.0</div></body></html>

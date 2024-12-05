@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ChatViewAdapter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=0;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">debug</a> &gt; <a href="index.source.html" class="el_package">com.coms309.isu_pulse_frontend.chat_system</a> &gt; <span class="el_source">ChatViewAdapter.java</span></div><h1>ChatViewAdapter.java</h1><pre class="source lang-java linenums">package com.coms309.isu_pulse_frontend.chat_system;
+
+import android.content.Intent;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.android.volley.VolleyError;
+import com.bumptech.glide.Glide;
+import com.coms309.isu_pulse_frontend.R;
+import com.coms309.isu_pulse_frontend.api.UpdateAccount;
+import com.coms309.isu_pulse_frontend.loginsignup.UserSession;
+import com.coms309.isu_pulse_frontend.model.Profile;
+
+import java.util.List;
+
+public class ChatViewAdapter extends RecyclerView.Adapter&lt;ChatViewAdapter.MessageViewHolder&gt; {
+    private List&lt;ChatMessage&gt; chatMessages;
+
+<span class="nc" id="L25">    public ChatViewAdapter(List&lt;ChatMessage&gt; chatMessages) {</span>
+<span class="nc" id="L26">        this.chatMessages = chatMessages;</span>
+<span class="nc" id="L27">    }</span>
+
+    @NonNull
+    @Override
+    public MessageViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+<span class="nc" id="L32">        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_chat, parent, false);</span>
+<span class="nc" id="L33">        return new MessageViewHolder(view);</span>
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull MessageViewHolder holder, int position) {
+<span class="nc" id="L38">        ChatMessage chatMessage = chatMessages.get(position);</span>
+<span class="nc bnc" id="L39" title="All 2 branches missed.">        if (chatMessage.getSenderNetId().equals(UserSession.getInstance().getNetId())){</span>
+<span class="nc" id="L40">            holder.textViewName.setText(chatMessage.getRecipientFullName());</span>
+<span class="nc" id="L41">            holder.textViewMessage.setText(&quot;You: &quot; + chatMessage.getMessage());</span>
+<span class="nc" id="L42">            holder.textViewTimestamp.setText(chatMessage.getTimestamp());</span>
+<span class="nc" id="L43">            UpdateAccount.fetchProfileData(UserSession.getInstance().getNetId(), holder.itemView.getContext(), new UpdateAccount.ProfileCallback() {</span>
+                @Override
+                public void onSuccess(Profile profile) {
+<span class="nc" id="L46">                    String imageUrl = profile.getProfilePictureUrl();  // Assume the Profile class has a method to get profile picture URL</span>
+<span class="nc" id="L47">                    Glide.with(holder.itemView.getContext())</span>
+<span class="nc" id="L48">                            .load(imageUrl)</span>
+<span class="nc" id="L49">                            .into(holder.imageViewProfile);  // Set the profile image to the ImageView</span>
+<span class="nc" id="L50">                }</span>
+
+                @Override
+                public void onError(VolleyError error) {
+                    // Handle the error, e.g., show a default image or log the error
+<span class="nc" id="L55">                    holder.imageViewProfile.setImageResource(R.drawable.isu_logo);</span>
+<span class="nc" id="L56">                }</span>
+            });
+        }
+        else {
+<span class="nc" id="L60">            holder.textViewName.setText(chatMessage.getSenderFullName());</span>
+<span class="nc" id="L61">            holder.textViewMessage.setText(chatMessage.getMessage());</span>
+<span class="nc" id="L62">            holder.textViewTimestamp.setText(chatMessage.getTimestamp());</span>
+<span class="nc" id="L63">            UpdateAccount.fetchProfileData(chatMessage.getSenderNetId(), holder.itemView.getContext(), new UpdateAccount.ProfileCallback() {</span>
+                @Override
+                public void onSuccess(Profile profile) {
+<span class="nc" id="L66">                    String imageUrl = profile.getProfilePictureUrl();  // Assume the Profile class has a method to get profile picture URL</span>
+<span class="nc" id="L67">                    Glide.with(holder.itemView.getContext())</span>
+<span class="nc" id="L68">                            .load(imageUrl)</span>
+<span class="nc" id="L69">                            .into(holder.imageViewProfile);  // Set the profile image to the ImageView</span>
+<span class="nc" id="L70">                }</span>
+
+                @Override
+                public void onError(VolleyError error) {
+                    // Handle the error, e.g., show a default image or log the error
+<span class="nc" id="L75">                    holder.imageViewProfile.setImageResource(R.drawable.isu_logo);</span>
+<span class="nc" id="L76">                }</span>
+            });
+        }
+
+<span class="nc" id="L80">        holder.buttonMessage.setOnClickListener(v -&gt; {</span>
+<span class="nc" id="L81">            Intent intent = new Intent(v.getContext(), ChatActivity.class);</span>
+<span class="nc bnc" id="L82" title="All 2 branches missed.">            if (chatMessage.getSenderNetId().equals(UserSession.getInstance().getNetId())){</span>
+<span class="nc" id="L83">                intent.putExtra(&quot;netId&quot;, chatMessage.getRecipientNetId());</span>
+            }
+            else {
+<span class="nc" id="L86">                intent.putExtra(&quot;netId&quot;, chatMessage.getSenderNetId());</span>
+            }
+<span class="nc" id="L88">            v.getContext().startActivity(intent);</span>
+<span class="nc" id="L89">        });</span>
+<span class="nc" id="L90">    }</span>
+
+    @Override
+    public int getItemCount() {
+<span class="nc" id="L94">        return chatMessages.size();</span>
+    }
+
+    static class MessageViewHolder extends RecyclerView.ViewHolder {
+        TextView textViewName;
+        TextView textViewMessage;
+        ImageView imageViewProfile;
+        TextView textViewTimestamp;
+        Button buttonMessage;
+
+        public MessageViewHolder(View itemview) {
+<span class="nc" id="L105">            super(itemview);</span>
+<span class="nc" id="L106">            textViewName = itemview.findViewById(R.id.name);</span>
+<span class="nc" id="L107">            textViewMessage = itemview.findViewById(R.id.last_message);</span>
+<span class="nc" id="L108">            imageViewProfile = itemview.findViewById(R.id.profile_image);</span>
+<span class="nc" id="L109">            textViewTimestamp = itemview.findViewById(R.id.timestamp);</span>
+<span class="nc" id="L110">            buttonMessage = itemview.findViewById(R.id.message_button);</span>
+<span class="nc" id="L111">        }</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span>Generated by the Android Gradle plugin 8.6.0</div></body></html>

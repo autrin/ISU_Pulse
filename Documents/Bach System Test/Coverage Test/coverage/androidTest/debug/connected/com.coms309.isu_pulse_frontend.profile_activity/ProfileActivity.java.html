@@ -1,0 +1,346 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ProfileActivity.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=0;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">debug</a> &gt; <a href="index.source.html" class="el_package">com.coms309.isu_pulse_frontend.profile_activity</a> &gt; <span class="el_source">ProfileActivity.java</span></div><h1>ProfileActivity.java</h1><pre class="source lang-java linenums">package com.coms309.isu_pulse_frontend.profile_activity;
+
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.util.Log;
+import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.bumptech.glide.Glide;
+import com.coms309.isu_pulse_frontend.MainActivity;
+import com.coms309.isu_pulse_frontend.R;
+import com.coms309.isu_pulse_frontend.api.FriendService;
+import com.coms309.isu_pulse_frontend.chat_system.ChatList;
+import com.coms309.isu_pulse_frontend.course_functional.CourseView;
+import com.coms309.isu_pulse_frontend.friend_functional.Friend;
+import com.coms309.isu_pulse_frontend.friend_functional.FriendList;
+import com.coms309.isu_pulse_frontend.friend_functional.FriendRequest;
+import com.coms309.isu_pulse_frontend.friend_functional.FriendSentRequest;
+import com.coms309.isu_pulse_frontend.friend_functional.FriendSuggestion;
+import com.coms309.isu_pulse_frontend.model.Profile;
+import com.coms309.isu_pulse_frontend.api.UpdateAccount;
+import com.coms309.isu_pulse_frontend.api.CourseService;
+import com.coms309.isu_pulse_frontend.loginsignup.UserSession;
+import com.coms309.isu_pulse_frontend.schedule.Schedule;
+import com.coms309.isu_pulse_frontend.ui.home.HomeActivity;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
+
+<span class="fc" id="L42">public class ProfileActivity extends AppCompatActivity {</span>
+
+    private Button chatButton;
+    private Button editProfile;
+    private Button logout;
+    private ImageView profileImage;
+    private TextView coursesTextView;
+    private TextView friendsTextView;
+    private TextView friendsrequestsTextView;
+    private TextView friendSentRequestTextView;
+    private TextView friendSuggestionTextView;
+    private TextView numcoursesTextView;
+    private TextView numfriendsTextView;
+    private TextView numrequestsTextView;
+    private TextView numsuggestionsTextView;
+    private TextView numsentrequestsTextView;
+    private ImageButton backButton;
+    private TextView firstNameTextView;
+    private TextView lastNameTextView;
+    private TextView usernameTextView;
+    private TextView linkedinUrlTextView;
+    private TextView externalUrlTextView;
+    private TextView descriptionTextView;
+    public List&lt;Friend&gt; friendRequestList;
+    public List&lt;Friend&gt; friendSuggestionList;
+
+    private CourseService courseService;
+    private FriendService friendService;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+<span class="fc" id="L73">        super.onCreate(savedInstanceState);</span>
+<span class="fc" id="L74">        setContentView(R.layout.profile);</span>
+
+<span class="fc" id="L76">        chatButton = findViewById(R.id.chatButton);</span>
+<span class="fc" id="L77">        coursesTextView = findViewById(R.id.coursesLabelTextView);</span>
+<span class="fc" id="L78">        friendsTextView = findViewById(R.id.friendsLabelTextView);</span>
+<span class="fc" id="L79">        friendsrequestsTextView = findViewById(R.id.friendsRequest);</span>
+<span class="fc" id="L80">        friendSentRequestTextView = findViewById(R.id.sentRequestsLabelTextView);</span>
+<span class="fc" id="L81">        friendSuggestionTextView = findViewById(R.id.friendSuggestionsLabelTextView);</span>
+<span class="fc" id="L82">        numcoursesTextView = findViewById(R.id.coursesCountTextView);</span>
+<span class="fc" id="L83">        numfriendsTextView = findViewById(R.id.friendsCountTextView);</span>
+<span class="fc" id="L84">        numrequestsTextView = findViewById(R.id.friendsRequestNumber);</span>
+<span class="fc" id="L85">        numsentrequestsTextView = findViewById(R.id.sentRequestsCountTextView);</span>
+<span class="fc" id="L86">        numsuggestionsTextView = findViewById(R.id.friendSuggestionsCountTextView);</span>
+
+<span class="fc" id="L88">        friendRequestList = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L89">        friendSuggestionList = new ArrayList&lt;&gt;();</span>
+
+<span class="fc" id="L91">        backButton = findViewById(R.id.backButton);</span>
+<span class="fc" id="L92">        editProfile = findViewById(R.id.updateProfileButton);</span>
+<span class="fc" id="L93">        logout = findViewById(R.id.logoutButton);</span>
+<span class="fc" id="L94">        profileImage = findViewById(R.id.profileImage);</span>
+<span class="fc" id="L95">        firstNameTextView = findViewById(R.id.firstNameTextView);</span>
+<span class="fc" id="L96">        lastNameTextView = findViewById(R.id.lastNameTextView);</span>
+<span class="fc" id="L97">        usernameTextView = findViewById(R.id.usernameTextView);</span>
+<span class="fc" id="L98">        linkedinUrlTextView = findViewById(R.id.linkedinUrlTextView);</span>
+<span class="fc" id="L99">        externalUrlTextView = findViewById(R.id.externalUrlTextView);</span>
+<span class="fc" id="L100">        descriptionTextView = findViewById(R.id.descriptionTextView);</span>
+
+<span class="fc" id="L102">        backButton.setOnClickListener(v -&gt; {</span>
+<span class="nc" id="L103">            Intent intent = new Intent(ProfileActivity.this, HomeActivity.class);</span>
+<span class="nc" id="L104">            startActivity(intent);</span>
+<span class="nc" id="L105">        });</span>
+
+<span class="fc" id="L107">        chatButton.setOnClickListener(v -&gt; {</span>
+<span class="nc" id="L108">            Intent intent = new Intent(ProfileActivity.this, ChatList.class);</span>
+<span class="nc" id="L109">            startActivity(intent);</span>
+<span class="nc" id="L110">        });</span>
+
+<span class="fc" id="L112">        friendsTextView.setOnClickListener(v -&gt; {</span>
+<span class="nc" id="L113">            Intent intent = new Intent(ProfileActivity.this, FriendList.class);</span>
+<span class="nc" id="L114">            startActivity(intent);</span>
+<span class="nc" id="L115">        });</span>
+
+<span class="fc" id="L117">        friendsrequestsTextView.setOnClickListener(v -&gt; {</span>
+<span class="nc" id="L118">            Intent intent = new Intent(ProfileActivity.this, FriendRequest.class);</span>
+<span class="nc" id="L119">            startActivity(intent);</span>
+<span class="nc" id="L120">        });</span>
+
+<span class="fc" id="L122">        friendSentRequestTextView.setOnClickListener(v -&gt; {</span>
+<span class="nc" id="L123">            Intent intent = new Intent(ProfileActivity.this, FriendSentRequest.class);</span>
+<span class="nc" id="L124">            startActivity(intent);</span>
+<span class="nc" id="L125">        });</span>
+
+<span class="fc" id="L127">        editProfile.setOnClickListener(v -&gt; {</span>
+<span class="nc" id="L128">            Intent intent = new Intent(ProfileActivity.this, EditProfileActivity.class);</span>
+<span class="nc" id="L129">            startActivity(intent);</span>
+<span class="nc" id="L130">        });</span>
+
+<span class="fc" id="L132">        logout.setOnClickListener(v -&gt; {</span>
+            // Clear session data
+<span class="nc" id="L134">            UserSession.getInstance(ProfileActivity.this).clearSession(ProfileActivity.this);</span>
+
+<span class="nc" id="L136">            Intent intent = new Intent(ProfileActivity.this, MainActivity.class); //TODO: Question Is this supposed to be MainActivity?</span>
+<span class="nc" id="L137">            startActivity(intent);</span>
+<span class="nc" id="L138">            finish(); // Added this line too</span>
+<span class="nc" id="L139">        });</span>
+
+<span class="fc" id="L141">        coursesTextView.setOnClickListener(v -&gt; {</span>
+<span class="nc" id="L142">            Intent intent = new Intent(ProfileActivity.this, CourseView.class);</span>
+<span class="nc" id="L143">            startActivity(intent);</span>
+<span class="nc" id="L144">        });</span>
+
+<span class="fc" id="L146">        courseService = new CourseService(this);</span>
+<span class="fc" id="L147">        friendService = new FriendService(this);</span>
+
+
+
+<span class="fc" id="L151">        friendSuggestionTextView.setOnClickListener(v -&gt; {</span>
+<span class="nc" id="L152">            Intent intent = new Intent(ProfileActivity.this, FriendSuggestion.class);</span>
+<span class="nc" id="L153">            startActivity(intent);</span>
+<span class="nc" id="L154">        });</span>
+
+<span class="fc" id="L156">        fetchProfileData();</span>
+<span class="fc" id="L157">        fetchEnrolledCourses();</span>
+<span class="fc" id="L158">        fetchFriends();</span>
+<span class="fc" id="L159">        fetchFriendsRequest();</span>
+<span class="fc" id="L160">        fetchFriendsSendRequest();</span>
+<span class="fc" id="L161">        fetchFriendSuggestions();</span>
+<span class="fc" id="L162">    }</span>
+
+    @Override
+    protected void onResume() {
+<span class="fc" id="L166">        super.onResume();</span>
+<span class="fc" id="L167">        fetchProfileData(); // Fetch the latest profile data when the activity is resumed</span>
+<span class="fc" id="L168">        fetchEnrolledCourses(); // Fetch the latest number of courses when resumed</span>
+<span class="fc" id="L169">        fetchFriends(); // Fetch the latest number of friends when resumed</span>
+<span class="fc" id="L170">        fetchFriendsRequest(); // Fetch the latest number of friend requests when resumed</span>
+<span class="fc" id="L171">        fetchFriendsSendRequest(); // Fetch the latest number of friend sent requests when resumed</span>
+<span class="fc" id="L172">        fetchFriendSuggestions(); // Fetch the latest number of friend suggestions when resumed</span>
+<span class="fc" id="L173">    }</span>
+
+    private void fetchProfileData() {
+<span class="fc" id="L176">        String netId = UserSession.getInstance().getNetId();</span>
+<span class="fc" id="L177">        UpdateAccount.fetchProfileData(netId,this, new UpdateAccount.ProfileCallback() {</span>
+            @Override
+            public void onSuccess(Profile profile) {
+<span class="fc" id="L180">                updateUI(profile);</span>
+<span class="fc" id="L181">            }</span>
+
+            @Override
+            public void onError(VolleyError error) {
+                // Handle error
+<span class="nc" id="L186">                error.printStackTrace();</span>
+<span class="nc" id="L187">            }</span>
+        });
+<span class="fc" id="L189">    }</span>
+
+    private void updateUI(Profile profile) {
+<span class="fc" id="L192">        String imageUrl = profile.getProfilePictureUrl();</span>
+<span class="fc" id="L193">        Glide.with(this)</span>
+<span class="fc" id="L194">                .load(imageUrl)</span>
+<span class="fc" id="L195">                .into(profileImage);</span>
+<span class="fc" id="L196">        firstNameTextView.setText(profile.getFirstName());</span>
+<span class="fc" id="L197">        lastNameTextView.setText(profile.getLastName());</span>
+<span class="fc" id="L198">        usernameTextView.setText(profile.getNetId());</span>
+<span class="fc" id="L199">        linkedinUrlTextView.setText(profile.getProfile().getLinkedinUrl());</span>
+<span class="fc" id="L200">        externalUrlTextView.setText(profile.getProfile().getExternalUrl());</span>
+<span class="fc" id="L201">        descriptionTextView.setText(profile.getProfile().getDescription());</span>
+<span class="fc" id="L202">    }</span>
+
+    private void fetchEnrolledCourses() {
+        // Get the current student's net ID using UserSession
+<span class="fc" id="L206">        String studentNetId = UserSession.getInstance().getNetId();</span>
+
+<span class="pc bpc" id="L208" title="1 of 2 branches missed.">        if (studentNetId != null) {</span>
+<span class="fc" id="L209">            courseService.getEnrolledCoursesById(studentNetId, new CourseService.GetEnrolledCoursesCallback() {</span>
+                @Override
+                public void onSuccess(List&lt;Schedule&gt; courses) {
+<span class="fc" id="L212">                    runOnUiThread(() -&gt; {</span>
+<span class="pc bpc" id="L213" title="1 of 2 branches missed.">                        if (courses != null) {</span>
+<span class="fc" id="L214">                            numcoursesTextView.setText(String.valueOf(courses.size()));</span>
+                        } else {
+<span class="nc" id="L216">                            numcoursesTextView.setText(&quot;0&quot;);</span>
+                        }
+<span class="fc" id="L218">                    });</span>
+<span class="fc" id="L219">                }</span>
+
+                @Override
+                public void onError(String error) {
+<span class="nc" id="L223">                    runOnUiThread(() -&gt; {</span>
+<span class="nc" id="L224">                        numcoursesTextView.setText(&quot;0&quot;);</span>
+<span class="nc" id="L225">                        Log.e(&quot;ProfileActivity&quot;, &quot;Error fetching enrolled courses: &quot; + error);</span>
+<span class="nc" id="L226">                    });</span>
+<span class="nc" id="L227">                }</span>
+            });
+        } else {
+<span class="nc" id="L230">            numcoursesTextView.setText(&quot;0&quot;);</span>
+<span class="nc" id="L231">            Log.e(&quot;ProfileActivity&quot;, &quot;Student net ID not found&quot;);</span>
+        }
+<span class="fc" id="L233">    }</span>
+
+    private void fetchFriends() {
+        // Get the current student's net ID using UserSession
+<span class="fc" id="L237">        String studentNetId = UserSession.getInstance().getNetId();</span>
+
+<span class="pc bpc" id="L239" title="1 of 2 branches missed.">        if (studentNetId != null) {</span>
+<span class="fc" id="L240">            friendService.getFriendList(studentNetId, new Response.Listener&lt;JSONArray&gt;() {</span>
+                @Override
+                public void onResponse(JSONArray response) {
+                    // Parse the response and update the number of friends in the UI
+<span class="fc" id="L244">                    runOnUiThread(() -&gt; {</span>
+<span class="fc" id="L245">                        numfriendsTextView.setText(String.valueOf(response.length()));</span>
+<span class="fc" id="L246">                    });</span>
+<span class="fc" id="L247">                }</span>
+<span class="fc" id="L248">            }, new Response.ErrorListener() {</span>
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    // Handle error
+<span class="nc" id="L252">                    numfriendsTextView.setText(&quot;0&quot;);</span>
+<span class="nc" id="L253">                    Log.e(&quot;ProfileActivity&quot;, &quot;Error fetching friends: &quot; + error.getMessage());</span>
+<span class="nc" id="L254">                }</span>
+            });
+        } else {
+<span class="nc" id="L257">            numfriendsTextView.setText(&quot;0&quot;);</span>
+<span class="nc" id="L258">            Log.e(&quot;ProfileActivity&quot;, &quot;Student net ID not found&quot;);</span>
+        }
+<span class="fc" id="L260">    }</span>
+
+
+    private void fetchFriendsRequest() {
+        // Get the current student's net ID using UserSession
+<span class="fc" id="L265">        String studentNetId = UserSession.getInstance().getNetId();</span>
+
+<span class="pc bpc" id="L267" title="1 of 2 branches missed.">        if (studentNetId != null) {</span>
+<span class="fc" id="L268">            friendService.getReceivedRequests(studentNetId, new Response.Listener&lt;JSONArray&gt;() {</span>
+                @Override
+                public void onResponse(JSONArray response) {
+                    // Parse the response and update the number of friends in the UI
+<span class="fc" id="L272">                    runOnUiThread(() -&gt; {</span>
+<span class="fc" id="L273">                        numrequestsTextView.setText(String.valueOf(response.length()));</span>
+<span class="fc" id="L274">                    });</span>
+<span class="fc" id="L275">                }</span>
+<span class="fc" id="L276">            }, new Response.ErrorListener() {</span>
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    // Handle error
+<span class="nc" id="L280">                    numrequestsTextView.setText(&quot;0&quot;);</span>
+<span class="nc" id="L281">                    Log.e(&quot;ProfileActivity&quot;, &quot;Error fetching friends: &quot; + error.getMessage());</span>
+<span class="nc" id="L282">                }</span>
+            });
+        } else {
+<span class="nc" id="L285">            numrequestsTextView.setText(&quot;0&quot;);</span>
+<span class="nc" id="L286">            Log.e(&quot;ProfileActivity&quot;, &quot;Student net ID not found&quot;);</span>
+        }
+<span class="fc" id="L288">    }</span>
+
+    private void fetchFriendsSendRequest() {
+        // Get the current student's net ID using UserSession
+<span class="fc" id="L292">        String studentNetId = UserSession.getInstance().getNetId();</span>
+
+<span class="pc bpc" id="L294" title="1 of 2 branches missed.">        if (studentNetId != null) {</span>
+<span class="fc" id="L295">            friendService.getSentRequests(studentNetId, new Response.Listener&lt;JSONArray&gt;() {</span>
+                @Override
+                public void onResponse(JSONArray response) {
+                    // Parse the response and update the number of friends in the UI
+<span class="fc" id="L299">                    runOnUiThread(() -&gt; {</span>
+<span class="fc" id="L300">                        numsentrequestsTextView.setText(String.valueOf(response.length()));</span>
+<span class="fc" id="L301">                    });</span>
+<span class="fc" id="L302">                }</span>
+<span class="fc" id="L303">            }, new Response.ErrorListener() {</span>
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    // Handle error
+<span class="nc" id="L307">                    numsentrequestsTextView.setText(&quot;0&quot;);</span>
+<span class="nc" id="L308">                    Log.e(&quot;ProfileActivity&quot;, &quot;Error fetching friends: &quot; + error.getMessage());</span>
+<span class="nc" id="L309">                }</span>
+            });
+        } else {
+<span class="nc" id="L312">            numsentrequestsTextView.setText(&quot;0&quot;);</span>
+<span class="nc" id="L313">            Log.e(&quot;ProfileActivity&quot;, &quot;Student net ID not found&quot;);</span>
+        }
+<span class="fc" id="L315">    }</span>
+
+
+
+    private void fetchFriendSuggestions() {
+<span class="fc" id="L320">        String studentNetId = UserSession.getInstance().getNetId();</span>
+<span class="fc" id="L321">        FriendService friendService = new FriendService(this);</span>
+<span class="fc" id="L322">        friendService.getFriendSuggestions(studentNetId, new Response.Listener&lt;JSONArray&gt;() {</span>
+            @Override
+            public void onResponse(JSONArray response) {
+<span class="fc bfc" id="L325" title="All 2 branches covered.">                for (int i = 0; i &lt; response.length(); i++) {</span>
+                    try {
+<span class="fc" id="L327">                        JSONObject friendObject = response.getJSONObject(i);</span>
+<span class="fc" id="L328">                        String firstName = friendObject.getString(&quot;firstName&quot;);</span>
+<span class="fc" id="L329">                        String lastName = friendObject.getString(&quot;lastName&quot;);</span>
+<span class="fc" id="L330">                        String netId = friendObject.getString(&quot;netId&quot;);</span>
+<span class="fc" id="L331">                        friendSuggestionList.add(new Friend(firstName, lastName, netId));</span>
+<span class="nc" id="L332">                    } catch (JSONException e) {</span>
+<span class="nc" id="L333">                        e.printStackTrace();</span>
+<span class="fc" id="L334">                    }</span>
+                }
+
+<span class="fc" id="L337">            }</span>
+<span class="fc" id="L338">        }, new Response.ErrorListener() {</span>
+            @Override
+            public void onErrorResponse(VolleyError error) {
+<span class="nc" id="L341">                Toast.makeText(ProfileActivity.this, &quot;Failed to fetch friends&quot;, Toast.LENGTH_SHORT).show();</span>
+<span class="nc" id="L342">            }</span>
+        });
+<span class="fc" id="L344">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span>Generated by the Android Gradle plugin 8.6.0</div></body></html>
