@@ -82,5 +82,63 @@ public class AutrinSystemTest {
     @Rule
     public ActivityScenarioRule<MainActivity> activityRule = new ActivityScenarioRule<>(MainActivity.class);
 
+//    @Test
+//    public void testNavigateToHomeFragment() {
+//        // Open navigation drawer
+//        onView(withId(R.id.drawer_layout))
+//                .check(matches(isClosed(Gravity.LEFT)))
+//                .perform(DrawerActions.open());
+//
+//        // Click on the Home navigation item
+//        onView(withId(R.id.nav_home)).perform(click());
+//
+//        // Verify the title displayed matches the user role
+//        String expectedTitle = UserSession.getInstance(getContext()).getUserType().equals("FACULTY") ? "Teacher Dashboard" : "Student Dashboard";
+//        if (expectedTitle != null) {
+//            onView(withId(R.id.dashboardTitle))
+//                    .check(matches(withText(expectedTitle)));
+//        }
+//    }
+
+//    @Test
+//    public void testAddTaskDialog() {
+//        onView(withId(R.id.buttonAddTask)).check(matches(isDisplayed()));
+//        // Click on the Add Task button
+//        onView(withId(R.id.buttonAddTask)).perform(click());
+//
+//        // Fill out the task details
+//        onView(withId(R.id.editTextTitle)).perform(typeText("Test Task"), closeSoftKeyboard());
+//        onView(withId(R.id.editTextDescription)).perform(typeText("This is a test task."), closeSoftKeyboard());
+//        onView(withId(R.id.editTextDueDate)).perform(typeText("2024-12-10"), closeSoftKeyboard());
+//
+//        // Submit the task
+//        onView(withId(R.id.buttonSubmit)).perform(click());
+//
+//        // Verify that the task appears in the "Tasks Due Today" RecyclerView
+//        onView(withId(R.id.recyclerViewTasksDueToday))
+//                .check(matches(hasDescendant(withText("Test Task"))));
+//    }
+
+    @Test
+    public void testEditTaskDialog() {
+        // Open the edit dialog for the first task
+        onView(withId(R.id.recyclerViewTasksDueToday))
+                .perform(actionOnItemAtPosition(0, clickChildViewWithId(R.id.buttonEditTask)));
+
+
+        // Update the task details
+        onView(withId(R.id.editTextTitle)).perform(replaceText("Updated Task"), closeSoftKeyboard());
+        onView(withId(R.id.editTextDescription)).perform(replaceText("Updated description."), closeSoftKeyboard());
+        onView(withId(R.id.editTextDueDate)).perform(replaceText("2024-12-15"), closeSoftKeyboard());
+
+        // Submit the changes
+        onView(withId(R.id.buttonSubmit)).perform(click());
+
+        // Verify that the updated task appears in the RecyclerView
+        onView(withId(R.id.recyclerViewTasksDueToday))
+                .check(matches(hasDescendant(withText("Updated Task"))));
+    }
+
+
 
 }
