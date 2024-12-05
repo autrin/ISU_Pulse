@@ -51,17 +51,6 @@ public class ScheduleController {
         return scheduleList;
     }
 
-//    @GetMapping("/getSchedule/{netId}")
-//    public ResponseEntity<List<Schedule>> getSchedule(@PathVariable String netId){
-//        Optional<User> curUser = userRepository.findUserByNetId(netId);
-//        if(curUser.isEmpty()){
-//            return  ResponseEntity.internalServerError().build();
-//        }
-//        User user1 = curUser.get();
-//        List<Enroll> enrollList = user1.getEnrollList();
-//        List<Schedule> scheduleList = getScheduleList(enrollList);
-//        return ResponseEntity.ok(scheduleList);
-//    }
     @Operation(summary = "Find courses in mutual between 2 users by NetID", description = "Retrieve courses in mutual using the NetIDs of 2 users.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Course in mutual found successfully",
