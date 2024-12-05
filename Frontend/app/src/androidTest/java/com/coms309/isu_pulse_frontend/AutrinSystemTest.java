@@ -79,5 +79,8 @@ public class AutrinSystemTest {
     }
 
 
+    @Rule
+    public ActivityScenarioRule<MainActivity> activityRule = new ActivityScenarioRule<>(MainActivity.class);
+
 
 }
