@@ -82,6 +82,8 @@ dependencies {
 
     implementation("org.java-websocket:Java-WebSocket:1.5.2")
     // implementation("org.apache.httpcomponents:httpclient:4.5.13")
+    testImplementation("org.mockito:mockito-core:4.0.0")
+    implementation("org.mockito:mockito-android:5.14.2")
 }
 
 
