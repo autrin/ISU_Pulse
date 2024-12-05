@@ -174,6 +174,58 @@ public class AutrinSystemTest {
         assertEquals(0, adapter.getItemCount());
         assertFalse(taskList.contains(taskToRemove));
     }
+//    @Test
+//    public void testEditTaskButtonClick() {
+//        // Arrange
+//        List<Object> taskList = new ArrayList<>();
+//        TaskApiService mockTaskApiService = mock(TaskApiService.class);
+//        WeeklyCalendarAdapter mockCalendarAdapter = mock(WeeklyCalendarAdapter.class);
+//        TaskListAdapter adapter = new TaskListAdapter(taskList, mockTaskApiService, mockCalendarAdapter);
+//
+//        Object task = new PersonalTask(3, "Edit Test", "Edit Description", System.currentTimeMillis(), "tanner01");
+//        taskList.add(task);
+//
+//        View mockView = LayoutInflater.from(ApplicationProvider.getApplicationContext())
+//                .inflate(R.layout.item_task, null, false);
+//        TaskListAdapter.TaskViewHolder viewHolder = new TaskListAdapter.TaskViewHolder(mockView);
+//
+//        adapter.onBindViewHolder(viewHolder, 0);
+//
+//        // Act
+//        viewHolder.buttonEditTask.performClick();
+//
+//        // Assert
+//        // (Mock a FragmentManager and verify EditTaskDialog is shown)
+//        verify(mockTaskApiService, never()).deletePersonalTask(any(), any());
+//    }
+    @Test
+    public void testCheckboxTaskDeletion() {
+        // Arrange
+        List<Object> taskList = new ArrayList<>();
+        TaskApiService mockTaskApiService = mock(TaskApiService.class);
+        WeeklyCalendarAdapter mockCalendarAdapter = mock(WeeklyCalendarAdapter.class);
+        TaskListAdapter adapter = new TaskListAdapter(taskList, mockTaskApiService, mockCalendarAdapter);
 
+        PersonalTask taskToDelete = new PersonalTask(7, "Checkbox Task", "Description", System.currentTimeMillis(), "tanner01");
+        taskList.add(taskToDelete);
+
+        View mockView = LayoutInflater.from(ApplicationProvider.getApplicationContext())
+                .inflate(R.layout.item_task, null, false);
+        TaskListAdapter.TaskViewHolder viewHolder = new TaskListAdapter.TaskViewHolder(mockView);
+
+        adapter.onBindViewHolder(viewHolder, 0);
+
+        // Mock API response
+        doAnswer(invocation -> {
+            adapter.removeTask(0);
+            return null;
+        }).when(mockTaskApiService).deletePersonalTask(eq(taskToDelete), any());
+
+        // Act
+        viewHolder.checkBox.setChecked(true);
+
+        // Assert
+        assertEquals(0, adapter.getItemCount());
+    }
 
 }
