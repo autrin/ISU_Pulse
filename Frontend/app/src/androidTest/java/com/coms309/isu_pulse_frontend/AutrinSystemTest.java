@@ -156,6 +156,24 @@ public class AutrinSystemTest {
         assertEquals(1, adapter.getItemCount());
         assertEquals(newTask, adapter.getTaskList().get(0));
     }
+    @Test
+    public void testRemoveTask() {
+        // Arrange
+        List<Object> taskList = new ArrayList<>();
+        TaskApiService mockTaskApiService = mock(TaskApiService.class);
+        WeeklyCalendarAdapter mockCalendarAdapter = mock(WeeklyCalendarAdapter.class);
+        TaskListAdapter adapter = new TaskListAdapter(taskList, mockTaskApiService, mockCalendarAdapter);
+
+        Object taskToRemove = new PersonalTask(6,"Task to Remove", "Description", System.currentTimeMillis(), "tanner01");
+        taskList.add(taskToRemove);
+
+        // Act
+        adapter.removeTask(0);
+
+        // Assert
+        assertEquals(0, adapter.getItemCount());
+        assertFalse(taskList.contains(taskToRemove));
+    }
 
 
 }
