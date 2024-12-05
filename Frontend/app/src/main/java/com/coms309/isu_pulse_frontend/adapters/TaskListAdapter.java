@@ -116,7 +116,9 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskVi
      *                     }
      *
      */
-
+    public List<Object> getTaskList() {
+        return taskList;
+    }
 
     @Override
     public int getItemCount() {
