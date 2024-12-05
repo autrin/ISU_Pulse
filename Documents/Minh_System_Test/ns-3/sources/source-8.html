@@ -45,26 +45,26 @@ Current scope:     <a href="../../index.html">all classes</a>
   <td class="name">FriendShipController</td>
 <td class="coverageStat">
   <span class="percent">
-    50%
+    62.5%
   </span>
   <span class="absValue">
-    (4/8)
+    (5/8)
   </span>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    19.4%
+    44.4%
   </span>
   <span class="absValue">
-    (7/36)
+    (16/36)
   </span>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    30%
+    56.2%
   </span>
   <span class="absValue">
-    (24/80)
+    (45/80)
   </span>
 </td>
 </tr>
@@ -99,26 +99,26 @@ Current scope:     <a href="../../index.html">all classes</a>
   <td class="name"><strong>Total</strong></td>
 <td class="coverageStat">
   <span class="percent">
-    40%
+    50%
   </span>
   <span class="absValue">
-    (4/10)
+    (5/10)
   </span>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    18.4%
+    42.1%
   </span>
   <span class="absValue">
-    (7/38)
+    (16/38)
   </span>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    28.2%
+    52.9%
   </span>
   <span class="absValue">
-    (24/85)
+    (45/85)
   </span>
 </td>
 </tr>
@@ -166,11 +166,11 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;    private List&lt;User&gt; getFriendsfromFriendships(List&lt;FriendShip&gt; friendShips, User user){
 <b class="fc">&nbsp;        List&lt;User&gt; friendlst = new ArrayList&lt;&gt;();</b>
 <b class="fc">&nbsp;        for(FriendShip friendShip : friendShips){</b>
-<b class="pc">&nbsp;            if(friendShip.getUser1().getId() == user.getId()){</b>
+<b class="fc">&nbsp;            if(friendShip.getUser1().getId() == user.getId()){</b>
 <b class="fc">&nbsp;                friendlst.add(friendShip.getUser2());</b>
 &nbsp;            }
-<b class="nc">&nbsp;            else if (friendShip.getUser1().getId() != user.getId()) {</b>
-<b class="nc">&nbsp;                friendlst.add(friendShip.getUser1());</b>
+<b class="pc">&nbsp;            else if (friendShip.getUser1().getId() != user.getId()) {</b>
+<b class="fc">&nbsp;                friendlst.add(friendShip.getUser1());</b>
 &nbsp;            }
 &nbsp;        }
 <b class="fc">&nbsp;        return friendlst;</b>
@@ -306,38 +306,38 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;            @Parameter(description = &quot;The NetID of the second user&quot;, required = true)
 &nbsp;            @RequestParam String netIdUser2){
 &nbsp;
-<b class="nc">&nbsp;        Optional&lt;User&gt; curUser1 = userRepository.findUserByNetId(netIdUser1);</b>
-<b class="nc">&nbsp;        if(curUser1.isEmpty()){</b>
+<b class="fc">&nbsp;        Optional&lt;User&gt; curUser1 = userRepository.findUserByNetId(netIdUser1);</b>
+<b class="pc">&nbsp;        if(curUser1.isEmpty()){</b>
 <b class="nc">&nbsp;            return  ResponseEntity.internalServerError().build();</b>
 &nbsp;        }
-<b class="nc">&nbsp;        User user1 = curUser1.get();</b>
+<b class="fc">&nbsp;        User user1 = curUser1.get();</b>
 &nbsp;
-<b class="nc">&nbsp;        Optional&lt;User&gt; curUser2 = userRepository.findUserByNetId(netIdUser2);</b>
-<b class="nc">&nbsp;        if(curUser2.isEmpty()){</b>
+<b class="fc">&nbsp;        Optional&lt;User&gt; curUser2 = userRepository.findUserByNetId(netIdUser2);</b>
+<b class="pc">&nbsp;        if(curUser2.isEmpty()){</b>
 <b class="nc">&nbsp;            return  ResponseEntity.internalServerError().build();</b>
 &nbsp;        }
-<b class="nc">&nbsp;        User user2 = curUser2.get();</b>
+<b class="fc">&nbsp;        User user2 = curUser2.get();</b>
 &nbsp;
-<b class="nc">&nbsp;        List&lt;FriendShip&gt; friendShips1 = user1.getFriendShips();</b>
-<b class="nc">&nbsp;        List&lt;User&gt; friendLst1 = getFriendsfromFriendships(friendShips1,user1);</b>
+<b class="fc">&nbsp;        List&lt;FriendShip&gt; friendShips1 = user1.getFriendShips();</b>
+<b class="fc">&nbsp;        List&lt;User&gt; friendLst1 = getFriendsfromFriendships(friendShips1,user1);</b>
 &nbsp;
-<b class="nc">&nbsp;        List&lt;FriendShip&gt; friendShips2 = user2.getFriendShips();</b>
-<b class="nc">&nbsp;        List&lt;User&gt; friendLst2 = getFriendsfromFriendships(friendShips2,user2);</b>
+<b class="fc">&nbsp;        List&lt;FriendShip&gt; friendShips2 = user2.getFriendShips();</b>
+<b class="fc">&nbsp;        List&lt;User&gt; friendLst2 = getFriendsfromFriendships(friendShips2,user2);</b>
 &nbsp;
-<b class="nc">&nbsp;        List&lt;User&gt; friendsInCommon = new ArrayList&lt;&gt;();</b>
-<b class="nc">&nbsp;        for(User userFromFriendLst1 : friendLst1){</b>
-<b class="nc">&nbsp;            boolean isInCommon = false;</b>
-<b class="nc">&nbsp;            for(User userFromFriendLst2 : friendLst2){</b>
-<b class="nc">&nbsp;                if (userFromFriendLst1.getId() == userFromFriendLst2.getId()) {</b>
-<b class="nc">&nbsp;                    isInCommon = true;</b>
+<b class="fc">&nbsp;        List&lt;User&gt; friendsInCommon = new ArrayList&lt;&gt;();</b>
+<b class="fc">&nbsp;        for(User userFromFriendLst1 : friendLst1){</b>
+<b class="fc">&nbsp;            boolean isInCommon = false;</b>
+<b class="pc">&nbsp;            for(User userFromFriendLst2 : friendLst2){</b>
+<b class="pc">&nbsp;                if (userFromFriendLst1.getId() == userFromFriendLst2.getId()) {</b>
+<b class="fc">&nbsp;                    isInCommon = true;</b>
 &nbsp;                    break;
 &nbsp;                }
 &nbsp;            }
-<b class="nc">&nbsp;            if(isInCommon){</b>
-<b class="nc">&nbsp;                friendsInCommon.add(userFromFriendLst1);</b>
+<b class="pc">&nbsp;            if(isInCommon){</b>
+<b class="fc">&nbsp;                friendsInCommon.add(userFromFriendLst1);</b>
 &nbsp;            }
 &nbsp;        }
-<b class="nc">&nbsp;        return ResponseEntity.ok(friendsInCommon);</b>
+<b class="fc">&nbsp;        return ResponseEntity.ok(friendsInCommon);</b>
 &nbsp;    }
 &nbsp;    /**
 &nbsp;     * Provides a list of suggested friends for a specific user identified by their NetID.
@@ -437,7 +437,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2024-12-04 22:46</div>
+    <div style="float:right;">generated on 2024-12-04 23:26</div>
 </div>
 </body>
 </html>
