@@ -22,6 +22,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.coms309.isu_pulse_frontend.MainActivity;
 import com.coms309.isu_pulse_frontend.R;
 import com.coms309.isu_pulse_frontend.api.AuthenticationService;
 import com.coms309.isu_pulse_frontend.profile_activity.ProfileActivity;
@@ -112,7 +113,7 @@ public class SignupActivity extends AppCompatActivity {
                         lastNameInput,
                         emailInput,
                         hashedPassword,
-                        null,
+                        "https://firebasestorage.googleapis.com/v0/b/coms-309-image-storage.appspot.com/o/images%2Fisu_logo.png?alt=media&token=8077829e-0e06-45c8-8be8-7b74a15a25c8",
                         usertype.getSelectedItem().toString(),
                         SignupActivity.this,
                         new AuthenticationService.VolleyCallback() {
@@ -124,7 +125,7 @@ public class SignupActivity extends AppCompatActivity {
                                 UserSession.getInstance(SignupActivity.this).setUserType(result.optString("userType"), SignupActivity.this);
 
                                 Toast.makeText(SignupActivity.this, "Signup successful!", Toast.LENGTH_SHORT).show();
-                                startActivity(new Intent(SignupActivity.this, ProfileActivity.class));
+                                startActivity(new Intent(SignupActivity.this, MainActivity.class));
                             }
 
                             @Override
@@ -157,7 +158,7 @@ public class SignupActivity extends AppCompatActivity {
                                             UserSession.getInstance(SignupActivity.this).setUserType(result.getString("userType"), SignupActivity.this);
 
                                             Toast.makeText(SignupActivity.this, "Signup successful!", Toast.LENGTH_SHORT).show();
-                                            startActivity(new Intent(SignupActivity.this, ProfileActivity.class));
+                                            startActivity(new Intent(SignupActivity.this, MainActivity.class));
                                         } catch (JSONException e) {
                                             e.printStackTrace();
                                             Toast.makeText(SignupActivity.this, "Error parsing response in onSuccess in SignupActivity", Toast.LENGTH_SHORT).show();
