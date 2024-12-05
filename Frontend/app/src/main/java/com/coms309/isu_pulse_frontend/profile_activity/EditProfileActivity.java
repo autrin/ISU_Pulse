@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -28,7 +29,7 @@ import org.json.JSONObject;
 import java.util.Objects;
 
 public class EditProfileActivity extends AppCompatActivity {
-    private MaterialButton backButton;
+    private Button backButton;
     private EditText netid;
     private EditText oldPassword;
     private EditText newPassword;
@@ -36,8 +37,8 @@ public class EditProfileActivity extends AppCompatActivity {
     private EditText description;
     private EditText linkedinUrl;
     private EditText externalUrl;
-    private MaterialButton checkCredentialsButton;
-    private MaterialButton updateProfileButton;
+    private Button checkCredentialsButton;
+    private Button updateProfileButton;
     private boolean checkcredential = false;
     private Profile existingProfile;
     private String userNetId; // Declare variable for net_id
