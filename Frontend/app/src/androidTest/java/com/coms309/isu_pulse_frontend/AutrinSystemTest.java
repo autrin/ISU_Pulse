@@ -139,6 +139,23 @@ public class AutrinSystemTest {
                 .check(matches(hasDescendant(withText("Updated Task"))));
     }
 
+    @Test
+    public void testAddTask() {
+        // Arrange
+        List<Object> taskList = new ArrayList<>();
+        TaskApiService mockTaskApiService = mock(TaskApiService.class);
+        WeeklyCalendarAdapter mockCalendarAdapter = mock(WeeklyCalendarAdapter.class);
+        TaskListAdapter adapter = new TaskListAdapter(taskList, mockTaskApiService, mockCalendarAdapter);
+
+        Object newTask = new PersonalTask(5, "New Task", "Task Description", System.currentTimeMillis(), "tanner01");
+
+        // Act
+        adapter.addTask(newTask);
+
+        // Assert
+        assertEquals(1, adapter.getItemCount());
+        assertEquals(newTask, adapter.getTaskList().get(0));
+    }
 
 
 }
