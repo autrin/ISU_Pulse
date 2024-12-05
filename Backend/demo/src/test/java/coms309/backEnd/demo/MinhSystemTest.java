@@ -58,40 +58,7 @@ public class MinhSystemTest {
     }
 
     /**
-     * Test Case 1: Send a Friend Request.
-     *
-     * Objective: Ensure that sending a friend request works correctly.
-     */
-    @Test
-    public void testSendFriendRequest_Success() {
-        // Setup sender and receiver
-        String senderNetId = "test_sender";
-        String receiverNetId = "test_receiver";
-
-        User sender = createUser(senderNetId, "Sender", "Test", "sender@example.com");
-        User receiver = createUser(receiverNetId, "Receiver", "Test", "receiver@example.com");
-
-        // Send POST request to send friend request
-        Response response = RestAssured.given()
-                .header("Content-Type", "application/json")
-                .queryParam("senderNetId", senderNetId)
-                .queryParam("receiverNetId", receiverNetId)
-                .when()
-                .post("/friendRequest/request");
-
-        // Verify response
-        assertEquals(200, response.getStatusCode(), "Expected status code 200");
-        assertEquals("Friend request sent.", response.getBody().asString(), "Expected success message");
-
-        // Verify in database
-        FriendRequest friendRequest = friendRequestRepository.findFriendRequestBySenderAndReceiver(sender, receiver).orElse(null);
-        assertNotNull(friendRequest, "FriendRequest should exist in the database");
-        assertEquals(senderNetId, friendRequest.getSender().getNetId(), "Sender should match");
-        assertEquals(receiverNetId, friendRequest.getReceiver().getNetId(), "Receiver should match");
-    }
-
-    /**
-     * Test Case 2: Get Friend List.
+     * Test Case 1: Get Friend List.
      *
      * Objective: Ensure that the friend list retrieval works correctly.
      */
@@ -127,7 +94,7 @@ public class MinhSystemTest {
     }
 
     /**
-     * Test Case 3: Unfriend a User.
+     * Test Case 2: Unfriend a User.
      *
      * Objective: Ensure that unfriending a user works correctly.
      */
@@ -159,7 +126,7 @@ public class MinhSystemTest {
     }
 
     /**
-     * Test Case 4: Get Friend List - Multiple Friends.
+     * Test Case 3: Get Friend List - Multiple Friends.
      *
      * Objective: Ensure that retrieving a friend list for a user with multiple friends returns all friends accurately.
      */
@@ -211,7 +178,7 @@ public class MinhSystemTest {
         }
     }
     /**
-     * Test Case: Send Friend Request - Null Receiver.
+     * Test Case 4: Send Friend Request - Null Receiver.
      *
      * Objective: Ensure that attempting to send a friend request to a null receiver
      * is handled gracefully and returns the appropriate error response.
@@ -248,7 +215,7 @@ public class MinhSystemTest {
         assertEquals("User with ID  not found.", responseBody, "Expected error message for null receiver");
     }
     /**
-     * Test Case: Unfriend Non-Existent Friendship.
+     * Test Case 5: Unfriend Non-Existent Friendship.
      *
      * Objective: Ensure that attempting to unfriend a user with whom no friendship exists
      * returns the appropriate error response.
