@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -28,13 +29,13 @@ import java.util.Objects;
 
 public class EditProfileActivity extends AppCompatActivity {
     private MaterialButton backButton;
-    private TextInputLayout netid;
-    private TextInputLayout oldPassword;
-    private TextInputLayout newPassword;
-    private TextInputLayout confirmNewPassword;
-    private TextInputLayout description;
-    private TextInputLayout linkedinUrl;
-    private TextInputLayout externalUrl;
+    private EditText netid;
+    private EditText oldPassword;
+    private EditText newPassword;
+    private EditText confirmNewPassword;
+    private EditText description;
+    private EditText linkedinUrl;
+    private EditText externalUrl;
     private MaterialButton checkCredentialsButton;
     private MaterialButton updateProfileButton;
     private boolean checkcredential = false;
@@ -62,13 +63,13 @@ public class EditProfileActivity extends AppCompatActivity {
         });
 
 
-        netid = findViewById(R.id.netIdLayout);
-        oldPassword = findViewById(R.id.oldPasswordLayout);
-        newPassword = findViewById(R.id.newPasswordLayout);
-        confirmNewPassword = findViewById(R.id.confirmNewPasswordLayout);
-        description = findViewById(R.id.descriptionLayout);
-        linkedinUrl = findViewById(R.id.linkedinUrlLayout);
-        externalUrl = findViewById(R.id.externalUrlLayout);
+        netid = findViewById(R.id.netIdEditText);
+        oldPassword = findViewById(R.id.oldPasswordEditText);
+        newPassword = findViewById(R.id.newPasswordEditText);
+        confirmNewPassword = findViewById(R.id.confirmNewPasswordEditText);
+        description = findViewById(R.id.descriptionEditText);
+        linkedinUrl = findViewById(R.id.linkedinUrlEditText);
+        externalUrl = findViewById(R.id.externalUrlEditText);
         checkCredentialsButton = findViewById(R.id.checkCredentialsButton);
         updateProfileButton = findViewById(R.id.updateProfileButton);
 
@@ -92,9 +93,9 @@ public class EditProfileActivity extends AppCompatActivity {
             public void onSuccess(Profile profile) {
                 existingProfile = profile; // Initialize the existing profile
                 // Set current profile data in the input fields
-                description.getEditText().setText(profile.getProfile().getDescription());
-                linkedinUrl.getEditText().setText(profile.getProfile().getLinkedinUrl());
-                externalUrl.getEditText().setText(profile.getProfile().getExternalUrl());
+                description.setText(profile.getProfile().getDescription());
+                linkedinUrl.setText(profile.getProfile().getLinkedinUrl());
+                externalUrl.setText(profile.getProfile().getExternalUrl());
             }
 
             @Override
@@ -105,8 +106,8 @@ public class EditProfileActivity extends AppCompatActivity {
     }
 
     private void checkCredentials() {
-        String netIdinput = Objects.requireNonNull(netid.getEditText()).getText().toString().trim();
-        String oldPasswordinput = Objects.requireNonNull(oldPassword.getEditText()).getText().toString().trim();
+        String netIdinput = netid.getText().toString().trim();
+        String oldPasswordinput = oldPassword.getText().toString().trim();
         String hashPassword = PasswordHasher.hashPassword(oldPasswordinput);
 
         if (!netIdinput.equals(userNetId)) {
@@ -142,12 +143,12 @@ public class EditProfileActivity extends AppCompatActivity {
 
     private void updateProfile() {
         UpdateAccount apiService = new UpdateAccount();
-        String newPasswordinput = Objects.requireNonNull(newPassword.getEditText()).getText().toString().trim();
-        String confirmNewPasswordinput = Objects.requireNonNull(confirmNewPassword.getEditText()).getText().toString().trim();
+        String newPasswordinput = newPassword.getText().toString().trim();
+        String confirmNewPasswordinput = confirmNewPassword.getText().toString().trim();
         String hashPassword = PasswordHasher.hashPassword(newPasswordinput);
-        String descriptionInput = Objects.requireNonNull(description.getEditText()).getText().toString().trim();
-        String linkedinUrlInput = Objects.requireNonNull(linkedinUrl.getEditText()).getText().toString().trim();
-        String externalUrlInput = Objects.requireNonNull(externalUrl.getEditText()).getText().toString().trim();
+        String descriptionInput = description.getText().toString().trim();
+        String linkedinUrlInput = linkedinUrl.getText().toString().trim();
+        String externalUrlInput = externalUrl.getText().toString().trim();
 
         if (!checkcredential) {
             Toast.makeText(EditProfileActivity.this, "Please check credentials", Toast.LENGTH_SHORT).show();
@@ -170,7 +171,7 @@ public class EditProfileActivity extends AppCompatActivity {
             return;
         }
 
-        String netIdValue = Objects.requireNonNull(netid.getEditText()).getText().toString();
+        String netIdValue = netid.getText().toString();
         if (!netIdValue.equals(userNetId))
             Toast.makeText(EditProfileActivity.this, "Net ID is wrong", Toast.LENGTH_SHORT).show();
 
