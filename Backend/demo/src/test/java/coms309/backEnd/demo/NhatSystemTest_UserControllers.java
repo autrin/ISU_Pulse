@@ -29,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ExtendWith(SpringExtension.class) // JUnit 5 extension for Spring
 @ActiveProfiles("test") // Ensure that 'test' profile is configured appropriately
-public class NhatSystemTest {
+public class NhatSystemTest_UserControllers {
 
     @LocalServerPort
     private int port;
