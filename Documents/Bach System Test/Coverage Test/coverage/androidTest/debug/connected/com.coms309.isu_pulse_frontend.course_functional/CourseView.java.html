@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CourseView.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=0;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">debug</a> &gt; <a href="index.source.html" class="el_package">com.coms309.isu_pulse_frontend.course_functional</a> &gt; <span class="el_source">CourseView.java</span></div><h1>CourseView.java</h1><pre class="source lang-java linenums">package com.coms309.isu_pulse_frontend.course_functional;
+
+/**
+ * This activity handles displaying a list of courses that a user is enrolled in.
+ * It allows navigation back to the ProfileActivity or to the AddCourse activity to add a new course.
+ * It also integrates with the CourseService to fetch and display course data dynamically.
+ *
+ * @author ntbach
+ */
+
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.Bundle;
+import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.Toast;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import com.coms309.isu_pulse_frontend.R;
+import com.coms309.isu_pulse_frontend.api.CourseService;
+import com.coms309.isu_pulse_frontend.loginsignup.UserSession;
+import com.coms309.isu_pulse_frontend.profile_activity.ProfileActivity;
+import com.coms309.isu_pulse_frontend.schedule.Schedule;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * The CourseView activity displays a list of courses the user is enrolled in.
+ */
+<span class="nc" id="L31">public class CourseView extends AppCompatActivity  {</span>
+
+    /**
+     * Back button to navigate to the ProfileActivity.
+     */
+    private ImageButton backButton;
+
+    /**
+     * RecyclerView to display the list of enrolled courses.
+     */
+    private RecyclerView recyclerViewCourses;
+
+    /**
+     * List to hold the course schedule objects.
+     */
+    private List&lt;Schedule&gt; courseList;
+
+    /**
+     * Adapter to bind the course data to the RecyclerView.
+     */
+    private CourseAdapter adapter;
+
+    /**
+     * Service object to handle API calls for fetching courses.
+     */
+    private CourseService courseService;
+
+    /**
+     * Button to navigate to the AddCourse activity.
+     */
+    private Button addclass;
+
+    /**
+     * Initializes the activity, sets up UI components, and fetches data.
+     *
+     * @param savedInstanceState If the activity is being re-initialized after
+     * previously being shut down, this contains the saved state.
+     */
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+<span class="nc" id="L71">        super.onCreate(savedInstanceState);</span>
+<span class="nc" id="L72">        setContentView(R.layout.course_view);</span>
+
+        // Set up the RecyclerView for displaying the list of courses.
+<span class="nc" id="L75">        recyclerViewCourses = findViewById(R.id.recyclerViewCourses);</span>
+<span class="nc" id="L76">        recyclerViewCourses.setLayoutManager(new LinearLayoutManager(this));</span>
+
+        // Initialize the &quot;Add Class&quot; button and set its click listener.
+<span class="nc" id="L79">        addclass = findViewById(R.id.buttonAddClass);</span>
+<span class="nc" id="L80">        addclass.setOnClickListener(view -&gt; {</span>
+            // Navigate to AddCourse activity when the button is clicked.
+<span class="nc" id="L82">            Intent intent = new Intent(CourseView.this, AddCourse.class);</span>
+<span class="nc" id="L83">            startActivity(intent);</span>
+<span class="nc" id="L84">        });</span>
+
+        // Initialize the back button and set its click listener.
+<span class="nc" id="L87">        backButton = findViewById(R.id.backButton);</span>
+<span class="nc" id="L88">        backButton.setOnClickListener(view -&gt; {</span>
+            // Navigate back to ProfileActivity when the back button is clicked.
+<span class="nc" id="L90">            Intent intent = new Intent(CourseView.this, ProfileActivity.class);</span>
+<span class="nc" id="L91">            startActivity(intent);</span>
+<span class="nc" id="L92">        });</span>
+
+        // Initialize the course list and set up the adapter for RecyclerView.
+<span class="nc" id="L95">        courseList = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L96">        adapter = new CourseAdapter(courseList, this);</span>
+<span class="nc" id="L97">        recyclerViewCourses.setAdapter(adapter);</span>
+
+        // Initialize the CourseService for fetching course data.
+<span class="nc" id="L100">        courseService = new CourseService(this);</span>
+
+        // Retrieve the current student's ID and fetch their enrolled courses.
+<span class="nc" id="L103">        String studentId = getCurrentStudentId();</span>
+<span class="nc" id="L104">        fetchEnrolledCourses(studentId);</span>
+<span class="nc" id="L105">    }</span>
+
+    /**
+     * Retrieves the current student's ID using UserSession or SharedPreferences.
+     * If no ID is found, it defaults to &quot;ntbach&quot;.
+     *
+     * @return The student's ID as a string.
+     */
+    private String getCurrentStudentId() {
+        // Try retrieving the student ID from the UserSession singleton.
+<span class="nc" id="L115">        String studentId = UserSession.getInstance().getNetId();</span>
+<span class="nc bnc" id="L116" title="All 2 branches missed.">        if (studentId != null) {</span>
+<span class="nc" id="L117">            return studentId;</span>
+        }
+
+        // Fallback to SharedPreferences if UserSession doesn't provide the ID.
+<span class="nc" id="L121">        SharedPreferences prefs = getSharedPreferences(&quot;user_prefs&quot;, MODE_PRIVATE);</span>
+<span class="nc" id="L122">        return prefs.getString(&quot;studentId&quot;, &quot;ntbach&quot;); // Default to &quot;ntbach&quot; if not found.</span>
+    }
+
+    /**
+     * Fetches the list of courses the student is enrolled in using the CourseService.
+     * Updates the UI with the fetched data or displays a message if no courses are found.
+     *
+     * @param studentId The ID of the student whose courses are to be fetched.
+     */
+    private void fetchEnrolledCourses(String studentId) {
+        // Call the API to get enrolled courses.
+<span class="nc" id="L133">        courseService.getEnrolledCoursesById(studentId, new CourseService.GetEnrolledCoursesCallback() {</span>
+            @Override
+            public void onSuccess(List&lt;Schedule&gt; courses) {
+                // Run on the main UI thread to update the RecyclerView.
+<span class="nc" id="L137">                runOnUiThread(() -&gt; {</span>
+<span class="nc bnc" id="L138" title="All 2 branches missed.">                    if (courses.isEmpty()) {</span>
+                        // Notify the user if no courses are found.
+<span class="nc" id="L140">                        Toast.makeText(CourseView.this, &quot;No enrolled courses found.&quot;, Toast.LENGTH_SHORT).show();</span>
+                    } else {
+                        // Update the course list and refresh the adapter.
+<span class="nc" id="L143">                        courseList.clear();</span>
+<span class="nc" id="L144">                        courseList.addAll(courses);</span>
+<span class="nc" id="L145">                        adapter.notifyDataSetChanged();</span>
+                    }
+<span class="nc" id="L147">                });</span>
+<span class="nc" id="L148">            }</span>
+
+            @Override
+            public void onError(String error) {
+                // Show an error message to the user on the main UI thread.
+<span class="nc" id="L153">                runOnUiThread(() -&gt; {</span>
+<span class="nc" id="L154">                    Toast.makeText(CourseView.this, error, Toast.LENGTH_LONG).show();</span>
+<span class="nc" id="L155">                });</span>
+<span class="nc" id="L156">            }</span>
+        });
+<span class="nc" id="L158">    }</span>
+
+    /*
+    // Uncomment this method to enable deleting a course directly from the list.
+    @Override
+    public void onCourseDelete(int position, Course course) {
+        // Get the current student ID for API call.
+        String studentId = getCurrentStudentId();
+
+        // Call the service to remove the enrollment for the selected course.
+        courseService.removeEnrollById(studentId, course.getcId(), new CourseService.RemoveEnrollCallback() {
+            @Override
+            public void onSuccess(String message) {
+                runOnUiThread(() -&gt; {
+                    // Remove the course from the list and notify the adapter.
+                    courseList.remove(position);
+                    adapter.notifyItemRemoved(position);
+                    Toast.makeText(CourseView.this, &quot;Course removed successfully&quot;, Toast.LENGTH_SHORT).show();
+                });
+            }
+
+            @Override
+            public void onError(String error) {
+                // Show an error message to the user on failure.
+                runOnUiThread(() -&gt; {
+                    Toast.makeText(CourseView.this, &quot;Error removing course: &quot; + error, Toast.LENGTH_LONG).show();
+                });
+            }
+        });
+    }
+    */
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span>Generated by the Android Gradle plugin 8.6.0</div></body></html>

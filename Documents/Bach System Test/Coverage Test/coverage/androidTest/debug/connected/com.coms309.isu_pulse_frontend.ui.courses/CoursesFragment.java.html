@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CoursesFragment.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=0;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">debug</a> &gt; <a href="index.source.html" class="el_package">com.coms309.isu_pulse_frontend.ui.courses</a> &gt; <span class="el_source">CoursesFragment.java</span></div><h1>CoursesFragment.java</h1><pre class="source lang-java linenums">package com.coms309.isu_pulse_frontend.ui.courses;
+
+import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.coms309.isu_pulse_frontend.R;
+import com.coms309.isu_pulse_frontend.adapters.CourseListAdapter;
+import com.coms309.isu_pulse_frontend.api.AnnouncementWebSocketClient;
+import com.coms309.isu_pulse_frontend.api.FacultyApiService;
+import com.coms309.isu_pulse_frontend.databinding.FragmentCoursesBinding;
+import com.coms309.isu_pulse_frontend.loginsignup.UserSession;
+import com.coms309.isu_pulse_frontend.model.Course;
+import com.coms309.isu_pulse_frontend.model.Schedule;
+
+import java.util.ArrayList;
+import java.util.List;
+
+<span class="nc" id="L30">public class CoursesFragment extends Fragment {</span>
+
+    private FragmentCoursesBinding binding;
+    private RecyclerView courseRecyclerView;
+    private CourseListAdapter courseAdapter;
+<span class="nc" id="L35">    private List&lt;Course&gt; courses = new ArrayList&lt;&gt;();</span>
+    private TextView emptyStateTextView;
+    private static final String TAG = &quot;CoursesFragment&quot;;
+
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+<span class="nc" id="L40">        binding = FragmentCoursesBinding.inflate(inflater, container, false);</span>
+<span class="nc" id="L41">        View root = binding.getRoot();</span>
+
+        // Set up Course RecyclerView
+<span class="nc" id="L44">        setupRecyclerView();</span>
+
+        // Fetch courses from backend
+<span class="nc" id="L47">        fetchCoursesFromBackend();</span>
+
+<span class="nc" id="L49">        return root;</span>
+    }
+
+    private void setupRecyclerView() {
+<span class="nc" id="L53">        courseRecyclerView = binding.recyclerViewCourses;</span>
+<span class="nc" id="L54">        courseRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));</span>
+<span class="nc" id="L55">        courseAdapter = new CourseListAdapter(courses, UserSession.getInstance(getContext()).getUserType(), this::navigateToCourseDetail);</span>
+<span class="nc" id="L56">        courseRecyclerView.setAdapter(courseAdapter);</span>
+
+<span class="nc" id="L58">        emptyStateTextView = binding.emptyStateTextView;</span>
+<span class="nc" id="L59">    }</span>
+
+    // Fetch courses from backend
+    private void fetchCoursesFromBackend() {
+<span class="nc" id="L63">        FacultyApiService facultyApiService = new FacultyApiService(getContext());</span>
+<span class="nc" id="L64">        String facultyNetId = UserSession.getInstance(getContext()).getNetId();</span>
+
+<span class="nc" id="L66">        facultyApiService.getFacultySchedules(facultyNetId, new FacultyApiService.ScheduleResponseListener() {</span>
+            @Override
+            public void onResponse(List&lt;Schedule&gt; schedules) {
+<span class="nc" id="L69">                courses.clear();</span>
+<span class="nc bnc" id="L70" title="All 2 branches missed.">                for (Schedule schedule : schedules) {</span>
+<span class="nc" id="L71">                    courses.add(schedule.getCourse());</span>
+<span class="nc" id="L72">                }</span>
+<span class="nc" id="L73">                courseAdapter.notifyDataSetChanged();</span>
+
+                // Show empty state if no courses are found
+<span class="nc bnc" id="L76" title="All 2 branches missed.">                if (courses.isEmpty()) {</span>
+<span class="nc" id="L77">                    emptyStateTextView.setVisibility(View.VISIBLE);</span>
+<span class="nc" id="L78">                    courseRecyclerView.setVisibility(View.GONE);</span>
+                } else {
+<span class="nc" id="L80">                    emptyStateTextView.setVisibility(View.GONE);</span>
+<span class="nc" id="L81">                    courseRecyclerView.setVisibility(View.VISIBLE);</span>
+                }
+<span class="nc" id="L83">            }</span>
+
+            @Override
+            public void onError(String message) {
+<span class="nc" id="L87">                Toast.makeText(getContext(), &quot;Error fetching courses: &quot; + message, Toast.LENGTH_SHORT).show();</span>
+<span class="nc" id="L88">                emptyStateTextView.setVisibility(View.VISIBLE);</span>
+<span class="nc" id="L89">                courseRecyclerView.setVisibility(View.GONE);</span>
+<span class="nc" id="L90">            }</span>
+        });
+<span class="nc" id="L92">    }</span>
+
+    // Navigate to CourseDetailFragment
+    private void navigateToCourseDetail(long scheduleId) {
+<span class="nc" id="L96">        scheduleId = 7L; // hardcoded schedule ID for testing</span>
+<span class="nc bnc" id="L97" title="All 2 branches missed.">        if (scheduleId == 0) {</span>
+<span class="nc" id="L98">            Log.e(TAG, &quot;scheduleId is null; cannot navigate to CourseDetailFragment&quot;);</span>
+<span class="nc" id="L99">            Toast.makeText(getContext(), &quot;Error: scheduleId is missing&quot;, Toast.LENGTH_SHORT).show();</span>
+<span class="nc" id="L100">            return;</span>
+        }
+
+<span class="nc" id="L103">        Bundle args = new Bundle();</span>
+<span class="nc" id="L104">        args.putLong(&quot;scheduleId&quot;, scheduleId); // Ensure the ID is passed</span>
+
+<span class="nc" id="L106">        NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment_content_main);</span>
+<span class="nc" id="L107">        navController.navigate(R.id.action_coursesFragment_to_courseDetailFragment, args);</span>
+<span class="nc" id="L108">    }</span>
+
+
+
+    @Override
+    public void onDestroyView() {
+<span class="nc" id="L114">        super.onDestroyView();</span>
+<span class="nc" id="L115">        binding = null; // Avoid memory leaks</span>
+<span class="nc" id="L116">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span>Generated by the Android Gradle plugin 8.6.0</div></body></html>

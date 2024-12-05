@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TeacherAnnouncementsFragment.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=0;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">debug</a> &gt; <a href="index.source.html" class="el_package">com.coms309.isu_pulse_frontend.ui.announcements</a> &gt; <span class="el_source">TeacherAnnouncementsFragment.java</span></div><h1>TeacherAnnouncementsFragment.java</h1><pre class="source lang-java linenums">package com.coms309.isu_pulse_frontend.ui.announcements;
+
+import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.coms309.isu_pulse_frontend.R;
+import com.coms309.isu_pulse_frontend.adapters.AnnouncementListAdapter;
+import com.coms309.isu_pulse_frontend.api.AnnouncementResponseListener;
+import com.coms309.isu_pulse_frontend.api.AnnouncementWebSocketClient;
+import com.coms309.isu_pulse_frontend.api.FacultyApiService;
+import com.coms309.isu_pulse_frontend.loginsignup.UserSession;
+import com.coms309.isu_pulse_frontend.model.Announcement;
+import com.coms309.isu_pulse_frontend.model.Schedule;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
+
+<span class="nc" id="L34">public class TeacherAnnouncementsFragment extends Fragment implements AnnouncementWebSocketClient.WebSocketListener {</span>
+
+    private RecyclerView recyclerView;
+    private AnnouncementListAdapter adapter;
+    private List&lt;Announcement&gt; announcementList;
+    private AnnouncementWebSocketClient webSocketClient;
+    private static final String TAG = &quot;TeacherAnnouncementsFragment&quot;;
+    private EditText announcementContent;
+<span class="nc" id="L42">    private long courseId = 2L; // hardcoded course ID for testing</span>
+<span class="nc" id="L43">    private long scheduleId = 7L; // hardcoded schedule ID for testing</span>
+
+    public static TeacherAnnouncementsFragment newInstance(long scheduleId) {
+<span class="nc" id="L46">        TeacherAnnouncementsFragment fragment = new TeacherAnnouncementsFragment();</span>
+<span class="nc" id="L47">        Bundle args = new Bundle();</span>
+<span class="nc" id="L48">        args.putLong(&quot;scheduleId&quot;, scheduleId);</span>
+<span class="nc" id="L49">        fragment.setArguments(args);</span>
+<span class="nc" id="L50">        return fragment;</span>
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+<span class="nc" id="L55">        super.onCreate(savedInstanceState);</span>
+        // Fetch the scheduleId from the arguments
+<span class="nc bnc" id="L57" title="All 2 branches missed.">        if (getArguments() != null) {</span>
+<span class="nc" id="L58">            scheduleId = getArguments().getLong(&quot;scheduleId&quot;, -1);</span>
+        }
+        // Fetch the scheduleId
+<span class="nc" id="L61">        getScheduleId();</span>
+<span class="nc" id="L62">    }</span>
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+<span class="nc" id="L67">        Log.d(TAG, &quot;onCreateView called&quot;);</span>
+<span class="nc bnc" id="L68" title="All 2 branches missed.">        if (getArguments() != null) {</span>
+<span class="nc" id="L69">            scheduleId = getArguments().getLong(&quot;scheduleId&quot;, 7L); // hardcoded schedule ID for testing</span>
+        }
+
+<span class="nc" id="L72">        View view = inflater.inflate(R.layout.teacher_announcement, container, false);</span>
+
+<span class="nc" id="L74">        recyclerView = view.findViewById(R.id.recyclerViewAnnouncements);</span>
+<span class="nc" id="L75">        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));</span>
+
+<span class="nc" id="L77">        announcementList = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L78">        adapter = new AnnouncementListAdapter(getContext(), announcementList, true);</span>
+<span class="nc" id="L79">        recyclerView.setAdapter(adapter);</span>
+        // Load announcements for this schedule when the fragment starts
+<span class="nc bnc" id="L81" title="All 2 branches missed.">        if (scheduleId != -1) {</span>
+<span class="nc" id="L82">            loadAnnouncementsForSchedule(scheduleId);</span>
+        } else {
+<span class="nc" id="L84">            Log.e(&quot;TeacherAnnouncementsFragment&quot;, &quot;Error: Schedule ID is not available&quot;);</span>
+<span class="nc" id="L85">            scheduleId = 7L; // hardcoded schedule ID for testing</span>
+        }
+<span class="nc" id="L87">        announcementContent = view.findViewById(R.id.editTextAnnouncementContent);</span>
+<span class="nc" id="L88">        Button submitButton = view.findViewById(R.id.buttonSubmitAnnouncement);</span>
+
+<span class="nc" id="L90">        submitButton.setOnClickListener(v -&gt; {</span>
+<span class="nc" id="L91">            String content = announcementContent.getText().toString();</span>
+<span class="nc bnc" id="L92" title="All 2 branches missed.">            if (!content.isEmpty()) {</span>
+<span class="nc" id="L93">                Log.d(TAG, &quot;Submit button clicked with content: &quot; + content);</span>
+
+<span class="nc bnc" id="L95" title="All 2 branches missed.">                if (scheduleId != -1) {</span>
+//                    webSocketClient.sendActionMessage(&quot;new_announcement&quot;, scheduleId, content, null);
+                    // Proceed to send the announcement
+<span class="nc" id="L98">                    webSocketClient.postAnnouncement(scheduleId, content);</span>
+<span class="nc" id="L99">                    Toast.makeText(getContext(), &quot;Announcement sent!&quot;, Toast.LENGTH_SHORT).show();</span>
+<span class="nc" id="L100">                    Log.d(TAG, &quot;Announcement sent with content: &quot; + content);</span>
+//                    announcementContent.setText(&quot;&quot;);
+                } else {
+<span class="nc" id="L103">                    Log.e(TAG, &quot;Error: Schedule ID not available yet&quot;);</span>
+<span class="nc" id="L104">                    Toast.makeText(getContext(), &quot;Schedule ID not available yet&quot;, Toast.LENGTH_SHORT).show();</span>
+                }
+            } else {
+<span class="nc" id="L107">                Log.w(TAG, &quot;Empty content, not sending announcement&quot;);</span>
+<span class="nc" id="L108">                Toast.makeText(getContext(), &quot;Content cannot be empty&quot;, Toast.LENGTH_SHORT).show();</span>
+            }
+<span class="nc" id="L110">        });</span>
+
+<span class="nc" id="L112">        initializeWebSocket();</span>
+
+<span class="nc" id="L114">        return view;</span>
+    }
+
+    private void loadAnnouncementsForSchedule(long scheduleId) {
+<span class="nc" id="L118">        String netId = UserSession.getInstance(getContext()).getNetId();  // Retrieve netId dynamically</span>
+<span class="nc" id="L119">        FacultyApiService apiService = new FacultyApiService(getContext());</span>
+<span class="nc" id="L120">        apiService.getAnnouncementsBySchedule(scheduleId, netId, new AnnouncementResponseListener() {</span>
+            @Override
+            public void onResponse(List&lt;Announcement&gt; announcements) {
+                // Update the announcement list and adapter
+<span class="nc" id="L124">                announcementList.clear();</span>
+<span class="nc" id="L125">                announcementList.addAll(announcements);</span>
+<span class="nc" id="L126">                adapter.notifyDataSetChanged();</span>
+<span class="nc" id="L127">            }</span>
+
+            @Override
+            public void onError(String message) {
+<span class="nc" id="L131">                Toast.makeText(getContext(), &quot;Error loading announcements: &quot; + message, Toast.LENGTH_SHORT).show();</span>
+<span class="nc" id="L132">            }</span>
+        });
+<span class="nc" id="L134">    }</span>
+
+
+    private void initializeWebSocket() {
+        // Fetch netId and userType from session or context
+<span class="nc" id="L139">        String netId = UserSession.getInstance(getContext()).getNetId();</span>
+<span class="nc" id="L140">        String userType = UserSession.getInstance(getContext()).getUserType();</span>
+
+<span class="nc bnc" id="L142" title="All 4 branches missed.">        if (netId == null || netId.isEmpty()) {</span>
+<span class="nc" id="L143">            Log.e(TAG, &quot;Error: netId is null or empty&quot;);</span>
+<span class="nc" id="L144">            Toast.makeText(getContext(), &quot;User not authenticated&quot;, Toast.LENGTH_SHORT).show();</span>
+<span class="nc" id="L145">            return;</span>
+        }
+
+<span class="nc" id="L148">        Log.d(TAG, &quot;Initializing WebSocket client with netId: &quot; + netId + &quot; and userType: &quot; + userType);</span>
+
+<span class="nc" id="L150">        webSocketClient = new AnnouncementWebSocketClient(this);</span>
+<span class="nc" id="L151">        webSocketClient.connectWebSocket(netId, userType);</span>
+<span class="nc" id="L152">    }</span>
+
+
+    @Override
+    public void onMessageReceived(String message) {
+<span class="nc" id="L157">        Log.d(TAG, &quot;Received WebSocket message: &quot; + message);</span>
+
+        // Check if the message is a JSON object
+<span class="nc bnc" id="L160" title="All 4 branches missed.">        if (message.trim().startsWith(&quot;{&quot;) &amp;&amp; message.trim().endsWith(&quot;}&quot;)) {</span>
+            try {
+<span class="nc" id="L162">                JSONObject jsonMessage = new JSONObject(message);</span>
+<span class="nc" id="L163">                String action = jsonMessage.optString(&quot;action&quot;, &quot;unknown&quot;);</span>
+
+<span class="nc bnc" id="L165" title="All 2 branches missed.">                if (&quot;new_announcement&quot;.equals(action)) {</span>
+                    // Process the new announcement as usual
+<span class="nc" id="L167">                    String content = jsonMessage.optString(&quot;content&quot;, &quot;No content&quot;);</span>
+<span class="nc" id="L168">                    announcementList.add(new Announcement(</span>
+<span class="nc" id="L169">                            jsonMessage.optLong(&quot;id&quot;, -1L),</span>
+                            content,
+<span class="nc" id="L171">                            jsonMessage.optLong(&quot;scheduleId&quot;, -1L),</span>
+<span class="nc" id="L172">                            jsonMessage.optString(&quot;facultyNetId&quot;, &quot;No faculty NetId&quot;),</span>
+<span class="nc" id="L173">                            jsonMessage.optString(&quot;timestamp&quot;, &quot;No timestamp&quot;),</span>
+<span class="nc" id="L174">                            jsonMessage.optString(&quot;extraField&quot;, &quot;No extra field&quot;)</span>
+                    ));
+<span class="nc" id="L176">                    adapter.notifyDataSetChanged();</span>
+<span class="nc" id="L177">                } else {</span>
+<span class="nc" id="L178">                    Log.w(TAG, &quot;Unknown action received: &quot; + action);</span>
+                }
+<span class="nc" id="L180">            } catch (JSONException e) {</span>
+<span class="nc" id="L181">                Log.e(TAG, &quot;Error parsing WebSocket message&quot;, e);</span>
+<span class="nc" id="L182">            }</span>
+        } else {
+            // Handle non-JSON messages, like &quot;Welcome batinov!&quot;
+<span class="nc" id="L185">            Log.d(TAG, &quot;Received non-JSON message: &quot; + message);</span>
+        }
+<span class="nc" id="L187">    }</span>
+
+    private long getScheduleId() {
+        // Assume courseId is passed as an argument from CourseDetailFragment or stored in a class variable
+<span class="nc bnc" id="L191" title="All 2 branches missed.">        long courseId = getArguments() != null ? getArguments().getLong(&quot;courseId&quot;, 2L) : 2L; // hardcoded courseId for testing. default should be -1</span>
+
+<span class="nc bnc" id="L193" title="All 2 branches missed.">        if (courseId == -1) {</span>
+<span class="nc" id="L194">            Log.e(TAG, &quot;Invalid course ID&quot;);</span>
+<span class="nc" id="L195">            return -1;</span>
+        }
+
+<span class="nc" id="L198">        String netId = UserSession.getInstance(getContext()).getNetId();  // Ensure netId is available in the user session</span>
+<span class="nc" id="L199">        FacultyApiService apiService = new FacultyApiService(getContext());</span>
+
+<span class="nc" id="L201">        apiService.getFacultySchedules(netId, new FacultyApiService.ScheduleResponseListener() {</span>
+            @Override
+            public void onResponse(List&lt;Schedule&gt; schedules) {
+<span class="nc bnc" id="L204" title="All 2 branches missed.">                for (Schedule schedule : schedules) {</span>
+<span class="nc bnc" id="L205" title="All 2 branches missed.">                    if (schedule.getCourse().getcId() == courseId) {</span>
+<span class="nc" id="L206">                        long scheduleId = schedule.getCourse().getcId();</span>
+<span class="nc" id="L207">                        Log.d(TAG, &quot;Found Schedule ID: &quot; + scheduleId);</span>
+<span class="nc" id="L208">                        onScheduleIdRetrieved(scheduleId);  // Pass scheduleId to another function for processing</span>
+<span class="nc" id="L209">                        return;</span>
+                    }
+<span class="nc" id="L211">                }</span>
+<span class="nc" id="L212">                Log.e(TAG, &quot;No schedule found for the given course ID&quot;);</span>
+<span class="nc" id="L213">                onScheduleIdRetrieved(-1);  // Handle case when no matching schedule is found</span>
+<span class="nc" id="L214">            }</span>
+
+            @Override
+            public void onError(String message) {
+<span class="nc" id="L218">                Log.e(TAG, &quot;Error fetching schedules: &quot; + message);</span>
+<span class="nc" id="L219">                onScheduleIdRetrieved(-1);  // Handle errors</span>
+<span class="nc" id="L220">            }</span>
+        });
+
+<span class="nc" id="L223">        return -1;  // Return a placeholder value; actual ID is retrieved asynchronously</span>
+    }
+
+    private void onScheduleIdRetrieved(long scheduleId) {
+<span class="nc bnc" id="L227" title="All 2 branches missed.">        if (scheduleId != -1) {</span>
+            // Proceed with sending the announcement
+<span class="nc" id="L229">            String content = announcementContent.getText().toString();</span>
+<span class="nc" id="L230">            webSocketClient.sendActionMessage(&quot;new_announcement&quot;, scheduleId, content, 0);</span>
+<span class="nc" id="L231">            Log.d(TAG, &quot;Announcement sent with content: &quot; + content);</span>
+<span class="nc" id="L232">        } else {</span>
+<span class="nc" id="L233">            Toast.makeText(getContext(), &quot;Error: Schedule ID not available&quot;, Toast.LENGTH_SHORT).show();</span>
+        }
+<span class="nc" id="L235">    }</span>
+
+    @Override
+    public void onDestroyView() {
+<span class="nc" id="L239">        super.onDestroyView();</span>
+<span class="nc" id="L240">        Log.d(TAG, &quot;onDestroyView called&quot;);</span>
+
+<span class="nc bnc" id="L242" title="All 2 branches missed.">        if (webSocketClient != null) {</span>
+<span class="nc" id="L243">            webSocketClient.disconnectWebSocket();</span>
+        }
+<span class="nc" id="L245">    }</span>
+
+    @Override
+    public void onStart() {
+<span class="nc" id="L249">        super.onStart();</span>
+
+        // Initialize the WebSocket client
+<span class="nc" id="L252">        AnnouncementWebSocketClient webSocketClient = UserSession.getInstance(getContext()).getWebSocketClient();</span>
+<span class="nc bnc" id="L253" title="All 2 branches missed.">        if (webSocketClient != null) {</span>
+<span class="nc" id="L254">            webSocketClient.setListener(new AnnouncementWebSocketClient.WebSocketListener() {</span>
+                @Override
+                public void onMessageReceived(String message) {
+                    // Handle incoming WebSocket messages
+<span class="nc" id="L258">                    handleWebSocketMessage(message);</span>
+<span class="nc" id="L259">                }</span>
+            });
+        } else {
+<span class="nc" id="L262">            Log.e(TAG, &quot;WebSocket client is not initialized&quot;);</span>
+<span class="nc" id="L263">            Toast.makeText(getContext(), &quot;WebSocket client is not initialized&quot;, Toast.LENGTH_SHORT).show();</span>
+        }
+<span class="nc" id="L265">    }</span>
+
+    private void handleWebSocketMessage(String message) {
+        try {
+<span class="nc" id="L269">            JSONObject jsonMessage = new JSONObject(message);</span>
+<span class="nc" id="L270">            String action = jsonMessage.getString(&quot;action&quot;);</span>
+
+<span class="nc bnc" id="L272" title="All 5 branches missed.">            switch (action) {</span>
+                case &quot;history&quot;:
+<span class="nc" id="L274">                    handleHistoryAction(jsonMessage);</span>
+<span class="nc" id="L275">                    break;</span>
+                case &quot;new&quot;:
+<span class="nc" id="L277">                    handleNewAnnouncement(jsonMessage);</span>
+<span class="nc" id="L278">                    break;</span>
+                case &quot;confirmation&quot;:
+<span class="nc" id="L280">                    handleConfirmation(jsonMessage);</span>
+<span class="nc" id="L281">                    break;</span>
+                case &quot;error&quot;:
+<span class="nc" id="L283">                    handleError(jsonMessage);</span>
+<span class="nc" id="L284">                    break;</span>
+                default:
+<span class="nc" id="L286">                    Log.w(TAG, &quot;Unknown action: &quot; + action);</span>
+            }
+<span class="nc" id="L288">        } catch (JSONException e) {</span>
+<span class="nc" id="L289">            Log.e(TAG, &quot;Received non-JSON message: &quot; + message, e);</span>
+<span class="nc" id="L290">        }</span>
+<span class="nc" id="L291">    }</span>
+
+    // Example functions for handling each action:
+    private void handleHistoryAction(JSONObject jsonMessage) throws JSONException {
+<span class="nc" id="L295">        JSONArray announcementsArray = jsonMessage.getJSONArray(&quot;announcements&quot;);</span>
+<span class="nc" id="L296">        announcementList.clear();</span>
+<span class="nc bnc" id="L297" title="All 2 branches missed.">        for (int i = 0; i &lt; announcementsArray.length(); i++) {</span>
+<span class="nc" id="L298">            JSONObject announcementJson = announcementsArray.getJSONObject(i);</span>
+<span class="nc" id="L299">            Announcement announcement = new Announcement(</span>
+<span class="nc" id="L300">                    announcementJson.getLong(&quot;id&quot;),</span>
+<span class="nc" id="L301">                    announcementJson.getString(&quot;content&quot;),</span>
+<span class="nc" id="L302">                    announcementJson.getLong(&quot;scheduleId&quot;),</span>
+<span class="nc" id="L303">                    announcementJson.getString(&quot;facultyNetId&quot;),</span>
+<span class="nc" id="L304">                    announcementJson.getString(&quot;timestamp&quot;),</span>
+                    &quot;&quot;
+            );
+<span class="nc" id="L307">            announcementList.add(announcement);</span>
+        }
+<span class="nc" id="L309">        adapter.notifyDataSetChanged();</span>
+<span class="nc" id="L310">    }</span>
+
+    private void handleNewAnnouncement(JSONObject jsonMessage) throws JSONException {
+<span class="nc" id="L313">        JSONObject announcementJson = jsonMessage.getJSONObject(&quot;announcement&quot;);</span>
+<span class="nc" id="L314">        Announcement newAnnouncement = new Announcement(</span>
+<span class="nc" id="L315">                announcementJson.getLong(&quot;id&quot;),</span>
+<span class="nc" id="L316">                announcementJson.getString(&quot;content&quot;),</span>
+<span class="nc" id="L317">                announcementJson.getLong(&quot;scheduleId&quot;),</span>
+<span class="nc" id="L318">                announcementJson.getString(&quot;facultyNetId&quot;),</span>
+<span class="nc" id="L319">                announcementJson.getString(&quot;timestamp&quot;),</span>
+                &quot;&quot;
+        );
+<span class="nc" id="L322">        announcementList.add(0, newAnnouncement);</span>
+<span class="nc" id="L323">        adapter.notifyItemInserted(0);</span>
+<span class="nc" id="L324">    }</span>
+
+    private void handleConfirmation(JSONObject jsonMessage) throws JSONException {
+<span class="nc" id="L327">        String confirmationMessage = jsonMessage.getString(&quot;message&quot;);</span>
+<span class="nc" id="L328">        Toast.makeText(getContext(), &quot;Confirmation: &quot; + confirmationMessage, Toast.LENGTH_SHORT).show();</span>
+<span class="nc" id="L329">    }</span>
+
+    private void handleError(JSONObject jsonMessage) throws JSONException {
+<span class="nc" id="L332">        String errorMessage = jsonMessage.getString(&quot;message&quot;);</span>
+<span class="nc" id="L333">        Log.e(TAG, &quot;Error: &quot; + errorMessage);</span>
+<span class="nc" id="L334">        Toast.makeText(getContext(), &quot;Error: &quot; + errorMessage, Toast.LENGTH_SHORT).show();</span>
+<span class="nc" id="L335">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span>Generated by the Android Gradle plugin 8.6.0</div></body></html>

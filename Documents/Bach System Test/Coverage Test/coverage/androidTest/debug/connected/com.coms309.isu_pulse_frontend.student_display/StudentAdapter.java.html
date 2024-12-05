@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>StudentAdapter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=0;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">debug</a> &gt; <a href="index.source.html" class="el_package">com.coms309.isu_pulse_frontend.student_display</a> &gt; <span class="el_source">StudentAdapter.java</span></div><h1>StudentAdapter.java</h1><pre class="source lang-java linenums">package com.coms309.isu_pulse_frontend.student_display;
+
+import android.content.Context;
+import android.content.Intent;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.PopupWindow;
+import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.android.volley.VolleyError;
+import com.bumptech.glide.Glide;
+import com.coms309.isu_pulse_frontend.R;
+import com.coms309.isu_pulse_frontend.api.CourseService;
+import com.coms309.isu_pulse_frontend.api.FriendService;
+import com.coms309.isu_pulse_frontend.api.UpdateAccount;
+import com.coms309.isu_pulse_frontend.friend_functional.FriendProfile;
+import com.coms309.isu_pulse_frontend.loginsignup.UserSession;
+import com.coms309.isu_pulse_frontend.model.Profile;
+import com.coms309.isu_pulse_frontend.ui.home.Course;
+
+import java.util.List;
+
+public class StudentAdapter extends RecyclerView.Adapter&lt;StudentAdapter.StudentViewHolder&gt; {
+    private Context context;
+    private List&lt;Student&gt; studentList;
+
+<span class="nc" id="L32">    public StudentAdapter(Context context, List&lt;Student&gt; studentList) {</span>
+<span class="nc" id="L33">        this.context = context;</span>
+<span class="nc" id="L34">        this.studentList = studentList;</span>
+<span class="nc" id="L35">    }</span>
+
+    @NonNull
+    @Override
+    public StudentViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+<span class="nc" id="L40">        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.friends_item, parent, false);</span>
+<span class="nc" id="L41">        return new StudentViewHolder(view);</span>
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull StudentViewHolder holder, int position) {
+<span class="nc" id="L46">        Student student = studentList.get(position);</span>
+<span class="nc" id="L47">        String fullName = student.getFirstName() + &quot; &quot; + student.getLastName();</span>
+<span class="nc" id="L48">        holder.nameTextView.setText(fullName);</span>
+
+<span class="nc" id="L50">        FriendService friendService = new FriendService(context);</span>
+<span class="nc" id="L51">        CourseService courseService = new CourseService(context);</span>
+
+<span class="nc" id="L53">        UpdateAccount.fetchProfileData(student.getNetId(), holder.itemView.getContext(), new UpdateAccount.ProfileCallback() {</span>
+            @Override
+            public void onSuccess(Profile profile) {
+<span class="nc" id="L56">                String imageUrl = profile.getProfilePictureUrl();  // Assume the Profile class has a method to get profile picture URL</span>
+<span class="nc" id="L57">                Glide.with(holder.itemView.getContext())</span>
+<span class="nc" id="L58">                        .load(imageUrl)</span>
+<span class="nc" id="L59">                        .into(holder.profileImageView);  // Set the profile image to the ImageView</span>
+<span class="nc" id="L60">            }</span>
+
+            @Override
+            public void onError(VolleyError error) {
+                // Handle the error, e.g., show a default image or log the error
+<span class="nc" id="L65">                holder.profileImageView.setImageResource(R.drawable.isu_logo);</span>
+<span class="nc" id="L66">            }</span>
+        });
+
+        // Fetch mutual courses
+<span class="nc" id="L70">        courseService.getMutualCourses(UserSession.getInstance().getNetId(), student.getNetId(),</span>
+<span class="nc" id="L71">                new CourseService.GetMutualCoursesCallback() {</span>
+                    @Override
+                    public void onSuccess(List&lt;Course&gt; courses) {
+<span class="nc" id="L74">                        int mutualCoursesCount = courses.size();</span>
+<span class="nc" id="L75">                        holder.mutualCoursesTextView.setText(mutualCoursesCount + &quot; mutual courses&quot;);</span>
+
+                        // Add popup for mutual courses
+<span class="nc" id="L78">                        holder.mutualCoursesTextView.setOnClickListener(v -&gt; {</span>
+<span class="nc" id="L79">                            View popupView = LayoutInflater.from(context).inflate(R.layout.popup_layout, null);</span>
+
+                            // Create the PopupWindow
+<span class="nc" id="L82">                            PopupWindow popupWindow = new PopupWindow(popupView,</span>
+                                    ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
+
+                            // Set data in popup
+<span class="nc" id="L86">                            TextView popupTitle = popupView.findViewById(R.id.popupTitle);</span>
+<span class="nc" id="L87">                            TextView popupContent = popupView.findViewById(R.id.popupContent);</span>
+
+<span class="nc" id="L89">                            popupTitle.setText(&quot;Mutual Courses&quot;);</span>
+<span class="nc" id="L90">                            StringBuilder coursesBuilder = new StringBuilder();</span>
+<span class="nc bnc" id="L91" title="All 2 branches missed.">                            for (Course course : courses) {</span>
+<span class="nc" id="L92">                                coursesBuilder.append(course.getCode()).append(&quot;\n&quot;);</span>
+<span class="nc" id="L93">                            }</span>
+<span class="nc" id="L94">                            popupContent.setText(coursesBuilder.toString());</span>
+
+                            // Show the popup window
+<span class="nc" id="L97">                            popupWindow.showAsDropDown(holder.mutualCoursesTextView, 0, 0);</span>
+<span class="nc" id="L98">                        });</span>
+<span class="nc" id="L99">                    }</span>
+
+                    @Override
+                    public void onError(String error) {
+<span class="nc" id="L103">                        holder.mutualCoursesTextView.setText(&quot;0 mutual courses&quot;);</span>
+<span class="nc" id="L104">                    }</span>
+                });
+
+        // Fetch mutual friends
+<span class="nc" id="L108">        friendService.getFriendsInCommon(UserSession.getInstance().getNetId(), student.getNetId(),</span>
+                response -&gt; {
+<span class="nc" id="L110">                    int mutualFriendsCount = response.length();</span>
+<span class="nc" id="L111">                    holder.mutualFriendsTextView.setText(mutualFriendsCount + &quot; mutual friends&quot;);</span>
+
+                    // Add popup for mutual friends
+<span class="nc" id="L114">                    holder.mutualFriendsTextView.setOnClickListener(v -&gt; {</span>
+<span class="nc" id="L115">                        View popupView = LayoutInflater.from(context).inflate(R.layout.popup_layout, null);</span>
+
+                        // Create the PopupWindow
+<span class="nc" id="L118">                        PopupWindow popupWindow = new PopupWindow(popupView,</span>
+                                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
+
+                        // Set data in popup
+<span class="nc" id="L122">                        TextView popupTitle = popupView.findViewById(R.id.popupTitle);</span>
+<span class="nc" id="L123">                        TextView popupContent = popupView.findViewById(R.id.popupContent);</span>
+
+<span class="nc" id="L125">                        popupTitle.setText(&quot;Mutual Friends&quot;);</span>
+<span class="nc" id="L126">                        StringBuilder friendsBuilder = new StringBuilder();</span>
+<span class="nc bnc" id="L127" title="All 2 branches missed.">                        for (int i = 0; i &lt; response.length(); i++) {</span>
+                            try {
+<span class="nc" id="L129">                                friendsBuilder.append(response.getJSONObject(i).getString(&quot;firstName&quot;))</span>
+<span class="nc" id="L130">                                        .append(&quot; &quot;)</span>
+<span class="nc" id="L131">                                        .append(response.getJSONObject(i).getString(&quot;lastName&quot;))</span>
+<span class="nc" id="L132">                                        .append(&quot;\n&quot;);</span>
+<span class="nc" id="L133">                            } catch (Exception e) {</span>
+<span class="nc" id="L134">                                e.printStackTrace();</span>
+<span class="nc" id="L135">                            }</span>
+                        }
+<span class="nc" id="L137">                        popupContent.setText(friendsBuilder.toString());</span>
+
+                        // Show the popup window
+<span class="nc" id="L140">                        popupWindow.showAsDropDown(holder.mutualFriendsTextView, 0, 0);</span>
+<span class="nc" id="L141">                    });</span>
+<span class="nc" id="L142">                },</span>
+<span class="nc" id="L143">                error -&gt; holder.mutualFriendsTextView.setText(&quot;0 mutual friends&quot;));</span>
+
+        // View profile button functionality
+<span class="nc" id="L146">        holder.viewProfileButton.setOnClickListener(v -&gt; {</span>
+<span class="nc" id="L147">            Intent intent = new Intent(context, FriendProfile.class);</span>
+<span class="nc" id="L148">            intent.putExtra(&quot;netId&quot;, student.getNetId());</span>
+<span class="nc" id="L149">            context.startActivity(intent);</span>
+<span class="nc" id="L150">        });</span>
+<span class="nc" id="L151">    }</span>
+
+    @Override
+    public int getItemCount() {
+<span class="nc" id="L155">        return studentList.size();</span>
+    }
+
+    static class StudentViewHolder extends RecyclerView.ViewHolder {
+        TextView nameTextView;
+        ImageView profileImageView;
+        TextView viewProfileButton;
+        TextView mutualFriendsTextView;
+        TextView mutualCoursesTextView;
+
+        StudentViewHolder(@NonNull View itemView) {
+<span class="nc" id="L166">            super(itemView);</span>
+<span class="nc" id="L167">            nameTextView = itemView.findViewById(R.id.friend_name); // Assuming friend_name is the ID in friends_item.xml</span>
+<span class="nc" id="L168">            viewProfileButton = itemView.findViewById(R.id.viewfriendbutton);</span>
+<span class="nc" id="L169">            mutualFriendsTextView = itemView.findViewById(R.id.mutual_friends);</span>
+<span class="nc" id="L170">            mutualCoursesTextView = itemView.findViewById(R.id.mutual_courses);</span>
+<span class="nc" id="L171">            profileImageView = itemView.findViewById(R.id.friend_avatar);</span>
+<span class="nc" id="L172">        }</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span>Generated by the Android Gradle plugin 8.6.0</div></body></html>

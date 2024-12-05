@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ChatServiceWebSocket.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=0;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">debug</a> &gt; <a href="index.source.html" class="el_package">com.coms309.isu_pulse_frontend.web_socket</a> &gt; <span class="el_source">ChatServiceWebSocket.java</span></div><h1>ChatServiceWebSocket.java</h1><pre class="source lang-java linenums">package com.coms309.isu_pulse_frontend.web_socket;
+
+import android.app.Activity;
+import android.util.Log;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.WebSocket;
+import okhttp3.WebSocketListener;
+import okhttp3.Response;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+public class ChatServiceWebSocket {
+    private static final String TAG = &quot;ChatServiceWebSocket&quot;;
+    private static ChatServiceWebSocket instance;
+    private WebSocket webSocket;
+    private ChatServiceListener listener;
+    private String netId;
+    private String recipientNetId;
+    private Activity activity;  // Reference to the Activity for running on the main thread
+
+<span class="nc" id="L24">    private ChatServiceWebSocket(ChatServiceListener listener, String netId, String recipientNetId, Activity activity) {</span>
+<span class="nc" id="L25">        this.listener = listener;</span>
+<span class="nc" id="L26">        this.netId = netId;</span>
+<span class="nc" id="L27">        this.recipientNetId = recipientNetId;</span>
+<span class="nc" id="L28">        this.activity = activity;</span>
+<span class="nc" id="L29">        connectWebSocket();</span>
+<span class="nc" id="L30">    }</span>
+
+    private ChatServiceWebSocket() {
+
+    }
+
+    public static synchronized ChatServiceWebSocket getInstance(ChatServiceListener listener, String netId, String recipientNetId, Activity activity) {
+<span class="nc bnc" id="L37" title="All 2 branches missed.">        if (instance == null) {</span>
+<span class="nc" id="L38">            instance = new ChatServiceWebSocket(listener, netId, recipientNetId, activity);</span>
+<span class="nc" id="L39">            Log.d(TAG, &quot;ChatServiceWebSocket initialized&quot;);</span>
+        } else {
+<span class="nc" id="L41">            instance.setWebSocketListener(listener);</span>
+//            instance.netId = netId;
+//            instance.recipientNetId = recipientNetId;
+//            instance.activity = activity;
+//            instance.connectWebSocket();  // Reconnect with updated parameters if necessary
+        }
+<span class="nc" id="L47">        return instance;</span>
+    }
+
+    public void setWebSocketListener(ChatServiceListener listener) {
+<span class="nc" id="L51">        this.listener = listener;</span>
+<span class="nc" id="L52">    }</span>
+
+    private void connectWebSocket() {
+<span class="nc" id="L55">        OkHttpClient client = new OkHttpClient();</span>
+<span class="nc" id="L56">        String wsUrl = String.format(&quot;ws://10.0.2.2:8080/ws/chat?netId=%s&amp;recipientNetId=%s&quot;, netId, recipientNetId);</span>
+//        String wsUrl = String.format(&quot;ws://coms-3090-042.class.las.iastate.edu:8080/ws/chat?netId=%s&amp;recipientNetId=%s&quot;, netId, recipientNetId);
+<span class="nc" id="L58">        Request request = new Request.Builder().url(wsUrl).build();</span>
+
+<span class="nc" id="L60">        webSocket = client.newWebSocket(request, new WebSocketListener() {</span>
+            @Override
+            public void onOpen(WebSocket webSocket, Response response) {
+<span class="nc" id="L63">                Log.d(TAG, &quot;WebSocket Connected to &quot; + wsUrl);</span>
+<span class="nc" id="L64">            }</span>
+
+            @Override
+            public void onMessage(WebSocket webSocket, String text) {
+<span class="nc" id="L68">                Log.d(TAG, &quot;Received message: &quot; + text);</span>
+<span class="nc bnc" id="L69" title="All 2 branches missed.">                if (listener != null) {</span>
+                    // Run on the main thread
+<span class="nc" id="L71">                    activity.runOnUiThread(() -&gt; {</span>
+                        try {
+                            // Check if the received text is a JSONArray or JSONObject
+<span class="nc bnc" id="L74" title="All 2 branches missed.">                            if (text.startsWith(&quot;[&quot;)) {  // Indicates a JSONArray</span>
+<span class="nc" id="L75">                                JSONArray jsonArray = new JSONArray(text);</span>
+<span class="nc bnc" id="L76" title="All 2 branches missed.">                                for (int i = 0; i &lt; jsonArray.length(); i++) {</span>
+<span class="nc" id="L77">                                    JSONObject jsonMessage = jsonArray.getJSONObject(i);</span>
+<span class="nc" id="L78">                                    String senderNetId = jsonMessage.getString(&quot;senderNetId&quot;);</span>
+<span class="nc" id="L79">                                    String recipientNetId = jsonMessage.getString(&quot;recipientNetId&quot;);</span>
+<span class="nc" id="L80">                                    String content = jsonMessage.getString(&quot;content&quot;);</span>
+<span class="nc" id="L81">                                    String timestamp = jsonMessage.getString(&quot;timestamp&quot;);</span>
+
+                                    // Pass each message to the listener
+<span class="nc" id="L84">                                    listener.onMessageReceived(senderNetId, recipientNetId, content, timestamp);</span>
+                                }
+<span class="nc" id="L86">                            } else {  // Single JSONObject</span>
+<span class="nc" id="L87">                                JSONObject jsonMessage = new JSONObject(text);</span>
+<span class="nc" id="L88">                                String senderNetId = jsonMessage.getString(&quot;senderNetId&quot;);</span>
+<span class="nc" id="L89">                                String recipientNetId = jsonMessage.getString(&quot;recipientNetId&quot;);</span>
+<span class="nc" id="L90">                                String content = jsonMessage.getString(&quot;content&quot;);</span>
+<span class="nc" id="L91">                                String timestamp = jsonMessage.getString(&quot;timestamp&quot;);</span>
+
+                                // Pass the single message to the listener
+<span class="nc" id="L94">                                listener.onMessageReceived(senderNetId, recipientNetId, content, timestamp);</span>
+                            }
+<span class="nc" id="L96">                        } catch (JSONException e) {</span>
+<span class="nc" id="L97">                            Log.e(TAG, &quot;Error parsing received message JSON&quot;, e);</span>
+<span class="nc" id="L98">                        }</span>
+<span class="nc" id="L99">                    });</span>
+                }
+<span class="nc" id="L101">            }</span>
+
+            @Override
+            public void onFailure(WebSocket webSocket, Throwable t, Response response) {
+<span class="nc" id="L105">                Log.e(TAG, &quot;WebSocket Error: &quot; + t.getMessage());</span>
+<span class="nc" id="L106">            }</span>
+
+            @Override
+            public void onClosing(WebSocket webSocket, int code, String reason) {
+<span class="nc" id="L110">                webSocket.close(1000, null);</span>
+<span class="nc" id="L111">                Log.d(TAG, &quot;WebSocket Closing: &quot; + reason);</span>
+<span class="nc" id="L112">            }</span>
+
+            @Override
+            public void onClosed(WebSocket webSocket, int code, String reason) {
+<span class="nc" id="L116">                Log.d(TAG, &quot;WebSocket Closed: &quot; + reason);</span>
+<span class="nc" id="L117">            }</span>
+        });
+<span class="nc" id="L119">    }</span>
+
+    public void sendMessage(String senderNetId, String recipientNetId, String content) {
+<span class="nc" id="L122">        JSONObject jsonMessage = new JSONObject();</span>
+        try {
+<span class="nc" id="L124">            jsonMessage.put(&quot;senderNetId&quot;, senderNetId);</span>
+<span class="nc" id="L125">            jsonMessage.put(&quot;recipientNetId&quot;, recipientNetId);</span>
+<span class="nc" id="L126">            jsonMessage.put(&quot;content&quot;, content);</span>
+<span class="nc" id="L127">            webSocket.send(jsonMessage.toString());</span>
+<span class="nc" id="L128">        } catch (JSONException e) {</span>
+<span class="nc" id="L129">            Log.e(TAG, &quot;Error creating JSON message&quot;, e);</span>
+<span class="nc" id="L130">        }</span>
+<span class="nc" id="L131">    }</span>
+
+    public void close() {
+<span class="nc bnc" id="L134" title="All 2 branches missed.">        if (webSocket != null) {</span>
+<span class="nc" id="L135">            webSocket.close(1000, &quot;User closed the chat&quot;);</span>
+<span class="nc" id="L136">            webSocket = null;</span>
+        }
+<span class="nc" id="L138">    }</span>
+
+    public interface ChatServiceListener {
+        void onMessageReceived(String senderNetId, String recipientNetId, String content, String timestamp);
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span>Generated by the Android Gradle plugin 8.6.0</div></body></html>

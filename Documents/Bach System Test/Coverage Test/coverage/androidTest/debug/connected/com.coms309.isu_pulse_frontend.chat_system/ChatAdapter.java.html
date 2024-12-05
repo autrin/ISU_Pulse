@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ChatAdapter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=0;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">debug</a> &gt; <a href="index.source.html" class="el_package">com.coms309.isu_pulse_frontend.chat_system</a> &gt; <span class="el_source">ChatAdapter.java</span></div><h1>ChatAdapter.java</h1><pre class="source lang-java linenums">package com.coms309.isu_pulse_frontend.chat_system;
+
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.coms309.isu_pulse_frontend.R;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+public class ChatAdapter extends RecyclerView.Adapter&lt;ChatAdapter.MessageViewHolder&gt; {
+    private List&lt;ChatMessage&gt; messages;
+
+<span class="nc" id="L20">    public ChatAdapter(List&lt;ChatMessage&gt; messages) {</span>
+<span class="nc" id="L21">        this.messages = messages;</span>
+<span class="nc" id="L22">    }</span>
+
+    @NonNull
+    @Override
+    public MessageViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view;
+<span class="nc bnc" id="L28" title="All 2 branches missed.">        if (viewType == 0) { // Received message</span>
+<span class="nc" id="L29">            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_received_text_message, parent, false);</span>
+        } else { // Sent message
+<span class="nc" id="L31">            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_sent_text_message, parent, false);</span>
+        }
+<span class="nc" id="L33">        return new MessageViewHolder(view, viewType);</span>
+    }
+
+
+    public void onBindViewHolder(@NonNull MessageViewHolder holder, int position) {
+<span class="nc" id="L38">        ChatMessage chatMessage = messages.get(position);</span>
+<span class="nc" id="L39">        holder.textViewMessage.setText(chatMessage.getMessage());</span>
+<span class="nc" id="L40">        holder.textViewTimestamp.setText(chatMessage.getTimestamp());</span>
+<span class="nc" id="L41">    }</span>
+
+    @Override
+    public int getItemCount() {
+<span class="nc" id="L45">        return messages.size();</span>
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+<span class="nc bnc" id="L50" title="All 2 branches missed.">        return messages.get(position).isSent() ? 1 : 0;</span>
+    }
+
+    public void addMessage(ChatMessage message) {
+<span class="nc" id="L54">        messages.add(message);</span>
+//        removeDuplicates();
+<span class="nc" id="L56">        notifyItemInserted(messages.size() - 1);</span>
+<span class="nc" id="L57">    }</span>
+
+//    public void clearMessages() {
+//        messages.clear();
+//        notifyDataSetChanged();
+//    }
+
+//    private void removeDuplicates() {
+//        Set&lt;String&gt; uniqueMessages = new HashSet&lt;&gt;();
+//        List&lt;ChatMessage&gt; uniqueList = new ArrayList&lt;&gt;();
+//
+//        for (ChatMessage message : messages) {
+//            if (!uniqueMessages.contains(generateMessageKey(message))) {
+//                uniqueMessages.add(generateMessageKey(message));
+//                uniqueList.add(message);
+//            }
+//        }
+//
+//        messages.clear();
+//        messages.addAll(uniqueList);
+//    }
+
+    private String generateMessageKey(ChatMessage message) {
+<span class="nc" id="L80">        return message.getTimestamp() + &quot;_&quot; + message.toString()+ &quot;_&quot; + message.isSent();</span>
+    }
+
+    static class MessageViewHolder extends RecyclerView.ViewHolder {
+        TextView textViewMessage;
+        TextView textViewTimestamp;
+
+        MessageViewHolder(View itemView, int viewType) {
+<span class="nc" id="L88">            super(itemView);</span>
+<span class="nc bnc" id="L89" title="All 2 branches missed.">            if (viewType == 0) {</span>
+<span class="nc" id="L90">                textViewMessage = itemView.findViewById(R.id.textViewReceivedMessage); // For received messages</span>
+<span class="nc" id="L91">                textViewTimestamp = itemView.findViewById(R.id.textViewReceivedTimestamp);</span>
+            } else {
+<span class="nc" id="L93">                textViewMessage = itemView.findViewById(R.id.textViewSentMessage); // For sent messages</span>
+<span class="nc" id="L94">                textViewTimestamp = itemView.findViewById(R.id.textViewSentTimestamp);</span>
+            }
+<span class="nc" id="L96">        }</span>
+
+        void bind(String message) {
+<span class="nc" id="L99">            textViewMessage.setText(message);</span>
+<span class="nc" id="L100">        }</span>
+    }
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span>Generated by the Android Gradle plugin 8.6.0</div></body></html>

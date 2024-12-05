@@ -6,7 +6,8 @@ import coms309.backEnd.demo.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface CourseRepository extends JpaRepository<Course, Long> {
-    //public Course findBy()
+    public Optional<Course> findByCode(String code);
 }

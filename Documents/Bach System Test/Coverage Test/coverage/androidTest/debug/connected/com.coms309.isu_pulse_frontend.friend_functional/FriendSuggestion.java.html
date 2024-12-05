@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>FriendSuggestion.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=0;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">debug</a> &gt; <a href="index.source.html" class="el_package">com.coms309.isu_pulse_frontend.friend_functional</a> &gt; <span class="el_source">FriendSuggestion.java</span></div><h1>FriendSuggestion.java</h1><pre class="source lang-java linenums">package com.coms309.isu_pulse_frontend.friend_functional;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.Spinner;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.coms309.isu_pulse_frontend.R;
+import com.coms309.isu_pulse_frontend.api.FriendService;
+import com.coms309.isu_pulse_frontend.api.StudentService;
+import com.coms309.isu_pulse_frontend.loginsignup.UserSession;
+import com.coms309.isu_pulse_frontend.profile_activity.ProfileActivity;
+import com.coms309.isu_pulse_frontend.student_display.DisplayStudent;
+import com.coms309.isu_pulse_frontend.student_display.Student;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+
+<span class="fc" id="L36">public class FriendSuggestion extends AppCompatActivity {</span>
+
+    private ImageView backButton;
+    private EditText searchBar;
+    private Button searchButton;
+    private Spinner spinner;
+    private RecyclerView friendsRecyclerView;
+    private FriendSuggestionAdapter friendAdapter;
+    private List&lt;Friend&gt; friendSuggestionList;
+    private List&lt;Friend&gt; filteredSuggestionList;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+<span class="fc" id="L49">        super.onCreate(savedInstanceState);</span>
+<span class="fc" id="L50">        setContentView(R.layout.friend_suggestion);</span>
+
+<span class="fc" id="L52">        backButton = findViewById(R.id.back_button_);</span>
+<span class="fc" id="L53">        searchButton = findViewById(R.id.search_button);</span>
+<span class="fc" id="L54">        searchBar = findViewById(R.id.search_bar);</span>
+<span class="fc" id="L55">        spinner = findViewById(R.id.sort_spinner);</span>
+
+<span class="fc" id="L57">        backButton.setOnClickListener(v -&gt; {</span>
+<span class="nc" id="L58">            Intent intent = new Intent(FriendSuggestion.this, ProfileActivity.class);</span>
+<span class="nc" id="L59">            startActivity(intent);</span>
+<span class="nc" id="L60">        });</span>
+
+<span class="fc" id="L62">        friendsRecyclerView = findViewById(R.id.friends_list);</span>
+<span class="fc" id="L63">        friendsRecyclerView.setLayoutManager(new LinearLayoutManager(this));</span>
+
+<span class="fc" id="L65">        friendSuggestionList = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L66">        filteredSuggestionList = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L67">        friendAdapter = new FriendSuggestionAdapter(filteredSuggestionList, this);</span>
+<span class="fc" id="L68">        friendsRecyclerView.setAdapter(friendAdapter);</span>
+
+<span class="fc" id="L70">        fetchFriendSuggestions();</span>
+
+        // Set up the sort spinner with options
+<span class="fc" id="L73">        ArrayAdapter&lt;CharSequence&gt; adapter = ArrayAdapter.createFromResource(this,</span>
+                R.array.sort_alphabetically_options, android.R.layout.simple_spinner_item);
+<span class="fc" id="L75">        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);</span>
+<span class="fc" id="L76">        spinner.setAdapter(adapter);</span>
+
+        // Set listener for sort option selection
+<span class="fc" id="L79">        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {</span>
+            @Override
+            public void onItemSelected(AdapterView&lt;?&gt; parent, View view, int position, long id) {
+<span class="fc" id="L82">                sortFriendSuggestions(position);</span>
+<span class="fc" id="L83">            }</span>
+
+            @Override
+            public void onNothingSelected(AdapterView&lt;?&gt; parent) {
+<span class="nc" id="L87">            }</span>
+        });
+
+
+<span class="fc" id="L91">        searchButton.setOnClickListener(v -&gt; {</span>
+<span class="fc" id="L92">            String query = searchBar.getText().toString().trim();</span>
+<span class="pc bpc" id="L93" title="1 of 2 branches missed.">            if (!query.isEmpty()) {</span>
+<span class="fc" id="L94">                filterFriendSuggestions(query);</span>
+            } else {
+<span class="nc" id="L96">                resetFriendSuggestionList();</span>
+            }
+<span class="fc" id="L98">        });</span>
+<span class="fc" id="L99">    }</span>
+
+    private void fetchFriendSuggestions() {
+<span class="fc" id="L102">        String studentNetId = UserSession.getInstance().getNetId();</span>
+<span class="fc" id="L103">        FriendService friendService = new FriendService(this);</span>
+
+<span class="fc" id="L105">        friendService.getFriendSuggestions(studentNetId, new Response.Listener&lt;JSONArray&gt;() {</span>
+            @Override
+            public void onResponse(JSONArray response) {
+<span class="fc" id="L108">                friendSuggestionList.clear();</span>
+<span class="fc bfc" id="L109" title="All 2 branches covered.">                for (int i = 0; i &lt; response.length(); i++) {</span>
+                    try {
+<span class="fc" id="L111">                        JSONObject friendObject = response.getJSONObject(i);</span>
+<span class="fc" id="L112">                        String firstName = friendObject.getString(&quot;firstName&quot;);</span>
+<span class="fc" id="L113">                        String lastName = friendObject.getString(&quot;lastName&quot;);</span>
+<span class="fc" id="L114">                        String netId = friendObject.getString(&quot;netId&quot;);</span>
+<span class="fc" id="L115">                        friendSuggestionList.add(new Friend(firstName, lastName, netId));</span>
+<span class="nc" id="L116">                    } catch (JSONException e) {</span>
+<span class="nc" id="L117">                        e.printStackTrace();</span>
+<span class="fc" id="L118">                    }</span>
+                }
+<span class="fc" id="L120">                resetFriendSuggestionList();</span>
+<span class="fc" id="L121">            }</span>
+<span class="fc" id="L122">        }, new Response.ErrorListener() {</span>
+            @Override
+            public void onErrorResponse(VolleyError error) {
+<span class="nc" id="L125">                Toast.makeText(FriendSuggestion.this, &quot;Failed to fetch friend suggestions&quot;, Toast.LENGTH_SHORT).show();</span>
+<span class="nc" id="L126">            }</span>
+        });
+<span class="fc" id="L128">    }</span>
+
+    private void filterFriendSuggestions(String query) {
+<span class="fc" id="L131">        filteredSuggestionList.clear();</span>
+<span class="fc bfc" id="L132" title="All 2 branches covered.">        for (Friend friend : friendSuggestionList) {</span>
+<span class="fc" id="L133">            String fullName = friend.getFirstName() + &quot; &quot; + friend.getLastName();</span>
+<span class="fc bfc" id="L134" title="All 2 branches covered.">            if (fullName.toLowerCase().contains(query.toLowerCase())) {</span>
+<span class="fc" id="L135">                filteredSuggestionList.add(friend);</span>
+            }
+<span class="fc" id="L137">        }</span>
+<span class="fc" id="L138">        friendAdapter.notifyDataSetChanged();</span>
+<span class="fc" id="L139">    }</span>
+
+    private void resetFriendSuggestionList() {
+<span class="fc" id="L142">        filteredSuggestionList.clear();</span>
+<span class="fc" id="L143">        filteredSuggestionList.addAll(friendSuggestionList); // Show all friend suggestions</span>
+<span class="fc" id="L144">        friendAdapter.notifyDataSetChanged();</span>
+<span class="fc" id="L145">    }</span>
+
+    private void sortFriendSuggestions(int sortOption) {
+<span class="pc bpc" id="L148" title="1 of 2 branches missed.">        if (sortOption == 0) {</span>
+            // Sort A-Z
+<span class="pc" id="L150">            filteredSuggestionList.sort((f1, f2) -&gt; f1.getFirstName().compareToIgnoreCase(f2.getFirstName()));</span>
+<span class="nc bnc" id="L151" title="All 2 branches missed.">        } else if (sortOption == 1) {</span>
+            // Sort Z-A
+<span class="nc" id="L153">            filteredSuggestionList.sort((f1, f2) -&gt; f2.getFirstName().compareToIgnoreCase(f1.getFirstName()));</span>
+        }
+<span class="fc" id="L155">        friendAdapter.notifyDataSetChanged();</span>
+<span class="fc" id="L156">    }</span>
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span>Generated by the Android Gradle plugin 8.6.0</div></body></html>

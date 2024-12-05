@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Course.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=0;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">debug</a> &gt; <a href="index.source.html" class="el_package">com.coms309.isu_pulse_frontend.model</a> &gt; <span class="el_source">Course.java</span></div><h1>Course.java</h1><pre class="source lang-java linenums">package com.coms309.isu_pulse_frontend.model;
+
+public class Course {
+    private String code;
+    private String title;
+    private String description;
+    private int credits;
+    private int numSections;
+    private Department department;
+    private long cId;
+    private String section;
+
+<span class="nc" id="L13">    public Course(long id, String title, String section) {</span>
+<span class="nc" id="L14">        this.cId = id;</span>
+<span class="nc" id="L15">        this.title = title;</span>
+<span class="nc" id="L16">        this.section = section;</span>
+<span class="nc" id="L17">    }</span>
+
+<span class="nc" id="L19">    public Course(String code, String title, String description, int credits, int numSections, Department department, long cId) {</span>
+<span class="nc" id="L20">        this.code = code;</span>
+<span class="nc" id="L21">        this.title = title;</span>
+<span class="nc" id="L22">        this.description = description;</span>
+<span class="nc" id="L23">        this.credits = credits;</span>
+<span class="nc" id="L24">        this.numSections = numSections;</span>
+<span class="nc" id="L25">        this.department = department;</span>
+<span class="nc" id="L26">        this.cId = cId;</span>
+<span class="nc" id="L27">    }</span>
+
+<span class="nc" id="L29">    public Course(String code, String title, String description, int credits, int numSections, String name, String location, int did, long cid) {</span>
+<span class="nc" id="L30">        this.code = code;</span>
+<span class="nc" id="L31">        this.title = title;</span>
+<span class="nc" id="L32">        this.description = description;</span>
+<span class="nc" id="L33">        this.credits = credits;</span>
+<span class="nc" id="L34">        this.numSections = numSections;</span>
+<span class="nc" id="L35">        this.cId = cid;</span>
+<span class="nc" id="L36">        this.department = new Department(name, location, did);</span>
+<span class="nc" id="L37">    }</span>
+
+    // Getters and setters
+    public String getCode() {
+<span class="nc" id="L41">        return code;</span>
+    }
+
+    public void setCode(String code) {
+<span class="nc" id="L45">        this.code = code;</span>
+<span class="nc" id="L46">    }</span>
+
+    public String getTitle() {
+<span class="nc" id="L49">        return title;</span>
+    }
+
+    public void setTitle(String title) {
+<span class="nc" id="L53">        this.title = title;</span>
+<span class="nc" id="L54">    }</span>
+
+    public String getDescription() {
+<span class="nc" id="L57">        return description;</span>
+    }
+
+    public void setDescription(String description) {
+<span class="nc" id="L61">        this.description = description;</span>
+<span class="nc" id="L62">    }</span>
+
+    public int getCredits() {
+<span class="nc" id="L65">        return credits;</span>
+    }
+
+    public void setCredits(int credits) {
+<span class="nc" id="L69">        this.credits = credits;</span>
+<span class="nc" id="L70">    }</span>
+
+    public int getNumSections() {
+<span class="nc" id="L73">        return numSections;</span>
+    }
+
+    public void setNumSections(int numSections) {
+<span class="nc" id="L77">        this.numSections = numSections;</span>
+<span class="nc" id="L78">    }</span>
+
+    public Department getDepartment() {
+<span class="nc" id="L81">        return department;</span>
+    }
+
+    public void setDepartment(Department department) {
+<span class="nc" id="L85">        this.department = department;</span>
+<span class="nc" id="L86">    }</span>
+
+    public long getcId() {
+<span class="nc" id="L89">        return cId;</span>
+    }
+
+    public void setcId(long cId) {
+<span class="nc" id="L93">        this.cId = cId;</span>
+<span class="nc" id="L94">    }</span>
+
+    public String getSection() {
+<span class="nc" id="L97">        return section;</span>
+    }
+
+    public void setSection(String section) {
+<span class="nc" id="L101">        this.section = section;</span>
+<span class="nc" id="L102">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span>Generated by the Android Gradle plugin 8.6.0</div></body></html>
