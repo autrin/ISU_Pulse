@@ -142,8 +142,8 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskVi
 
     public static class TaskViewHolder extends RecyclerView.ViewHolder implements ViewHolder {
         TextView title, description, dueDate;
-        CheckBox checkBox;
-        Button buttonEditTask;
+        public CheckBox checkBox;
+        public Button buttonEditTask;
 
         public TaskViewHolder(@NonNull View itemView) {
             super(itemView);
