@@ -36,7 +36,7 @@ public class BachSystemTest {
     @Test
     public void testLoginWithValidCredentials() {
         String netIdInput = "ntbachh";
-        String passwordInput = "bachdbrr1234567890@";
+        String passwordInput = "bachdbrr1234567890";
 
         // Type in NetID and Password
         onView(withId(R.id.netid_isu_pulse)).perform(typeText(netIdInput), closeSoftKeyboard());
@@ -59,12 +59,12 @@ public class BachSystemTest {
     @Test
     public void testUpdateProfileWithValidData() {
         String netIdInput = "ntbachh";
-        String passwordInput = "bachdbrr1234567890@";
+        String passwordInput = "bachdbrr1234567890";
         String newDescription = "My name is Bach";
         String newLinkedInUrl = "My linkedin url is here";
         String newExternalUrl = "My external url is here";
-        String newPassword = "bachdbrr1234567890";
-        String newConfirmPassword = "bachdbrr1234567890";
+        String newPassword = "bachdbrr1234567890@";
+        String newConfirmPassword = "bachdbrr1234567890@";
 
         ActivityScenario.launch(EditProfileActivity.class);
 
