@@ -22,10 +22,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -268,6 +265,88 @@ public class MinhSystemTest {
         // Assert
         assertEquals(404, response.getStatusCode(), "Expected status code 404 for no existing friendship");
     }
+
+    /**
+     * Test Case 6: Reject Non-Existent Friend Request.
+     *
+     * Objective: Ensure that rejecting a friend request that does not exist
+     * returns the appropriate error response.
+     */
+    @Test
+    public void testRejectFriendRequest_NoRequestExists() {
+        // Arrange: Define sender and receiver NetIDs
+        String senderNetId = "test_sender";
+        String receiverNetId = "test_receiver";
+
+        // Ensure sender and receiver exist in the database
+        User sender = createUser(senderNetId, "Sender", "Test", "sender@example.com");
+        User receiver = createUser(receiverNetId, "Receiver", "Test", "receiver@example.com");
+
+        // Ensure no friend request exists between sender and receiver
+        friendRequestRepository.findFriendRequestBySenderAndReceiver(sender, receiver)
+                .ifPresent(friendRequestRepository::delete);
+
+        // Act: Attempt to reject a friend request that doesn't exist
+        Response response = RestAssured.given()
+                .header("Content-Type", "application/json")
+                .queryParam("senderNetId", senderNetId)
+                .queryParam("receiverNetId", receiverNetId)
+                .when()
+                .delete("/friendRequest/reject");
+
+        // Assert: Verify the response status and message
+        assertEquals(404, response.getStatusCode(), "Expected status code 404 for non-existent friend request");
+        assertEquals("Friend request not exist", response.getBody().asString(), "Expected error message for non-existent friend request");
+    }
+    /**
+     * Test Case 7: Display Common Friends.
+     *
+     * Objective: Verify that the API correctly identifies and returns the common friends
+     * between two users who share mutual friendships.
+     */
+    @Test
+    public void testDisplayCommonFriends() {
+        // Arrange: Create users
+        User userA = createUser("userA", "Alice", "Anderson", "alice@example.com");
+        User userB = createUser("userB", "Bob", "Brown", "bob@example.com");
+        User userC = createUser("userC", "Charlie", "Clark", "charlie@example.com");
+        User userD = createUser("userD", "David", "Davis", "david@example.com");
+
+        // Arrange: Create friendships
+        createFriendShip(userA, userB); // Common Friend
+        createFriendShip(userA, userC); // Common Friend
+        createFriendShip(userA, userD); // Unique Friend
+
+        try {
+            // Act: Call the API to get common friends
+            Response response = RestAssured.given()
+                    .header("Content-Type", "application/json")
+                    .queryParam("netIdUser1", "userB")
+                    .queryParam("netIdUser2", "userC")
+                    .when()
+                    .get("/friendShip/sameFriends");
+
+            // Assert: Verify the response
+            assertEquals(200, response.getStatusCode(), "Expected status code 200");
+            List<User> friendsInCommon = Arrays.asList(response.getBody().as(User[].class));
+            assertNotNull(friendsInCommon, "Friends in common should not be null");
+            assertEquals(1, friendsInCommon.size(), "Expected 1 common friends");
+            assertTrue(friendsInCommon.stream().anyMatch(friend -> friend.getNetId().equals("userA")), "Expected userA as a common friend");
+        } finally {
+            // Clean up: Remove test-specific friendships
+            friendShipRepository.delete(friendShipRepository.findFriendShipBetweenUsers(userA, userB).get());
+            friendShipRepository.delete(friendShipRepository.findFriendShipBetweenUsers(userA, userC).get());
+            friendShipRepository.delete(friendShipRepository.findFriendShipBetweenUsers(userA, userD).get());
+
+            // Clean up: Remove test-specific users
+            userRepository.delete(userA);
+            userRepository.delete(userB);
+            userRepository.delete(userC);
+            userRepository.delete(userD);
+        }
+    }
+
+
     /**
      * Utility: Create a user.
      */
@@ -289,4 +368,6 @@ public class MinhSystemTest {
             friendShipRepository.save(friendship);
         }
     }
+
+
 }
