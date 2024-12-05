@@ -65,14 +65,14 @@ public class ScheduleController {
         // Check if user 1 exists or not
         Optional<User> curUser1 = userRepository.findUserByNetId(user1NetId);
         if(curUser1.isEmpty()){
-            return  ResponseEntity.internalServerError().build();
+            return  ResponseEntity.status(404).body(null);
         }
         User user1 = curUser1.get();
 
         //Check if user 2 exists or not
         Optional<User> curUser2 = userRepository.findUserByNetId(user2NetId);
         if(curUser2.isEmpty()){
-            return  ResponseEntity.internalServerError().build();
+            return  ResponseEntity.status(404).body(null);
         }
         User user2 = curUser2.get();
 
