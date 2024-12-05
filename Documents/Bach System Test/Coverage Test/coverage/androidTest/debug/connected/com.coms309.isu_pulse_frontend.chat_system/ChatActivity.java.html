@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ChatActivity.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=0;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">debug</a> &gt; <a href="index.source.html" class="el_package">com.coms309.isu_pulse_frontend.chat_system</a> &gt; <span class="el_source">ChatActivity.java</span></div><h1>ChatActivity.java</h1><pre class="source lang-java linenums">package com.coms309.isu_pulse_frontend.chat_system;
+
+import static android.content.ContentValues.TAG;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.text.NoCopySpan;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.android.volley.VolleyError;
+import com.bumptech.glide.Glide;
+import com.coms309.isu_pulse_frontend.R;
+import com.coms309.isu_pulse_frontend.api.ChatApiService;
+import com.coms309.isu_pulse_frontend.api.UpdateAccount;
+import com.coms309.isu_pulse_frontend.loginsignup.UserSession;
+import com.coms309.isu_pulse_frontend.model.Profile;
+import com.coms309.isu_pulse_frontend.web_socket.ChatServiceWebSocket;
+
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+
+<span class="nc" id="L39">public class ChatActivity extends AppCompatActivity implements ChatServiceWebSocket.ChatServiceListener {</span>
+
+    private ImageButton backButton;
+    private ChatApiService chatApiService;
+    private ImageView profileImageView;
+    private ImageButton attachButton;
+    private Button sendButton;
+    private EditText messageEditText;
+    private RecyclerView recyclerViewMessages;
+    private TextView nameTextView;
+    private TextView typingIndicatorTextView;
+    private ChatAdapter chatAdapter;
+    private ChatAdapter chatAdapterfetchHistory;
+    private ChatServiceWebSocket chatServiceWebSocket;
+    private String netId1;
+    private String netId2;
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+<span class="nc" id="L59">        super.onCreate(savedInstanceState);</span>
+<span class="nc" id="L60">        setContentView(R.layout.activity_chat);</span>
+<span class="nc" id="L61">        netId1 = getIntent().getStringExtra(&quot;netId&quot;);</span>
+<span class="nc" id="L62">        netId2 = UserSession.getInstance().getNetId();</span>
+<span class="nc" id="L63">        backButton = findViewById(R.id.buttonBack);</span>
+<span class="nc" id="L64">        profileImageView = findViewById(R.id.imageViewLogo);</span>
+<span class="nc" id="L65">        nameTextView = findViewById(R.id.textViewUsername);</span>
+<span class="nc" id="L66">        messageEditText = findViewById(R.id.editTextMessage);</span>
+<span class="nc" id="L67">        sendButton = findViewById(R.id.buttonSend);</span>
+<span class="nc" id="L68">        recyclerViewMessages = findViewById(R.id.recyclerViewMessages);</span>
+<span class="nc" id="L69">        recyclerViewMessages.setLayoutManager(new LinearLayoutManager(this));</span>
+<span class="nc" id="L70">        chatAdapter = new ChatAdapter(new ArrayList&lt;&gt;());</span>
+<span class="nc" id="L71">        chatAdapterfetchHistory = new ChatAdapter(new ArrayList&lt;&gt;());</span>
+<span class="nc" id="L72">        recyclerViewMessages.setAdapter(chatAdapter);</span>
+<span class="nc" id="L73">        chatServiceWebSocket = ChatServiceWebSocket.getInstance(this, netId2, netId1, this);</span>
+<span class="nc" id="L74">        chatServiceWebSocket.setWebSocketListener(this);</span>
+<span class="nc" id="L75">        chatApiService = new ChatApiService(this);</span>
+
+
+
+<span class="nc" id="L79">        backButton.setOnClickListener(v -&gt; {</span>
+<span class="nc" id="L80">            Intent intent = new Intent(ChatActivity.this, ChatList.class);</span>
+<span class="nc" id="L81">            startActivity(intent);</span>
+<span class="nc" id="L82">        });</span>
+
+<span class="nc" id="L84">        sendButton.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View v) {
+<span class="nc" id="L87">                String message = messageEditText.getText().toString();</span>
+<span class="nc bnc" id="L88" title="All 2 branches missed.">                if (!message.isEmpty()) {</span>
+<span class="nc" id="L89">                    sendMessage(message);</span>
+//                    chatAdapter.addMessage(new ChatMessage(message, true, LocalDateTime.now().toString()));
+//                    displayMessage(message, true, new SimpleDateFormat(&quot;HH:mm&quot;, Locale.getDefault()).format(new Date()));
+<span class="nc" id="L92">                    messageEditText.setText(&quot;&quot;);</span>
+                }
+<span class="nc" id="L94">            }</span>
+        });
+
+<span class="nc" id="L97">        fetchProfileData();</span>
+<span class="nc" id="L98">        fetchChatHistory();</span>
+<span class="nc" id="L99">    }</span>
+
+    @Override
+    protected void onResume() {
+<span class="nc" id="L103">        super.onResume();</span>
+<span class="nc" id="L104">        fetchProfileData();</span>
+//        fetchChatHistory();
+<span class="nc" id="L106">    }</span>
+
+
+    private void fetchChatHistory() {
+<span class="nc" id="L110">        chatApiService.getChatHistory(netId1, netId2, new ChatApiService.ChatHistoryCallback() {</span>
+            @Override
+            public void onSuccess(List&lt;ChatMessageDTO&gt; chatHistory) {
+//                chatAdapter.clearMessages();
+<span class="nc bnc" id="L114" title="All 2 branches missed.">                for (ChatMessageDTO message : chatHistory) {</span>
+<span class="nc" id="L115">                    displayMessage(message.getContent(), message.getSenderNetId().equals(netId2), message.getTimestamp());</span>
+<span class="nc" id="L116">                }</span>
+<span class="nc" id="L117">            }</span>
+
+            @Override
+            public void onError(String error) {
+<span class="nc" id="L121">                Toast.makeText(ChatActivity.this, &quot;Error fetching chat history: &quot; + error, Toast.LENGTH_LONG).show();</span>
+<span class="nc" id="L122">            }</span>
+        });
+<span class="nc" id="L124">    }</span>
+
+    public void updateUI(Profile profile) {
+<span class="nc bnc" id="L127" title="All 2 branches missed.">        if (profile != null) {</span>
+<span class="nc" id="L128">            String imageUrl = profile.getProfilePictureUrl();</span>
+<span class="nc" id="L129">            Glide.with(this)</span>
+<span class="nc" id="L130">                    .load(imageUrl)</span>
+<span class="nc" id="L131">                    .into(profileImageView);</span>
+<span class="nc" id="L132">            nameTextView.setText(profile.getFirstName() + &quot; &quot; + profile.getLastName());</span>
+<span class="nc" id="L133">        }</span>
+        else {
+<span class="nc" id="L135">            Log.e(&quot;FriendProfile&quot;, &quot;Profile data is null&quot;);</span>
+        }
+<span class="nc" id="L137">    }</span>
+
+
+    public void fetchProfileData() {
+<span class="nc" id="L141">        UpdateAccount.fetchProfileData(netId1, this, new UpdateAccount.ProfileCallback() {</span>
+            @Override
+            public void onSuccess(Profile profile) {
+<span class="nc" id="L144">                updateUI(profile);</span>
+<span class="nc" id="L145">            }</span>
+
+            @Override
+            public void onError(VolleyError error) {
+                // Handle error
+<span class="nc" id="L150">                error.printStackTrace();</span>
+<span class="nc" id="L151">            }</span>
+        });
+<span class="nc" id="L153">    }</span>
+
+    private void sendMessage(String messageContent) {
+        // Display the message locally
+<span class="nc" id="L157">        displayMessage(messageContent, true, LocalDateTime.now().toString());</span>
+
+        // Send message via WebSocket
+<span class="nc" id="L160">        chatServiceWebSocket.sendMessage(netId2, netId1, messageContent);</span>
+<span class="nc" id="L161">    }</span>
+
+    @Override
+    public void onMessageReceived(String senderNetId, String recipientNetId, String message, String timestamp) {
+//        Log.d(TAG, &quot;Message received in ChatActivity: &quot; + message);
+//        displayMessage(message, false, timestamp);
+//        boolean isSent = senderNetId.equals(netId2);
+//        ChatMessage chatMessage = new ChatMessage(message, isSent, timestamp);
+//        chatAdapter.addMessage(chatMessage);
+<span class="nc" id="L170">        runOnUiThread(() -&gt; {</span>
+            // Avoid adding the message twice by checking if it's from the current user
+<span class="nc bnc" id="L172" title="All 2 branches missed.">            if (!senderNetId.equals(UserSession.getInstance().getNetId())) {</span>
+<span class="nc" id="L173">                displayMessage(message, false, timestamp);</span>
+            }
+<span class="nc" id="L175">        });</span>
+<span class="nc" id="L176">    }</span>
+
+
+
+    private void displayMessage(String message, boolean isSent, String timestamp) {
+<span class="nc" id="L181">        chatAdapter.addMessage(new ChatMessage(message, isSent, timestamp));</span>
+<span class="nc" id="L182">        recyclerViewMessages.smoothScrollToPosition(chatAdapter.getItemCount() - 1);</span>
+<span class="nc" id="L183">    }</span>
+
+    @Override
+    protected void onDestroy() {
+<span class="nc" id="L187">        super.onDestroy();</span>
+        // Close WebSocket connection if needed
+<span class="nc bnc" id="L189" title="All 2 branches missed.">        if (chatServiceWebSocket != null) {</span>
+<span class="nc" id="L190">            chatServiceWebSocket.close();</span>
+<span class="nc" id="L191">            chatServiceWebSocket = null;</span>
+        }
+<span class="nc" id="L193">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span>Generated by the Android Gradle plugin 8.6.0</div></body></html>

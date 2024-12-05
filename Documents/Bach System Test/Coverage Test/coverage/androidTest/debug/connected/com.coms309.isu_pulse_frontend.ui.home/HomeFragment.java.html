@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>HomeFragment.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=0;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">debug</a> &gt; <a href="index.source.html" class="el_package">com.coms309.isu_pulse_frontend.ui.home</a> &gt; <span class="el_source">HomeFragment.java</span></div><h1>HomeFragment.java</h1><pre class="source lang-java linenums">package com.coms309.isu_pulse_frontend.ui.home;
+
+import android.graphics.Typeface;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.coms309.isu_pulse_frontend.adapters.AnnouncementListAdapter;
+import com.coms309.isu_pulse_frontend.adapters.TaskListAdapter;
+import com.coms309.isu_pulse_frontend.adapters.WeeklyCalendarAdapter;
+import com.coms309.isu_pulse_frontend.api.AnnouncementWebSocketClient;
+import com.coms309.isu_pulse_frontend.api.TaskApiService;
+import com.coms309.isu_pulse_frontend.databinding.FragmentHomeBinding;
+import com.coms309.isu_pulse_frontend.loginsignup.UserSession;
+import com.coms309.isu_pulse_frontend.model.Announcement;
+import com.coms309.isu_pulse_frontend.model.PersonalTask;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+<span class="fc" id="L37">public class HomeFragment extends Fragment implements AnnouncementWebSocketClient.WebSocketListener {</span>
+
+    private FragmentHomeBinding binding;
+    private TextView textViewTasksDueTodayTitle;
+    private TextView textViewAnnouncementTitle;
+    private TaskListAdapter taskAdapter;
+    private Button buttonAddTask;
+    private RecyclerView recyclerViewCalendar;
+    private RecyclerView recyclerViewTasksDueToday;
+    private RecyclerView recyclerViewAnnouncements;
+    private AnnouncementListAdapter announcementAdapter;
+
+<span class="fc" id="L49">    private List&lt;Object&gt; tasksDueToday = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L50">    private List&lt;String&gt; events = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L51">    private List&lt;Announcement&gt; announcementList = new ArrayList&lt;&gt;();</span>
+    private TaskApiService taskApiService;
+    private AnnouncementWebSocketClient announcementClient;
+    private static final String TAG = &quot;HomeFragment&quot;;
+
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             ViewGroup container, Bundle savedInstanceState) {
+<span class="fc" id="L59">        HomeViewModel homeViewModel =</span>
+<span class="fc" id="L60">                new ViewModelProvider(this).get(HomeViewModel.class);</span>
+
+<span class="fc" id="L62">        binding = FragmentHomeBinding.inflate(inflater, container, false);</span>
+<span class="fc" id="L63">        View root = binding.getRoot();</span>
+        // Set Dashboard title based on user role
+<span class="fc" id="L65">        String userRole = UserSession.getInstance(getContext()).getUserType();</span>
+<span class="fc" id="L66">        TextView dashboardTitle = binding.dashboardTitle;</span>
+<span class="pc bpc" id="L67" title="1 of 2 branches missed.">        if (&quot;FACULTY&quot;.equals(userRole)) {</span>
+<span class="nc" id="L68">            dashboardTitle.setText(&quot;Teacher Dashboard&quot;);</span>
+        } else {
+<span class="fc" id="L70">            dashboardTitle.setText(&quot;Student Dashboard&quot;);</span>
+        }
+        // Set up Announcement title
+<span class="fc" id="L73">        textViewAnnouncementTitle = binding.announcementTitle;</span>
+<span class="fc" id="L74">        textViewAnnouncementTitle.setText(&quot;Announcements&quot;);</span>
+<span class="fc" id="L75">        textViewAnnouncementTitle.setTextSize(25);</span>
+<span class="fc" id="L76">        textViewAnnouncementTitle.setTypeface(null, Typeface.BOLD);</span>
+
+        // Set up Tasks Due Today title
+<span class="fc" id="L79">        textViewTasksDueTodayTitle = binding.textViewTasksDueToday;</span>
+<span class="fc" id="L80">        textViewTasksDueTodayTitle.setText(&quot;Tasks Due Today&quot;);</span>
+<span class="fc" id="L81">        textViewTasksDueTodayTitle.setTextSize(25);</span>
+<span class="fc" id="L82">        textViewTasksDueTodayTitle.setTypeface(null, Typeface.BOLD);</span>
+
+        // Set up Weekly Calendar RecyclerView
+<span class="fc" id="L85">        recyclerViewCalendar = binding.recyclerViewWeeklyCalendar;</span>
+<span class="fc" id="L86">        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);</span>
+<span class="fc" id="L87">        recyclerViewCalendar.setLayoutManager(layoutManager);</span>
+<span class="fc" id="L88">        List&lt;String&gt; days = Arrays.asList(&quot;Monday&quot;, &quot;Tuesday&quot;, &quot;Wednesday&quot;, &quot;Thursday&quot;, &quot;Friday&quot;, &quot;Saturday&quot;, &quot;Sunday&quot;);</span>
+<span class="fc" id="L89">        WeeklyCalendarAdapter calendarAdapter = new WeeklyCalendarAdapter(days, tasksDueToday, events);</span>
+<span class="fc" id="L90">        recyclerViewCalendar.setAdapter(calendarAdapter);</span>
+
+        // Set up Tasks Due Today RecyclerView
+<span class="fc" id="L93">        recyclerViewTasksDueToday = binding.recyclerViewTasksDueToday;</span>
+<span class="fc" id="L94">        LinearLayoutManager layoutManagerTasks = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);</span>
+<span class="fc" id="L95">        recyclerViewTasksDueToday.setLayoutManager(layoutManagerTasks);</span>
+<span class="fc" id="L96">        taskApiService = new TaskApiService(getContext());</span>
+<span class="fc" id="L97">        taskAdapter = new TaskListAdapter(tasksDueToday, taskApiService, calendarAdapter);</span>
+<span class="fc" id="L98">        recyclerViewTasksDueToday.setAdapter(taskAdapter);</span>
+
+        // Add Task Button setup
+<span class="fc" id="L101">        buttonAddTask = binding.buttonAddTask;</span>
+<span class="fc" id="L102">        buttonAddTask.setText(&quot;Add Task&quot;);</span>
+<span class="fc" id="L103">        buttonAddTask.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View v) {
+<span class="nc" id="L106">                openAddTaskDialog();</span>
+<span class="nc" id="L107">            }</span>
+        });
+
+<span class="fc" id="L110">        populateTasksDue();</span>
+
+        // Set up Announcements RecyclerView (for Home/Dashboard view)
+<span class="fc" id="L113">        recyclerViewAnnouncements = binding.recyclerViewAnnouncements;</span>
+<span class="fc" id="L114">        LinearLayoutManager layoutManagerAnnouncements = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);</span>
+<span class="fc" id="L115">        recyclerViewAnnouncements.setLayoutManager(layoutManagerAnnouncements);</span>
+
+        // Pass 'false' for the isCourseView parameter since this is the dashboard
+<span class="fc" id="L118">        announcementAdapter = new AnnouncementListAdapter(getContext(), announcementList, false);</span>
+<span class="fc" id="L119">        recyclerViewAnnouncements.setAdapter(announcementAdapter);</span>
+
+<span class="fc" id="L121">        populateAnnouncements(); // Ensure announcements are fetched via WebSocket</span>
+
+<span class="fc" id="L123">        return root;</span>
+    }
+
+    private void openAddTaskDialog() {
+<span class="nc" id="L127">        AddTaskDialog addTaskDialog = new AddTaskDialog(taskApiService, taskAdapter, this);</span>
+<span class="nc" id="L128">        addTaskDialog.show(getChildFragmentManager(), &quot;Add Task Dialog&quot;);</span>
+<span class="nc" id="L129">    }</span>
+
+    private void populateTasksDue() {
+<span class="fc" id="L132">        taskApiService.getTasksIn2days(new TaskApiService.TaskResponseListener() {</span>
+            @Override
+            public void onResponse(List&lt;Object&gt; tasks) {
+<span class="fc" id="L135">                tasksDueToday.clear();</span>
+<span class="fc" id="L136">                tasksDueToday.addAll(tasks);</span>
+<span class="fc" id="L137">                taskAdapter.notifyDataSetChanged();</span>
+<span class="fc" id="L138">                recyclerViewCalendar.getAdapter().notifyDataSetChanged();</span>
+<span class="fc" id="L139">            }</span>
+
+            @Override
+            public void onError(String message) {
+<span class="nc bnc" id="L143" title="All 2 branches missed.">                Log.e(&quot;API Error&quot;, message != null ? message : &quot;Unknown error&quot;);</span>
+<span class="nc" id="L144">            }</span>
+        });
+<span class="fc" id="L146">    }</span>
+
+    // Remove or modify populateAnnouncements() based on your actual implementation
+    private void populateAnnouncements() {
+        // Ideally, fetch announcements via WebSocket or REST API
+        // For now, using placeholder data
+<span class="fc" id="L152">        announcementList.clear();</span>
+<span class="fc" id="L153">        announcementList.add(new Announcement(1L, &quot;Sample Announcement&quot;, 1L, &quot;facultyNetId&quot;, &quot;2024-11-07T10:00:00.000-06:00&quot;, &quot;CourseName&quot;));</span>
+<span class="fc" id="L154">        announcementAdapter.notifyDataSetChanged();</span>
+<span class="fc" id="L155">    }</span>
+
+    public void addNewTask(PersonalTask newTask) {
+<span class="nc" id="L158">        tasksDueToday.add(newTask);</span>
+<span class="nc" id="L159">        taskAdapter.notifyItemInserted(tasksDueToday.size() - 1);</span>
+<span class="nc" id="L160">        recyclerViewTasksDueToday.scrollToPosition(tasksDueToday.size() - 1);</span>
+<span class="nc" id="L161">        recyclerViewCalendar.getAdapter().notifyDataSetChanged();</span>
+<span class="nc" id="L162">    }</span>
+
+    @Override
+    public void onStart() {
+<span class="fc" id="L166">        super.onStart();</span>
+        // Access the singleton with Context
+<span class="fc" id="L168">        UserSession userSession = UserSession.getInstance(getContext());</span>
+<span class="fc" id="L169">        announcementClient = userSession.getWebSocketClient();</span>
+<span class="pc bpc" id="L170" title="1 of 2 branches missed.">        if (announcementClient != null) {</span>
+<span class="fc" id="L171">            announcementClient.setListener(this);</span>
+<span class="fc" id="L172">            Log.d(TAG, &quot;WebSocket client set as listener.&quot;);</span>
+            // Optionally, fetch initial announcements if needed
+        } else {
+<span class="nc" id="L175">            Log.e(TAG, &quot;WebSocket client is not initialized&quot;);</span>
+<span class="nc" id="L176">            Toast.makeText(getContext(), &quot;WebSocket client is not initialized&quot;, Toast.LENGTH_SHORT).show();</span>
+        }
+<span class="fc" id="L178">    }</span>
+
+    @Override
+    public void onMessageReceived(String message) {
+        try {
+<span class="nc" id="L183">            JSONObject jsonMessage = new JSONObject(message);</span>
+<span class="nc" id="L184">            String action = jsonMessage.getString(&quot;action&quot;);</span>
+
+<span class="nc bnc" id="L186" title="All 5 branches missed.">            switch (action) {</span>
+                case &quot;history&quot;:
+<span class="nc" id="L188">                    handleHistoryAction(jsonMessage);</span>
+<span class="nc" id="L189">                    break;</span>
+                case &quot;new&quot;:
+<span class="nc" id="L191">                    handleNewAnnouncement(jsonMessage);</span>
+<span class="nc" id="L192">                    break;</span>
+                case &quot;confirmation&quot;:
+<span class="nc" id="L194">                    handleConfirmation(jsonMessage);</span>
+<span class="nc" id="L195">                    break;</span>
+                case &quot;error&quot;:
+<span class="nc" id="L197">                    handleError(jsonMessage);</span>
+<span class="nc" id="L198">                    break;</span>
+                default:
+<span class="nc" id="L200">                    Log.w(TAG, &quot;Unknown action: &quot; + action);</span>
+            }
+<span class="nc" id="L202">        } catch (JSONException e) {</span>
+<span class="nc" id="L203">            Log.d(TAG, &quot;Received non-JSON message: &quot; + message);</span>
+<span class="nc" id="L204">        }</span>
+<span class="nc" id="L205">    }</span>
+
+    private void handleHistoryAction(JSONObject jsonMessage) throws JSONException {
+<span class="nc" id="L208">        JSONArray announcementsArray = jsonMessage.getJSONArray(&quot;announcements&quot;);</span>
+<span class="nc" id="L209">        announcementList.clear();</span>
+
+<span class="nc bnc" id="L211" title="All 2 branches missed.">        for (int i = 0; i &lt; announcementsArray.length(); i++) {</span>
+<span class="nc" id="L212">            JSONObject announcementJson = announcementsArray.getJSONObject(i);</span>
+<span class="nc" id="L213">            Announcement announcement = new Announcement(</span>
+<span class="nc" id="L214">                    announcementJson.getLong(&quot;id&quot;),</span>
+<span class="nc" id="L215">                    announcementJson.getString(&quot;content&quot;),</span>
+<span class="nc" id="L216">                    announcementJson.getLong(&quot;scheduleId&quot;),</span>
+<span class="nc" id="L217">                    announcementJson.getString(&quot;facultyNetId&quot;),</span>
+<span class="nc" id="L218">                    announcementJson.getString(&quot;timestamp&quot;),</span>
+                    &quot;&quot;
+            );
+<span class="nc" id="L221">            announcementList.add(announcement);</span>
+        }
+
+<span class="nc" id="L224">        announcementAdapter.notifyDataSetChanged();</span>
+<span class="nc" id="L225">    }</span>
+
+    private void handleNewAnnouncement(JSONObject jsonMessage) throws JSONException {
+<span class="nc" id="L228">        JSONObject announcementJson = jsonMessage.getJSONObject(&quot;announcement&quot;);</span>
+<span class="nc" id="L229">        Announcement newAnnouncement = new Announcement(</span>
+<span class="nc" id="L230">                announcementJson.getLong(&quot;id&quot;),</span>
+<span class="nc" id="L231">                announcementJson.getString(&quot;content&quot;),</span>
+<span class="nc" id="L232">                announcementJson.getLong(&quot;scheduleId&quot;),</span>
+<span class="nc" id="L233">                announcementJson.getString(&quot;facultyNetId&quot;),</span>
+<span class="nc" id="L234">                announcementJson.getString(&quot;timestamp&quot;),</span>
+                &quot;&quot;
+        );
+
+<span class="nc" id="L238">        announcementList.add(0, newAnnouncement);</span>
+<span class="nc" id="L239">        announcementAdapter.notifyItemInserted(0);</span>
+<span class="nc" id="L240">    }</span>
+
+    private void handleConfirmation(JSONObject jsonMessage) throws JSONException {
+<span class="nc" id="L243">        String confirmationMessage = jsonMessage.getString(&quot;message&quot;);</span>
+<span class="nc" id="L244">        Toast.makeText(getContext(), &quot;Confirmation: &quot; + confirmationMessage, Toast.LENGTH_SHORT).show();</span>
+<span class="nc" id="L245">    }</span>
+
+    private void handleError(JSONObject jsonMessage) throws JSONException {
+<span class="nc" id="L248">        String errorMessage = jsonMessage.getString(&quot;message&quot;);</span>
+<span class="nc" id="L249">        Log.e(TAG, &quot;Error: &quot; + errorMessage);</span>
+<span class="nc" id="L250">        Toast.makeText(getContext(), &quot;Error: &quot; + errorMessage, Toast.LENGTH_SHORT).show();</span>
+<span class="nc" id="L251">    }</span>
+
+    @Override
+    public void onDestroyView() {
+<span class="fc" id="L255">        super.onDestroyView();</span>
+<span class="fc bfc" id="L256" title="All 2 branches covered.">        if (announcementClient != null) {</span>
+<span class="fc" id="L257">            announcementClient.disconnectWebSocket();</span>
+<span class="fc" id="L258">            announcementClient = null;</span>
+        }
+<span class="fc" id="L260">        binding = null; // Avoid memory leaks by releasing the binding reference</span>
+<span class="fc" id="L261">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span>Generated by the Android Gradle plugin 8.6.0</div></body></html>

@@ -43,7 +43,11 @@ public class AuthenticationService {
             userJson.put("lastName", lastName);
             userJson.put("email", email);
             userJson.put("hashedPassword", password);
-            userJson.put("profilePictureUrl", imageUrl);
+            if (imageUrl != null){
+                userJson.put("profilePictureUrl", imageUrl);
+            } else {
+                userJson.put("profilePictureUrl", null);
+            }
             userJson.put("userType", userType);
         } catch (JSONException e) {
             e.printStackTrace();

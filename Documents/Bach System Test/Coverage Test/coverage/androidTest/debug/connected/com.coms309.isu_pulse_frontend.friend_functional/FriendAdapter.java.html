@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>FriendAdapter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=0;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">debug</a> &gt; <a href="index.source.html" class="el_package">com.coms309.isu_pulse_frontend.friend_functional</a> &gt; <span class="el_source">FriendAdapter.java</span></div><h1>FriendAdapter.java</h1><pre class="source lang-java linenums">package com.coms309.isu_pulse_frontend.friend_functional;
+
+import android.content.Context;
+import android.content.Intent;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.PopupWindow;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.coms309.isu_pulse_frontend.R;
+import com.coms309.isu_pulse_frontend.api.CourseService;
+import com.coms309.isu_pulse_frontend.api.FriendService;
+import com.coms309.isu_pulse_frontend.loginsignup.UserSession;
+import com.coms309.isu_pulse_frontend.ui.home.Course;
+
+import java.util.List;
+
+public class FriendAdapter extends RecyclerView.Adapter&lt;FriendAdapter.FriendViewHolder&gt; {
+    private Context context;
+    private List&lt;Friend&gt; friendList;
+
+<span class="nc" id="L30">    public FriendAdapter(Context context, List&lt;Friend&gt; friendList) {</span>
+<span class="nc" id="L31">        this.friendList = friendList;</span>
+<span class="nc" id="L32">        this.context = context;</span>
+<span class="nc" id="L33">    }</span>
+
+    @NonNull
+    @Override
+    public FriendViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+<span class="nc" id="L38">        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.unfriend_layout, parent, false);</span>
+<span class="nc" id="L39">        return new FriendViewHolder(view);</span>
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull FriendViewHolder holder, int position) {
+<span class="nc" id="L44">        Friend friend = friendList.get(position);</span>
+<span class="nc" id="L45">        holder.friendName.setText(friend.getFirstName() + &quot; &quot; + friend.getLastName());</span>
+
+<span class="nc" id="L47">        String student1NetId = UserSession.getInstance().getNetId();</span>
+<span class="nc" id="L48">        String student2NetId = friend.getNetId();</span>
+<span class="nc" id="L49">        FriendService friendService = new FriendService(context);</span>
+<span class="nc" id="L50">        CourseService courseService = new CourseService(context);</span>
+
+        // Fetch mutual courses
+<span class="nc" id="L53">        courseService.getMutualCourses(student1NetId, student2NetId,</span>
+<span class="nc" id="L54">                new CourseService.GetMutualCoursesCallback() {</span>
+                    @Override
+                    public void onSuccess(List&lt;Course&gt; courses) {
+<span class="nc" id="L57">                        int mutualCoursesCount = courses.size();</span>
+<span class="nc" id="L58">                        holder.mutualCoursesTextView.setText(mutualCoursesCount + &quot; mutual courses&quot;);</span>
+
+                        // Add popup for mutual courses
+<span class="nc" id="L61">                        holder.mutualCoursesTextView.setOnClickListener(v -&gt; {</span>
+<span class="nc" id="L62">                            View popupView = LayoutInflater.from(context).inflate(R.layout.popup_layout, null);</span>
+
+                            // Create the PopupWindow
+<span class="nc" id="L65">                            PopupWindow popupWindow = new PopupWindow(popupView,</span>
+                                    ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
+
+                            // Set data in popup
+<span class="nc" id="L69">                            TextView popupTitle = popupView.findViewById(R.id.popupTitle);</span>
+<span class="nc" id="L70">                            TextView popupContent = popupView.findViewById(R.id.popupContent);</span>
+
+<span class="nc" id="L72">                            popupTitle.setText(&quot;Mutual Courses&quot;);</span>
+<span class="nc" id="L73">                            StringBuilder coursesBuilder = new StringBuilder();</span>
+<span class="nc bnc" id="L74" title="All 2 branches missed.">                            for (Course course : courses) {</span>
+<span class="nc" id="L75">                                coursesBuilder.append(course.getCode()).append(&quot;\n&quot;);</span>
+<span class="nc" id="L76">                            }</span>
+<span class="nc" id="L77">                            popupContent.setText(coursesBuilder.toString());</span>
+
+                            // Show the popup window
+<span class="nc" id="L80">                            popupWindow.showAsDropDown(holder.mutualCoursesTextView, 0, 0);</span>
+<span class="nc" id="L81">                        });</span>
+<span class="nc" id="L82">                    }</span>
+
+                    @Override
+                    public void onError(String error) {
+<span class="nc" id="L86">                        holder.mutualCoursesTextView.setText(&quot;0 mutual courses&quot;);</span>
+<span class="nc" id="L87">                    }</span>
+                });
+
+        // Fetch mutual friends
+<span class="nc" id="L91">        friendService.getFriendsInCommon(student1NetId, student2NetId,</span>
+                response -&gt; {
+<span class="nc" id="L93">                    int mutualFriendsCount = response.length();</span>
+<span class="nc" id="L94">                    holder.mutualFriendsTextView.setText(mutualFriendsCount + &quot; mutual friends&quot;);</span>
+
+                    // Add popup for mutual friends
+<span class="nc" id="L97">                    holder.mutualFriendsTextView.setOnClickListener(v -&gt; {</span>
+<span class="nc" id="L98">                        View popupView = LayoutInflater.from(context).inflate(R.layout.popup_layout, null);</span>
+
+                        // Create the PopupWindow
+<span class="nc" id="L101">                        PopupWindow popupWindow = new PopupWindow(popupView,</span>
+                                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
+
+                        // Set data in popup
+<span class="nc" id="L105">                        TextView popupTitle = popupView.findViewById(R.id.popupTitle);</span>
+<span class="nc" id="L106">                        TextView popupContent = popupView.findViewById(R.id.popupContent);</span>
+
+<span class="nc" id="L108">                        popupTitle.setText(&quot;Mutual Friends&quot;);</span>
+<span class="nc" id="L109">                        StringBuilder friendsBuilder = new StringBuilder();</span>
+<span class="nc bnc" id="L110" title="All 2 branches missed.">                        for (int i = 0; i &lt; response.length(); i++) {</span>
+                            try {
+<span class="nc" id="L112">                                friendsBuilder.append(response.getJSONObject(i).getString(&quot;firstName&quot;))</span>
+<span class="nc" id="L113">                                        .append(&quot; &quot;)</span>
+<span class="nc" id="L114">                                        .append(response.getJSONObject(i).getString(&quot;lastName&quot;))</span>
+<span class="nc" id="L115">                                        .append(&quot;\n&quot;);</span>
+<span class="nc" id="L116">                            } catch (Exception e) {</span>
+<span class="nc" id="L117">                                e.printStackTrace();</span>
+<span class="nc" id="L118">                            }</span>
+                        }
+<span class="nc" id="L120">                        popupContent.setText(friendsBuilder.toString());</span>
+
+                        // Show the popup window
+<span class="nc" id="L123">                        popupWindow.showAsDropDown(holder.mutualFriendsTextView, 0, 0);</span>
+<span class="nc" id="L124">                    });</span>
+<span class="nc" id="L125">                },</span>
+<span class="nc" id="L126">                error -&gt; holder.mutualFriendsTextView.setText(&quot;0 mutual friends&quot;));</span>
+
+        // Unfriend button functionality
+<span class="nc" id="L129">        holder.unfriendButton.setOnClickListener(v -&gt; {</span>
+<span class="nc" id="L130">            friendService.unfriendFriend(student1NetId, student2NetId, new Response.Listener&lt;String&gt;() {</span>
+                @Override
+                public void onResponse(String response) {
+<span class="nc" id="L133">                    Toast.makeText(context, &quot;Unfriend successfully&quot;, Toast.LENGTH_SHORT).show();</span>
+<span class="nc" id="L134">                    friendList.remove(holder.getAdapterPosition());</span>
+<span class="nc" id="L135">                    notifyItemRemoved(holder.getAdapterPosition());</span>
+<span class="nc" id="L136">                    notifyItemRangeChanged(holder.getAdapterPosition(), friendList.size());</span>
+<span class="nc" id="L137">                }</span>
+<span class="nc" id="L138">            }, new Response.ErrorListener() {</span>
+                @Override
+                public void onErrorResponse(VolleyError error) {
+<span class="nc" id="L141">                    Toast.makeText(context, &quot;Unfriend unsuccessfully&quot;, Toast.LENGTH_SHORT).show();</span>
+<span class="nc" id="L142">                }</span>
+            });
+<span class="nc" id="L144">        });</span>
+
+        // View profile button functionality
+<span class="nc" id="L147">        holder.viewProfileButton.setOnClickListener(v -&gt; {</span>
+            // Handle view profile button click
+<span class="nc" id="L149">            Intent intent = new Intent(context, FriendProfile.class);</span>
+<span class="nc" id="L150">            intent.putExtra(&quot;netId&quot;, friend.getNetId());</span>
+<span class="nc" id="L151">            context.startActivity(intent);</span>
+<span class="nc" id="L152">        });</span>
+<span class="nc" id="L153">    }</span>
+
+    @Override
+    public int getItemCount() {
+<span class="nc" id="L157">        return friendList.size();</span>
+    }
+
+    public static class FriendViewHolder extends RecyclerView.ViewHolder {
+        TextView friendName;
+        TextView mutualFriendsTextView;
+        TextView mutualCoursesTextView;
+        Button viewProfileButton;
+        Button unfriendButton;
+
+        public FriendViewHolder(@NonNull View itemView) {
+<span class="nc" id="L168">            super(itemView);</span>
+<span class="nc" id="L169">            friendName = itemView.findViewById(R.id.friend_name);</span>
+<span class="nc" id="L170">            mutualFriendsTextView = itemView.findViewById(R.id.mutual_friends);</span>
+<span class="nc" id="L171">            mutualCoursesTextView = itemView.findViewById(R.id.mutual_courses);</span>
+<span class="nc" id="L172">            viewProfileButton = itemView.findViewById(R.id.viewfriendbutton);</span>
+<span class="nc" id="L173">            unfriendButton = itemView.findViewById(R.id.unfriendbutton);</span>
+<span class="nc" id="L174">        }</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span>Generated by the Android Gradle plugin 8.6.0</div></body></html>

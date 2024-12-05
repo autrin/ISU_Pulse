@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AnnouncementListAdapter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=0;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">debug</a> &gt; <a href="index.source.html" class="el_package">com.coms309.isu_pulse_frontend.adapters</a> &gt; <span class="el_source">AnnouncementListAdapter.java</span></div><h1>AnnouncementListAdapter.java</h1><pre class="source lang-java linenums">package com.coms309.isu_pulse_frontend.adapters;
+
+import android.app.AlertDialog;
+import android.content.Context;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.coms309.isu_pulse_frontend.R;
+import com.coms309.isu_pulse_frontend.loginsignup.UserSession;
+import com.coms309.isu_pulse_frontend.model.Announcement;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+
+/**
+ * A RecyclerView adapter for displaying and managing a list of announcements.
+ * Supports actions like editing and deleting announcements for faculty users.
+ */
+public class AnnouncementListAdapter extends RecyclerView.Adapter&lt;AnnouncementListAdapter.AnnouncementViewHolder&gt; {
+
+    private List&lt;Announcement&gt; announcements;
+    private boolean isTeacherView;
+    private Context context;
+
+    /**
+     * Constructs an {@link AnnouncementListAdapter}.
+     *
+     * @param context        the context for inflating views and displaying dialogs
+     * @param announcements  the list of announcements to be displayed
+     * @param isTeacherView  indicates if the adapter is being used in the teacher's view
+     */
+<span class="fc" id="L43">    public AnnouncementListAdapter(Context context, List&lt;Announcement&gt; announcements, boolean isTeacherView) {</span>
+<span class="fc" id="L44">        this.context = context;</span>
+<span class="fc" id="L45">        this.announcements = announcements;</span>
+<span class="fc" id="L46">        this.isTeacherView = isTeacherView;</span>
+<span class="fc" id="L47">    }</span>
+
+    /**
+     * Creates and returns a new {@link AnnouncementViewHolder} for displaying an announcement.
+     *
+     * @param parent   the parent view group
+     * @param viewType the type of the view
+     * @return a new instance of {@link AnnouncementViewHolder}
+     */
+    @Override
+    public AnnouncementViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+<span class="fc" id="L58">        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.announcement_item, parent, false);</span>
+<span class="fc" id="L59">        return new AnnouncementViewHolder(view, false);</span>
+    }
+
+    /**
+     * Binds data to the {@link AnnouncementViewHolder}.
+     *
+     * @param holder   the view holder
+     * @param position the position of the item in the list
+     */
+    @Override
+    public void onBindViewHolder(@NonNull AnnouncementViewHolder holder, int position) {
+<span class="fc" id="L70">        Announcement announcement = announcements.get(position);</span>
+
+<span class="fc" id="L72">        holder.announcementContent.setText(announcement.getContent());</span>
+<span class="fc" id="L73">        holder.announcementCourse.setText(announcement.getCourseName());</span>
+<span class="fc" id="L74">        holder.announcementTimestamp.setText(formatDate(announcement.getTimestamp()));</span>
+
+<span class="fc" id="L76">        String userType = UserSession.getInstance(holder.itemView.getContext()).getUserType();</span>
+
+        // Show buttons for teachers
+<span class="pc bpc" id="L79" title="1 of 2 branches missed.">        if (&quot;FACULTY&quot;.equals(userType)) {</span>
+<span class="nc" id="L80">            holder.teacherActionsLayout.setVisibility(View.VISIBLE);</span>
+<span class="nc" id="L81">            holder.buttonUpdateAnnouncement.setOnClickListener(v -&gt; editAnnouncement(announcement, position));</span>
+<span class="nc" id="L82">            holder.buttonDeleteAnnouncement.setOnClickListener(v -&gt; deleteAnnouncement(announcement, position));</span>
+        } else {
+<span class="fc" id="L84">            holder.teacherActionsLayout.setVisibility(View.GONE);</span>
+        }
+<span class="fc" id="L86">    }</span>
+
+    /**
+     * Returns the total number of announcements.
+     *
+     * @return the size of the announcements list
+     */
+    @Override
+    public int getItemCount() {
+<span class="fc" id="L95">        return announcements.size();</span>
+    }
+
+    /**
+     * Formats the timestamp of an announcement for display.
+     *
+     * @param timestamp the timestamp string in ISO 8601 format
+     * @return the formatted timestamp string
+     */
+    private String formatDate(String timestamp) {
+<span class="fc" id="L105">        SimpleDateFormat inputFormat = new SimpleDateFormat(&quot;yyyy-MM-dd'T'HH:mm:ss.SSSXXX&quot;, Locale.getDefault());</span>
+<span class="fc" id="L106">        SimpleDateFormat outputFormat = new SimpleDateFormat(&quot;MMM dd, yyyy hh:mm a&quot;, Locale.getDefault());</span>
+        try {
+<span class="fc" id="L108">            Date date = inputFormat.parse(timestamp);</span>
+<span class="fc" id="L109">            return outputFormat.format(date);</span>
+<span class="nc" id="L110">        } catch (Exception e) {</span>
+<span class="nc" id="L111">            e.printStackTrace();</span>
+<span class="nc" id="L112">            return timestamp;</span>
+        }
+    }
+
+    /**
+     * Displays a dialog for editing an announcement's content.
+     *
+     * @param announcement the announcement to edit
+     * @param position     the position of the announcement in the list
+     */
+    private void editAnnouncement(Announcement announcement, int position) {
+<span class="nc" id="L123">        AlertDialog.Builder builder = new AlertDialog.Builder(context);</span>
+<span class="nc" id="L124">        builder.setTitle(&quot;Edit Announcement&quot;);</span>
+
+<span class="nc" id="L126">        final EditText input = new EditText(context);</span>
+<span class="nc" id="L127">        input.setText(announcement.getContent());</span>
+<span class="nc" id="L128">        builder.setView(input);</span>
+
+<span class="nc" id="L130">        builder.setPositiveButton(&quot;Save&quot;, (dialog, which) -&gt; {</span>
+<span class="nc" id="L131">            String newContent = input.getText().toString();</span>
+<span class="nc bnc" id="L132" title="All 2 branches missed.">            if (!newContent.isEmpty()) {</span>
+<span class="nc" id="L133">                announcement.setContent(newContent);</span>
+<span class="nc" id="L134">                notifyItemChanged(position);</span>
+
+                // Notify backend via WebSocket
+<span class="nc" id="L137">                UserSession.getInstance(context).getWebSocketClient()</span>
+<span class="nc" id="L138">                        .updateAnnouncement(announcement.getId(), newContent);</span>
+<span class="nc" id="L139">                Toast.makeText(context, &quot;Announcement updated&quot;, Toast.LENGTH_SHORT).show();</span>
+            }
+<span class="nc" id="L141">        });</span>
+<span class="nc" id="L142">        builder.setNegativeButton(&quot;Cancel&quot;, (dialog, which) -&gt; dialog.cancel());</span>
+
+<span class="nc" id="L144">        builder.show();</span>
+<span class="nc" id="L145">    }</span>
+
+    /**
+     * Displays a dialog for deleting an announcement.
+     *
+     * @param announcement the announcement to delete
+     * @param position     the position of the announcement in the list
+     */
+    private void deleteAnnouncement(Announcement announcement, int position) {
+<span class="nc" id="L154">        AlertDialog.Builder builder = new AlertDialog.Builder(context);</span>
+<span class="nc" id="L155">        builder.setTitle(&quot;Delete Announcement&quot;);</span>
+<span class="nc" id="L156">        builder.setMessage(&quot;Are you sure you want to delete this announcement?&quot;);</span>
+
+<span class="nc" id="L158">        builder.setPositiveButton(&quot;Yes&quot;, (dialog, which) -&gt; {</span>
+<span class="nc" id="L159">            announcements.remove(position);</span>
+<span class="nc" id="L160">            notifyItemRemoved(position);</span>
+<span class="nc" id="L161">            notifyItemRangeChanged(position, announcements.size());</span>
+
+            // Notify backend via WebSocket
+<span class="nc" id="L164">            UserSession.getInstance(context).getWebSocketClient()</span>
+<span class="nc" id="L165">                    .deleteAnnouncement(announcement.getId());</span>
+<span class="nc" id="L166">            Toast.makeText(context, &quot;Announcement deleted&quot;, Toast.LENGTH_SHORT).show();</span>
+<span class="nc" id="L167">        });</span>
+<span class="nc" id="L168">        builder.setNegativeButton(&quot;No&quot;, (dialog, which) -&gt; dialog.cancel());</span>
+
+<span class="nc" id="L170">        builder.show();</span>
+<span class="nc" id="L171">    }</span>
+
+    /**
+     * ViewHolder class for displaying a single announcement.
+     */
+    public static class AnnouncementViewHolder extends RecyclerView.ViewHolder {
+        TextView announcementContent, announcementTimestamp, announcementCourse;
+        LinearLayout teacherActionsLayout;
+        Button buttonUpdateAnnouncement, buttonDeleteAnnouncement;
+
+        /**
+         * Constructs an {@link AnnouncementViewHolder}.
+         *
+         * @param itemView      the view representing a single announcement
+         * @param isTeacherView indicates if the view is for teachers
+         */
+        public AnnouncementViewHolder(@NonNull View itemView, boolean isTeacherView) {
+<span class="fc" id="L188">            super(itemView);</span>
+
+<span class="fc" id="L190">            announcementContent = itemView.findViewById(R.id.announcement_content);</span>
+<span class="fc" id="L191">            announcementTimestamp = itemView.findViewById(R.id.announcement_timestamp);</span>
+<span class="fc" id="L192">            announcementCourse = itemView.findViewById(R.id.announcement_course);</span>
+<span class="fc" id="L193">            teacherActionsLayout = itemView.findViewById(R.id.teacher_actions_layout);</span>
+
+<span class="pc bpc" id="L195" title="1 of 2 branches missed.">            if (&quot;FACULTY&quot;.equals(UserSession.getInstance(itemView.getContext()).getUserType())) {</span>
+<span class="nc" id="L196">                buttonUpdateAnnouncement = itemView.findViewById(R.id.button_update_announcement);</span>
+<span class="nc" id="L197">                buttonDeleteAnnouncement = itemView.findViewById(R.id.button_delete_announcement);</span>
+            }
+<span class="fc" id="L199">        }</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span>Generated by the Android Gradle plugin 8.6.0</div></body></html>

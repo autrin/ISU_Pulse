@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UpdateAccount.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=0;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">debug</a> &gt; <a href="index.source.html" class="el_package">com.coms309.isu_pulse_frontend.api</a> &gt; <span class="el_source">UpdateAccount.java</span></div><h1>UpdateAccount.java</h1><pre class="source lang-java linenums">package com.coms309.isu_pulse_frontend.api;
+
+import static com.coms309.isu_pulse_frontend.api.Constants.BASE_URL;
+
+import android.content.Context;
+import android.net.Uri;
+import android.util.Log;
+
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+import com.bumptech.glide.Glide;
+import com.coms309.isu_pulse_frontend.loginsignup.UserSession;
+import com.coms309.isu_pulse_frontend.model.Profile;
+import com.google.gson.Gson;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+<span class="fc" id="L24">public class UpdateAccount {</span>
+
+    public interface VolleyCallback {
+        void onSuccess(String result);
+        void onError(String message);
+    }
+
+    public interface ProfileCallback {
+        void onSuccess(Profile profile);
+        void onError(VolleyError error);
+    }
+
+    public void updateUserPassword(
+//            String netId,
+            String newPassword,
+            Context context,
+            final VolleyCallback callback
+    ) {
+<span class="fc" id="L42">        String netId = UserSession.getInstance(context).getNetId(); // Retrieve the netId dynamically</span>
+<span class="fc" id="L43">        Log.d(&quot;UpdatePassword&quot;, &quot;NetId: &quot; + netId + &quot;, New Password: &quot; + newPassword);</span>
+<span class="fc" id="L44">        String url = BASE_URL + &quot;users/updatepw/&quot; + netId + &quot;?newPassword=&quot; + newPassword; // can use Uri.encode(newPassword);</span>
+<span class="fc" id="L45">        RequestQueue queue = Volley.newRequestQueue(context);</span>
+
+<span class="fc" id="L47">        StringRequest putRequest = new StringRequest(</span>
+                Request.Method.PUT, url,
+<span class="fc" id="L49">                callback::onSuccess,</span>
+                error -&gt; {
+<span class="nc" id="L51">                    Log.e(&quot;UpdatePasswordError&quot;, &quot;Error response: &quot; + error.toString());</span>
+<span class="nc" id="L52">                    callback.onError(error.toString());</span>
+<span class="nc" id="L53">                    error.printStackTrace();</span>
+<span class="nc" id="L54">                }</span>
+        );
+<span class="fc" id="L56">        queue.add(putRequest);</span>
+<span class="fc" id="L57">    }</span>
+
+    public static void fetchProfileData(String netId, Context context, final ProfileCallback callback) {
+<span class="fc" id="L60">        String url = BASE_URL + &quot;profile/&quot; + netId;</span>
+<span class="fc" id="L61">        RequestQueue queue = Volley.newRequestQueue(context);</span>
+
+<span class="fc" id="L63">        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(</span>
+                Request.Method.GET, url, null,
+<span class="fc" id="L65">                new Response.Listener&lt;JSONObject&gt;() {</span>
+                    @Override
+                    public void onResponse(JSONObject response) {
+<span class="fc" id="L68">                        Gson gson = new Gson();</span>
+<span class="fc" id="L69">                        Profile profile = gson.fromJson(response.toString(), Profile.class);</span>
+<span class="fc" id="L70">                        callback.onSuccess(profile);</span>
+<span class="fc" id="L71">                    }</span>
+                },
+<span class="fc" id="L73">                new Response.ErrorListener() {</span>
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+<span class="fc" id="L76">                        callback.onError(error);</span>
+<span class="fc" id="L77">                    }</span>
+                }
+        );
+
+<span class="fc" id="L81">        queue.add(jsonObjectRequest);</span>
+<span class="fc" id="L82">    }</span>
+
+    public void updateProfile(
+//            String netId,
+            String description,
+            String externalUrl,
+            String linkedinUrl,
+            Context context,
+            final VolleyCallback callback
+    ) {
+<span class="fc" id="L92">        String netId = UserSession.getInstance(context).getNetId();  // Retrieve netId dynamically</span>
+        // Construct the URL with query parameters for PUT request
+<span class="fc" id="L94">        String url = BASE_URL + &quot;profile/&quot; + netId</span>
+                + &quot;?description=&quot; + description
+                + &quot;&amp;externalUrl=&quot; + externalUrl
+                + &quot;&amp;linkedinUrl=&quot; + linkedinUrl;
+
+<span class="fc" id="L99">        RequestQueue queue = Volley.newRequestQueue(context);</span>
+
+        // Create a PUT request
+<span class="fc" id="L102">        StringRequest putRequest = new StringRequest(</span>
+                Request.Method.PUT, url,
+<span class="fc" id="L104">                response -&gt; callback.onSuccess(response),</span>
+                error -&gt; {
+<span class="nc" id="L106">                    callback.onError(error.toString());</span>
+<span class="nc" id="L107">                    error.printStackTrace();</span>
+<span class="nc" id="L108">                }</span>
+        );
+<span class="fc" id="L110">        queue.add(putRequest);</span>
+<span class="fc" id="L111">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span>Generated by the Android Gradle plugin 8.6.0</div></body></html>
