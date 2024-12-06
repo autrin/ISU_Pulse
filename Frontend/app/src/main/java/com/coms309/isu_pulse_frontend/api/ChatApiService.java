@@ -78,6 +78,16 @@ public class ChatApiService {
                         for (int i = 0; i < response.length(); i++) {
                             try {
                                 JSONObject jsonMessage = response.getJSONObject(i);
+
+                                if (jsonMessage.has("group")){
+                                    if (jsonMessage.isNull("sender")){
+
+                                    }
+                                    else {
+
+                                    }
+                                }
+
                                 JSONObject senderJson = jsonMessage.getJSONObject("sender");
                                 JSONObject recipientJson = jsonMessage.getJSONObject("recipient");
                                 ChatMessage message = new ChatMessage(

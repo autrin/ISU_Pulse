@@ -14,6 +14,8 @@ public class ChatMessage {
     private String recipientlastName;
     private String senderNetId;
     private String recipientNetId;
+    private Long groupId;
+    private String groupName;
 
     public ChatMessage(String message, boolean isSent, String timestamp) {
         this.message = message;
@@ -28,6 +30,17 @@ public class ChatMessage {
         this.timestamp = timestamp;
     }
 
+    public ChatMessage(String senderfirstName, String senderlastName, String senderNetId, Long groupId, String groupName, String message, String timestamp) {
+        this.senderfirstName = senderfirstName;
+        this.senderlastName = senderlastName;
+        this.senderNetId = senderNetId;
+        this.groupId = groupId;
+        this.groupName = groupName;
+        this.message = message;
+        this.timestamp = timestamp;
+    }
+
+
     public ChatMessage(String senderfirstName, String senderlastName, String recipientfirstName, String recipientlastName, String senderNetId, String recipientNetId, String message, String timestamp) {
         this.senderfirstName = senderfirstName;
         this.senderlastName = senderlastName;
@@ -35,6 +48,13 @@ public class ChatMessage {
         this.recipientlastName = recipientlastName;
         this.senderNetId = senderNetId;
         this.recipientNetId = recipientNetId;
+        this.message = message;
+        this.timestamp = timestamp;
+    }
+
+    public ChatMessage(Long groupId, String groupName, String message, String timestamp) {
+        this.groupId = groupId;
+        this.groupName = groupName;
         this.message = message;
         this.timestamp = timestamp;
     }
@@ -54,6 +74,10 @@ public class ChatMessage {
     public String getRecipientlastName() {
         return recipientlastName;
     }
+
+    private Long getGroupId() {return groupId;}
+
+    private String getGroupName() {return groupName;}
 
     public String getSenderFullName() {
         return senderfirstName + " " + senderlastName;
