@@ -130,7 +130,6 @@ public class ChatController {
         if (user == null) {
             return ResponseEntity.badRequest().body(null);
         }
-
         // Fetch the list of unique users the specified user has chatted with
         List<User> chattedUserAsRecipient = chatMessageRepository.findDistinctRecipients(netId);
         List<User> chattedUserAsSender = chatMessageRepository.findDistinctSenders(netId);
