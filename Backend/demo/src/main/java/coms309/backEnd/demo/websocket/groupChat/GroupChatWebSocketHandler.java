@@ -95,6 +95,7 @@ public class GroupChatWebSocketHandler extends TextWebSocketHandler {
         groupMessagesRepository.save(groupMessage);
 
         // Broadcast the message to all group members
+        groupMessagesDTO.setId(groupMessage.getId());
         String messageJson = objectMapper.writeValueAsString(groupMessagesDTO);
         broadcastToGroup(groupMessagesDTO.getGroupId(), messageJson);
     }
@@ -124,6 +125,7 @@ public class GroupChatWebSocketHandler extends TextWebSocketHandler {
         List<GroupMessagesDTO> chatHistory = new ArrayList<>();
         for (GroupMessages message : groupMessages) {
             GroupMessagesDTO groupMessagesDTO = new GroupMessagesDTO();
+            groupMessagesDTO.setId(message.getId());
             groupMessagesDTO.setSenderNetId(message.getSender().getNetId());
             groupMessagesDTO.setGroupId(message.getGroup().getId());
             groupMessagesDTO.setContent(message.getContent());
