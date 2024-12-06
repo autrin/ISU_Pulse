@@ -126,7 +126,8 @@ public class GroupChatWebSocketHandler extends TextWebSocketHandler {
         for (GroupMessages message : groupMessages) {
             GroupMessagesDTO groupMessagesDTO = new GroupMessagesDTO();
             groupMessagesDTO.setId(message.getId());
-            groupMessagesDTO.setSenderNetId(message.getSender().getNetId());
+            //groupMessagesDTO.setSenderNetId(message.getSender().getNetId());
+            groupMessagesDTO.setSenderNetId(message.getSender() != null ? message.getSender().getNetId() : null);
             groupMessagesDTO.setGroupId(message.getGroup().getId());
             groupMessagesDTO.setContent(message.getContent());
             groupMessagesDTO.setTimestamp(message.getTimestamp());

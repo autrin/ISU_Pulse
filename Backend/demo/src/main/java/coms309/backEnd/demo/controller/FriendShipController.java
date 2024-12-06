@@ -321,8 +321,6 @@ public class FriendShipController {
             }
         }
         return ResponseEntity.ok(friendsNotInAGivenGroup);
-
-
     }
     private boolean checkUserInTheGroup(User user, Group group){
         List<Join> joins = user.getJoins();
