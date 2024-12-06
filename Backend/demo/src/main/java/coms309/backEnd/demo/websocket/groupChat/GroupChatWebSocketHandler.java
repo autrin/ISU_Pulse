@@ -127,6 +127,7 @@ public class GroupChatWebSocketHandler extends TextWebSocketHandler {
             GroupMessagesDTO groupMessagesDTO = new GroupMessagesDTO();
             groupMessagesDTO.setId(message.getId());
             //groupMessagesDTO.setSenderNetId(message.getSender().getNetId());
+            // The value of sender cna be null therefor, it will need the ternary conditional operator to handle this situation
             groupMessagesDTO.setSenderNetId(message.getSender() != null ? message.getSender().getNetId() : null);
             groupMessagesDTO.setGroupId(message.getGroup().getId());
             groupMessagesDTO.setContent(message.getContent());
