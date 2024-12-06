@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 @Data
 @Entity
 @Table(name = "group_messages")
-public class GroupMessages {
+public class GroupMessages implements Message{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
