@@ -103,7 +103,6 @@ public class ChatViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 else {
                     intent.putExtra("netId", chatMessage.getSenderNetId());
                 }
-
                 v.getContext().startActivity(intent);
             });
         }
