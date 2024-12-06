@@ -303,16 +303,19 @@ public class FriendShipController {
         Group group = curGroup.get();
 
         User user = userRepository.findUserByNetId(netId).orElse(null);
-
         if (user == null) {
             return ResponseEntity.badRequest().body(null);
         }
+        // Check if user is in the group or not
+//        if(!checkUserInTheGroup(user,group)){
+//            ResponseEntity.internalServerError().build();
+//        }
         // List all the friends
         List<User> friends = displayFriendList(netId).getBody();
         List<User> friendsNotInAGivenGroup = new ArrayList<>();
         if(friends != null){
             for(User friend : friends) {
-                if (!checkUserIntheGroup(friend, group)) {
+                if (!checkUserInTheGroup(friend, group)) {
                     friendsNotInAGivenGroup.add(friend);
                 }
             }
@@ -321,13 +324,13 @@ public class FriendShipController {
 
 
     }
-    private boolean checkUserIntheGroup(User user, Group group){
+    private boolean checkUserInTheGroup(User user, Group group){
         List<Join> joins = group.getJoins();
-        List<User> usersIntheGroup =  new ArrayList<>();
+        List<User> usersInTheGroup =  new ArrayList<>();
         for(Join join : joins){
-            usersIntheGroup.add(join.getUser());
+            usersInTheGroup.add(join.getUser());
         }
-        for(User u : usersIntheGroup){
+        for(User u : usersInTheGroup){
             if(user.getId() == u.getId()){
                 return true;
             }
