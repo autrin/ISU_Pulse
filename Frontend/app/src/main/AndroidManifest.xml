@@ -45,6 +45,9 @@
             android:name=".chat_system.ChatActivity"
             android:exported="false" />
         <activity
+            android:name=".chat_system.GroupChatAddingMember"
+            android:exported="false" />
+        <activity
             android:name=".profile_activity.EditProfileActivity"
             android:exported="false" />
         <activity

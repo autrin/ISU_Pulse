@@ -44,6 +44,7 @@
             android:layout_centerVertical="true"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@android:drawable/ic_input_add"
+            android:clickable="true"
             android:contentDescription="Add Person" />
     </RelativeLayout>
 
