@@ -30,6 +30,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class GroupChatAddingMember extends AppCompatActivity {
     private TextView cancel;
@@ -115,9 +116,24 @@ public class GroupChatAddingMember extends AppCompatActivity {
         String groupNameText = groupName.getText().toString().trim();
         String netId = UserSession.getInstance().getNetId();
 
+        // If group name is empty, set it to concatenated first names of selected friends
         if (groupNameText.isEmpty()) {
-            Toast.makeText(this, "Please enter a group name", Toast.LENGTH_SHORT).show();
-            return;
+            List<Friend> selectedFriends = filteredFriendList.stream()
+                    .filter(Friend::isSelected)
+                    .collect(Collectors.toList());
+
+            // Generate group name as "FirstName, FirstName..."
+            groupNameText = selectedFriends.stream()
+                    .map(Friend::getFirstName)
+                    .collect(Collectors.joining(", "));
+
+            // In case there are more than 3 names, truncate and add ellipsis
+            if (selectedFriends.size() > 3) {
+                groupNameText = selectedFriends.stream()
+                        .limit(3)
+                        .map(Friend::getFirstName)
+                        .collect(Collectors.joining(", ")) + "...";
+            }
         }
 
         groupChatApiService.createGroupChat(groupNameText, netId, new GroupChatApiService.GroupChatCallback() {
