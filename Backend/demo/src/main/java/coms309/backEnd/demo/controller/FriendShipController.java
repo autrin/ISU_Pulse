@@ -307,9 +307,9 @@ public class FriendShipController {
             return ResponseEntity.badRequest().body(null);
         }
         // Check if user is in the group or not
-//        if(!checkUserInTheGroup(user,group)){
-//            ResponseEntity.internalServerError().build();
-//        }
+        if(!checkUserInTheGroup(user,group)){
+            return  ResponseEntity.internalServerError().build();
+        }
         // List all the friends
         List<User> friends = displayFriendList(netId).getBody();
         List<User> friendsNotInAGivenGroup = new ArrayList<>();
@@ -325,16 +325,29 @@ public class FriendShipController {
 
     }
     private boolean checkUserInTheGroup(User user, Group group){
-        List<Join> joins = group.getJoins();
-        List<User> usersInTheGroup =  new ArrayList<>();
+        List<Join> joins = user.getJoins();
         for(Join join : joins){
-            usersInTheGroup.add(join.getUser());
-        }
-        for(User u : usersInTheGroup){
-            if(user.getId() == u.getId()){
+            if(Objects.equals(join.getGroup().getId(), group.getId())){
                 return true;
             }
         }
         return false;
     }
+//    @GetMapping("/checkIfUserIsInTheGroup")
+//    public ResponseEntity<Boolean> checkIfUserIsInTheGroup1(
+//            @RequestParam String netId,
+//            @RequestParam long groupId
+//    ){
+//        Optional<Group> curGroup = groupRepository.findById(groupId);
+//        if(curGroup.isEmpty()){
+//            return ResponseEntity.notFound().build();
+//        }
+//        Group group = curGroup.get();
+//
+//        User user = userRepository.findUserByNetId(netId).orElse(null);
+//        if (user == null) {
+//            return ResponseEntity.badRequest().body(null);
+//        }
+//        return ResponseEntity.ok(checkUserInTheGroup(user,group));
+//    }
 }
