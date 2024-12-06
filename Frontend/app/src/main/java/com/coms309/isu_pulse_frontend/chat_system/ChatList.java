@@ -68,16 +68,11 @@ public class ChatList extends AppCompatActivity {
         });
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-    }
-
     private void fetchChats() {
         String netId = UserSession.getInstance().getNetId();
         ChatApiService chatApiService = new ChatApiService(this);
 
-        chatApiService.getLatestMessage(netId, new ChatApiService.ChatLatestCallback(){
+        chatApiService.getLatestMessage(netId, new ChatApiService.ChatLatestCallback() {
             @Override
             public void onSuccess(List<ChatMessage> chatHistory) {
                 chatList.clear();
@@ -101,9 +96,10 @@ public class ChatList extends AppCompatActivity {
         } else {
             List<ChatMessage> filteredList = new ArrayList<>();
             for (ChatMessage chatMessage : allChats) {
-                // Filter based on sender or recipient name
-                if (chatMessage.getSenderFullName().toLowerCase().contains(query.toLowerCase()) ||
-                        chatMessage.getRecipientFullName().toLowerCase().contains(query.toLowerCase())) {
+                // Filter based on sender, recipient, or group name
+                if ((chatMessage.getSenderFullName() != null && chatMessage.getSenderFullName().toLowerCase().contains(query.toLowerCase())) ||
+                        (chatMessage.getRecipientFullName() != null && chatMessage.getRecipientFullName().toLowerCase().contains(query.toLowerCase())) ||
+                        (chatMessage.getGroupName() != null && chatMessage.getGroupName().toLowerCase().contains(query.toLowerCase()))) {
                     filteredList.add(chatMessage);
                 }
             }

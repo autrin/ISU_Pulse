@@ -83,8 +83,8 @@ public class ChatApiService {
                                     if (jsonMessage.isNull("sender")){
                                         JSONObject groupJson = jsonMessage.getJSONObject("group");
                                         message = new ChatMessage(
-                                                groupJson.getLong("groupId"),
-                                                groupJson.getString("groupName"),
+                                                groupJson.getLong("id"),
+                                                groupJson.getString("name"),
                                                 jsonMessage.getString("content"),
                                                 jsonMessage.getString("timestamp")
                                         );
@@ -96,8 +96,8 @@ public class ChatApiService {
                                                 senderJson.getString("firstName"),
                                                 senderJson.getString("lastName"),
                                                 senderJson.getString("netId"),
-                                                groupJson.getLong("groupId"),
-                                                groupJson.getString("groupName"),
+                                                groupJson.getLong("id"),
+                                                groupJson.getString("name"),
                                                 jsonMessage.getString("content"),
                                                 jsonMessage.getString("timestamp")
                                         );

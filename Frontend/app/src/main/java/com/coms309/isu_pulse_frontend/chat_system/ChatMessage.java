@@ -75,9 +75,9 @@ public class ChatMessage {
         return recipientlastName;
     }
 
-    private Long getGroupId() {return groupId;}
+    public Long getGroupId() {return groupId;}
 
-    private String getGroupName() {return groupName;}
+    public String getGroupName() {return groupName;}
 
     public String getSenderFullName() {
         return senderfirstName + " " + senderlastName;
