@@ -1,8 +1,12 @@
 package coms309.backEnd.demo.controller;
 
 import coms309.backEnd.demo.entity.FriendShip;
+import coms309.backEnd.demo.entity.Group;
+import coms309.backEnd.demo.entity.Join;
 import coms309.backEnd.demo.entity.User;
 import coms309.backEnd.demo.repository.FriendShipRepository;
+import coms309.backEnd.demo.repository.GroupMessagesRepository;
+import coms309.backEnd.demo.repository.GroupRepository;
 import coms309.backEnd.demo.repository.UserRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -26,11 +30,15 @@ public class FriendShipController {
     @Autowired
     private final FriendShipRepository friendShipRepository;
 
+    @Autowired
+    private final GroupRepository groupRepository;
 
-    public FriendShipController(UserRepository userRepository, FriendShipRepository friendShipRepository) {
+    public FriendShipController(UserRepository userRepository, FriendShipRepository friendShipRepository, GroupRepository groupRepository) {
         this.userRepository = userRepository;
         this.friendShipRepository = friendShipRepository;
+        this.groupRepository = groupRepository;
     }
+
 
     private List<User> getFriendsfromFriendships(List<FriendShip> friendShips, User user){
         List<User> friendlst = new ArrayList<>();
@@ -282,4 +290,64 @@ public class FriendShipController {
         return ResponseEntity.ok("Unfriended successfully.");
     }
 
+    @GetMapping("/fetchFriendNotInAGivenGroup")
+    public ResponseEntity<List<User>> fetchUserNotfromAGivenGroup(
+            @RequestParam String netId,
+            @RequestParam long groupId
+    ){
+        //validate
+        Optional<Group> curGroup = groupRepository.findById(groupId);
+        if(curGroup.isEmpty()){
+            return ResponseEntity.notFound().build();
+        }
+        Group group = curGroup.get();
+
+        User user = userRepository.findUserByNetId(netId).orElse(null);
+        if (user == null) {
+            return ResponseEntity.badRequest().body(null);
+        }
+        // Check if user is in the group or not
+        if(!checkUserInTheGroup(user,group)){
+            return  ResponseEntity.internalServerError().build();
+        }
+        // List all the friends
+        List<User> friends = displayFriendList(netId).getBody();
+        List<User> friendsNotInAGivenGroup = new ArrayList<>();
+        if(friends != null){
+            for(User friend : friends) {
+                if (!checkUserInTheGroup(friend, group)) {
+                    friendsNotInAGivenGroup.add(friend);
+                }
+            }
+        }
+        return ResponseEntity.ok(friendsNotInAGivenGroup);
+
+
+    }
+    private boolean checkUserInTheGroup(User user, Group group){
+        List<Join> joins = user.getJoins();
+        for(Join join : joins){
+            if(Objects.equals(join.getGroup().getId(), group.getId())){
+                return true;
+            }
+        }
+        return false;
+    }
+//    @GetMapping("/checkIfUserIsInTheGroup")
+//    public ResponseEntity<Boolean> checkIfUserIsInTheGroup1(
+//            @RequestParam String netId,
+//            @RequestParam long groupId
+//    ){
+//        Optional<Group> curGroup = groupRepository.findById(groupId);
+//        if(curGroup.isEmpty()){
+//            return ResponseEntity.notFound().build();
+//        }
+//        Group group = curGroup.get();
+//
+//        User user = userRepository.findUserByNetId(netId).orElse(null);
+//        if (user == null) {
+//            return ResponseEntity.badRequest().body(null);
+//        }
+//        return ResponseEntity.ok(checkUserInTheGroup(user,group));
+//    }
 }
