@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 @Data
 @Entity
-public class ChatMessage {
+public class ChatMessage implements Message {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

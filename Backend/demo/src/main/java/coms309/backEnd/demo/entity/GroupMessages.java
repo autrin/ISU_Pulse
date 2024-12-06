@@ -8,13 +8,13 @@ import java.time.LocalDateTime;
 @Data
 @Entity
 @Table(name = "group_messages")
-public class GroupMessages {
+public class GroupMessages implements Message{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "sender_id", nullable = false)
+    @JoinColumn(name = "sender_id", nullable = true)
     private User sender;
 
     @ManyToOne

@@ -1,9 +1,9 @@
 package coms309.backEnd.demo.controller;
 
 import coms309.backEnd.demo.DTO.ChatMessageDTO;
-import coms309.backEnd.demo.entity.ChatMessage;
-import coms309.backEnd.demo.entity.User;
+import coms309.backEnd.demo.entity.*;
 import coms309.backEnd.demo.repository.ChatMessageRepository;
+import coms309.backEnd.demo.repository.GroupMessagesRepository;
 import coms309.backEnd.demo.repository.UserRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -18,16 +18,27 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/chat")
 public class ChatController {
 
     @Autowired
-    private ChatMessageRepository chatMessageRepository;
+    private final ChatMessageRepository chatMessageRepository;
 
     @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+
+    @Autowired
+    private final GroupMessagesRepository groupMessagesRepository;
+
+    public ChatController(ChatMessageRepository chatMessageRepository, UserRepository userRepository, GroupMessagesRepository groupMessagesRepository) {
+        this.chatMessageRepository = chatMessageRepository;
+        this.userRepository = userRepository;
+        this.groupMessagesRepository = groupMessagesRepository;
+    }
+
 
     /**
      * Retrieves the chat history between two users identified by their NetIDs.
@@ -110,7 +121,7 @@ public class ChatController {
                     content = @Content)
     })
     @GetMapping("/allLatestMessages/{netId}")
-    public ResponseEntity<List<ChatMessage>> getUsersYouMessagingWith(
+    public ResponseEntity<List<Message>> getUsersYouMessagingWith(
             @Parameter(description = "The NetID of the user", required = true)
             @PathVariable String netId){
         // Find the user with the given netId
@@ -139,17 +150,29 @@ public class ChatController {
             }
         }
         // Get the latest message from user that a given user is messaging with
-        List<ChatMessage> latestMessages = new ArrayList<>();
+        List<Message> latestMessages = new ArrayList<>();
         for(User userInChatList : chattedUser){
-            ChatMessage chatMessage = getLatestMessageBetween2User(netId,userInChatList.getNetId()).getBody();
+            Message chatMessage = getLatestMessageBetween2User(netId,userInChatList.getNetId()).getBody();
             latestMessages.add(chatMessage);
         }
 
-        // Sort the message based on time
-        latestMessages.sort(new Comparator<ChatMessage>() {
+        //Get all the group that a given user is in
+        List<Join> joins = user.getJoins();
+        List<Group> groups = new ArrayList<>();
+        for(Join join : joins){
+            groups.add(join.getGroup());
+        }
+
+        for(Group group : groups){
+            List<GroupMessages> groupMessages = groupMessagesRepository.findByGroupId(group.getId());
+            if(!groupMessages.isEmpty()){
+                latestMessages.add(groupMessages.get(groupMessages.size()-1));
+            }
+        }
+        latestMessages.sort(new Comparator<Message>() {
             @Override
-            public int compare(ChatMessage chatMessage1, ChatMessage chatMessage2) {
-                return chatMessage2.getTimestamp().compareTo(chatMessage1.getTimestamp());
+            public int compare(Message message1, Message message2) {
+                return message2.getTimestamp().compareTo(message1.getTimestamp());
             }
         });
         return ResponseEntity.ok(latestMessages);
@@ -191,8 +214,15 @@ public class ChatController {
             }
 
             List<ChatMessage> chatMessages = chatMessageRepository.findMessagesBetweenUsers(netIdUser1,netIdUser2);
-            ChatMessage chatMessage = chatMessages.get(chatMessages.size()-1);
+
+            ChatMessage chatMessage = null;
+            if(!chatMessages.isEmpty()){
+                chatMessage = chatMessages.get(chatMessages.size()-1);
+            }
             return ResponseEntity.ok(chatMessage);
 
         }
+
+
+
 }
