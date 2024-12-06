@@ -65,7 +65,7 @@ public class ChatViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             }
             groupHolder.textViewTimestamp.setText(chatMessage.getTimestamp());
             groupHolder.buttonMessage.setOnClickListener(v -> {
-                Intent intent = new Intent(v.getContext(), ChatActivity.class);
+                Intent intent = new Intent(v.getContext(), GroupChatActivity.class);
                 intent.putExtra("groupId", chatMessage.getGroupId());
                 v.getContext().startActivity(intent);
             });
@@ -96,7 +96,13 @@ public class ChatViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             });
             oneOnOneHolder.buttonMessage.setOnClickListener(v -> {
                 Intent intent = new Intent(v.getContext(), ChatActivity.class);
-                intent.putExtra("netId", chatMessage.getSenderNetId());
+                if (chatMessage.getSenderNetId().equals(UserSession.getInstance().getNetId())){
+                    intent.putExtra("netId", chatMessage.getRecipientNetId());
+                }
+                else {
+                    intent.putExtra("netId", chatMessage.getSenderNetId());
+                }
+
                 v.getContext().startActivity(intent);
             });
         }
