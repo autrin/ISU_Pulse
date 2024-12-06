@@ -67,6 +67,7 @@ public class ChatViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             groupHolder.buttonMessage.setOnClickListener(v -> {
                 Intent intent = new Intent(v.getContext(), GroupChatActivity.class);
                 intent.putExtra("groupId", chatMessage.getGroupId());
+                intent.putExtra("groupName", chatMessage.getGroupName());
                 v.getContext().startActivity(intent);
             });
         } else {
