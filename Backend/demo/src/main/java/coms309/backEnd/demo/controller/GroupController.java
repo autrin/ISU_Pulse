@@ -65,7 +65,7 @@ public class GroupController {
         User user = curUser.get();
 
         // Create the group
-        Group group = new Group(groupName);
+        Group group = new Group(groupName,user);
         groupRepository.save(group);
 
         // Add the user to the group by default
@@ -150,10 +150,46 @@ public class GroupController {
             group.setName(groupName);
             groupRepository.save(group);
         }
-
         return ResponseEntity.ok("Update the name of the group successfully");
-
-
     }
+
+    @PostMapping("/addInitialMembers")
+    public ResponseEntity<String> addInitialMembers(
+            @RequestParam String creatorNetId,
+            @RequestParam String personBeingAdded
+    ){
+        // validate
+        Optional<User> curUser = userRepository.findUserByNetId(creatorNetId);
+        if(curUser.isEmpty()){
+            return ResponseEntity.notFound().build();
+        }
+        User user = curUser.get();
+
+        Optional<User> curPersonalBeingAdded = userRepository.findUserByNetId(personBeingAdded);
+        if(curPersonalBeingAdded.isEmpty()){
+            return ResponseEntity.notFound().build();
+        }
+        User userAdded = curPersonalBeingAdded.get();
+
+
+       List<Group> groups = user.getGroupsCreated();
+       if(groups.isEmpty()){
+           return ResponseEntity.internalServerError().build();
+       }
+       Group group = groups.get(groups.size()-1);
+
+        //Create join
+        Join join = new Join(group,userAdded);
+        joinRepository.save(join);
+
+        //Add the welcome message to the group
+        GroupMessages message = new GroupMessages();
+        message.setSender(null);
+        message.setGroup(group);
+        message.setContent(personBeingAdded + " joined the group");
+        groupMessagesRepository.save(message);
+        return ResponseEntity.ok("Added new member successfully");
+    }
+
 
 }

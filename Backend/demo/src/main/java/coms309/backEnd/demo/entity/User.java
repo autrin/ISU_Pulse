@@ -78,6 +78,10 @@ public class User {
     @JsonIgnore
     private List<GroupMessages> groupMessagesSent;
 
+    // This is the groups that this person created
+    @OneToMany(mappedBy = "creator", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<Group> groupsCreated;
 
 
     public User() {
