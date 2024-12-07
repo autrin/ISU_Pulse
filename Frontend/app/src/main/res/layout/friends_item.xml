@@ -19,6 +19,8 @@
             android:id="@+id/friend_avatar"
             android:layout_width="56dp"
             android:layout_height="56dp"
+            android:layout_gravity="center"
+            android:gravity="center"
             android:src="@drawable/isu_logo" />
 
         <LinearLayout
@@ -61,7 +63,9 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:gravity="center"
+            android:layout_gravity="center">
 
             <Button
                 android:id="@+id/viewfriendbutton"
@@ -70,6 +74,7 @@
                 android:text="View Profile"
                 android:textColor="#FFFFFF"
                 android:paddingHorizontal="16dp"
+                android:background="@drawable/rounded_button"
                 android:layout_marginBottom="8dp"/>
 
 
