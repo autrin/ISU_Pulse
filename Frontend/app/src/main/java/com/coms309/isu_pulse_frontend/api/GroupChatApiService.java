@@ -44,6 +44,27 @@ public class GroupChatApiService {
         requestQueue.add(request);
     }
 
+    public void modifyGroupChat(Long groupId, String groupName, GroupChatCallback callback) {
+        String url = BASE_URL + "groups/modifyGroupName?groupId=" + groupId + "&groupName=" + groupName;
+
+        StringRequest request = new StringRequest(Request.Method.PUT, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        // Success callback
+                        callback.onSuccess(response);
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        // Error callback
+                        callback.onError("Failed to modify group: " + error.getMessage());
+                    }
+        });
+        requestQueue.add(request);
+    }
+
     public void addMemberToGroup(String adderNetId, String personAddedNetId, Long groupId, GroupChatCallback callback) {
         String url = BASE_URL + "groups/addMember?adderNetId=" + adderNetId + "&personAddedNetId=" + personAddedNetId + "&groupId=" + groupId;
 
