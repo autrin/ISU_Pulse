@@ -133,4 +133,27 @@ public class GroupController {
         return ResponseEntity.ok("Member added successfully");
     }
 
+    @PutMapping("/modifyGroupName")
+    public ResponseEntity<String> modifyGroupName(
+            @RequestParam long groupId,
+            @RequestParam String groupName
+    ){
+        // Check the group exists
+        Optional<Group> curGroup = groupRepository.findById(groupId);
+        if(curGroup.isEmpty()){
+            return ResponseEntity.notFound().build();
+        }
+        Group group = curGroup.get();
+
+        // If the target name of the group is not null, set it to the group name
+        if(groupName != null){
+            group.setName(groupName);
+            groupRepository.save(group);
+        }
+
+        return ResponseEntity.ok("Update the name of the group successfully");
+
+
+    }
+
 }
