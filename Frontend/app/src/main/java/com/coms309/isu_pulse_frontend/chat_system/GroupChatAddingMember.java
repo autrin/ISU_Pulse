@@ -7,11 +7,13 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.coms309.isu_pulse_frontend.R;
+import com.coms309.isu_pulse_frontend.api.GroupChatApiService;
 import com.coms309.isu_pulse_frontend.loginsignup.User;
 
 import java.util.List;
@@ -23,7 +25,8 @@ public class GroupChatAddingMember extends AppCompatActivity {
     private EditText searchBar;
     private EditText groupName;
     private RecyclerView groupChatAddingMemberRecyclerView;
-    private List<User> userList;;
+    private List<User> userList;
+    private GroupChatApiService groupChatApiService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +46,8 @@ public class GroupChatAddingMember extends AppCompatActivity {
         create.setTextColor(Color.BLUE);
         newGroup.setText("New Members");
 
+        groupChatApiService = new GroupChatApiService(this);
+
         groupChatAddingMemberRecyclerView = findViewById(R.id.friend_list);
 
         cancel.setOnClickListener(v -> {
@@ -51,9 +56,34 @@ public class GroupChatAddingMember extends AppCompatActivity {
         });
 
         create.setOnClickListener(v -> {
+            if (!groupName.getText().toString().trim().isEmpty()) {
+                saveGroup();
+            }
 
+            Intent intent = new Intent(GroupChatAddingMember.this, ChatList.class);
+            startActivity(intent);
         });
 
 
+    }
+
+    private void saveGroup(){
+        String groupNameText = groupName.getText().toString().trim();
+        Long groupId = getIntent().getLongExtra("groupId", -1);
+        Toast.makeText(GroupChatAddingMember.this, "Group id: " + groupId, Toast.LENGTH_SHORT).show();
+        Toast.makeText(GroupChatAddingMember.this, "Group name: " + groupNameText, Toast.LENGTH_SHORT).show();
+        groupChatApiService.modifyGroupChat(groupId, groupNameText, new GroupChatApiService.GroupChatCallback() {
+            @Override
+            public void onSuccess(String response) {
+                Toast.makeText(GroupChatAddingMember.this, "Group name modified successfully!", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(GroupChatAddingMember.this, ChatList.class);
+                startActivity(intent);
+            }
+
+            @Override
+            public void onError(String error) {
+                Toast.makeText(GroupChatAddingMember.this, error, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }
