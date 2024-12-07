@@ -35,14 +35,6 @@ public class FriendService {
         requestQueue.add(request);
     }
 
-    public void fetchFriendChats(String netId, Long groupId, Response.Listener<JSONArray> listener, Response.ErrorListener errorListener) {
-        String url = BASE_URL + "friendShip/fetchFriendNotInAGivenGroup?netId=" + netId + "&groupId=" + groupId;
-        JsonArrayRequest request = new JsonArrayRequest(Request.Method.GET, url, null, listener, errorListener);
-        requestQueue.add(request);
-    }
-
-
-
     // Get sent friend requests
     public void getSentRequests(String netId, Response.Listener<JSONArray> listener, Response.ErrorListener errorListener) {
         String url = BASE_URL + "friendRequest/sentRequest/" + netId;
