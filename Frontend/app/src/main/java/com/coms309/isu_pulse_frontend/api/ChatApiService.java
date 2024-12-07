@@ -21,7 +21,6 @@ import java.util.List;
 
 public class ChatApiService {
     private RequestQueue requestQueue;
-    private ChatMessage message;
 
     public ChatApiService(Context context) {
         requestQueue = Volley.newRequestQueue(context);
@@ -79,44 +78,18 @@ public class ChatApiService {
                         for (int i = 0; i < response.length(); i++) {
                             try {
                                 JSONObject jsonMessage = response.getJSONObject(i);
-                                if (jsonMessage.has("group")){
-                                    if (jsonMessage.isNull("sender")){
-                                        JSONObject groupJson = jsonMessage.getJSONObject("group");
-                                        message = new ChatMessage(
-                                                groupJson.getLong("id"),
-                                                groupJson.getString("name"),
-                                                jsonMessage.getString("content"),
-                                                jsonMessage.getString("timestamp")
-                                        );
-                                    }
-                                    else {
-                                        JSONObject senderJson = jsonMessage.getJSONObject("sender");
-                                        JSONObject groupJson = jsonMessage.getJSONObject("group");
-                                        message = new ChatMessage(
-                                                senderJson.getString("firstName"),
-                                                senderJson.getString("lastName"),
-                                                senderJson.getString("netId"),
-                                                groupJson.getLong("id"),
-                                                groupJson.getString("name"),
-                                                jsonMessage.getString("content"),
-                                                jsonMessage.getString("timestamp")
-                                        );
-                                    }
-                                }
-                                else{
-                                    JSONObject senderJson = jsonMessage.getJSONObject("sender");
-                                    JSONObject recipientJson = jsonMessage.getJSONObject("recipient");
-                                    message = new ChatMessage(
-                                            senderJson.getString("firstName"),
-                                            senderJson.getString("lastName"),
-                                            recipientJson.getString("firstName"),
-                                            recipientJson.getString("lastName"),
-                                            senderJson.getString("netId"),
-                                            recipientJson.getString("netId"),
-                                            jsonMessage.getString("content"),
-                                            jsonMessage.getString("timestamp")
-                                    );
-                                }
+                                JSONObject senderJson = jsonMessage.getJSONObject("sender");
+                                JSONObject recipientJson = jsonMessage.getJSONObject("recipient");
+                                ChatMessage message = new ChatMessage(
+                                        senderJson.getString("firstName"),
+                                        senderJson.getString("lastName"),
+                                        recipientJson.getString("firstName"),
+                                        recipientJson.getString("lastName"),
+                                        senderJson.getString("netId"),
+                                        recipientJson.getString("netId"),
+                                        jsonMessage.getString("content"),
+                                        jsonMessage.getString("timestamp")
+                                );
                                 chatHistory.add(message);
                             } catch (JSONException e) {
                                 e.printStackTrace();

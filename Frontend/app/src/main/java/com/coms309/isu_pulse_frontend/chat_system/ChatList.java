@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -25,7 +24,6 @@ public class ChatList extends AppCompatActivity {
     private ImageView backButton;
     private Button searchButton;
     private EditText searchBar;
-    private ImageButton createButton;
     private RecyclerView chatsRecyclerView;
     private ChatViewAdapter chatViewAdapter;
     private List<ChatMessage> chatList;
@@ -39,15 +37,9 @@ public class ChatList extends AppCompatActivity {
         backButton = findViewById(R.id.back_button);
         searchButton = findViewById(R.id.search_button);
         searchBar = findViewById(R.id.search_bar);
-        createButton = findViewById(R.id.add_button);
 
         backButton.setOnClickListener(v -> {
             Intent intent = new Intent(ChatList.this, HomeActivity.class);
-            startActivity(intent);
-        });
-
-        createButton.setOnClickListener(v -> {
-            Intent intent = new Intent(ChatList.this, GroupChatCreating.class);
             startActivity(intent);
         });
 
@@ -68,11 +60,16 @@ public class ChatList extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
     private void fetchChats() {
         String netId = UserSession.getInstance().getNetId();
         ChatApiService chatApiService = new ChatApiService(this);
 
-        chatApiService.getLatestMessage(netId, new ChatApiService.ChatLatestCallback() {
+        chatApiService.getLatestMessage(netId, new ChatApiService.ChatLatestCallback(){
             @Override
             public void onSuccess(List<ChatMessage> chatHistory) {
                 chatList.clear();
@@ -96,10 +93,9 @@ public class ChatList extends AppCompatActivity {
         } else {
             List<ChatMessage> filteredList = new ArrayList<>();
             for (ChatMessage chatMessage : allChats) {
-                // Filter based on sender, recipient, or group name
-                if ((chatMessage.getSenderFullName() != null && chatMessage.getSenderFullName().toLowerCase().contains(query.toLowerCase())) ||
-                        (chatMessage.getRecipientFullName() != null && chatMessage.getRecipientFullName().toLowerCase().contains(query.toLowerCase())) ||
-                        (chatMessage.getGroupName() != null && chatMessage.getGroupName().toLowerCase().contains(query.toLowerCase()))) {
+                // Filter based on sender or recipient name
+                if (chatMessage.getSenderFullName().toLowerCase().contains(query.toLowerCase()) ||
+                        chatMessage.getRecipientFullName().toLowerCase().contains(query.toLowerCase())) {
                     filteredList.add(chatMessage);
                 }
             }
