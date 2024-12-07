@@ -1,141 +1,147 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/white"
-    android:orientation="vertical"
-    android:padding="24dp">
+    android:fillViewport="true">
 
-    <!-- Title -->
-    <TextView
-        android:id="@+id/updateProfileTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="24dp"
-        android:gravity="center"
-        android:text="Update Profile"
-        android:textColor="@android:color/black"
-        android:textSize="24sp"
-        android:textStyle="bold" />
-
-    <!-- Net ID -->
-    <EditText
-        android:id="@+id/netIdEditText"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:background="@drawable/edit_text_background"
-        android:hint="Net ID"
-        android:padding="16dp"
-        android:textColor="@color/design_default_color_on_secondary"
-        android:textColorHint="@color/design_default_color_on_secondary" />
+        android:orientation="vertical"
+        android:padding="24dp">
 
-    <!-- Old Password -->
-    <EditText
-        android:id="@+id/oldPasswordEditText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:background="@drawable/edit_text_background"
-        android:hint="Old Password"
-        android:inputType="textPassword"
-        android:padding="16dp"
-        android:textColor="@color/design_default_color_on_secondary"
-        android:textColorHint="@color/design_default_color_on_secondary" />
+        <!-- Title -->
+        <TextView
+            android:id="@+id/updateProfileTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            android:gravity="center"
+            android:text="Update Profile"
+            android:textColor="@android:color/black"
+            android:textSize="24sp"
+            android:textStyle="bold" />
 
-    <!-- Check Credentials Button -->
-    <Button
-        android:id="@+id/checkCredentialsButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:backgroundTint="@color/design_default_color_primary"
-        android:text="Check Credentials"
-        android:textColor="@android:color/white"
-        android:padding="16dp" />
+        <!-- Net ID -->
+        <EditText
+            android:id="@+id/netIdEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/edit_text_background"
+            android:hint="Net ID"
+            android:padding="16dp"
+            android:textColor="@color/design_default_color_on_secondary"
+            android:textColorHint="@color/design_default_color_on_secondary" />
 
-    <!-- Description -->
-    <EditText
-        android:id="@+id/descriptionEditText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:background="@drawable/edit_text_background"
-        android:hint="Description"
-        android:padding="16dp"
-        android:textColor="@color/design_default_color_on_secondary"
-        android:textColorHint="@color/design_default_color_on_secondary" />
+        <!-- Old Password -->
+        <EditText
+            android:id="@+id/oldPasswordEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/edit_text_background"
+            android:hint="Old Password"
+            android:inputType="textPassword"
+            android:padding="16dp"
+            android:textColor="@color/design_default_color_on_secondary"
+            android:textColorHint="@color/design_default_color_on_secondary" />
 
-    <!-- LinkedIn URL -->
-    <EditText
-        android:id="@+id/linkedinUrlEditText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:background="@drawable/edit_text_background"
-        android:hint="LinkedIn URL"
-        android:padding="16dp"
-        android:textColor="@color/design_default_color_on_secondary"
-        android:textColorHint="@color/design_default_color_on_secondary" />
+        <!-- Check Credentials Button -->
+        <Button
+            android:id="@+id/checkCredentialsButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:backgroundTint="@color/design_default_color_primary"
+            android:text="Check Credentials"
+            android:textColor="@android:color/white"
+            android:padding="16dp" />
 
-    <!-- External URL -->
-    <EditText
-        android:id="@+id/externalUrlEditText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:background="@drawable/edit_text_background"
-        android:hint="External URL"
-        android:padding="16dp"
-        android:textColor="@color/design_default_color_on_secondary"
-        android:textColorHint="@color/design_default_color_on_secondary" />
+        <!-- Description -->
+        <EditText
+            android:id="@+id/descriptionEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/edit_text_background"
+            android:hint="Description"
+            android:padding="16dp"
+            android:textColor="@color/design_default_color_on_secondary"
+            android:textColorHint="@color/design_default_color_on_secondary" />
 
-    <!-- New Password -->
-    <EditText
-        android:id="@+id/newPasswordEditText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:background="@drawable/edit_text_background"
-        android:hint="New Password"
-        android:inputType="textPassword"
-        android:padding="16dp"
-        android:textColor="@color/design_default_color_on_secondary"
-        android:textColorHint="@color/design_default_color_on_secondary" />
+        <!-- LinkedIn URL -->
+        <EditText
+            android:id="@+id/linkedinUrlEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/edit_text_background"
+            android:hint="LinkedIn URL"
+            android:padding="16dp"
+            android:textColor="@color/design_default_color_on_secondary"
+            android:textColorHint="@color/design_default_color_on_secondary" />
 
-    <!-- Confirm New Password -->
-    <EditText
-        android:id="@+id/confirmNewPasswordEditText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:background="@drawable/edit_text_background"
-        android:hint="Confirm New Password"
-        android:inputType="textPassword"
-        android:padding="16dp"
-        android:textColor="@color/design_default_color_on_secondary"
-        android:textColorHint="@color/design_default_color_on_secondary" />
+        <!-- External URL -->
+        <EditText
+            android:id="@+id/externalUrlEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/edit_text_background"
+            android:hint="External URL"
+            android:padding="16dp"
+            android:textColor="@color/design_default_color_on_secondary"
+            android:textColorHint="@color/design_default_color_on_secondary" />
 
-    <!-- Update Profile Button -->
-    <Button
-        android:id="@+id/updateProfileButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:backgroundTint="@color/design_default_color_primary"
-        android:text="Update Profile"
-        android:textColor="@android:color/white"
-        android:padding="16dp" />
+        <!-- New Password -->
+        <EditText
+            android:id="@+id/newPasswordEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/edit_text_background"
+            android:hint="New Password"
+            android:inputType="textPassword"
+            android:padding="16dp"
+            android:textColor="@color/design_default_color_on_secondary"
+            android:textColorHint="@color/design_default_color_on_secondary" />
 
-    <!-- Back Button -->
-    <Button
-        android:id="@+id/backButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:backgroundTint="@color/design_default_color_secondary"
-        android:text="Back"
-        android:textColor="@android:color/white"
-        android:padding="16dp" />
+        <!-- Confirm New Password -->
+        <EditText
+            android:id="@+id/confirmNewPasswordEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/edit_text_background"
+            android:hint="Confirm New Password"
+            android:inputType="textPassword"
+            android:padding="16dp"
+            android:textColor="@color/design_default_color_on_secondary"
+            android:textColorHint="@color/design_default_color_on_secondary" />
 
-</LinearLayout>
+        <!-- Update Profile Button -->
+        <Button
+            android:id="@+id/updateProfileButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:backgroundTint="@color/design_default_color_primary"
+            android:text="Update Profile"
+            android:textColor="@android:color/white"
+            android:padding="16dp" />
+
+        <!-- Back Button -->
+        <Button
+            android:id="@+id/backButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/design_default_color_secondary"
+            android:text="Back"
+            android:textColor="@android:color/white"
+            android:padding="16dp" />
+
+    </LinearLayout>
+</ScrollView>
