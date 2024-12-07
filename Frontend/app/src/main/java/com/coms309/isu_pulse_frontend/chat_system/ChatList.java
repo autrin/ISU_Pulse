@@ -47,7 +47,7 @@ public class ChatList extends AppCompatActivity {
         });
 
         createButton.setOnClickListener(v -> {
-            Intent intent = new Intent(ChatList.this, GroupChatAddingMember.class);
+            Intent intent = new Intent(ChatList.this, GroupChatCreating.class);
             startActivity(intent);
         });
 

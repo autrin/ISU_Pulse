@@ -2,7 +2,12 @@ package com.coms309.isu_pulse_frontend.web_socket;
 
 import android.app.Activity;
 import android.util.Log;
-import android.widget.Toast;
+import androidx.appcompat.app.AppCompatActivity;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.time.LocalDateTime;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -10,159 +15,176 @@ import okhttp3.Response;
 import okhttp3.WebSocket;
 import okhttp3.WebSocketListener;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.List;
-
 public class GroupChatServiceWebSocket {
-    private static final String TAG = "GroupChatServiceWebSocket";
+    private static final String TAG = "GroupChatWebSocket";
     private static GroupChatServiceWebSocket instance;
     private WebSocket webSocket;
-    private GroupChatServiceListener listener;
-    private String netId;
+    private ChatServiceListener listener;
+    private String netId; // The current user's NetID
     private Long groupId;
-    private Activity activity; // Reference to the Activity for running on the main thread
+    private Activity activity;
 
-    private boolean isConnected = false; // Connection state
-    private final List<JSONObject> messageQueue = new ArrayList<>(); // Message queue for unsent messages
-
-    private GroupChatServiceWebSocket(GroupChatServiceListener listener, String netId, Long groupId, Activity activity) {
+    /**
+     * Private constructor for the singleton instance.
+     * @param listener A listener for incoming messages
+     * @param netId The current user's NetID
+     * @param groupId The group ID for the chat
+     */
+    private GroupChatServiceWebSocket(ChatServiceListener listener, String netId, Long groupId) {
         this.listener = listener;
         this.netId = netId;
         this.groupId = groupId;
-        this.activity = activity;
+
+        // Debug logging to verify values
+        Log.d(TAG, "Initializing WebSocket with netId: " + this.netId + " and groupId: " + this.groupId);
+
         connectWebSocket();
     }
 
-    private GroupChatServiceWebSocket() {
-        // Empty private constructor to prevent direct instantiation
-    }
-
-    public static synchronized GroupChatServiceWebSocket getInstance(GroupChatServiceListener listener, String netId, Long groupId, Activity activity) {
-        if (instance == null) {
-            instance = new GroupChatServiceWebSocket(listener, netId, groupId, activity);
-            Log.d(TAG, "GroupChatServiceWebSocket initialized");
-        } else {
-            instance.setWebSocketListener(listener);
+    /**
+     * Get an instance of the WebSocket connection.
+     * This ensures that any previous instance is closed before creating a new one.
+     */
+    public static synchronized GroupChatServiceWebSocket getInstance(ChatServiceListener listener, String netId, Long groupId, AppCompatActivity activity) {
+        if (instance != null) {
+            instance.close(); // Ensure the previous instance is fully closed
         }
+        instance = new GroupChatServiceWebSocket(listener, netId, groupId);
         return instance;
     }
 
-    public void setWebSocketListener(GroupChatServiceListener listener) {
-        this.listener = listener;
-    }
-
+    /**
+     * Connects to the WebSocket endpoint.
+     */
     private void connectWebSocket() {
         OkHttpClient client = new OkHttpClient();
-        String wsUrl = String.format("ws://10.0.2.2:8080/ws/group-chat?netId=%s&groupId=%s", netId, groupId);
-        Request request = new Request.Builder().url(wsUrl).build();
 
+        // Construct the WebSocket URL
+        String wsUrl = String.format("ws://10.0.2.2:8080/ws/group-chat?netId=%s&groupId=%s", netId, groupId);
+        Log.d(TAG, "Connecting to WebSocket URL: " + wsUrl);
+
+        Request request = new Request.Builder().url(wsUrl).build();
         webSocket = client.newWebSocket(request, new WebSocketListener() {
             @Override
             public void onOpen(WebSocket webSocket, Response response) {
-                Log.d(TAG, "WebSocket Connected to " + wsUrl);
-                isConnected = true;
-                processQueuedMessages();
+                Log.d(TAG, "WebSocket Connected: " + wsUrl);
+
+                // Send a fetchMessages request upon connection if required by server
+                JSONObject fetchRequest = new JSONObject();
+                try {
+//                    fetchRequest.put("action", "fetchMessages");
+                    fetchRequest.put("groupId", groupId);
+                    fetchRequest.put("senderNetId", netId);
+//                    webSocket.send(fetchRequest.toString());
+                    Log.d(TAG, "Sent fetchMessages request: " + fetchRequest.toString());
+                } catch (JSONException e) {
+                    Log.e(TAG, "Error creating fetch request", e);
+                }
             }
 
             @Override
             public void onMessage(WebSocket webSocket, String text) {
-                Log.d(TAG, "Received message: " + text);
-                if (listener != null) {
-                    activity.runOnUiThread(() -> {
-                        try {
-                            if (text.startsWith("[")) {  // JSONArray
-                                JSONArray jsonArray = new JSONArray(text);
-                                for (int i = 0; i < jsonArray.length(); i++) {
-                                    JSONObject jsonMessage = jsonArray.getJSONObject(i);
-                                    String senderNetId = jsonMessage.getString("senderNetId");
-                                    String content = jsonMessage.getString("content");
-                                    String timestamp = jsonMessage.getString("timestamp");
-                                    listener.onMessageReceived(senderNetId, groupId, content, timestamp);
-                                }
-                            } else {  // JSONObject
-                                JSONObject jsonMessage = new JSONObject(text);
-                                String senderNetId = jsonMessage.getString("senderNetId");
-                                String content = jsonMessage.getString("content");
-                                String timestamp = jsonMessage.getString("timestamp");
-                                listener.onMessageReceived(senderNetId, groupId, content, timestamp);
-                            }
-                        } catch (JSONException e) {
-                            Log.e(TAG, "Error parsing received message JSON", e);
+                Log.d(TAG, "WebSocket message received: " + text);
+
+
+                try {
+                    if (text.startsWith("[")) {
+                        // Handle JSON array (chat history)
+                        JSONArray messageArray = new JSONArray(text);
+                        for (int i = 0; i < messageArray.length(); i++) {
+                            JSONObject messageJson = messageArray.getJSONObject(i);
+                            processMessage(messageJson);
                         }
-                    });
+                    } else if (text.startsWith("{")) {
+                        // Handle single JSON object
+                        JSONObject messageJson = new JSONObject(text);
+                        processMessage(messageJson);
+                    } else {
+                        // Handle plain text (non-JSON) messages
+                        Log.e(TAG, "Received non-JSON message: " + text);
+                        if (text.contains("Invalid sender or group")) {
+                            Log.e(TAG, "Server rejected request: " + text);
+                        }
+                    }
+                } catch (JSONException e) {
+                    Log.e(TAG, "Error parsing WebSocket message: " + text, e);
+                }
+            }
+
+            /**
+             * Process a single JSON message from the server.
+             */
+            private void processMessage(JSONObject messageJson) {
+                try {
+                    String senderNetId = messageJson.optString("senderNetId", null);
+                    Long grpId = messageJson.optLong("groupId", -1);
+                    String content = messageJson.optString("content", "no content");
+                    String timestamp = messageJson.optString("timestamp", "unknown");
+
+                    // Pass the message to the listener
+                    if (listener != null) {
+                        listener.onMessageReceived(senderNetId, grpId, content, timestamp);
+                    }
+                } catch (Exception e) {
+                    Log.e(TAG, "Error processing message JSON", e);
                 }
             }
 
             @Override
             public void onFailure(WebSocket webSocket, Throwable t, Response response) {
-                Log.e(TAG, "WebSocket Connection Failed: " + t.getMessage());
-                isConnected = false;
-                activity.runOnUiThread(() ->
-                        Toast.makeText(activity, "WebSocket connection failed. Please try again later.", Toast.LENGTH_SHORT).show()
-                );
-            }
-
-            @Override
-            public void onClosing(WebSocket webSocket, int code, String reason) {
-                Log.d(TAG, "WebSocket Closing: " + reason);
-                isConnected = false;
-                webSocket.close(1000, null);
+                Log.e(TAG, "WebSocket Failure: " + t.getMessage());
+                if (response != null) {
+                    Log.e(TAG, "Response: " + response.toString());
+                }
             }
 
             @Override
             public void onClosed(WebSocket webSocket, int code, String reason) {
                 Log.d(TAG, "WebSocket Closed: " + reason);
-                isConnected = false;
             }
         });
     }
 
-    public void sendMessage(String senderNetId, String content) {
-        if (!isConnected || webSocket == null) {
-            Log.e(TAG, "WebSocket is not connected. Queuing message.");
-            try {
-                JSONObject jsonMessage = new JSONObject();
-                jsonMessage.put("senderNetId", senderNetId);
-                jsonMessage.put("groupId", groupId);
-                jsonMessage.put("content", content);
-                messageQueue.add(jsonMessage);
-            } catch (JSONException e) {
-                Log.e(TAG, "Error creating JSON message", e);
-            }
-            return;
-        }
-
+    /**
+     * Send a message over the WebSocket.
+     * Make sure to include the required fields the server expects.
+     */
+    public void sendMessage(String senderNetId, Long groupId, String content) {
+        JSONObject messageJson = new JSONObject();
         try {
-            JSONObject jsonMessage = new JSONObject();
-            jsonMessage.put("senderNetId", senderNetId);
-            jsonMessage.put("groupId", groupId);
-            jsonMessage.put("content", content);
-            webSocket.send(jsonMessage.toString());
+            // If the server requires an "action" field for sending messages
+//            messageJson.put("action", "sendMessage");
+            messageJson.put("senderNetId", senderNetId);
+            messageJson.put("groupId", groupId);
+            messageJson.put("content", content);
+
+            webSocket.send(messageJson.toString());
+            Log.d(TAG, "Message sent: " + messageJson.toString());
+
+            // Optimistic update: Show the message immediately in the chat.
+//            if (listener != null) {
+//                listener.onMessageReceived(senderNetId, groupId, content, LocalDateTime.now().toString());
+//            }
         } catch (JSONException e) {
             Log.e(TAG, "Error creating JSON message", e);
         }
     }
 
-    private void processQueuedMessages() {
-        for (JSONObject message : messageQueue) {
-            webSocket.send(message.toString());
-        }
-        messageQueue.clear();
-    }
-
+    /**
+     * Close the WebSocket connection.
+     */
     public void close() {
         if (webSocket != null) {
-            webSocket.close(1000, "User closed the group chat");
+            webSocket.close(1000, "Group chat closed");
             webSocket = null;
-            isConnected = false;
         }
     }
 
-    public interface GroupChatServiceListener {
+    public void setWebSocketListener(ChatServiceListener listener) {
+        this.listener = listener;
+    }
+
+    public interface ChatServiceListener {
         void onMessageReceived(String senderNetId, Long groupId, String content, String timestamp);
     }
 }

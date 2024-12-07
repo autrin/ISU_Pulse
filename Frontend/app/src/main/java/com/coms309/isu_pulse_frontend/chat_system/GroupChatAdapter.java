@@ -9,106 +9,126 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.coms309.isu_pulse_frontend.R;
+import com.coms309.isu_pulse_frontend.loginsignup.UserSession;
 
 import java.util.List;
 
 public class GroupChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private static final int VIEW_TYPE_SENT = 1;
-    private static final int VIEW_TYPE_RECEIVED = 2;
-    private static final int VIEW_TYPE_SYSTEM = 3;
+    private static final int TYPE_SENT = 0;
+    private static final int TYPE_RECEIVED = 1;
+    private static final int TYPE_JOINED = 2;
 
-    private List<GroupChatMessage> messages;
+    private List<ChatMessage> chatMessages;
+    private String currentUserNetId;
 
-    public GroupChatAdapter(List<GroupChatMessage> messages) {
-        this.messages = messages;
+    public GroupChatAdapter(List<ChatMessage> chatMessages) {
+        this.chatMessages = chatMessages;
+        this.currentUserNetId = UserSession.getInstance().getNetId();
     }
 
     @Override
     public int getItemViewType(int position) {
-        GroupChatMessage message = messages.get(position);
-        if (message.isSystemMessage()) {
-            return VIEW_TYPE_SYSTEM;
-        } else if (message.isSentByUser()) {
-            return VIEW_TYPE_SENT;
+        ChatMessage chatMessage = chatMessages.get(position);
+        if (chatMessage.getSenderNetId() == null) {
+            // System message like "User joined the group"
+            return TYPE_JOINED;
+        } else if (chatMessage.getSenderNetId().equals(currentUserNetId)) {
+            // Message sent by the current user
+            return TYPE_SENT;
         } else {
-            return VIEW_TYPE_RECEIVED;
+            // Message received from another user
+            return TYPE_RECEIVED;
         }
     }
 
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        if (viewType == VIEW_TYPE_SENT) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_sent_text_message_groupchat, parent, false);
+        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+        if (viewType == TYPE_SENT) {
+            View view = inflater.inflate(R.layout.item_sent_text_message_groupchat, parent, false);
             return new SentMessageViewHolder(view);
-        } else if (viewType == VIEW_TYPE_RECEIVED) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_received_text_message_groupchat, parent, false);
+        } else if (viewType == TYPE_RECEIVED) {
+            View view = inflater.inflate(R.layout.item_received_text_message_groupchat, parent, false);
             return new ReceivedMessageViewHolder(view);
-        } else { // VIEW_TYPE_SYSTEM
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_joined_groupchat, parent, false);
-            return new SystemMessageViewHolder(view);
+        } else {
+            View view = inflater.inflate(R.layout.item_joined_groupchat, parent, false);
+            return new JoinedMessageViewHolder(view);
         }
     }
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        GroupChatMessage message = messages.get(position);
+        ChatMessage chatMessage = chatMessages.get(position);
 
         if (holder instanceof SentMessageViewHolder) {
-            SentMessageViewHolder sentHolder = (SentMessageViewHolder) holder;
-            sentHolder.textViewSenderName.setText(message.getSenderName());
-            sentHolder.textViewSentMessage.setText(message.getMessageContent());
-            sentHolder.textViewSentTimestamp.setText(message.getTimestamp());
+//            ((SentMessageViewHolder) holder).bind(chatMessage);
+            SentMessageViewHolder sentMessageViewHolder = (SentMessageViewHolder) holder;
+            sentMessageViewHolder.textViewSenderName.setText(chatMessage.getSenderNetId());
+            sentMessageViewHolder.textViewMessage.setText(chatMessage.getMessage());
+            sentMessageViewHolder.textViewTimestamp.setText(chatMessage.getTimestamp());
         } else if (holder instanceof ReceivedMessageViewHolder) {
-            ReceivedMessageViewHolder receivedHolder = (ReceivedMessageViewHolder) holder;
-            receivedHolder.textViewSenderName.setText(message.getSenderName());
-            receivedHolder.textViewReceivedMessage.setText(message.getMessageContent());
-            receivedHolder.textViewReceivedTimestamp.setText(message.getTimestamp());
-        } else if (holder instanceof SystemMessageViewHolder) {
-            SystemMessageViewHolder systemHolder = (SystemMessageViewHolder) holder;
-            systemHolder.textViewSystemMessage.setText(message.getMessageContent());
+//            ((ReceivedMessageViewHolder) holder).bind(chatMessage);
+            ReceivedMessageViewHolder receivedMessageViewHolder = (ReceivedMessageViewHolder) holder;
+            receivedMessageViewHolder.textViewSenderName.setText(chatMessage.getSenderNetId());
+            receivedMessageViewHolder.textViewMessage.setText(chatMessage.getMessage());
+            receivedMessageViewHolder.textViewTimestamp.setText(chatMessage.getTimestamp());
+        } else if (holder instanceof JoinedMessageViewHolder) {
+//            ((JoinedMessageViewHolder) holder).bind(chatMessage);
+            JoinedMessageViewHolder joinedMessageViewHolder = (JoinedMessageViewHolder) holder;
+            joinedMessageViewHolder.textViewMessage.setText(chatMessage.getMessage());
         }
     }
 
     @Override
     public int getItemCount() {
-        return messages.size();
-    }
-
-    public void addMessage(GroupChatMessage message) {
-        messages.add(message);
-        notifyItemInserted(messages.size() - 1);
+        return chatMessages.size();
     }
 
     static class SentMessageViewHolder extends RecyclerView.ViewHolder {
-        TextView textViewSenderName, textViewSentMessage, textViewSentTimestamp;
+        TextView textViewSenderName, textViewMessage, textViewTimestamp;
 
-        public SentMessageViewHolder(@NonNull View itemView) {
+        public SentMessageViewHolder(View itemView) {
             super(itemView);
             textViewSenderName = itemView.findViewById(R.id.textViewSenderName);
-            textViewSentMessage = itemView.findViewById(R.id.textViewSentMessage);
-            textViewSentTimestamp = itemView.findViewById(R.id.textViewSentTimestamp);
+            textViewMessage = itemView.findViewById(R.id.textViewSentMessage);
+            textViewTimestamp = itemView.findViewById(R.id.textViewSentTimestamp);
+        }
+
+        public void bind(ChatMessage message) {
+            textViewMessage.setText(message.getMessage());
+            textViewTimestamp.setText(message.getTimestamp());
         }
     }
 
     static class ReceivedMessageViewHolder extends RecyclerView.ViewHolder {
-        TextView textViewSenderName, textViewReceivedMessage, textViewReceivedTimestamp;
+        TextView textViewSenderName, textViewMessage, textViewTimestamp;
 
-        public ReceivedMessageViewHolder(@NonNull View itemView) {
+        public ReceivedMessageViewHolder(View itemView) {
             super(itemView);
             textViewSenderName = itemView.findViewById(R.id.textViewSenderName);
-            textViewReceivedMessage = itemView.findViewById(R.id.textViewReceivedMessage);
-            textViewReceivedTimestamp = itemView.findViewById(R.id.textViewReceivedTimestamp);
+            textViewMessage = itemView.findViewById(R.id.textViewReceivedMessage);
+            textViewTimestamp = itemView.findViewById(R.id.textViewReceivedTimestamp);
+        }
+
+        public void bind(ChatMessage message) {
+            textViewSenderName.setText(message.getSenderNetId()); // Display sender's NetID
+            textViewMessage.setText(message.getMessage());
+            textViewTimestamp.setText(message.getTimestamp());
         }
     }
 
-    static class SystemMessageViewHolder extends RecyclerView.ViewHolder {
-        TextView textViewSystemMessage;
+    static class JoinedMessageViewHolder extends RecyclerView.ViewHolder {
+        TextView textViewMessage;
 
-        public SystemMessageViewHolder(@NonNull View itemView) {
+        public JoinedMessageViewHolder(View itemView) {
             super(itemView);
-            textViewSystemMessage = itemView.findViewById(R.id.textViewSystemMessage);
+            textViewMessage = itemView.findViewById(R.id.textViewSystemMessage);
+        }
+
+        public void bind(ChatMessage message) {
+            textViewMessage.setText(message.getMessage());
         }
     }
 }

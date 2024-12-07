@@ -48,6 +48,9 @@
             android:name=".chat_system.GroupChatActivity"
             android:exported="false" />
         <activity
+            android:name=".chat_system.GroupChatCreating"
+            android:exported="false" />
+        <activity
             android:name=".chat_system.GroupChatAddingMember"
             android:exported="false" />
         <activity

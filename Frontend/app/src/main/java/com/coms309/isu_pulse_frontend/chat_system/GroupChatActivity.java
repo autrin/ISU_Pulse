@@ -2,14 +2,14 @@ package com.coms309.isu_pulse_frontend.chat_system;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -18,119 +18,118 @@ import com.coms309.isu_pulse_frontend.R;
 import com.coms309.isu_pulse_frontend.loginsignup.UserSession;
 import com.coms309.isu_pulse_frontend.web_socket.GroupChatServiceWebSocket;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GroupChatActivity extends AppCompatActivity implements GroupChatServiceWebSocket.GroupChatServiceListener {
+public class GroupChatActivity extends AppCompatActivity implements GroupChatServiceWebSocket.ChatServiceListener {
 
-    private static final String TAG = "GroupChatActivity";
-
-    private ImageButton backButton, addButton, attachButton;
-    private Button sendButton;
-    private EditText messageEditText;
-    private TextView groupNameTextView, typingIndicatorTextView;
     private RecyclerView recyclerViewMessages;
-    private GroupChatServiceWebSocket groupChatServiceWebSocket;
     private GroupChatAdapter groupChatAdapter;
+    private List<ChatMessage> chatMessages = new ArrayList<>();
+    private EditText editTextMessage;
+    private Button buttonSend;
+    private ImageButton buttonBack;
+    private TextView textViewGroupName;
+    private ImageButton buttonAdd;
 
-    private String netId;
+    private GroupChatServiceWebSocket webSocketService;
+    private String currentUserNetId;
     private Long groupId;
+    private String groupName;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_group_chat);
 
-        // Get group details from intent
-        groupId = getIntent().getLongExtra("groupId", -1);
-        String groupName = getIntent().getStringExtra("groupName");
-        netId = UserSession.getInstance().getNetId();
-
-        if (groupId == -1 || groupName == null) {
-            Toast.makeText(this, "Invalid group details", Toast.LENGTH_SHORT).show();
-            finish();
-            return;
-        }
-
         // Initialize UI components
-        backButton = findViewById(R.id.buttonBack);
-        addButton = findViewById(R.id.buttonAdd);
-        attachButton = findViewById(R.id.buttonAttach);
-        sendButton = findViewById(R.id.buttonSend);
-        messageEditText = findViewById(R.id.editTextMessage);
-        groupNameTextView = findViewById(R.id.textViewUsername);
-        typingIndicatorTextView = findViewById(R.id.textViewTypingIndicator);
         recyclerViewMessages = findViewById(R.id.recyclerViewMessages);
-
-        // Set group name
-        groupNameTextView.setText(groupName);
+        editTextMessage = findViewById(R.id.editTextMessage);
+        buttonSend = findViewById(R.id.buttonSend);
+        buttonBack = findViewById(R.id.buttonBack);
+        textViewGroupName = findViewById(R.id.textViewGroupName);
+        buttonAdd = findViewById(R.id.buttonAdd);
 
         // Setup RecyclerView
+        groupChatAdapter = new GroupChatAdapter(chatMessages);
         recyclerViewMessages.setLayoutManager(new LinearLayoutManager(this));
-        groupChatAdapter = new GroupChatAdapter(new ArrayList<>());
         recyclerViewMessages.setAdapter(groupChatAdapter);
 
-        // Setup WebSocket
-        groupChatServiceWebSocket = GroupChatServiceWebSocket.getInstance(this, netId, groupId, this);
-        groupChatServiceWebSocket.setWebSocketListener(this);
+        // Retrieve group info from intent
+        groupId = getIntent().getLongExtra("groupId", -1);
+        groupName = getIntent().getStringExtra("groupName");
+        currentUserNetId = UserSession.getInstance().getNetId();
 
-        // Button click listeners
-        backButton.setOnClickListener(v -> finish());
-        addButton.setOnClickListener(v -> openAddMemberScreen());
-        sendButton.setOnClickListener(v -> sendMessage());
+        textViewGroupName.setText(groupName);
 
-        // Fetch chat history
-        fetchChatHistory();
-    }
+        // Initialize WebSocket
+        connectToWebSocket();
 
-    private void openAddMemberScreen() {
-        // Navigate to Add Member Screen
-        Intent intent = new Intent(this, GroupChatAddingMember.class);
-        intent.putExtra("groupId", groupId);
-        startActivity(intent);
-    }
+        // Handle send button
+        buttonSend.setOnClickListener(v -> {
+            String message = editTextMessage.getText().toString();
+            if (!TextUtils.isEmpty(message)) {
+                webSocketService.sendMessage(currentUserNetId, groupId, message);
+                editTextMessage.setText("");
+            }
+        });
 
-    private void fetchChatHistory() {
+        // Handle back button
+        buttonBack.setOnClickListener(view -> {
+            Intent intent = new Intent(GroupChatActivity.this, ChatList.class);
+            startActivity(intent);
+        });
 
-    }
-
-    private void sendMessage() {
-        String message = messageEditText.getText().toString().trim();
-        if (message.isEmpty()) {
-            Toast.makeText(this, "Message cannot be empty", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        // Display message locally
-        displayMessage("You", message, LocalDateTime.now().toString());
-
-        // Send message via WebSocket
-        groupChatServiceWebSocket.sendMessage(netId, message);
-
-        // Clear input field
-        messageEditText.setText("");
-    }
-
-    private void displayMessage(String sender, String content, String timestamp) {
-        groupChatAdapter.addMessage(new GroupChatMessage(sender, content, timestamp, sender.equals("You"), false));
-        recyclerViewMessages.smoothScrollToPosition(groupChatAdapter.getItemCount() - 1);
-    }
-
-    @Override
-    public void onMessageReceived(String senderNetId, Long groupId, String content, String timestamp) {
-        Log.d(TAG, "Message received: " + content);
-        runOnUiThread(() -> {
-            String sender = senderNetId.equals(netId) ? "You" : senderNetId;
-            displayMessage(sender, content, timestamp);
+        buttonAdd.setOnClickListener(view -> {
+            Intent intent = new Intent(GroupChatActivity.this, GroupChatAddingMember.class);
+            intent.putExtra("groupId", groupId);
+            startActivity(intent);
         });
     }
+
+    private void connectToWebSocket() {
+        Log.d("GroupChatActivity", "Connecting to WebSocket for groupId: " + groupId);
+        webSocketService = GroupChatServiceWebSocket.getInstance(this, currentUserNetId, groupId, this);
+    }
+
+//    @Override
+//    public void onMessageReceived(String senderNetId, Long groupId, String content, String timestamp) {
+//        // Add new message to the list and refresh RecyclerView
+//        ChatMessage chatMessage = new ChatMessage(senderNetId, groupId, content, timestamp);
+//        chatMessages.add(chatMessage);
+//        runOnUiThread(() -> {
+//            groupChatAdapter.notifyItemInserted(chatMessages.size() - 1);
+//            recyclerViewMessages.smoothScrollToPosition(chatMessages.size() - 1); // Scroll to the latest message
+//        });
+//    }
+    @Override
+    public void onMessageReceived(String senderNetId, Long receivedGroupId, String content, String timestamp) {
+        // Check if the received message belongs to the group the user is currently viewing
+        if (receivedGroupId != null && receivedGroupId.equals(this.groupId)) {
+            // This message is for the currently displayed group
+
+            ChatMessage chatMessage = new ChatMessage(senderNetId, receivedGroupId, content, timestamp);
+            chatMessages.add(chatMessage);
+
+            // Update the UI on the main thread
+            runOnUiThread(() -> {
+                groupChatAdapter.notifyItemInserted(chatMessages.size() - 1);
+                recyclerViewMessages.smoothScrollToPosition(chatMessages.size() - 1); // Scroll to the latest message
+            });
+        } else {
+            // The message is not for the current group. You can ignore it or handle it differently.
+            // For example:
+            Log.d("GroupChatActivity", "Received a message for groupId: " + receivedGroupId + " but currently viewing groupId: " + this.groupId);
+        }
+    }
+
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (groupChatServiceWebSocket != null) {
-            groupChatServiceWebSocket.close();
+        if (webSocketService != null) {
+            webSocketService.close();
+            webSocketService = null;
         }
     }
 }

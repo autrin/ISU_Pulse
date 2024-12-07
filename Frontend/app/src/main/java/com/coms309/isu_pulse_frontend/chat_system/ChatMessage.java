@@ -59,6 +59,14 @@ public class ChatMessage {
         this.timestamp = timestamp;
     }
 
+    public ChatMessage(String senderNetId, Long groupId, String content, String timestamp) {
+        this.senderNetId = senderNetId;
+        this.groupId = groupId;
+        this.message = content;
+        this.timestamp = timestamp;
+    }
+
+
     public String getSenderfirstName() {
         return senderfirstName;
     }
