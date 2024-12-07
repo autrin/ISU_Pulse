@@ -139,6 +139,8 @@
                     android:layout_height="wrap_content"
                     android:text="6"
                     android:textColor="@android:color/black"
+                    android:layout_gravity="center"
+                    android:gravity="center"
                     android:textSize="18sp"
                     android:textStyle="bold" />
 
@@ -146,6 +148,8 @@
                     android:id="@+id/coursesLabelTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center"
                     android:text="Courses"
                     android:textColor="@android:color/darker_gray"
                     android:textSize="14sp" />

@@ -147,6 +147,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="6"
+                    android:gravity="center"
+                    android:layout_gravity="center"
                     android:textColor="@android:color/black"
                     android:textSize="18sp"
                     android:textStyle="bold" />
@@ -156,6 +158,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Courses"
+                    android:gravity="center"
+                    android:layout_gravity="center"
                     android:textColor="@android:color/darker_gray"
                     android:textSize="14sp" />
             </LinearLayout>
@@ -173,6 +177,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="20"
+                    android:gravity="center"
+                    android:layout_gravity="center"
                     android:textColor="@android:color/black"
                     android:textSize="18sp"
                     android:textStyle="bold" />
@@ -182,6 +188,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Friends"
+                    android:gravity="center"
+                    android:layout_gravity="center"
                     android:textColor="@android:color/darker_gray"
                     android:textSize="14sp" />
             </LinearLayout>
@@ -199,6 +207,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="15"
+                    android:gravity="center"
+                    android:layout_gravity="center"
                     android:textColor="@android:color/black"
                     android:textSize="18sp"
                     android:textStyle="bold" />
@@ -207,6 +217,8 @@
                     android:id="@+id/friendsRequest"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:layout_gravity="center"
                     android:text="Friend Requests"
                     android:textColor="@android:color/darker_gray"
                     android:textSize="14sp" />
@@ -226,6 +238,8 @@
                     android:layout_height="wrap_content"
                     android:text="10"
                     android:textColor="@android:color/black"
+                    android:gravity="center"
+                    android:layout_gravity="center"
                     android:textSize="18sp"
                     android:textStyle="bold" />
 
@@ -234,6 +248,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Sent Requests"
+                    android:gravity="center"
+                    android:layout_gravity="center"
                     android:textColor="@android:color/darker_gray"
                     android:textSize="14sp" />
             </LinearLayout>
@@ -253,13 +269,18 @@
                     android:text="5"
                     android:textColor="@android:color/black"
                     android:textSize="18sp"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    android:gravity="center"
+                    android:layout_gravity="center"
+                    android:visibility="invisible"/>
 
                 <TextView
                     android:id="@+id/friendSuggestionsLabelTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Friend Suggestions"
+                    android:gravity="center"
+                    android:layout_gravity="center"
                     android:textColor="@android:color/darker_gray"
                     android:textSize="14sp" />
             </LinearLayout>
