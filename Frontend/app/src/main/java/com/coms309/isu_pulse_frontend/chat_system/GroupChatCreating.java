@@ -3,6 +3,7 @@ package com.coms309.isu_pulse_frontend.chat_system;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -121,12 +122,10 @@ public class GroupChatCreating extends AppCompatActivity {
                     .filter(Friend::isSelected)
                     .collect(Collectors.toList());
 
-            // Generate group name as "FirstName, FirstName..."
             groupNameText = selectedFriends.stream()
                     .map(Friend::getFirstName)
                     .collect(Collectors.joining(", "));
 
-            // In case there are more than 3 names, truncate and add ellipsis
             if (selectedFriends.size() > 3) {
                 groupNameText = selectedFriends.stream()
                         .limit(3)
@@ -135,12 +134,12 @@ public class GroupChatCreating extends AppCompatActivity {
             }
         }
 
+        // Create the group
         groupChatApiService.createGroupChat(groupNameText, netId, new GroupChatApiService.GroupChatCallback() {
             @Override
             public void onSuccess(String response) {
-                Toast.makeText(GroupChatCreating.this, "Group created successfully!", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(GroupChatCreating.this, ChatList.class);
-                startActivity(intent);
+                // Group created successfully; proceed to add members
+                addInitialMembers();
             }
 
             @Override
@@ -148,6 +147,32 @@ public class GroupChatCreating extends AppCompatActivity {
                 Toast.makeText(GroupChatCreating.this, error, Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void addInitialMembers() {
+        String creatorNetId = UserSession.getInstance().getNetId();
+        List<Friend> selectedFriends = filteredFriendList.stream()
+                .filter(Friend::isSelected)
+                .collect(Collectors.toList());
+
+        for (Friend friend : selectedFriends) {
+            groupChatApiService.addInitialMembers(creatorNetId, friend.getNetId(), new GroupChatApiService.GroupChatCallback() {
+                @Override
+                public void onSuccess(String response) {
+                    Log.d("GroupChatCreating", "Successfully added member: " + friend.getNetId());
+                }
+
+                @Override
+                public void onError(String error) {
+                    Log.e("GroupChatCreating", "Failed to add member: " + friend.getNetId() + " - " + error);
+                }
+            });
+        }
+
+        // After adding members, navigate back to the chat list
+        Toast.makeText(GroupChatCreating.this, "Group created successfully!", Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(GroupChatCreating.this, ChatList.class);
+        startActivity(intent);
     }
 
     private void fetchFriends() {

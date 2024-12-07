@@ -23,6 +23,26 @@ public class GroupChatApiService {
         void onError(String error);
     }
 
+    public void addInitialMembers(String creatorNetId, String personBeingAdded, GroupChatCallback callback) {
+        String url = BASE_URL + "groups/addInitialMembers?creatorNetId=" + creatorNetId + "&personBeingAdded=" + personBeingAdded;
+        StringRequest request = new StringRequest(Request.Method.POST, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        // Success callback
+                        callback.onSuccess(response);
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        // Error callback
+                        callback.onError("Failed to add members: " + error.getMessage());
+                    }
+                });
+        requestQueue.add(request);
+    }
+
     public void createGroupChat(String groupName, String netId, GroupChatCallback callback) {
         String url = BASE_URL + "groups/create?groupName=" + groupName + "&netId=" + netId;
 
