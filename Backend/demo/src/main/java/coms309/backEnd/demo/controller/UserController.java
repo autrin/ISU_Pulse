@@ -224,6 +224,21 @@ public class UserController {
         }
         return ResponseEntity.ok(users);
     }
+
+    @PutMapping("/forgotPassword")
+    public ResponseEntity<String> changePassword(
+            @RequestParam String netId,
+            @RequestParam String newHashPassword
+    ){
+        Optional<User> curUser = userRepository.findUserByNetId(netId);
+        if(curUser.isEmpty()){
+            return ResponseEntity.internalServerError().build();
+        }
+        User user = curUser.get();
+
+        user.setHashedPassword(newHashPassword);
+        return ResponseEntity.ok("Updating password successfully");
+    }
 }
 
 
