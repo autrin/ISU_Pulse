@@ -57,13 +57,13 @@ public class MainActivity extends AppCompatActivity {
             String userRole = UserSession.getInstance(this).getUserType();
             if ("FACULTY".equals(userRole)) {
                 mAppBarConfiguration = new AppBarConfiguration.Builder(
-                        R.id.nav_home, R.id.nav_profile, R.id.nav_courses)
+                        R.id.nav_home, R.id.nav_profile, R.id.nav_courses, R.id.nav_ask_ai)
                         .setOpenableLayout(drawer)
                         .build();
                 setupTeacherMenu();
             } else {
                 mAppBarConfiguration = new AppBarConfiguration.Builder(
-                        R.id.nav_home, R.id.nav_students, R.id.nav_chatting, R.id.nav_announcements, R.id.nav_profile, R.id.nav_logout)
+                        R.id.nav_home, R.id.nav_students, R.id.nav_chatting, R.id.nav_announcements, R.id.nav_profile, R.id.nav_ask_ai, R.id.nav_logout)
                         .setOpenableLayout(drawer)
                         .build();
                 setupStudentMenu();
