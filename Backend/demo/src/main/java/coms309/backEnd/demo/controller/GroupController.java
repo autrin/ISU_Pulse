@@ -152,7 +152,7 @@ public class GroupController {
         }
         return ResponseEntity.ok("Update the name of the group successfully");
     }
-
+    // this is the API using the list<Group> in User Entity to find the latest group of a given user created
     @PostMapping("/addInitialMembers")
     public ResponseEntity<String> addInitialMembers(
             @RequestParam String creatorNetId,
@@ -189,6 +189,26 @@ public class GroupController {
         message.setContent(personBeingAdded + " joined the group");
         groupMessagesRepository.save(message);
         return ResponseEntity.ok("Added new member successfully");
+    }
+
+    // This is the API using query from MySQL to find the latest group that a given user create
+    @GetMapping("/latestGroup")
+    public ResponseEntity<Group> findTheLatestGroup(
+            @RequestParam String netId
+    ){
+        Optional<User> curUser = userRepository.findUserByNetId(netId);
+        if(curUser.isEmpty()){
+            return ResponseEntity.internalServerError().build();
+        }
+        User user = curUser.get();
+
+        Optional<Group> curGroup = groupRepository.findLatestGroupByUser(user.getId());
+        if(curGroup.isEmpty()){
+            return ResponseEntity.internalServerError().build();
+        }
+        Group group = curGroup.get();
+
+        return ResponseEntity.ok(group);
     }
 
 
