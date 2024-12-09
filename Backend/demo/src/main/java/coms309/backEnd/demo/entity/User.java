@@ -83,6 +83,15 @@ public class User {
     @JsonIgnore
     private List<Group> groupsCreated;
 
+    // Add fields for OTP-based authentication
+    @JsonIgnore
+    private String otp; // Temporary storage for OTP
+
+
+    // 0 for false and 1 for true
+    @JsonIgnore
+    private boolean verified; // To track if the user is verified
+
 
     public User() {
     }
@@ -106,6 +115,5 @@ public class User {
         friendShips.addAll(friendshipsAsUser1);
         friendShips.addAll(friendshipsAsUser2);
         return friendShips;
-
     }
 }

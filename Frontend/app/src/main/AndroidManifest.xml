@@ -75,6 +75,9 @@
             android:name=".loginsignup.LoginActivity"
             android:exported="false" />
         <activity
+            android:name=".loginsignup.ForgotPassword"
+            android:exported="false" />
+        <activity
             android:name=".course_functional.CourseView"
             android:exported="false" />
         <activity

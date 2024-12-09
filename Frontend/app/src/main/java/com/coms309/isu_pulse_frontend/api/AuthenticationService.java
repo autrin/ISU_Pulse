@@ -9,6 +9,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
 import org.json.JSONException;
@@ -20,6 +21,75 @@ public class AuthenticationService {
     public interface VolleyCallback {
         void onSuccess(JSONObject result);
         void onError(String message);
+    }
+
+    public interface ForgetPasswordCallback {
+        void onSuccess(String result);
+        void onError(String message);
+    }
+
+    public void sendOtp(String email, Context context, final ForgetPasswordCallback callback){
+        String url = BASE_URL + "auth/sendOtp?email=" + email;
+        RequestQueue queue = Volley.newRequestQueue(context);
+        StringRequest request = new StringRequest(Request.Method.POST, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        // Success callback
+                        callback.onSuccess(response);
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        // Error callback
+                        callback.onError("Failed to send otp: " + error.getMessage());
+                    }
+                });
+        queue.add(request);
+    }
+
+    public void verifyOtp(String email, String otp, Context context, final ForgetPasswordCallback callback){
+        String url = BASE_URL + "auth/verifyOtp?email=" + email + "&otp=" + otp;
+        RequestQueue queue = Volley.newRequestQueue(context);
+        StringRequest request = new StringRequest(Request.Method.POST, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        // Success callback
+                        callback.onSuccess(response);
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        // Error callback
+                        callback.onError("Failed to verify otp: " + error.getMessage());
+                    }
+                });
+        queue.add(request);
+    }
+
+
+    public void forgotPassword(String netId, String newHashPassword, Context context, final ForgetPasswordCallback callback) {
+        String url = BASE_URL + "users/forgotPassword?netId=" + netId + "&newHashPassword=" + newHashPassword;
+        RequestQueue queue = Volley.newRequestQueue(context);
+        StringRequest request = new StringRequest(Request.Method.PUT, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        // Success callback
+                        callback.onSuccess(response);
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        // Error callback
+                        callback.onError("Failed to update password: " + error.getMessage());
+                    }
+                });
+        queue.add(request);
     }
 
     public void registerNewUser(
