@@ -34,6 +34,28 @@ public class AuthenticationService {
         void onError(String message);
     }
 
+
+    public void deleteAccount(String netId, Context context, final LoginCallback callback){
+        String url = BASE_URL + "users/" + netId;
+        RequestQueue queue = Volley.newRequestQueue(context);
+        StringRequest request = new StringRequest(Request.Method.DELETE, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        // Success callback
+                        callback.onSuccess(response);
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        // Error callback
+                        callback.onError("Failed to delete account: " + error.getMessage());
+                    }
+                });
+        queue.add(request);
+    }
+
     public void sendOtp(String email, Context context, final ForgetPasswordCallback callback){
         String url = BASE_URL + "auth/sendOtp?email=" + email;
         RequestQueue queue = Volley.newRequestQueue(context);
