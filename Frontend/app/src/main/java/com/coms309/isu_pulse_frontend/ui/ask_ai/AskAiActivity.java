@@ -165,20 +165,20 @@ public class AskAiActivity extends AppCompatActivity {
 //        chatServiceWebSocket.sendMessage(netId2, netId1, messageContent);
     }
 
-    @Override
-    public void onMessageReceived(String senderNetId, String recipientNetId, String message, String timestamp) {
-//        Log.d(TAG, "Message received in ChatActivity: " + message);
-//        displayMessage(message, false, timestamp);
-//        boolean isSent = senderNetId.equals(netId2);
-//        ChatMessage chatMessage = new ChatMessage(message, isSent, timestamp);
-//        chatAdapter.addMessage(chatMessage);
-        runOnUiThread(() -> {
-            // Avoid adding the message twice by checking if it's from the current user
-            if (!senderNetId.equals(UserSession.getInstance().getNetId())) {
-                displayMessage(message, false, timestamp);
-            }
-        });
-    }
+//    @Override
+//    public void onMessageReceived(String senderNetId, String recipientNetId, String message, String timestamp) {
+////        Log.d(TAG, "Message received in ChatActivity: " + message);
+////        displayMessage(message, false, timestamp);
+////        boolean isSent = senderNetId.equals(netId2);
+////        ChatMessage chatMessage = new ChatMessage(message, isSent, timestamp);
+////        chatAdapter.addMessage(chatMessage);
+//        runOnUiThread(() -> {
+//            // Avoid adding the message twice by checking if it's from the current user
+//            if (!senderNetId.equals(UserSession.getInstance().getNetId())) {
+//                displayMessage(message, false, timestamp);
+//            }
+//        });
+//    }
 
 
 
