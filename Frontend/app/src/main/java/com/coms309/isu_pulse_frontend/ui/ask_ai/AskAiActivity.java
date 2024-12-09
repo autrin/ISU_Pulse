@@ -20,16 +20,19 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.VolleyError;
 import com.bumptech.glide.Glide;
+import com.coms309.isu_pulse_frontend.MainActivity;
 import com.coms309.isu_pulse_frontend.R;
 import com.coms309.isu_pulse_frontend.api.ChatApiService;
 import com.coms309.isu_pulse_frontend.api.UpdateAccount;
 import com.coms309.isu_pulse_frontend.chat_system.ChatActivity;
 import com.coms309.isu_pulse_frontend.adapters.AskAiAdapter;
+import com.coms309.isu_pulse_frontend.chat_system.ChatAdapter;
 import com.coms309.isu_pulse_frontend.chat_system.ChatList;
 import com.coms309.isu_pulse_frontend.chat_system.ChatMessage;
 import com.coms309.isu_pulse_frontend.chat_system.ChatMessageDTO;
 import com.coms309.isu_pulse_frontend.loginsignup.UserSession;
 import com.coms309.isu_pulse_frontend.model.Profile;
+import com.coms309.isu_pulse_frontend.ui.home.HomeActivity;
 import com.coms309.isu_pulse_frontend.web_socket.ChatServiceWebSocket;
 
 import java.text.SimpleDateFormat;
@@ -54,8 +57,8 @@ public class AskAiActivity extends AppCompatActivity {
     private RecyclerView recyclerViewMessages;
     private TextView nameTextView;
     private TextView typingIndicatorTextView;
-    private AskAiAdapter askAiAdapter;
-    private AskAiAdapter chatAdapterfetchHistory;
+    private ChatAdapter askAiAdapter;
+//    private AskAiAdapter chatAdapterfetchHistory;
 //    private ChatServiceWebSocket chatServiceWebSocket;
     private String netId1;
     private String netId2;
@@ -82,25 +85,25 @@ public class AskAiActivity extends AppCompatActivity {
         sendButton = findViewById(R.id.buttonSend);
         recyclerViewMessages = findViewById(R.id.recyclerAskAiViewMessages);
         recyclerViewMessages.setLayoutManager(new LinearLayoutManager(this));
-        askAiAdapter = new AskAiAdapter(new ArrayList<>());
+        askAiAdapter = new ChatAdapter(new ArrayList<>());
         recyclerViewMessages.setAdapter(askAiAdapter);
-
+        // TODO API service
         // Set ChatGPT-specific UI
-        Glide.with(this).load(R.drawable.chatgpt_100).into(profileImageView);
+//        Glide.with(this).load(R.drawable.chatgpt_100).into(profileImageView);
         nameTextView.setText("ChatGPT");
 
         // Handle the Intent and initialize the session
-        String chatId = getIntent().getStringExtra("chatId");
-        if (chatId != null) {
-            Log.d("AskAiActivity", "Chat session started for chatId: " + chatId);
-        }
+//        String chatId = getIntent().getStringExtra("chatId");
+//        if (chatId != null) {
+//            Log.d("AskAiActivity", "Chat session started for chatId: " + chatId);
+//        }
 
         // Handle back button navigation
         backButton.setOnClickListener(v -> {
-            Intent intent = new Intent(AskAiActivity.this, AskAiAllHistoryActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); // Avoid multiple instances
+            Intent intent = new Intent(AskAiActivity.this, MainActivity.class); // might be MainActivity or HomeActivity
+//            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); // Avoid multiple instances
             startActivity(intent);
-            finish(); // Finish current activity
+//            finish(); // Finish current activity
         });
 
 
@@ -127,14 +130,14 @@ public class AskAiActivity extends AppCompatActivity {
         new Handler().postDelayed(() -> {
             String aiResponse = generateAIResponse(messageContent); // Replace with actual API call later
             displayMessage(aiResponse, false, getCurrentTimestamp());
-        }, 2000); // Simulate a 2-second response delay
+        }, 2000); // Simulate a 2-second response delay // TODO: Change to actual API call
     }
 
     // Simulates ChatGPT's typing indicator
     private void simulateAITyping() {
         TextView typingIndicator = findViewById(R.id.textViewTypingIndicator);
         typingIndicator.setVisibility(View.VISIBLE);
-        new Handler().postDelayed(() -> typingIndicator.setVisibility(View.GONE), 2000);
+        new Handler().postDelayed(() -> typingIndicator.setVisibility(View.GONE), 2000); // TODO Change to actual typing indicator
     }
 
     private void displayMessage(String message, boolean isSent, String timestamp) {
