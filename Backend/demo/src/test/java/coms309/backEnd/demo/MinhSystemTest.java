@@ -87,6 +87,13 @@ public class MinhSystemTest {
 
         } catch (JSONException e) {
             fail("JSON parsing failed: " + e.getMessage());
+        } finally {
+            // Clean up: Remove test-specific friendships and users
+            friendShipRepository.findFriendShipBetweenUsers(user1, user2)
+                    .ifPresent(friendShipRepository::delete);
+
+            userRepository.delete(user1);
+            userRepository.delete(user2);
         }
     }
 
@@ -106,20 +113,26 @@ public class MinhSystemTest {
 
         createFriendShip(user1, user2);
 
-        // Unfriend user
-        Response response = RestAssured.given()
-                .header("Content-Type", "application/json")
-                .queryParam("userNetId1", user1NetId)
-                .queryParam("userNetId2", user2NetId)
-                .when()
-                .delete("/friendShip/unfriend");
+        try {
+            // Unfriend user
+            Response response = RestAssured.given()
+                    .header("Content-Type", "application/json")
+                    .queryParam("userNetId1", user1NetId)
+                    .queryParam("userNetId2", user2NetId)
+                    .when()
+                    .delete("/friendShip/unfriend");
 
-        // Verify response
-        assertEquals(200, response.getStatusCode(), "Expected status code 200");
-        assertEquals("Unfriended successfully.", response.getBody().asString(), "Expected success message");
+            // Verify response
+            assertEquals(200, response.getStatusCode(), "Expected status code 200");
+            assertEquals("Unfriended successfully.", response.getBody().asString(), "Expected success message");
 
-        // Verify in database
-        assertFalse(friendShipRepository.findFriendShipBetweenUsers(user1, user2).isPresent(), "Friendship should no longer exist");
+            // Verify in database
+            assertFalse(friendShipRepository.findFriendShipBetweenUsers(user1, user2).isPresent(), "Friendship should no longer exist");
+        } finally {
+            // Clean up: Remove test-specific users
+            userRepository.delete(user1);
+            userRepository.delete(user2);
+        }
     }
 
     /**
@@ -146,13 +159,13 @@ public class MinhSystemTest {
         createFriendShip(user, friend2);
         createFriendShip(user, friend3);
 
-        // Fetch friend list
-        Response response = RestAssured.given()
-                .header("Content-Type", "application/json")
-                .when()
-                .get("/friendShip/friends/" + userNetId);
-
         try {
+            // Fetch friend list
+            Response response = RestAssured.given()
+                    .header("Content-Type", "application/json")
+                    .when()
+                    .get("/friendShip/friends/" + userNetId);
+
             // Verify response
             assertEquals(200, response.getStatusCode(), "Expected status code 200");
 
@@ -172,8 +185,20 @@ public class MinhSystemTest {
 
         } catch (org.json.JSONException e) {
             fail("JSONException occurred: " + e.getMessage());
+        } finally {
+            // Clean up: Remove friendships
+            friendShipRepository.delete(friendShipRepository.findFriendShipBetweenUsers(user, friend1).get());
+            friendShipRepository.delete(friendShipRepository.findFriendShipBetweenUsers(user, friend2).get());
+            friendShipRepository.delete(friendShipRepository.findFriendShipBetweenUsers(user, friend3).get());
+
+            // Clean up: Remove users
+            userRepository.delete(user);
+            userRepository.delete(friend1);
+            userRepository.delete(friend2);
+            userRepository.delete(friend3);
         }
     }
+
     /**
      * Test Case 4: Send Friend Request - Null Receiver.
      *
@@ -186,31 +211,42 @@ public class MinhSystemTest {
         String senderNetId = "valid_sender"; // Assuming this is a valid NetID
         String receiverNetId = null; // Null receiver
 
-        // Ensure the sender exists in the database
-        if (!userRepository.findUserByNetId(senderNetId).isPresent()) {
-            User sender = new User();
-            sender.setNetId(senderNetId);
-            sender.setFirstName("Sender");
-            sender.setLastName("User");
-            sender.setEmail("sender@example.com");
-            sender.setHashedPassword("hashedpassword123");
-            sender.setUserType(UserType.STUDENT);
-            userRepository.save(sender);
+        User sender = null;
+
+        try {
+            // Ensure the sender exists in the database
+            sender = userRepository.findUserByNetId(senderNetId).orElseGet(() -> {
+                User newSender = new User();
+                newSender.setNetId(senderNetId);
+                newSender.setFirstName("Sender");
+                newSender.setLastName("User");
+                newSender.setEmail("sender@example.com");
+                newSender.setHashedPassword("hashedpassword123");
+                newSender.setUserType(UserType.STUDENT);
+                return userRepository.save(newSender);
+            });
+
+            // Act
+            Response response = RestAssured.given()
+                    .header("Content-Type", "application/json")
+                    .queryParam("senderNetId", senderNetId)
+                    .queryParam("receiverNetId", receiverNetId) // Null value
+                    .when()
+                    .post("/friendRequest/request");
+
+            // Assert
+            assertEquals(404, response.getStatusCode(), "Expected status code 404 for null receiver");
+            String responseBody = response.getBody().asString();
+            assertEquals("User with ID  not found.", responseBody, "Expected error message for null receiver");
+
+        } finally {
+            // Clean up: Remove the sender user if it was created for this test
+            if (sender != null) {
+                userRepository.delete(sender);
+            }
         }
-
-        // Act
-        Response response = RestAssured.given()
-                .header("Content-Type", "application/json")
-                .queryParam("senderNetId", senderNetId)
-                .queryParam("receiverNetId", receiverNetId) // Null value
-                .when()
-                .post("/friendRequest/request");
-
-        // Assert
-        assertEquals(404, response.getStatusCode(), "Expected status code 404 for null receiver");
-        String responseBody = response.getBody().asString();
-        assertEquals("User with ID  not found.", responseBody, "Expected error message for null receiver");
     }
+
     /**
      * Test Case 5: Unfriend Non-Existent Friendship.
      *
@@ -223,49 +259,58 @@ public class MinhSystemTest {
         String userNetId1 = "user1";
         String userNetId2 = "user2";
 
-        // Ensure both users exist in the database
-        if (!userRepository.findUserByNetId(userNetId1).isPresent()) {
-            User user1 = new User();
-            user1.setNetId(userNetId1);
-            user1.setFirstName("User");
-            user1.setLastName("One");
-            user1.setEmail("user1@example.com");
-            user1.setHashedPassword("hashedpassword1");
-            user1.setUserType(UserType.STUDENT);
-            userRepository.save(user1);
+        User user1 = null;
+        User user2 = null;
+
+        try {
+            // Ensure both users exist in the database
+            user1 = userRepository.findUserByNetId(userNetId1).orElseGet(() -> {
+                User newUser1 = new User();
+                newUser1.setNetId(userNetId1);
+                newUser1.setFirstName("User");
+                newUser1.setLastName("One");
+                newUser1.setEmail("user1@example.com");
+                newUser1.setHashedPassword("hashedpassword1");
+                newUser1.setUserType(UserType.STUDENT);
+                return userRepository.save(newUser1);
+            });
+
+            user2 = userRepository.findUserByNetId(userNetId2).orElseGet(() -> {
+                User newUser2 = new User();
+                newUser2.setNetId(userNetId2);
+                newUser2.setFirstName("User");
+                newUser2.setLastName("Two");
+                newUser2.setEmail("user2@example.com");
+                newUser2.setHashedPassword("hashedpassword2");
+                newUser2.setUserType(UserType.STUDENT);
+                return userRepository.save(newUser2);
+            });
+
+            // Ensure no friendship exists between the two users
+            Optional<FriendShip> friendship = friendShipRepository.findFriendShipBetweenUsers(user1, user2);
+            friendship.ifPresent(friendShipRepository::delete);
+
+            // Act
+            Response response = RestAssured.given()
+                    .header("Content-Type", "application/json")
+                    .queryParam("userNetId1", userNetId1)
+                    .queryParam("userNetId2", userNetId2)
+                    .when()
+                    .delete("/friendRequest/unfriend");
+
+            // Assert
+            assertEquals(404, response.getStatusCode(), "Expected status code 404 for no existing friendship");
+
+        } finally {
+            // Clean up: Remove test-specific users
+            if (user1 != null) {
+                userRepository.delete(user1);
+            }
+            if (user2 != null) {
+                userRepository.delete(user2);
+            }
         }
-
-        if (!userRepository.findUserByNetId(userNetId2).isPresent()) {
-            User user2 = new User();
-            user2.setNetId(userNetId2);
-            user2.setFirstName("User");
-            user2.setLastName("Two");
-            user2.setEmail("user2@example.com");
-            user2.setHashedPassword("hashedpassword2");
-            user2.setUserType(UserType.STUDENT);
-            userRepository.save(user2);
-        }
-
-        // Ensure no friendship exists between the two users
-        Optional<FriendShip> friendship = friendShipRepository.findFriendShipBetweenUsers(
-                userRepository.findUserByNetId(userNetId1).get(),
-                userRepository.findUserByNetId(userNetId2).get()
-        );
-        friendship.ifPresent(friendShipRepository::delete);
-
-        // Act
-        Response response = RestAssured.given()
-                .header("Content-Type", "application/json")
-                .queryParam("userNetId1", userNetId1)
-                .queryParam("userNetId2", userNetId2)
-                .when()
-                .delete("/friendRequest/unfriend");
-
-
-        // Assert
-        assertEquals(404, response.getStatusCode(), "Expected status code 404 for no existing friendship");
     }
-
     /**
      * Test Case 6: Reject Non-Existent Friend Request.
      *
@@ -278,26 +323,48 @@ public class MinhSystemTest {
         String senderNetId = "test_sender";
         String receiverNetId = "test_receiver";
 
-        // Ensure sender and receiver exist in the database
-        User sender = createUser(senderNetId, "Sender", "Test", "sender@example.com");
-        User receiver = createUser(receiverNetId, "Receiver", "Test", "receiver@example.com");
+        User sender = null;
+        User receiver = null;
 
-        // Ensure no friend request exists between sender and receiver
-        friendRequestRepository.findFriendRequestBySenderAndReceiver(sender, receiver)
-                .ifPresent(friendRequestRepository::delete);
+        try {
+            // Ensure sender exists in the database
+            sender = userRepository.findUserByNetId(senderNetId).orElseGet(() -> {
+                User newUser = new User(senderNetId, "Sender", "Test", "sender@example.com", "hashedpassword", UserType.STUDENT);
+                return userRepository.save(newUser);
+            });
 
-        // Act: Attempt to reject a friend request that doesn't exist
-        Response response = RestAssured.given()
-                .header("Content-Type", "application/json")
-                .queryParam("senderNetId", senderNetId)
-                .queryParam("receiverNetId", receiverNetId)
-                .when()
-                .delete("/friendRequest/reject");
+            // Ensure receiver exists in the database
+            receiver = userRepository.findUserByNetId(receiverNetId).orElseGet(() -> {
+                User newUser = new User(receiverNetId, "Receiver", "Test", "receiver@example.com", "hashedpassword", UserType.STUDENT);
+                return userRepository.save(newUser);
+            });
 
-        // Assert: Verify the response status and message
-        assertEquals(404, response.getStatusCode(), "Expected status code 404 for non-existent friend request");
-        assertEquals("Friend request not exist", response.getBody().asString(), "Expected error message for non-existent friend request");
+            // Ensure no friend request exists between sender and receiver
+            friendRequestRepository.findFriendRequestBySenderAndReceiver(sender, receiver)
+                    .ifPresent(friendRequestRepository::delete);
+
+            // Act: Attempt to reject a friend request that doesn't exist
+            Response response = RestAssured.given()
+                    .header("Content-Type", "application/json")
+                    .queryParam("senderNetId", senderNetId)
+                    .queryParam("receiverNetId", receiverNetId)
+                    .when()
+                    .delete("/friendRequest/reject");
+
+            // Assert: Verify the response status and message
+            assertEquals(404, response.getStatusCode(), "Expected status code 404 for non-existent friend request");
+            assertEquals("Friend request not exist", response.getBody().asString(), "Expected error message for non-existent friend request");
+        } finally {
+            // Clean up: Remove test-specific users
+            if (sender != null) {
+                userRepository.delete(sender);
+            }
+            if (receiver != null) {
+                userRepository.delete(receiver);
+            }
+        }
     }
+
     /**
      * Test Case 7: Display Common Friends.
      *

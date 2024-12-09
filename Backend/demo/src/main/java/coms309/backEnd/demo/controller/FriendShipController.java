@@ -1,9 +1,6 @@
 package coms309.backEnd.demo.controller;
 
-import coms309.backEnd.demo.entity.FriendShip;
-import coms309.backEnd.demo.entity.Group;
-import coms309.backEnd.demo.entity.Join;
-import coms309.backEnd.demo.entity.User;
+import coms309.backEnd.demo.entity.*;
 import coms309.backEnd.demo.repository.FriendShipRepository;
 import coms309.backEnd.demo.repository.GroupMessagesRepository;
 import coms309.backEnd.demo.repository.GroupRepository;
@@ -239,7 +236,13 @@ public class FriendShipController {
         }
         User user = curUser.get();
         List<User> listOfSuggestedFriends = userRepository.findUsersNotFriendsWith(user.getId());
-        return ResponseEntity.ok(listOfSuggestedFriends);
+        List<User> listOfSuggestedStudentFriends = new ArrayList<>();
+        for(User friendUser : listOfSuggestedFriends){
+            if(friendUser.getUserType().equals(UserType.STUDENT)){
+                listOfSuggestedStudentFriends.add(friendUser);
+            }
+        }
+        return ResponseEntity.ok(listOfSuggestedStudentFriends);
     }
 
 
