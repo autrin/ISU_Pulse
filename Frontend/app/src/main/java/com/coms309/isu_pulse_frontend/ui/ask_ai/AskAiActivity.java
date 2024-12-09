@@ -118,9 +118,9 @@ public class AskAiActivity extends AppCompatActivity {
         new Handler().postDelayed(() -> typingIndicator.setVisibility(View.GONE), 2000);
     }
 
-    // Displays a message in the chat
     private void displayMessage(String message, boolean isSent, String timestamp) {
-        askAiAdapter.addMessage(new ChatMessage(message, isSent, timestamp));
+        ChatMessage chatMessage = new ChatMessage(message, isSent, timestamp);
+        askAiAdapter.addMessage(chatMessage); // Add the message to the adapter
         recyclerViewMessages.smoothScrollToPosition(askAiAdapter.getItemCount() - 1);
     }
 
