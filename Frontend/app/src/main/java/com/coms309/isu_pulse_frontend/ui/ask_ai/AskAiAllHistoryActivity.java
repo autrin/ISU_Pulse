@@ -2,6 +2,7 @@ package com.coms309.isu_pulse_frontend.ui.ask_ai;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -50,10 +51,12 @@ public class AskAiAllHistoryActivity extends AppCompatActivity {
         });
 
         createButton.setOnClickListener(v -> {
+            Log.d("AskAiAllHistoryActivity", "Create button clicked.");
             Intent intent = new Intent(AskAiAllHistoryActivity.this, AskAiActivity.class);
-            intent.putExtra("isNewChat", true); // Indicate a new session
+            intent.putExtra("isNewChat", true);
             startActivity(intent);
         });
+
 
         chatsRecyclerView = findViewById(R.id.recyclerView);
         chatsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
