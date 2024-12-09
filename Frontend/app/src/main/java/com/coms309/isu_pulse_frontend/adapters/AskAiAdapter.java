@@ -53,16 +53,30 @@ public class AskAiAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         ChatMessage chatMessage = chatMessages.get(position);
-        if (holder instanceof AskAiViewHolder) {
-            AskAiViewHolder viewHolder = (AskAiViewHolder) holder;
-            viewHolder.textViewName.setText("ChatGPT");
-            viewHolder.textViewMessage.setText(chatMessage.getMessage());
-            viewHolder.textViewTimestamp.setText(chatMessage.getTimestamp());
-            Glide.with(holder.itemView.getContext())
-                    .load(R.drawable.chatgpt_100)
-                    .into(viewHolder.imageViewProfile);
-        }
+        AskAiViewHolder viewHolder = (AskAiViewHolder) holder;
+
+        // Set text and other details in the ViewHolder
+        viewHolder.textViewName.setText(chatMessage.getSenderFullName() != null
+                ? chatMessage.getSenderFullName()
+                : "ChatGPT");
+        viewHolder.textViewMessage.setText(chatMessage.getMessage());
+        viewHolder.textViewTimestamp.setText(chatMessage.getTimestamp());
+
+        // Load profile image (if available)
+//        Glide.with(holder.itemView.getContext())
+//                .load(chatMessage.getProfileImageUrl() != null
+//                        ? chatMessage.getProfileImageUrl()
+//                        : R.drawable.chatgpt_100) // Fallback image
+//                .into(viewHolder.imageViewProfile);
+
+        // Set OnClickListener for the "MESSAGE" button
+        viewHolder.buttonMessage.setOnClickListener(v -> {
+            Intent intent = new Intent(v.getContext(), AskAiActivity.class);
+            intent.putExtra("chatId", chatMessage.getGroupId()); // Pass chatId or other data if needed
+            v.getContext().startActivity(intent);
+        });
     }
+
 
     @Override
     public int getItemCount() {
