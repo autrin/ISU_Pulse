@@ -41,7 +41,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class AskAiActivity extends AppCompatActivity implements ChatServiceWebSocket.ChatServiceListener {
+public class AskAiActivity extends AppCompatActivity {
 
     private ImageButton backButton;
     private ChatApiService chatApiService;
