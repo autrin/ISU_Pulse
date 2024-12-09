@@ -1,0 +1,346 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > PersonalTaskController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">coms309.backEnd.demo.controller</a>
+</div>
+
+<h1>Coverage Summary for Class: PersonalTaskController (coms309.backEnd.demo.controller)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">PersonalTaskController</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    20%
+  </span>
+  <span class="absValue">
+    (1/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/22)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    9.6%
+  </span>
+  <span class="absValue">
+    (5/52)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package coms309.backEnd.demo.controller;
+&nbsp;
+&nbsp;import coms309.backEnd.demo.entity.Course;
+&nbsp;import coms309.backEnd.demo.entity.Enroll;
+&nbsp;import coms309.backEnd.demo.entity.PersonalTask;
+&nbsp;import coms309.backEnd.demo.entity.User;
+&nbsp;import coms309.backEnd.demo.repository.CourseRepository;
+&nbsp;import coms309.backEnd.demo.repository.EnrollRepository;
+&nbsp;import coms309.backEnd.demo.repository.PersonalTaskRepository;
+&nbsp;import coms309.backEnd.demo.repository.UserRepository;
+&nbsp;import io.swagger.v3.oas.annotations.Operation;
+&nbsp;import io.swagger.v3.oas.annotations.Parameter;
+&nbsp;import io.swagger.v3.oas.annotations.media.Content;
+&nbsp;import io.swagger.v3.oas.annotations.media.Schema;
+&nbsp;import io.swagger.v3.oas.annotations.responses.ApiResponse;
+&nbsp;import io.swagger.v3.oas.annotations.responses.ApiResponses;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.http.HttpStatus;
+&nbsp;import org.springframework.http.ResponseEntity;
+&nbsp;import org.springframework.web.bind.annotation.*;
+&nbsp;
+&nbsp;import java.util.Date;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Optional;
+&nbsp;
+&nbsp;@RestController
+&nbsp;@RequestMapping(&quot;/personalTask&quot;)
+&nbsp;public class PersonalTaskController {
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private final PersonalTaskRepository personalTaskRepository;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private final UserRepository userRepository;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private final CourseRepository courseRepository;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private final EnrollRepository enrollRepository;
+&nbsp;
+<b class="fc">&nbsp;    public PersonalTaskController(PersonalTaskRepository personalTaskRepository, UserRepository userRepository, CourseRepository courseRepository, EnrollRepository enrollRepository) {</b>
+<b class="fc">&nbsp;        this.personalTaskRepository = personalTaskRepository;</b>
+<b class="fc">&nbsp;        this.userRepository = userRepository;</b>
+<b class="fc">&nbsp;        this.courseRepository = courseRepository;</b>
+<b class="fc">&nbsp;        this.enrollRepository = enrollRepository;</b>
+&nbsp;    }
+&nbsp;    /**
+&nbsp;     * Retrieves a list of personal tasks for a specific user identified by their NetID.
+&nbsp;     *
+&nbsp;     * @param netId The NetID of the user.
+&nbsp;     * @return A list of personal tasks associated with the user.
+&nbsp;     */
+&nbsp;    @Operation(summary = &quot;Get Personal Tasks for a User&quot;, description = &quot;Retrieve all personal tasks associated with a user by their NetID.&quot;)
+&nbsp;    @ApiResponses(value = {
+&nbsp;            @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Personal tasks retrieved successfully&quot;,
+&nbsp;                    content = @Content(mediaType = &quot;application/json&quot;, schema = @Schema(implementation = PersonalTask.class))),
+&nbsp;            @ApiResponse(responseCode = &quot;500&quot;, description = &quot;Internal server error&quot;,
+&nbsp;                    content = @Content)
+&nbsp;    })
+&nbsp;    @GetMapping(&quot;/getPersonalTasks/{netId}&quot;)
+&nbsp;    public ResponseEntity&lt;List&lt;PersonalTask&gt;&gt; getListofPersonalTasks(
+&nbsp;            @Parameter(description = &quot;The NetID of the user&quot;, required = true) @PathVariable String netId){
+<b class="nc">&nbsp;        Optional&lt;User&gt; curUser = userRepository.findUserByNetId(netId);</b>
+<b class="nc">&nbsp;        if(curUser.isEmpty()){</b>
+<b class="nc">&nbsp;            return  ResponseEntity.internalServerError().build();</b>
+&nbsp;        }
+<b class="nc">&nbsp;        User user = curUser.get();</b>
+<b class="nc">&nbsp;        List&lt;PersonalTask&gt; personalTasklist = personalTaskRepository.findAllByUser(user);</b>
+<b class="nc">&nbsp;        return ResponseEntity.ok(personalTasklist);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Adds a new personal task for a specific user identified by their NetID.
+&nbsp;     *
+&nbsp;     * @param netId            The NetID of the user.
+&nbsp;     * @param title            The title of the personal task.
+&nbsp;     * @param description      The description of the personal task.
+&nbsp;     * @param dueDateTimestamp The due date of the task as a timestamp.
+&nbsp;     * @return A confirmation message upon successful addition.
+&nbsp;     */
+&nbsp;    @Operation(summary = &quot;Add a Personal Task&quot;, description = &quot;Create a new personal task for a user identified by their NetID.&quot;)
+&nbsp;    @ApiResponses(value = {
+&nbsp;            @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Personal task added successfully&quot;,
+&nbsp;                    content = @Content(mediaType = &quot;application/json&quot;, schema = @Schema(implementation = String.class))),
+&nbsp;            @ApiResponse(responseCode = &quot;404&quot;, description = &quot;User not found&quot;,
+&nbsp;                    content = @Content),
+&nbsp;            @ApiResponse(responseCode = &quot;500&quot;, description = &quot;Internal server error&quot;,
+&nbsp;                    content = @Content)
+&nbsp;    })
+&nbsp;    @PostMapping(&quot;/addPersonalTask/{netId}&quot;)
+&nbsp;    public ResponseEntity&lt;String&gt; addPersonTasks(
+&nbsp;            @Parameter(description = &quot;The NetID of the user&quot;, required = true)
+&nbsp;            @PathVariable String netId,
+&nbsp;            @Parameter(description = &quot;The title of the personal task&quot;, required = true)
+&nbsp;            @RequestParam String title,
+&nbsp;            @Parameter(description = &quot;The description of the personal task&quot;, required = true)
+&nbsp;            @RequestParam String description,
+&nbsp;            @Parameter(description = &quot;The due date of the task as a timestamp&quot;, required = true)
+&nbsp;            @RequestParam long dueDateTimestamp
+&nbsp;    ){
+<b class="nc">&nbsp;        Optional&lt;User&gt; curUser = userRepository.findUserByNetId(netId);</b>
+<b class="nc">&nbsp;        if(curUser.isEmpty()){</b>
+<b class="nc">&nbsp;            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(&quot;User not found.&quot;);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        User user = curUser.get();</b>
+<b class="nc">&nbsp;        PersonalTask personalTask = new PersonalTask(title, description, new Date(dueDateTimestamp), user);</b>
+<b class="nc">&nbsp;        personalTaskRepository.save(personalTask);</b>
+<b class="nc">&nbsp;        return ResponseEntity.ok(&quot;Personal task added successfully.&quot;);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Updates an existing personal task for a specific user identified by their NetID.
+&nbsp;     *
+&nbsp;     * @param netId            The NetID of the user.
+&nbsp;     * @param taskId           The ID of the task to be updated.
+&nbsp;     * @param title            (Optional) The new title of the task.
+&nbsp;     * @param description      (Optional) The new description of the task.
+&nbsp;     * @param dueDateTimestamp (Optional) The new due date of the task as a timestamp.
+&nbsp;     * @return A confirmation message upon successful update.
+&nbsp;     */
+&nbsp;    @Operation(summary = &quot;Update a Personal Task&quot;, description = &quot;Update details of an existing personal task for a user identified by their NetID.&quot;)
+&nbsp;    @ApiResponses(value = {
+&nbsp;            @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Task updated successfully&quot;,
+&nbsp;                    content = @Content(mediaType = &quot;application/json&quot;, schema = @Schema(implementation = String.class))),
+&nbsp;            @ApiResponse(responseCode = &quot;404&quot;, description = &quot;User or Task not found&quot;,
+&nbsp;                    content = @Content),
+&nbsp;            @ApiResponse(responseCode = &quot;403&quot;, description = &quot;Forbidden: Unauthorized to update this task&quot;,
+&nbsp;                    content = @Content)
+&nbsp;    })
+&nbsp;    @PutMapping(&quot;/updatePersonalTask/{netId}&quot;)
+&nbsp;    public ResponseEntity&lt;String&gt; updatePersonTasks(
+&nbsp;            @Parameter(description = &quot;The NetID of the user&quot;, required = true)
+&nbsp;            @PathVariable String netId,
+&nbsp;            @Parameter(description = &quot;The ID of the task to update&quot;, required = true)
+&nbsp;            @RequestParam long taskId,
+&nbsp;            @Parameter(description = &quot;The new title of the task&quot;, required = false)
+&nbsp;            @RequestParam(required = false) String title,
+&nbsp;            @Parameter(description = &quot;The new description of the task&quot;, required = false)
+&nbsp;            @RequestParam(required = false) String description,
+&nbsp;            @Parameter(description = &quot;The new due date of the task as a timestamp&quot;, required = false)
+&nbsp;            @RequestParam(required = false) Long dueDateTimestamp
+&nbsp;    ) {
+<b class="nc">&nbsp;        Optional&lt;User&gt; curUser = userRepository.findUserByNetId(netId);</b>
+<b class="nc">&nbsp;        if (curUser.isEmpty()) {</b>
+<b class="nc">&nbsp;            return ResponseEntity.status(HttpStatus.NOT_FOUND)</b>
+<b class="nc">&nbsp;                    .body(&quot;User with ID &quot; + netId + &quot; not found.&quot;);</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        User user = curUser.get();</b>
+&nbsp;
+<b class="nc">&nbsp;        Optional&lt;PersonalTask&gt; optionalTask = personalTaskRepository.findById(taskId);</b>
+<b class="nc">&nbsp;        if (optionalTask.isEmpty()) {</b>
+<b class="nc">&nbsp;            return ResponseEntity.status(HttpStatus.NOT_FOUND)</b>
+<b class="nc">&nbsp;                    .body(&quot;Task with ID &quot; + taskId + &quot; not found.&quot;);</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        PersonalTask task = optionalTask.get();</b>
+&nbsp;
+<b class="nc">&nbsp;        if(!task.getUser().getNetId().trim().equalsIgnoreCase(netId.trim())){</b>
+<b class="nc">&nbsp;            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(&quot;You are not authorized to update this task.&quot;);</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        if (title != null) {</b>
+<b class="nc">&nbsp;            task.setTitle(title);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        if (description != null) {</b>
+<b class="nc">&nbsp;            task.setDescription(description);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        if (dueDateTimestamp != null) {</b>
+<b class="nc">&nbsp;            task.setDueDate(new Date(dueDateTimestamp));</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        personalTaskRepository.save(task);</b>
+&nbsp;
+<b class="nc">&nbsp;        return ResponseEntity.ok(&quot;Task updated successfully.&quot;);</b>
+&nbsp;
+&nbsp;    }
+&nbsp;    /**
+&nbsp;     * Deletes an existing personal task for a specific user identified by their NetID.
+&nbsp;     *
+&nbsp;     * @param netId  The NetID of the user.
+&nbsp;     * @param taskId The ID of the task to be deleted.
+&nbsp;     * @return A confirmation message upon successful deletion.
+&nbsp;     */
+&nbsp;    @Operation(summary = &quot;Delete a Personal Task&quot;, description = &quot;Delete an existing personal task for a user identified by their NetID.&quot;)
+&nbsp;    @ApiResponses(value = {
+&nbsp;            @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Task deleted successfully&quot;,
+&nbsp;                    content = @Content(mediaType = &quot;application/json&quot;, schema = @Schema(implementation = String.class))),
+&nbsp;            @ApiResponse(responseCode = &quot;404&quot;, description = &quot;User or Task not found&quot;,
+&nbsp;                    content = @Content),
+&nbsp;            @ApiResponse(responseCode = &quot;403&quot;, description = &quot;Forbidden: Unauthorized to delete this task&quot;,
+&nbsp;                    content = @Content)
+&nbsp;    })
+&nbsp;    @DeleteMapping(&quot;/deletePersonalTask/{netId}&quot;)
+&nbsp;    public ResponseEntity&lt;String&gt; deletePersonalTasks(
+&nbsp;            @Parameter(description = &quot;The NetID of the user&quot;, required = true)
+&nbsp;            @PathVariable String netId,
+&nbsp;            @Parameter(description = &quot;The ID of the task to delete&quot;, required = true)
+&nbsp;            @RequestParam long taskId
+&nbsp;    ){
+<b class="nc">&nbsp;        Optional&lt;User&gt; curUser = userRepository.findUserByNetId(netId);</b>
+<b class="nc">&nbsp;        if (curUser.isEmpty()) {</b>
+<b class="nc">&nbsp;            return ResponseEntity.status(HttpStatus.NOT_FOUND)</b>
+<b class="nc">&nbsp;                    .body(&quot;User with ID &quot; + netId + &quot; not found.&quot;);</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        User user = curUser.get();</b>
+&nbsp;
+<b class="nc">&nbsp;        Optional&lt;PersonalTask&gt; optionalTask = personalTaskRepository.findById(taskId);</b>
+<b class="nc">&nbsp;        if (optionalTask.isEmpty()) {</b>
+<b class="nc">&nbsp;            return ResponseEntity.status(HttpStatus.NOT_FOUND)</b>
+<b class="nc">&nbsp;                    .body(&quot;Task with ID &quot; + taskId + &quot; not found.&quot;);</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        PersonalTask task = optionalTask.get();</b>
+&nbsp;
+<b class="nc">&nbsp;        if(!task.getUser().getNetId().trim().equalsIgnoreCase(netId.trim())){</b>
+<b class="nc">&nbsp;            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(&quot;You are not authorized to update this task.&quot;);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        personalTaskRepository.delete(task);</b>
+<b class="nc">&nbsp;        return ResponseEntity.ok(&quot;Task deleted successfully.&quot;);</b>
+&nbsp;
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-12-04 23:26</div>
+</div>
+</body>
+</html>

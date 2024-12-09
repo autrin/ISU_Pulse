@@ -1,87 +1,92 @@
-<LinearLayout
+<ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp">
+    android:fillViewport="true">
 
-    <!-- Back Button -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="start|center_vertical">
+        android:orientation="vertical"
+        android:padding="16dp">
 
-        <ImageView
-            android:id="@+id/back_button_"
-            android:layout_width="wrap_content"
+        <!-- Back Button -->
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:src="@android:drawable/ic_media_previous"
-            android:contentDescription="Back" />
+            android:orientation="horizontal"
+            android:gravity="start|center_vertical">
 
-        <TextView
-            android:id="@+id/title"
-            android:layout_width="wrap_content"
+            <ImageView
+                android:id="@+id/back_button_"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@android:drawable/ic_media_previous"
+                android:contentDescription="Back" />
+
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Your Friends Request"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:textColor="@color/black" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Your Friends Request"
-            android:textSize="24sp"
-            android:textStyle="bold"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/common_full_open_on_phone"
+            android:orientation="horizontal"
+            android:padding="8dp"
+            android:gravity="center_vertical">
+
+            <EditText
+                android:id="@+id/search_bar"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="Search Friends Request..."
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:background="@android:color/transparent"
+                android:textColor="@color/black"
+                android:textColorHint="@color/black"
+                android:imeOptions="actionSearch" />
+
+            <Button
+                android:id="@+id/search_button"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@android:drawable/ic_menu_search"
+                android:contentDescription="Search" />
+        </LinearLayout>
+
+        <!-- Sorting dropdown -->
+        <Spinner
+            android:id="@+id/sort_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/spinner_background"
+            android:dropDownWidth="wrap_content"
+            android:entries="@array/sort_alphabetically_options"
+            android:padding="8dp"
             android:textColor="@color/black" />
 
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:background="@drawable/common_full_open_on_phone"
-        android:orientation="horizontal"
-        android:padding="8dp"
-        android:gravity="center_vertical">
-
-        <EditText
-            android:id="@+id/search_bar"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
+        <!-- Friends List Request-->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/friends_list_request"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="16dp"
             android:layout_weight="1"
-            android:hint="Search Friends Request..."
-            android:paddingStart="12dp"
-            android:paddingEnd="12dp"
-            android:background="@android:color/transparent"
-            android:textColor="@color/black"
-            android:textColorHint="@color/black"
-            android:imeOptions="actionSearch" />
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:clipToPadding="false" />
 
-        <Button
-            android:id="@+id/search_button"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="@android:drawable/ic_menu_search"
-            android:contentDescription="Search" />
     </LinearLayout>
-
-    <!-- Sorting dropdown -->
-    <Spinner
-        android:id="@+id/sort_spinner"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:background="@drawable/spinner_background"
-        android:dropDownWidth="wrap_content"
-        android:entries="@array/sort_alphabetically_options"
-        android:padding="8dp"
-        android:textColor="@color/black" />
-
-    <!-- Friends List Request-->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/friends_list_request"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginTop="16dp"
-        android:layout_weight="1"
-        android:paddingTop="8dp"
-        android:paddingBottom="8dp"
-        android:clipToPadding="false" />
-
-</LinearLayout>
+</ScrollView>

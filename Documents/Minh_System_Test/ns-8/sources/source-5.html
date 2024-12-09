@@ -1,0 +1,97 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > ChatMessageRepository</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">coms309.backEnd.demo.repository</a>
+</div>
+
+<h1>Coverage Summary for Class: ChatMessageRepository (coms309.backEnd.demo.repository)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+</tr>
+<tr>
+  <td class="name">ChatMessageRepository</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package coms309.backEnd.demo.repository;
+&nbsp;
+&nbsp;import coms309.backEnd.demo.entity.ChatMessage;
+&nbsp;import coms309.backEnd.demo.entity.User;
+&nbsp;import org.springframework.data.jpa.repository.JpaRepository;
+&nbsp;import org.springframework.data.jpa.repository.Query;
+&nbsp;import org.springframework.data.repository.query.Param;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;public interface ChatMessageRepository extends JpaRepository&lt;ChatMessage, Long&gt; {
+&nbsp;    @Query(&quot;SELECT m FROM ChatMessage m WHERE &quot; +
+&nbsp;            &quot;(m.sender.netId = :user1NetId AND m.recipient.netId = :user2NetId) &quot; +
+&nbsp;            &quot;OR (m.sender.netId = :user2NetId AND m.recipient.netId = :user1NetId) &quot; +
+&nbsp;            &quot;ORDER BY m.timestamp&quot;)
+&nbsp;    List&lt;ChatMessage&gt; findMessagesBetweenUsers(
+&nbsp;            @Param(&quot;user1NetId&quot;) String user1NetId,
+&nbsp;            @Param(&quot;user2NetId&quot;) String user2NetId);
+&nbsp;
+&nbsp;    @Query(&quot;SELECT DISTINCT m.sender FROM ChatMessage m WHERE m.recipient.netId = :netId&quot;)
+&nbsp;    List&lt;User&gt; findDistinctSenders(@Param(&quot;netId&quot;) String netId);
+&nbsp;
+&nbsp;    @Query(&quot;SELECT DISTINCT m.recipient FROM ChatMessage m WHERE m.sender.netId = :netId&quot;)
+&nbsp;    List&lt;User&gt; findDistinctRecipients(@Param(&quot;netId&quot;) String netId);
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-12-04 23:26</div>
+</div>
+</body>
+</html>

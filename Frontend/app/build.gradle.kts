@@ -1,3 +1,5 @@
+import org.gradle.internal.impldep.org.eclipse.jgit.lib.ObjectChecker.author
+
 plugins {
     alias(libs.plugins.android.application)
     // id("com.android.application") // Removed this line
@@ -15,11 +17,14 @@ android {
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
+        debug {
+            enableAndroidTestCoverage = true
+        }
+
         release {
             isMinifyEnabled = false
             proguardFiles(
@@ -58,14 +63,16 @@ dependencies {
     implementation(libs.firebase.auth)
     implementation(libs.glide)
     implementation(libs.firebase.database)
-    implementation(files("C:\\Users\\autri\\AppData\\Local\\Android\\Sdk\\platforms\\android-35\\android.jar"))
+    implementation(libs.espresso.contrib)
+//    implementation(files("C:\\Users\\autri\\AppData\\Local\\Android\\Sdk\\platforms\\android-35\\android.jar")) // there was an error for dependency for 2 classes.
+    // So it is commented but it was used for javadocs
     annotationProcessor(libs.glide.compiler)
-
     // Unit test dependencies
     testImplementation(libs.junit)
     testImplementation("org.robolectric:robolectric:4.10.3") // Robolectric for unit tests
     testImplementation("androidx.test.ext:junit:1.1.5")
     testImplementation("androidx.test:core:1.4.0")
+    androidTestImplementation("androidx.test.espresso:espresso-contrib:3.4.0")
 
     // Android instrumentation test dependencies
     androidTestImplementation(libs.ext.junit)
@@ -75,6 +82,15 @@ dependencies {
 
     implementation("org.java-websocket:Java-WebSocket:1.5.2")
     // implementation("org.apache.httpcomponents:httpclient:4.5.13")
+    testImplementation("org.mockito:mockito-core:4.0.0")
+    implementation("org.mockito:mockito-android:5.14.2")
+}
+
+
+configurations {
+    all {
+        exclude(group = "com.google.protobuf", module = "protobuf-lite")
+    }
 }
 
 // Apply the Google Services plugin at the bottom of the file

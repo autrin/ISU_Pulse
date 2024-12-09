@@ -1,0 +1,348 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > ChatController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">coms309.backEnd.demo.controller</a>
+</div>
+
+<h1>Coverage Summary for Class: ChatController (coms309.backEnd.demo.controller)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ChatController</td>
+<td class="coverageStat">
+  <span class="percent">
+    25%
+  </span>
+  <span class="absValue">
+    (1/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/22)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    2.3%
+  </span>
+  <span class="absValue">
+    (1/43)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">ChatController$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    16.7%
+  </span>
+  <span class="absValue">
+    (1/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/22)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    2.2%
+  </span>
+  <span class="absValue">
+    (1/45)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package coms309.backEnd.demo.controller;
+&nbsp;
+&nbsp;import coms309.backEnd.demo.DTO.ChatMessageDTO;
+&nbsp;import coms309.backEnd.demo.entity.ChatMessage;
+&nbsp;import coms309.backEnd.demo.entity.User;
+&nbsp;import coms309.backEnd.demo.repository.ChatMessageRepository;
+&nbsp;import coms309.backEnd.demo.repository.UserRepository;
+&nbsp;import io.swagger.v3.oas.annotations.Operation;
+&nbsp;import io.swagger.v3.oas.annotations.Parameter;
+&nbsp;import io.swagger.v3.oas.annotations.media.Content;
+&nbsp;import io.swagger.v3.oas.annotations.media.Schema;
+&nbsp;import io.swagger.v3.oas.annotations.responses.ApiResponse;
+&nbsp;import io.swagger.v3.oas.annotations.responses.ApiResponses;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.http.ResponseEntity;
+&nbsp;import org.springframework.web.bind.annotation.*;
+&nbsp;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.Comparator;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;@RestController
+&nbsp;@RequestMapping(&quot;/chat&quot;)
+<b class="fc">&nbsp;public class ChatController {</b>
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private ChatMessageRepository chatMessageRepository;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private UserRepository userRepository;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Retrieves the chat history between two users identified by their NetIDs.
+&nbsp;     *
+&nbsp;     * @param user1NetId The NetID of the first user.
+&nbsp;     * @param user2NetId The NetID of the second user.
+&nbsp;     * @return A list of chat messages exchanged between the two users.
+&nbsp;     */
+&nbsp;    @Operation(summary = &quot;Get Chat History&quot;, description = &quot;Retrieve the chat history between two users identified by their NetIDs.&quot;)
+&nbsp;    @ApiResponses(value = {
+&nbsp;            @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Chat history retrieved successfully&quot;,
+&nbsp;                    content = @Content(mediaType = &quot;application/json&quot;, schema = @Schema(implementation = ChatMessageDTO.class))),
+&nbsp;            @ApiResponse(responseCode = &quot;400&quot;, description = &quot;Invalid user IDs provided&quot;,
+&nbsp;                    content = @Content),
+&nbsp;            @ApiResponse(responseCode = &quot;500&quot;, description = &quot;Internal server error&quot;,
+&nbsp;                    content = @Content)
+&nbsp;    })
+&nbsp;    @GetMapping(&quot;/history&quot;)
+&nbsp;    public ResponseEntity&lt;List&lt;ChatMessageDTO&gt;&gt; getChatHistory(
+&nbsp;            @Parameter(description = &quot;The NetID of the first user&quot;, required = true)
+&nbsp;            @RequestParam String user1NetId,
+&nbsp;            @Parameter(description = &quot;The NetID of the second user&quot;, required = true)
+&nbsp;            @RequestParam String user2NetId) {
+&nbsp;
+&nbsp;        // Ensure both users exist in the database
+<b class="nc">&nbsp;        User user1 = userRepository.findUserByNetId(user1NetId).orElse(null);</b>
+<b class="nc">&nbsp;        User user2 = userRepository.findUserByNetId(user2NetId).orElse(null);</b>
+&nbsp;
+<b class="nc">&nbsp;        if (user1 == null || user2 == null) {</b>
+<b class="nc">&nbsp;            return ResponseEntity.badRequest().body(null);</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        // Retrieve chat history between the two users, in both directions
+<b class="nc">&nbsp;        List&lt;ChatMessage&gt; chatMessages = chatMessageRepository.findMessagesBetweenUsers(user1NetId, user2NetId);</b>
+&nbsp;
+&nbsp;        // Convert ChatMessage entities to ChatMessageDTOs
+<b class="nc">&nbsp;        List&lt;ChatMessageDTO&gt; chatHistory = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;        for (ChatMessage message : chatMessages) {</b>
+<b class="nc">&nbsp;            ChatMessageDTO chatMessageDTO = new ChatMessageDTO();</b>
+<b class="nc">&nbsp;            chatMessageDTO.setSenderNetId(message.getSender().getNetId());</b>
+<b class="nc">&nbsp;            chatMessageDTO.setRecipientNetId(message.getRecipient().getNetId());</b>
+<b class="nc">&nbsp;            chatMessageDTO.setContent(message.getContent());</b>
+<b class="nc">&nbsp;            chatMessageDTO.setTimestamp(message.getTimestamp());</b>
+<b class="nc">&nbsp;            chatHistory.add(chatMessageDTO);</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        return ResponseEntity.ok(chatHistory);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;//    @PostMapping(&quot;/send&quot;)
+&nbsp;//    public ResponseEntity&lt;String&gt; sendChatMessage(@RequestBody ChatMessageDTO chatMessageDTO) {
+&nbsp;//        // Verify sender and recipient exist
+&nbsp;//        User sender = userRepository.findUserByNetId(chatMessageDTO.getSenderNetId()).orElse(null);
+&nbsp;//        User recipient = userRepository.findUserByNetId(chatMessageDTO.getRecipientNetId()).orElse(null);
+&nbsp;//
+&nbsp;//        if (sender == null || recipient == null) {
+&nbsp;//            return ResponseEntity.badRequest().body(&quot;Invalid sender or recipient.&quot;);
+&nbsp;//        }
+&nbsp;//
+&nbsp;//        // Save the chat message to the database
+&nbsp;//        ChatMessage chatMessage = new ChatMessage(sender, recipient, chatMessageDTO.getContent());
+&nbsp;//        chatMessageRepository.save(chatMessage);
+&nbsp;//
+&nbsp;//        return ResponseEntity.ok(&quot;Message sent successfully.&quot;);
+&nbsp;//    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Retrieves the latest chat messages between the specified user and all other users they have messaged with.
+&nbsp;     *
+&nbsp;     * @param netId The NetID of the user.
+&nbsp;     * @return A list of the latest chat messages with each user the specified user has interacted with.
+&nbsp;     */
+&nbsp;    @Operation(summary = &quot;Get All Latest Messages&quot;, description = &quot;Retrieve the latest chat messages between the specified user and all other users they have messaged with.&quot;)
+&nbsp;    @ApiResponses(value = {
+&nbsp;            @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Latest messages retrieved successfully&quot;,
+&nbsp;                    content = @Content(mediaType = &quot;application/json&quot;, schema = @Schema(implementation = ChatMessage.class))),
+&nbsp;            @ApiResponse(responseCode = &quot;400&quot;, description = &quot;Invalid user ID provided&quot;,
+&nbsp;                    content = @Content),
+&nbsp;            @ApiResponse(responseCode = &quot;500&quot;, description = &quot;Internal server error&quot;,
+&nbsp;                    content = @Content)
+&nbsp;    })
+&nbsp;    @GetMapping(&quot;/allLatestMessages/{netId}&quot;)
+&nbsp;    public ResponseEntity&lt;List&lt;ChatMessage&gt;&gt; getUsersYouMessagingWith(
+&nbsp;            @Parameter(description = &quot;The NetID of the user&quot;, required = true)
+&nbsp;            @PathVariable String netId){
+&nbsp;        // Find the user with the given netId
+<b class="nc">&nbsp;        User user = userRepository.findUserByNetId(netId).orElse(null);</b>
+&nbsp;
+<b class="nc">&nbsp;        if (user == null) {</b>
+<b class="nc">&nbsp;            return ResponseEntity.badRequest().body(null);</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        // Fetch the list of unique users the specified user has chatted with
+<b class="nc">&nbsp;        List&lt;User&gt; chattedUserAsRecipient = chatMessageRepository.findDistinctRecipients(netId);</b>
+<b class="nc">&nbsp;        List&lt;User&gt; chattedUserAsSender = chatMessageRepository.findDistinctSenders(netId);</b>
+&nbsp;
+&nbsp;        // Use a Set to avoid duplicates
+<b class="nc">&nbsp;        List&lt;User&gt; chattedUser = new ArrayList&lt;&gt;(chattedUserAsRecipient);</b>
+<b class="nc">&nbsp;        for(User us : chattedUserAsSender){</b>
+<b class="nc">&nbsp;            boolean isInTheList = false;</b>
+<b class="nc">&nbsp;            for(User use : chattedUser){</b>
+<b class="nc">&nbsp;                if (us.getId() == use.getId()) {</b>
+<b class="nc">&nbsp;                    isInTheList = true;</b>
+&nbsp;                    break;
+&nbsp;                }
+&nbsp;            }
+<b class="nc">&nbsp;            if(!isInTheList){</b>
+<b class="nc">&nbsp;                chattedUser.add(us);</b>
+&nbsp;            }
+&nbsp;        }
+&nbsp;        // Get the latest message from user that a given user is messaging with
+<b class="nc">&nbsp;        List&lt;ChatMessage&gt; latestMessages = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;        for(User userInChatList : chattedUser){</b>
+<b class="nc">&nbsp;            ChatMessage chatMessage = getLatestMessageBetween2User(netId,userInChatList.getNetId()).getBody();</b>
+<b class="nc">&nbsp;            latestMessages.add(chatMessage);</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        // Sort the message based on time
+<b class="nc">&nbsp;        latestMessages.sort(new Comparator&lt;ChatMessage&gt;() {</b>
+&nbsp;            @Override
+&nbsp;            public int compare(ChatMessage chatMessage1, ChatMessage chatMessage2) {
+<b class="nc">&nbsp;                return chatMessage2.getTimestamp().compareTo(chatMessage1.getTimestamp());</b>
+&nbsp;            }
+&nbsp;        });
+<b class="nc">&nbsp;        return ResponseEntity.ok(latestMessages);</b>
+&nbsp;    }
+&nbsp;        /**
+&nbsp;         * Retrieves the latest chat message between two users identified by their NetIDs.
+&nbsp;         *
+&nbsp;         * @param netIdUser1 The NetID of the first user.
+&nbsp;         * @param netIdUser2 The NetID of the second user.
+&nbsp;         * @return The latest chat message exchanged between the two users.
+&nbsp;         */
+&nbsp;        @Operation(summary = &quot;Get Latest Message Between Two Users&quot;, description = &quot;Retrieve the latest chat message between two users identified by their NetIDs.&quot;)
+&nbsp;        @ApiResponses(value = {
+&nbsp;                @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Latest chat message retrieved successfully&quot;,
+&nbsp;                        content = @Content(mediaType = &quot;application/json&quot;, schema = @Schema(implementation = ChatMessage.class))),
+&nbsp;                @ApiResponse(responseCode = &quot;400&quot;, description = &quot;Invalid user IDs provided&quot;,
+&nbsp;                        content = @Content),
+&nbsp;                @ApiResponse(responseCode = &quot;404&quot;, description = &quot;No chat messages found between the users&quot;,
+&nbsp;                        content = @Content),
+&nbsp;                @ApiResponse(responseCode = &quot;500&quot;, description = &quot;Internal server error&quot;,
+&nbsp;                        content = @Content)
+&nbsp;        })
+&nbsp;        @GetMapping(&quot;/getLatestMessageBetween2User&quot;)
+&nbsp;        public ResponseEntity&lt;ChatMessage&gt; getLatestMessageBetween2User(
+&nbsp;                @Parameter(description = &quot;The NetID of the first user&quot;, required = true)
+&nbsp;                @RequestParam String netIdUser1,
+&nbsp;                @Parameter(description = &quot;The NetID of the second user&quot;, required = true)
+&nbsp;                @RequestParam String netIdUser2){
+&nbsp;
+&nbsp;            // Check if these 2 users exist
+<b class="nc">&nbsp;            User user1 = userRepository.findUserByNetId(netIdUser1).orElse(null);</b>
+<b class="nc">&nbsp;            if (user1 == null) {</b>
+<b class="nc">&nbsp;                return ResponseEntity.badRequest().body(null);</b>
+&nbsp;            }
+&nbsp;
+<b class="nc">&nbsp;            User user2 = userRepository.findUserByNetId(netIdUser2).orElse(null);</b>
+<b class="nc">&nbsp;            if (user2 == null) {</b>
+<b class="nc">&nbsp;                return ResponseEntity.badRequest().body(null);</b>
+&nbsp;            }
+&nbsp;
+<b class="nc">&nbsp;            List&lt;ChatMessage&gt; chatMessages = chatMessageRepository.findMessagesBetweenUsers(netIdUser1,netIdUser2);</b>
+<b class="nc">&nbsp;            ChatMessage chatMessage = chatMessages.get(chatMessages.size()-1);</b>
+<b class="nc">&nbsp;            return ResponseEntity.ok(chatMessage);</b>
+&nbsp;
+&nbsp;        }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-12-04 23:26</div>
+</div>
+</body>
+</html>

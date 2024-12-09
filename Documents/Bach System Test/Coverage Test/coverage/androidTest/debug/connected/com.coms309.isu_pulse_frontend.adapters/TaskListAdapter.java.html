@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TaskListAdapter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=0;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">debug</a> &gt; <a href="index.source.html" class="el_package">com.coms309.isu_pulse_frontend.adapters</a> &gt; <span class="el_source">TaskListAdapter.java</span></div><h1>TaskListAdapter.java</h1><pre class="source lang-java linenums">package com.coms309.isu_pulse_frontend.adapters;
+
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.TextView;
+import android.widget.CompoundButton;
+
+import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentActivity;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.coms309.isu_pulse_frontend.R;
+import com.coms309.isu_pulse_frontend.api.TaskApiService;
+import com.coms309.isu_pulse_frontend.model.CourseTask;
+import com.coms309.isu_pulse_frontend.model.PersonalTask;
+import com.coms309.isu_pulse_frontend.viewholders.ViewHolder;
+import com.coms309.isu_pulse_frontend.ui.home.EditTaskDialog;
+
+import java.util.List;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
+public class TaskListAdapter extends RecyclerView.Adapter&lt;TaskListAdapter.TaskViewHolder&gt; {
+
+    private List&lt;Object&gt; taskList;
+    private TaskApiService taskApiService;
+    private WeeklyCalendarAdapter weekCalendarAdapter;
+<span class="fc" id="L34">    public TaskListAdapter(List&lt;Object&gt; taskList, TaskApiService taskApiService, WeeklyCalendarAdapter weekCalendarAdapter) {</span>
+<span class="fc" id="L35">        this.taskList = taskList;</span>
+<span class="fc" id="L36">        this.taskApiService = taskApiService;</span>
+<span class="fc" id="L37">        this.weekCalendarAdapter = weekCalendarAdapter;</span>
+<span class="fc" id="L38">    }</span>
+
+    @NonNull
+    @Override
+    public TaskViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+<span class="nc" id="L43">        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_task, parent, false);</span>
+<span class="nc" id="L44">        return new TaskViewHolder(view);</span>
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull TaskViewHolder holder, int position) {
+<span class="nc" id="L49">        Object task = taskList.get(position);</span>
+<span class="nc" id="L50">        Log.d(&quot;Task Data&quot;, &quot;Position: &quot; + position + &quot;, Task: &quot; + task.toString());  // Log task data</span>
+
+<span class="nc bnc" id="L52" title="All 2 branches missed.">        if (task instanceof CourseTask) {</span>
+<span class="nc" id="L53">            CourseTask courseTask = (CourseTask) task;</span>
+<span class="nc" id="L54">            holder.title.setText(courseTask.getTitle());</span>
+<span class="nc" id="L55">            holder.description.setText(courseTask.getDescription());</span>
+<span class="nc" id="L56">            holder.dueDate.setText(courseTask.getDueDate().toString());</span>
+<span class="nc bnc" id="L57" title="All 2 branches missed.">        } else if (task instanceof PersonalTask) {</span>
+<span class="nc" id="L58">            PersonalTask personalTask = (PersonalTask) task;</span>
+<span class="nc" id="L59">            holder.title.setText(personalTask.getTitle());</span>
+<span class="nc" id="L60">            holder.description.setText(personalTask.getDescription());</span>
+
+            // Convert dueDate from milliseconds to date string
+<span class="nc" id="L63">            DateFormat dateFormat = new SimpleDateFormat(&quot;yyyy-MM-dd&quot;, Locale.getDefault());</span>
+<span class="nc" id="L64">            String formattedDate = dateFormat.format(new Date(personalTask.getDueDate()));</span>
+<span class="nc" id="L65">            holder.dueDate.setText(formattedDate);</span>
+        }
+
+<span class="nc" id="L68">        holder.buttonEditTask.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View v) {
+                // Open edit dialog
+<span class="nc" id="L72">                EditTaskDialog editTaskDialog = new EditTaskDialog(taskApiService, task, TaskListAdapter.this, weekCalendarAdapter);</span>
+<span class="nc" id="L73">                editTaskDialog.show(((FragmentActivity) v.getContext()).getSupportFragmentManager(), &quot;EditTaskDialog&quot;);</span>
+<span class="nc" id="L74">            }</span>
+        });
+
+<span class="nc" id="L77">        holder.checkBox.setOnCheckedChangeListener(null); // Remove previous listener</span>
+<span class="nc" id="L78">        holder.checkBox.setChecked(false);</span>
+<span class="nc" id="L79">        holder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {</span>
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+<span class="nc bnc" id="L82" title="All 2 branches missed.">                if (isChecked) {</span>
+<span class="nc bnc" id="L83" title="All 2 branches missed.">                    if (task instanceof PersonalTask) {</span>
+<span class="nc" id="L84">                        taskApiService.deletePersonalTask((PersonalTask) task, new TaskApiService.TaskResponseListener() {</span>
+                            @Override
+                            public void onResponse(List&lt;Object&gt; tasks) {
+<span class="nc" id="L87">                                removeTask(holder.getAdapterPosition());</span>
+<span class="nc" id="L88">                            }</span>
+
+                            @Override
+                            public void onError(String message) {
+<span class="nc" id="L92">                                Log.e(&quot;API Error occurred in TaskListAdapter, type PersonalTask&quot;, message);</span>
+<span class="nc" id="L93">                            }</span>
+                        });
+<span class="nc bnc" id="L95" title="All 2 branches missed.">                    } else if (task instanceof CourseTask) {</span>
+                        // Handle CourseTask deletion
+                    }
+                }
+<span class="nc" id="L99">            }</span>
+        });
+<span class="nc" id="L101">    }</span>
+
+    /**
+     * else if (task instanceof CourseTask) {
+     * //                        taskApiService.deleteCourseTask((CourseTask) task, new TaskApiService.TaskResponseListener() {
+     * //                            @Override
+     * //                            public void onResponse(List&lt;Object&gt; tasks) {
+     * //                                removeTask(holder.getAdapterPosition());
+     * //                            }
+     * //
+     * //                            @Override
+     * //                            public void onError(String message) {
+     * //                                Log.e(&quot;API Error occurred in TaskListAdapter, type CourseTask&quot;, message);
+     * //                            }
+     * //                        });
+     *                     }
+     *
+     */
+
+
+    @Override
+    public int getItemCount() {
+<span class="fc" id="L123">        return taskList.size();</span>
+    }
+
+    public void updateTasks(List&lt;Object&gt; newTaskList) {
+<span class="nc" id="L127">        this.taskList = newTaskList;</span>
+<span class="nc" id="L128">        notifyDataSetChanged();</span>
+<span class="nc" id="L129">    }</span>
+
+    public void addTask(Object task) {
+<span class="nc" id="L132">        this.taskList.add(task);</span>
+<span class="nc" id="L133">        notifyItemInserted(taskList.size() - 1);</span>
+<span class="nc" id="L134">    }</span>
+
+    public void removeTask(int position) {
+<span class="nc" id="L137">        this.taskList.remove(position);</span>
+<span class="nc" id="L138">        notifyItemRemoved(position);</span>
+<span class="nc" id="L139">    }</span>
+
+    public static class TaskViewHolder extends RecyclerView.ViewHolder implements ViewHolder {
+        TextView title, description, dueDate;
+        CheckBox checkBox;
+        Button buttonEditTask;
+
+        public TaskViewHolder(@NonNull View itemView) {
+<span class="nc" id="L147">            super(itemView);</span>
+<span class="nc" id="L148">            title = itemView.findViewById(R.id.task_title);</span>
+<span class="nc" id="L149">            description = itemView.findViewById(R.id.task_description);</span>
+<span class="nc" id="L150">            dueDate = itemView.findViewById(R.id.task_due_date);</span>
+<span class="nc" id="L151">            checkBox = itemView.findViewById(R.id.checkBoxTask);</span>
+<span class="nc" id="L152">            buttonEditTask = itemView.findViewById(R.id.buttonEditTask);</span>
+<span class="nc" id="L153">        }</span>
+
+        @Override
+        public void bind(Object obj) {
+<span class="nc" id="L157">        }</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span>Generated by the Android Gradle plugin 8.6.0</div></body></html>

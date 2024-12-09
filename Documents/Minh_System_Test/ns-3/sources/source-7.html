@@ -1,0 +1,441 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > FriendRequestConroller</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">coms309.backEnd.demo.controller</a>
+</div>
+
+<h1>Coverage Summary for Class: FriendRequestConroller (coms309.backEnd.demo.controller)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">FriendRequestConroller</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    42.9%
+  </span>
+  <span class="absValue">
+    (3/7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    13.9%
+  </span>
+  <span class="absValue">
+    (5/36)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    20.6%
+  </span>
+  <span class="absValue">
+    (20/97)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package coms309.backEnd.demo.controller;
+&nbsp;
+&nbsp;import coms309.backEnd.demo.entity.FriendRequest;
+&nbsp;import coms309.backEnd.demo.entity.FriendShip;
+&nbsp;import coms309.backEnd.demo.entity.RequestStatus;
+&nbsp;import coms309.backEnd.demo.entity.User;
+&nbsp;import coms309.backEnd.demo.repository.FriendRequestRepository;
+&nbsp;import coms309.backEnd.demo.repository.FriendShipRepository;
+&nbsp;import coms309.backEnd.demo.repository.UserRepository;
+&nbsp;import io.swagger.v3.oas.annotations.Operation;
+&nbsp;import io.swagger.v3.oas.annotations.Parameter;
+&nbsp;import io.swagger.v3.oas.annotations.media.Content;
+&nbsp;import io.swagger.v3.oas.annotations.media.Schema;
+&nbsp;import io.swagger.v3.oas.annotations.responses.ApiResponse;
+&nbsp;import io.swagger.v3.oas.annotations.responses.ApiResponses;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.http.HttpStatus;
+&nbsp;import org.springframework.http.ResponseEntity;
+&nbsp;import org.springframework.web.bind.annotation.*;
+&nbsp;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Optional;
+&nbsp;
+&nbsp;@RestController
+&nbsp;@RequestMapping(&quot;/friendRequest&quot;)
+&nbsp;public class FriendRequestConroller {
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private final UserRepository userRepository;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private final FriendRequestRepository friendRequestRepository;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private final FriendShipRepository friendShipRepository;
+&nbsp;
+&nbsp;
+<b class="fc">&nbsp;    public FriendRequestConroller(UserRepository userRepository, FriendRequestRepository friendRequestRepository, FriendShipRepository friendShipRepository) {</b>
+<b class="fc">&nbsp;        this.userRepository = userRepository;</b>
+<b class="fc">&nbsp;        this.friendRequestRepository = friendRequestRepository;</b>
+<b class="fc">&nbsp;        this.friendShipRepository = friendShipRepository;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Retrieves all received friend requests for a specific user identified by their NetID.
+&nbsp;     *
+&nbsp;     * @param netId The NetID of the user.
+&nbsp;     * @return A list of users who have sent friend requests to the specified user.
+&nbsp;     */
+&nbsp;    @Operation(summary = &quot;Get Received Friend Requests&quot;, description = &quot;Retrieve all pending friend requests received by a user identified by their NetID.&quot;)
+&nbsp;    @ApiResponses(value = {
+&nbsp;            @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Received friend requests retrieved successfully&quot;,
+&nbsp;                    content = @Content(mediaType = &quot;application/json&quot;, schema = @Schema(implementation = User.class))),
+&nbsp;            @ApiResponse(responseCode = &quot;500&quot;, description = &quot;Internal server error&quot;,
+&nbsp;                    content = @Content)
+&nbsp;    })
+&nbsp;    @GetMapping(&quot;/receivedRequest/{netId}&quot;)
+&nbsp;    public ResponseEntity&lt;List&lt;User&gt;&gt; getAllFriendRequest(
+&nbsp;            @Parameter(description = &quot;The NetID of the user&quot;, required = true)
+&nbsp;            @PathVariable String netId){
+<b class="nc">&nbsp;        Optional&lt;User&gt; curReceiver = userRepository.findUserByNetId(netId);</b>
+<b class="nc">&nbsp;        if (curReceiver.isEmpty()) {</b>
+<b class="nc">&nbsp;            return  ResponseEntity.internalServerError().build();</b>
+&nbsp;        }
+<b class="nc">&nbsp;        User receiver = curReceiver.get();</b>
+<b class="nc">&nbsp;        List&lt;FriendRequest&gt; receivedRequests = friendRequestRepository.findAllByReceiverAndStatus(receiver,RequestStatus.PENDING);</b>
+<b class="nc">&nbsp;        List&lt;User&gt; listOfSenders = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;        for(FriendRequest friendRequest : receivedRequests){</b>
+<b class="nc">&nbsp;            listOfSenders.add(friendRequest.getSender());</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return ResponseEntity.ok(listOfSenders);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Retrieves all sent friend requests from a specific user identified by their NetID.
+&nbsp;     *
+&nbsp;     * @param netId The NetID of the user.
+&nbsp;     * @return A list of users to whom the specified user has sent friend requests.
+&nbsp;     */
+&nbsp;    @Operation(summary = &quot;Get Sent Friend Requests&quot;, description = &quot;Retrieve all pending friend requests sent by a user identified by their NetID.&quot;)
+&nbsp;    @ApiResponses(value = {
+&nbsp;            @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Sent friend requests retrieved successfully&quot;,
+&nbsp;                    content = @Content(mediaType = &quot;application/json&quot;, schema = @Schema(implementation = User.class))),
+&nbsp;            @ApiResponse(responseCode = &quot;500&quot;, description = &quot;Internal server error&quot;,
+&nbsp;                    content = @Content)
+&nbsp;    })
+&nbsp;    @GetMapping(&quot;/sentRequest/{netId}&quot;)
+&nbsp;    public ResponseEntity&lt;List&lt;User&gt;&gt; getAllSentRequest(
+&nbsp;            @Parameter(description = &quot;The NetID of the user&quot;, required = true)
+&nbsp;            @PathVariable String netId){
+<b class="nc">&nbsp;        Optional&lt;User&gt; curSender = userRepository.findUserByNetId(netId);</b>
+<b class="nc">&nbsp;        if (curSender.isEmpty()) {</b>
+<b class="nc">&nbsp;            return  ResponseEntity.internalServerError().build();</b>
+&nbsp;        }
+<b class="nc">&nbsp;        User sender = curSender.get();</b>
+<b class="nc">&nbsp;        List&lt;FriendRequest&gt; sentRequest = friendRequestRepository.findAllBySenderAndStatus(sender, RequestStatus.PENDING);</b>
+<b class="nc">&nbsp;        List&lt;User&gt; listOfReceiver = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;        for(FriendRequest friendRequest : sentRequest){</b>
+<b class="nc">&nbsp;            listOfReceiver.add(friendRequest.getReceiver());</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return ResponseEntity.ok(listOfReceiver);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Sends a friend request from one user to another.
+&nbsp;     *
+&nbsp;     * @param senderNetId   The NetID of the user sending the friend request.
+&nbsp;     * @param receiverNetId The NetID of the user receiving the friend request.
+&nbsp;     * @return A confirmation message upon successful sending of the friend request.
+&nbsp;     */
+&nbsp;    @Operation(summary = &quot;Send Friend Request&quot;, description = &quot;Send a friend request from one user to another using their NetIDs.&quot;)
+&nbsp;    @ApiResponses(value = {
+&nbsp;            @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Friend request sent successfully&quot;,
+&nbsp;                    content = @Content(mediaType = &quot;application/json&quot;, schema = @Schema(implementation = String.class))),
+&nbsp;            @ApiResponse(responseCode = &quot;404&quot;, description = &quot;Sender or Receiver not found&quot;,
+&nbsp;                    content = @Content),
+&nbsp;            @ApiResponse(responseCode = &quot;500&quot;, description = &quot;Internal server error&quot;,
+&nbsp;                    content = @Content)
+&nbsp;    })
+&nbsp;    @PostMapping(&quot;/request&quot;)
+&nbsp;    public ResponseEntity&lt;String&gt; sendFriendRequest(
+&nbsp;            @Parameter(description = &quot;The NetID of the user sending the friend request&quot;, required = true)
+&nbsp;            @RequestParam String senderNetId,
+&nbsp;            @Parameter(description = &quot;The NetID of the user receiving the friend request&quot;, required = true)
+&nbsp;            @RequestParam String receiverNetId){
+<b class="fc">&nbsp;        Optional&lt;User&gt; curSender = userRepository.findUserByNetId(senderNetId);</b>
+<b class="fc">&nbsp;        Optional&lt;User&gt; curReceiver = userRepository.findUserByNetId(receiverNetId);</b>
+&nbsp;
+<b class="pc">&nbsp;        if (curSender.isEmpty()) {</b>
+<b class="nc">&nbsp;            return ResponseEntity.status(HttpStatus.NOT_FOUND)</b>
+<b class="nc">&nbsp;                    .body(&quot;User with ID &quot; + senderNetId + &quot; not found.&quot;);</b>
+&nbsp;        }
+<b class="pc">&nbsp;        if (curReceiver.isEmpty()) {</b>
+<b class="fc">&nbsp;            return ResponseEntity.status(HttpStatus.NOT_FOUND)</b>
+<b class="fc">&nbsp;                    .body(&quot;User with ID &quot; + receiverNetId + &quot; not found.&quot;);</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        User sender = curSender.get();</b>
+<b class="nc">&nbsp;        User receiver = curReceiver.get();</b>
+&nbsp;
+<b class="nc">&nbsp;        FriendRequest request = new FriendRequest(sender, receiver, RequestStatus.PENDING);</b>
+<b class="nc">&nbsp;        friendRequestRepository.save(request);</b>
+&nbsp;
+<b class="nc">&nbsp;        return ResponseEntity.ok(&quot;Friend request sent.&quot;);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Accepts a received friend request, establishing a friendship between the sender and receiver.
+&nbsp;     *
+&nbsp;     * @param receiverNetId The NetID of the user accepting the friend request.
+&nbsp;     * @param senderNetId   The NetID of the user who sent the friend request.
+&nbsp;     * @return A confirmation message upon successful acceptance of the friend request.
+&nbsp;     */
+&nbsp;    @Operation(summary = &quot;Accept Friend Request&quot;, description = &quot;Accept a received friend request, establishing a friendship between the sender and receiver.&quot;)
+&nbsp;    @ApiResponses(value = {
+&nbsp;            @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Friend request accepted successfully&quot;,
+&nbsp;                    content = @Content(mediaType = &quot;application/json&quot;, schema = @Schema(implementation = String.class))),
+&nbsp;            @ApiResponse(responseCode = &quot;404&quot;, description = &quot;User or Friend Request not found&quot;,
+&nbsp;                    content = @Content),
+&nbsp;            @ApiResponse(responseCode = &quot;403&quot;, description = &quot;Forbidden: Unauthorized to accept this friend request&quot;,
+&nbsp;                    content = @Content)
+&nbsp;    })
+&nbsp;    @DeleteMapping(&quot;/accept&quot;)
+&nbsp;    public ResponseEntity&lt;String&gt; acceptFriendRequest (
+&nbsp;            @Parameter(description = &quot;The NetID of the user accepting the friend request&quot;, required = true)
+&nbsp;            @RequestParam String receiverNetId,
+&nbsp;            @Parameter(description = &quot;The NetID of the user who sent the friend request&quot;, required = true)
+&nbsp;            @RequestParam String senderNetId
+&nbsp;    ){
+&nbsp;        // Check user exists or not
+<b class="nc">&nbsp;        Optional&lt;User&gt; curReceiver = userRepository.findUserByNetId(receiverNetId);</b>
+<b class="nc">&nbsp;        if (curReceiver.isEmpty()) {</b>
+<b class="nc">&nbsp;            return ResponseEntity.status(HttpStatus.NOT_FOUND)</b>
+<b class="nc">&nbsp;                    .body(&quot;User with ID &quot; + receiverNetId  + &quot; not found.&quot;);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        User receiver = curReceiver.get();</b>
+&nbsp;
+<b class="nc">&nbsp;        Optional&lt;User&gt; curSender = userRepository.findUserByNetId(senderNetId);</b>
+<b class="nc">&nbsp;        if (curSender.isEmpty()) {</b>
+<b class="nc">&nbsp;            return ResponseEntity.status(HttpStatus.NOT_FOUND)</b>
+<b class="nc">&nbsp;                    .body(&quot;User with ID &quot; + senderNetId  + &quot; not found.&quot;);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        User sender = curSender.get();</b>
+&nbsp;
+&nbsp;        // Check the request exists or not
+<b class="nc">&nbsp;        Optional&lt;FriendRequest&gt; curFriendRequest = friendRequestRepository.findFriendRequestBySenderAndReceiver(sender,receiver);</b>
+<b class="nc">&nbsp;        if(curFriendRequest.isEmpty()){</b>
+<b class="nc">&nbsp;            return ResponseEntity.status(HttpStatus.NOT_FOUND)</b>
+<b class="nc">&nbsp;                    .body(&quot;Friend request not exist&quot;);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        FriendRequest friendRequest = curFriendRequest.get();</b>
+&nbsp;
+&nbsp;        //getNetId().trim().equalsIgnoreCase(sId.trim())
+&nbsp;        // Check if the receiver of the friend request is the same as the person who try to accept this friend request by NetId
+<b class="nc">&nbsp;        if(!friendRequest.getReceiver().getNetId().trim().equalsIgnoreCase(receiverNetId.trim())){</b>
+<b class="nc">&nbsp;            return ResponseEntity.status(HttpStatus.NOT_FOUND)</b>
+<b class="nc">&nbsp;                    .body(&quot;You can not modify this friend request&quot;);</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        //Create the FriendShip Object and add it into the FriendShip table
+<b class="nc">&nbsp;        FriendShip friendShip = new FriendShip(friendRequest.getSender(), friendRequest.getReceiver());</b>
+<b class="nc">&nbsp;        friendShipRepository.save(friendShip);</b>
+&nbsp;
+&nbsp;        // After creating the friendship between 2 user, delete it in the friendRequestRepository
+<b class="nc">&nbsp;        friendRequestRepository.delete(friendRequest);</b>
+<b class="nc">&nbsp;        return ResponseEntity.ok(&quot;Friend request accepted&quot;);</b>
+&nbsp;    }
+&nbsp;    /**
+&nbsp;     * Rejects a received friend request.
+&nbsp;     *
+&nbsp;     * @param receiverNetId The NetID of the user rejecting the friend request.
+&nbsp;     * @param senderNetId   The NetID of the user who sent the friend request.
+&nbsp;     * @return A confirmation message upon successful rejection of the friend request.
+&nbsp;     */
+&nbsp;    @Operation(summary = &quot;Reject Friend Request&quot;, description = &quot;Reject a received friend request.&quot;)
+&nbsp;    @ApiResponses(value = {
+&nbsp;            @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Friend request rejected successfully&quot;,
+&nbsp;                    content = @Content(mediaType = &quot;application/json&quot;, schema = @Schema(implementation = String.class))),
+&nbsp;            @ApiResponse(responseCode = &quot;404&quot;, description = &quot;User or Friend Request not found&quot;,
+&nbsp;                    content = @Content),
+&nbsp;            @ApiResponse(responseCode = &quot;403&quot;, description = &quot;Forbidden: Unauthorized to reject this friend request&quot;,
+&nbsp;                    content = @Content)
+&nbsp;    })
+&nbsp;    @DeleteMapping(&quot;/reject&quot;)
+&nbsp;    public ResponseEntity&lt;String&gt; declineFriendRequest (
+&nbsp;            @Parameter(description = &quot;The NetID of the user rejecting the friend request&quot;, required = true)
+&nbsp;            @RequestParam String receiverNetId,
+&nbsp;            @Parameter(description = &quot;The NetID of the user who sent the friend request&quot;, required = true)
+&nbsp;            @RequestParam String senderNetId
+&nbsp;    ){
+&nbsp;        // Check user exists or not
+<b class="fc">&nbsp;        Optional&lt;User&gt; curReceiver = userRepository.findUserByNetId(receiverNetId);</b>
+<b class="pc">&nbsp;        if (curReceiver.isEmpty()) {</b>
+<b class="nc">&nbsp;            return ResponseEntity.status(HttpStatus.NOT_FOUND)</b>
+<b class="nc">&nbsp;                    .body(&quot;User with ID &quot; + receiverNetId  + &quot; not found.&quot;);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        User receiver = curReceiver.get();</b>
+&nbsp;
+<b class="fc">&nbsp;        Optional&lt;User&gt; curSender = userRepository.findUserByNetId(senderNetId);</b>
+<b class="pc">&nbsp;        if (curSender.isEmpty()) {</b>
+<b class="nc">&nbsp;            return ResponseEntity.status(HttpStatus.NOT_FOUND)</b>
+<b class="nc">&nbsp;                    .body(&quot;User with ID &quot; + senderNetId  + &quot; not found.&quot;);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        User sender = curSender.get();</b>
+&nbsp;
+&nbsp;        // Check the request exists or not
+<b class="fc">&nbsp;        Optional&lt;FriendRequest&gt; curFriendRequest = friendRequestRepository.findFriendRequestBySenderAndReceiver(sender,receiver);</b>
+<b class="pc">&nbsp;        if(curFriendRequest.isEmpty()){</b>
+<b class="fc">&nbsp;            return ResponseEntity.status(HttpStatus.NOT_FOUND)</b>
+<b class="fc">&nbsp;                    .body(&quot;Friend request not exist&quot;);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        FriendRequest friendRequest = curFriendRequest.get();</b>
+&nbsp;
+&nbsp;        // Check if the receiver of the friend request is the same as the person who try to accept this friend request by NetId
+<b class="nc">&nbsp;        if(!friendRequest.getReceiver().getNetId().trim().equalsIgnoreCase(receiverNetId.trim())){</b>
+<b class="nc">&nbsp;            return ResponseEntity.status(HttpStatus.NOT_FOUND)</b>
+<b class="nc">&nbsp;                    .body(&quot;You can not modify this friend request&quot;);</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        // Delete it in friendRequestRepository
+<b class="nc">&nbsp;        friendRequestRepository.delete(friendRequest);</b>
+<b class="nc">&nbsp;        return ResponseEntity.ok(&quot;Friend request rejected&quot;);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Cancels a sent friend request that has not yet been accepted or rejected.
+&nbsp;     *
+&nbsp;     * @param senderNetId   The NetID of the user who sent the friend request.
+&nbsp;     * @param receiverNetId The NetID of the user who received the friend request.
+&nbsp;     * @return A confirmation message upon successful cancellation of the friend request.
+&nbsp;     */
+&nbsp;    @Operation(summary = &quot;Unsend Friend Request&quot;, description = &quot;Cancel a sent friend request that has not yet been accepted or rejected.&quot;)
+&nbsp;    @ApiResponses(value = {
+&nbsp;            @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Friend request unsent successfully&quot;,
+&nbsp;                    content = @Content(mediaType = &quot;application/json&quot;, schema = @Schema(implementation = String.class))),
+&nbsp;            @ApiResponse(responseCode = &quot;404&quot;, description = &quot;User or Friend Request not found&quot;,
+&nbsp;                    content = @Content),
+&nbsp;            @ApiResponse(responseCode = &quot;403&quot;, description = &quot;Forbidden: Unauthorized to unsend this friend request&quot;,
+&nbsp;                    content = @Content)
+&nbsp;    })
+&nbsp;    @DeleteMapping(&quot;/unsent&quot;)
+&nbsp;    public ResponseEntity&lt;String&gt; unsentFriendRequest(
+&nbsp;            @Parameter(description = &quot;The NetID of the user who sent the friend request&quot;, required = true)
+&nbsp;            @RequestParam String senderNetId,
+&nbsp;            @Parameter(description = &quot;The NetID of the user who received the friend request&quot;, required = true)
+&nbsp;            @RequestParam String receiverNetId
+&nbsp;    ){
+&nbsp;        // Check user exists or not
+<b class="nc">&nbsp;        Optional&lt;User&gt; curReceiver = userRepository.findUserByNetId(receiverNetId);</b>
+<b class="nc">&nbsp;        if (curReceiver.isEmpty()) {</b>
+<b class="nc">&nbsp;            return ResponseEntity.status(HttpStatus.NOT_FOUND)</b>
+<b class="nc">&nbsp;                    .body(&quot;User with ID &quot; + receiverNetId  + &quot; not found.&quot;);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        User receiver = curReceiver.get();</b>
+&nbsp;
+<b class="nc">&nbsp;        Optional&lt;User&gt; curSender = userRepository.findUserByNetId(senderNetId);</b>
+<b class="nc">&nbsp;        if (curSender.isEmpty()) {</b>
+<b class="nc">&nbsp;            return ResponseEntity.status(HttpStatus.NOT_FOUND)</b>
+<b class="nc">&nbsp;                    .body(&quot;User with ID &quot; + senderNetId  + &quot; not found.&quot;);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        User sender = curSender.get();</b>
+&nbsp;
+&nbsp;        // Check the request exists or not
+<b class="nc">&nbsp;        Optional&lt;FriendRequest&gt; curFriendRequest = friendRequestRepository.findFriendRequestBySenderAndReceiver(sender,receiver);</b>
+<b class="nc">&nbsp;        if(curFriendRequest.isEmpty()){</b>
+<b class="nc">&nbsp;            return ResponseEntity.status(HttpStatus.NOT_FOUND)</b>
+<b class="nc">&nbsp;                    .body(&quot;Friend request not exist&quot;);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        FriendRequest friendRequest = curFriendRequest.get();</b>
+&nbsp;
+&nbsp;        // Check if the receiver of the friend request is the same as the person who try to accept this friend request
+<b class="nc">&nbsp;        if(!friendRequest.getSender().getNetId().equalsIgnoreCase(senderNetId)){</b>
+<b class="nc">&nbsp;            return ResponseEntity.status(HttpStatus.NOT_FOUND)</b>
+<b class="nc">&nbsp;                    .body(&quot;You can not modify this friend request&quot;);</b>
+&nbsp;        }
+&nbsp;        //Delete the friend request
+<b class="nc">&nbsp;        friendRequestRepository.delete(friendRequest);</b>
+<b class="nc">&nbsp;        return ResponseEntity.ok(&quot;Unsent Friend request successfully&quot;);</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-12-04 23:26</div>
+</div>
+</body>
+</html>

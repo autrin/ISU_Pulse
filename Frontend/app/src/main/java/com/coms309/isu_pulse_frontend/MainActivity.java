@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.widget.Button;
 
 import com.coms309.isu_pulse_frontend.chat_system.ChatList;
@@ -17,7 +16,6 @@ import com.coms309.isu_pulse_frontend.student_display.DisplayStudent;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.navigation.NavController;
@@ -65,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
                 setupTeacherMenu();
             } else {
                 mAppBarConfiguration = new AppBarConfiguration.Builder(
-                        R.id.nav_home, R.id.nav_profile)
+                        R.id.nav_home, R.id.nav_students, R.id.nav_chatting, R.id.nav_announcements, R.id.nav_profile, R.id.nav_logout)
                         .setOpenableLayout(drawer)
                         .build();
                 setupStudentMenu();

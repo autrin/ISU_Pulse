@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UserSession.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=0;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">debug</a> &gt; <a href="index.source.html" class="el_package">com.coms309.isu_pulse_frontend.loginsignup</a> &gt; <span class="el_source">UserSession.java</span></div><h1>UserSession.java</h1><pre class="source lang-java linenums">package com.coms309.isu_pulse_frontend.loginsignup;
+
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.util.Log;
+
+import com.coms309.isu_pulse_frontend.api.AnnouncementWebSocketClient;
+
+/**
+ * Singleton class to manage the user's session in the application.
+ * Handles user information, shared preferences, and WebSocket connections.
+ */
+public class UserSession {
+
+    private static UserSession instance; // Singleton instance
+    private String netId;               // User's NetID
+    private long id;                    // User's unique ID
+    private String userType;            // User type (e.g., &quot;student&quot;, &quot;faculty&quot;)
+    private AnnouncementWebSocketClient webSocketClient; // WebSocket client for announcements
+    private static final String TAG = &quot;UserSession&quot;;      // Tag for logging
+
+    /**
+     * Private default constructor to enforce Singleton pattern.
+     */
+    private UserSession() {}
+
+    /**
+     * Private constructor to initialize user session from shared preferences.
+     *
+     * @param context the application context
+     */
+<span class="fc" id="L32">    private UserSession(Context context) {</span>
+<span class="fc" id="L33">        SharedPreferences sharedPreferences = context.getSharedPreferences(&quot;UserSession&quot;, Context.MODE_PRIVATE);</span>
+<span class="fc" id="L34">        this.netId = sharedPreferences.getString(&quot;netId&quot;, null);</span>
+<span class="fc" id="L35">    }</span>
+
+    // ---- Static Methods ----
+
+    /**
+     * Returns the singleton instance of the UserSession.
+     * Creates a new instance if one does not already exist.
+     *
+     * @return the singleton instance of UserSession
+     */
+    public static synchronized UserSession getInstance() {
+<span class="pc bpc" id="L46" title="1 of 2 branches missed.">        if (instance == null) {</span>
+<span class="nc" id="L47">            instance = new UserSession();</span>
+        }
+<span class="fc" id="L49">        return instance;</span>
+    }
+
+    /**
+     * Returns the singleton instance of the UserSession and initializes it using the context.
+     * Creates a new instance if one does not already exist.
+     *
+     * @param context the application context
+     * @return the singleton instance of UserSession
+     */
+    public static synchronized UserSession getInstance(Context context) {
+<span class="fc bfc" id="L60" title="All 2 branches covered.">        if (instance == null) {</span>
+<span class="fc" id="L61">            instance = new UserSession(context);</span>
+        }
+<span class="fc" id="L63">        return instance;</span>
+    }
+
+    // ---- Getters ----
+
+    /**
+     * Gets the NetID of the user.
+     *
+     * @return the NetID of the user
+     */
+    public String getNetId() {
+<span class="fc" id="L74">        return netId;</span>
+    }
+
+    /**
+     * Gets the unique ID of the user.
+     *
+     * @return the unique ID of the user
+     */
+    public long getId() {
+<span class="nc" id="L83">        return id;</span>
+    }
+
+    /**
+     * Gets the user type (e.g., &quot;student&quot;, &quot;faculty&quot;).
+     *
+     * @return the user type
+     */
+    public String getUserType() {
+<span class="fc" id="L92">        return userType;</span>
+    }
+
+    /**
+     * Gets the WebSocket client for announcements.
+     *
+     * @return the WebSocket client
+     */
+    public AnnouncementWebSocketClient getWebSocketClient() {
+<span class="fc" id="L101">        return webSocketClient;</span>
+    }
+
+    // ---- Setters ----
+
+    /**
+     * Sets the NetID of the user.
+     *
+     * @param netId the NetID to set
+     */
+    public void setNetId(String netId) {
+<span class="nc" id="L112">        this.netId = netId;</span>
+<span class="nc" id="L113">    }</span>
+
+    /**
+     * Sets the unique ID of the user.
+     *
+     * @param id the unique ID to set
+     */
+    public void setId(long id) {
+<span class="nc" id="L121">        this.id = id;</span>
+<span class="nc" id="L122">    }</span>
+
+    /**
+     * Sets the NetID and saves it to shared preferences.
+     * Also initializes the WebSocket connection.
+     *
+     * @param netId   the NetID to set
+     * @param context the application context
+     */
+    public void setNetId(String netId, Context context) {
+<span class="fc" id="L132">        this.netId = netId;</span>
+<span class="fc" id="L133">        SharedPreferences sharedPreferences = context.getSharedPreferences(&quot;UserSession&quot;, Context.MODE_PRIVATE);</span>
+<span class="fc" id="L134">        SharedPreferences.Editor editor = sharedPreferences.edit();</span>
+<span class="fc" id="L135">        editor.putString(&quot;netId&quot;, netId);</span>
+<span class="fc" id="L136">        editor.apply();</span>
+<span class="fc" id="L137">        initWebSocket();</span>
+<span class="fc" id="L138">    }</span>
+
+    /**
+     * Sets the user type and saves it to shared preferences.
+     * Also initializes the WebSocket connection.
+     *
+     * @param userType the user type to set
+     * @param context  the application context
+     */
+    public void setUserType(String userType, Context context) {
+<span class="fc" id="L148">        this.userType = userType;</span>
+<span class="fc" id="L149">        SharedPreferences sharedPreferences = context.getSharedPreferences(&quot;UserSession&quot;, Context.MODE_PRIVATE);</span>
+<span class="fc" id="L150">        SharedPreferences.Editor editor = sharedPreferences.edit();</span>
+<span class="fc" id="L151">        editor.putString(&quot;userType&quot;, userType);</span>
+<span class="fc" id="L152">        editor.apply();</span>
+<span class="fc" id="L153">        initWebSocket();</span>
+<span class="fc" id="L154">    }</span>
+
+    // ---- Session Management ----
+
+    /**
+     * Clears the current user session and removes data from shared preferences.
+     * Also disconnects the WebSocket connection.
+     *
+     * @param context the application context
+     */
+    public void clearSession(Context context) {
+<span class="nc" id="L165">        SharedPreferences sharedPreferences = context.getSharedPreferences(&quot;UserSession&quot;, Context.MODE_PRIVATE);</span>
+<span class="nc" id="L166">        SharedPreferences.Editor editor = sharedPreferences.edit();</span>
+<span class="nc" id="L167">        editor.remove(&quot;netId&quot;);</span>
+<span class="nc" id="L168">        editor.remove(&quot;userType&quot;);</span>
+<span class="nc" id="L169">        editor.apply();</span>
+<span class="nc" id="L170">        netId = null;</span>
+<span class="nc" id="L171">        userType = null;</span>
+<span class="nc" id="L172">        disconnectWebSocket();</span>
+<span class="nc" id="L173">    }</span>
+
+    // ---- WebSocket Management ----
+
+    /**
+     * Initializes the WebSocket connection for announcements.
+     */
+    private void initWebSocket() {
+<span class="pc bpc" id="L181" title="2 of 6 branches missed.">        if (webSocketClient == null &amp;&amp; netId != null &amp;&amp; userType != null) {</span>
+<span class="fc" id="L182">            webSocketClient = new AnnouncementWebSocketClient(message -&gt; {</span>
+<span class="fc" id="L183">                Log.d(TAG, &quot;Message received: &quot; + message);</span>
+<span class="fc" id="L184">            });</span>
+<span class="fc" id="L185">            webSocketClient.connectWebSocket(netId, userType);</span>
+        }
+<span class="fc" id="L187">    }</span>
+
+    /**
+     * Disconnects the WebSocket connection if it exists.
+     */
+    public void disconnectWebSocket() {
+<span class="nc bnc" id="L193" title="All 2 branches missed.">        if (webSocketClient != null) {</span>
+<span class="nc" id="L194">            webSocketClient.disconnectWebSocket();</span>
+<span class="nc" id="L195">            webSocketClient = null;</span>
+<span class="nc" id="L196">            Log.d(TAG, &quot;WebSocket disconnected&quot;);</span>
+        }
+<span class="nc" id="L198">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span>Generated by the Android Gradle plugin 8.6.0</div></body></html>

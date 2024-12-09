@@ -1,0 +1,550 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > AnnouncementWebSocketHandler</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">coms309.backEnd.demo.websocket.announcement</a>
+</div>
+
+<h1>Coverage Summary for Class: AnnouncementWebSocketHandler (coms309.backEnd.demo.websocket.announcement)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">AnnouncementWebSocketHandler</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    15.4%
+  </span>
+  <span class="absValue">
+    (2/13)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/100)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    2.2%
+  </span>
+  <span class="absValue">
+    (4/185)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package coms309.backEnd.demo.websocket.announcement;
+&nbsp;
+&nbsp;import com.fasterxml.jackson.databind.ObjectMapper;
+&nbsp;import coms309.backEnd.demo.DTO.AnnouncementDTO;
+&nbsp;import coms309.backEnd.demo.entity.*;
+&nbsp;import coms309.backEnd.demo.repository.*;
+&nbsp;import org.slf4j.Logger;
+&nbsp;import org.slf4j.LoggerFactory;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.stereotype.Component;
+&nbsp;import org.springframework.web.socket.CloseStatus;
+&nbsp;import org.springframework.web.socket.TextMessage;
+&nbsp;import org.springframework.web.socket.WebSocketSession;
+&nbsp;import org.springframework.web.socket.handler.TextWebSocketHandler;
+&nbsp;
+&nbsp;import java.net.URI;
+&nbsp;import java.net.URLDecoder;
+&nbsp;import java.nio.charset.StandardCharsets;
+&nbsp;import java.time.LocalDateTime;
+&nbsp;import java.util.*;
+&nbsp;import java.util.concurrent.ConcurrentHashMap;
+&nbsp;
+&nbsp;@Component
+<b class="fc">&nbsp;public class AnnouncementWebSocketHandler extends TextWebSocketHandler {</b>
+&nbsp;
+<b class="fc">&nbsp;    private static final Logger logger = LoggerFactory.getLogger(AnnouncementWebSocketHandler.class);</b>
+&nbsp;
+&nbsp;    // Maps to keep track of student and faculty sessions
+<b class="fc">&nbsp;    private final Map&lt;Long, Set&lt;WebSocketSession&gt;&gt; studentSessions = new ConcurrentHashMap&lt;&gt;();</b>
+<b class="fc">&nbsp;    private final Map&lt;Long, Set&lt;WebSocketSession&gt;&gt; facultySessions = new ConcurrentHashMap&lt;&gt;();</b>
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private UserRepository userRepository;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private FacultyRepository facultyRepository;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private EnrollRepository enrollRepository;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private TeachRepository teachRepository;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private ScheduleRepository scheduleRepository;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private AnnouncementRepository announcementRepository;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private ObjectMapper objectMapper; // Inject the auto-configured ObjectMapper
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public void afterConnectionEstablished(WebSocketSession session) throws Exception {
+<b class="nc">&nbsp;        URI uri = session.getUri();</b>
+<b class="nc">&nbsp;        if (uri == null) {</b>
+<b class="nc">&nbsp;            session.close(CloseStatus.BAD_DATA.withReason(&quot;No URI in session&quot;));</b>
+&nbsp;            return;
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        String query = uri.getQuery();</b>
+<b class="nc">&nbsp;        if (query == null) {</b>
+<b class="nc">&nbsp;            session.close(CloseStatus.BAD_DATA.withReason(&quot;No query parameters in URI&quot;));</b>
+&nbsp;            return;
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        Map&lt;String, String&gt; params = getQueryParams(query);</b>
+<b class="nc">&nbsp;        String netId = params.get(&quot;netId&quot;);</b>
+<b class="nc">&nbsp;        String userType = params.get(&quot;userType&quot;);</b>
+&nbsp;
+<b class="nc">&nbsp;        if (netId == null || userType == null) {</b>
+<b class="nc">&nbsp;            session.close(CloseStatus.BAD_DATA.withReason(&quot;Missing netId or userType&quot;));</b>
+&nbsp;            return;
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        User user = userRepository.findUserByNetId(netId).orElse(null);</b>
+<b class="nc">&nbsp;        if (user == null) {</b>
+<b class="nc">&nbsp;            session.close(CloseStatus.NOT_ACCEPTABLE.withReason(&quot;User not found&quot;));</b>
+&nbsp;            return;
+&nbsp;        }
+&nbsp;
+&nbsp;        // Verify userType matches using Enum
+&nbsp;        UserType enumUserType;
+&nbsp;        try {
+<b class="nc">&nbsp;            enumUserType = UserType.valueOf(userType.toUpperCase());</b>
+<b class="nc">&nbsp;            if (!user.getUserType().equals(enumUserType)) {</b>
+<b class="nc">&nbsp;                session.close(CloseStatus.NOT_ACCEPTABLE.withReason(&quot;UserType mismatch&quot;));</b>
+&nbsp;                return;
+&nbsp;            }
+<b class="nc">&nbsp;        } catch (IllegalArgumentException e) {</b>
+<b class="nc">&nbsp;            session.close(CloseStatus.NOT_ACCEPTABLE.withReason(&quot;Invalid userType value&quot;));</b>
+&nbsp;            return;
+&nbsp;        }
+&nbsp;
+&nbsp;        // Store session based on userType
+<b class="nc">&nbsp;        if (enumUserType == UserType.FACULTY) {</b>
+<b class="nc">&nbsp;            facultySessions.computeIfAbsent(user.getId(), k -&gt; ConcurrentHashMap.newKeySet()).add(session);</b>
+<b class="nc">&nbsp;            logger.info(&quot;Faculty user connected: {}&quot;, user.getNetId());</b>
+<b class="nc">&nbsp;        } else if (enumUserType == UserType.STUDENT) {</b>
+<b class="nc">&nbsp;            studentSessions.computeIfAbsent(user.getId(), k -&gt; ConcurrentHashMap.newKeySet()).add(session);</b>
+<b class="nc">&nbsp;            logger.info(&quot;Student user connected: {}&quot;, user.getNetId());</b>
+&nbsp;
+&nbsp;            // Send announcement history to the student upon connection
+<b class="nc">&nbsp;            sendAnnouncementHistoryToStudent(session, user);</b>
+&nbsp;        } else {
+<b class="nc">&nbsp;            session.close(CloseStatus.NOT_ACCEPTABLE.withReason(&quot;Invalid userType&quot;));</b>
+&nbsp;            return;
+&nbsp;        }
+&nbsp;
+&nbsp;        // Store user in session attributes for quick access
+<b class="nc">&nbsp;        session.getAttributes().put(&quot;user&quot;, user);</b>
+&nbsp;
+&nbsp;        // Optionally, send a welcome message
+<b class="nc">&nbsp;        sendMessage(session, &quot;Welcome &quot; + user.getNetId() + &quot;!&quot;);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
+&nbsp;        // Retrieve user from session attributes
+<b class="nc">&nbsp;        User user = (User) session.getAttributes().get(&quot;user&quot;);</b>
+<b class="nc">&nbsp;        if (user == null) {</b>
+<b class="nc">&nbsp;            session.close(CloseStatus.NOT_ACCEPTABLE.withReason(&quot;User not found in session&quot;));</b>
+&nbsp;            return;
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        String userType = user.getUserType().toString();</b>
+&nbsp;
+<b class="nc">&nbsp;        String payload = message.getPayload();</b>
+&nbsp;        Map&lt;String, Object&gt; msgMap;
+&nbsp;        try {
+<b class="nc">&nbsp;            msgMap = objectMapper.readValue(payload, Map.class);</b>
+<b class="nc">&nbsp;        } catch (Exception e) {</b>
+<b class="nc">&nbsp;            sendMessage(session, &quot;Invalid message format.&quot;);</b>
+&nbsp;            return;
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        String action = (String) msgMap.get(&quot;action&quot;);</b>
+&nbsp;
+<b class="nc">&nbsp;        if (&quot;post&quot;.equalsIgnoreCase(action) &amp;&amp; user.getUserType() == UserType.FACULTY) {</b>
+<b class="nc">&nbsp;            handlePostAnnouncement(session, user, msgMap);</b>
+<b class="nc">&nbsp;        } else if (&quot;update&quot;.equalsIgnoreCase(action) &amp;&amp; user.getUserType() == UserType.FACULTY) {</b>
+<b class="nc">&nbsp;            handleUpdateAnnouncement(session, user, msgMap);</b>
+<b class="nc">&nbsp;        } else if (&quot;delete&quot;.equalsIgnoreCase(action) &amp;&amp; user.getUserType() == UserType.FACULTY) {</b>
+<b class="nc">&nbsp;            handleDeleteAnnouncement(session, user, msgMap);</b>
+&nbsp;        } else {
+<b class="nc">&nbsp;            sendMessage(session, &quot;Invalid action or insufficient permissions.&quot;);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    private void handlePostAnnouncement(WebSocketSession session, User user, Map&lt;String, Object&gt; msgMap) throws Exception {
+&nbsp;        Long scheduleId;
+&nbsp;        String content;
+&nbsp;
+&nbsp;        try {
+<b class="nc">&nbsp;            scheduleId = Long.valueOf(msgMap.get(&quot;scheduleId&quot;).toString());</b>
+<b class="nc">&nbsp;            content = (String) msgMap.get(&quot;content&quot;);</b>
+<b class="nc">&nbsp;        } catch (Exception e) {</b>
+<b class="nc">&nbsp;            sendMessage(session, &quot;Invalid message format.&quot;);</b>
+&nbsp;            return;
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        Faculty faculty = facultyRepository.findByUserNetId(user.getNetId()).orElse(null);</b>
+<b class="nc">&nbsp;        Schedule schedule = scheduleRepository.findById(scheduleId).orElse(null);</b>
+&nbsp;
+<b class="nc">&nbsp;        if (faculty == null || schedule == null) {</b>
+<b class="nc">&nbsp;            sendMessage(session, &quot;Invalid faculty or schedule.&quot;);</b>
+&nbsp;            return;
+&nbsp;        }
+&nbsp;
+&nbsp;        // Check if faculty teaches the schedule
+<b class="nc">&nbsp;        Teach teach = teachRepository.findByScheduleIdAndFacultyId(scheduleId, faculty.getId()).orElse(null);</b>
+<b class="nc">&nbsp;        if (teach == null) {</b>
+<b class="nc">&nbsp;            sendMessage(session, &quot;You do not teach this schedule.&quot;);</b>
+&nbsp;            return;
+&nbsp;        }
+&nbsp;
+&nbsp;        // Create and save announcement
+<b class="nc">&nbsp;        Announcement announcement = new Announcement(content, schedule, faculty);</b>
+<b class="nc">&nbsp;        announcementRepository.save(announcement);</b>
+&nbsp;
+&nbsp;        // Broadcast to students enrolled in this schedule
+<b class="nc">&nbsp;        broadcastAnnouncement(announcement);</b>
+&nbsp;
+&nbsp;        // Send confirmation to the faculty
+<b class="nc">&nbsp;        sendMessage(session, &quot;Announcement posted successfully.&quot;);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private void handleUpdateAnnouncement(WebSocketSession session, User user, Map&lt;String, Object&gt; msgMap) throws Exception {
+&nbsp;        Long announcementId;
+&nbsp;        String newContent;
+&nbsp;
+&nbsp;        try {
+<b class="nc">&nbsp;            announcementId = Long.valueOf(msgMap.get(&quot;announcementId&quot;).toString());</b>
+<b class="nc">&nbsp;            newContent = (String) msgMap.get(&quot;content&quot;);</b>
+<b class="nc">&nbsp;        } catch (Exception e) {</b>
+<b class="nc">&nbsp;            sendMessage(session, &quot;Invalid message format.&quot;);</b>
+&nbsp;            return;
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        Announcement announcement = announcementRepository.findById(announcementId).orElse(null);</b>
+<b class="nc">&nbsp;        if (announcement == null) {</b>
+<b class="nc">&nbsp;            sendMessage(session, &quot;Announcement not found.&quot;);</b>
+&nbsp;            return;
+&nbsp;        }
+&nbsp;
+&nbsp;        // Check if the faculty owns the announcement
+<b class="nc">&nbsp;        Faculty faculty = facultyRepository.findByUserNetId(user.getNetId()).orElse(null);</b>
+<b class="nc">&nbsp;        if (faculty == null || announcement.getFaculty().getId() != faculty.getId()) {</b>
+<b class="nc">&nbsp;            sendMessage(session, &quot;You do not have permission to update this announcement.&quot;);</b>
+&nbsp;            return;
+&nbsp;        }
+&nbsp;
+&nbsp;        // Update and save the announcement
+<b class="nc">&nbsp;        announcement.setContent(newContent);</b>
+<b class="nc">&nbsp;        announcement.setTimestamp(LocalDateTime.now()); // Reset the timestamp to current time</b>
+<b class="nc">&nbsp;        announcementRepository.save(announcement);</b>
+&nbsp;
+&nbsp;        // Optionally, broadcast the updated announcement to students
+<b class="nc">&nbsp;        broadcastAnnouncement(announcement);</b>
+&nbsp;
+&nbsp;        // Send confirmation to the faculty
+<b class="nc">&nbsp;        sendMessage(session, &quot;Announcement updated successfully.&quot;);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private void handleDeleteAnnouncement(WebSocketSession session, User user, Map&lt;String, Object&gt; msgMap) throws Exception {
+&nbsp;        Long announcementId;
+&nbsp;
+&nbsp;        try {
+<b class="nc">&nbsp;            announcementId = Long.valueOf(msgMap.get(&quot;announcementId&quot;).toString());</b>
+<b class="nc">&nbsp;        } catch (Exception e) {</b>
+<b class="nc">&nbsp;            sendMessage(session, &quot;Invalid message format.&quot;);</b>
+&nbsp;            return;
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        Announcement announcement = announcementRepository.findById(announcementId).orElse(null);</b>
+<b class="nc">&nbsp;        if (announcement == null) {</b>
+<b class="nc">&nbsp;            sendMessage(session, &quot;Announcement not found.&quot;);</b>
+&nbsp;            return;
+&nbsp;        }
+&nbsp;
+&nbsp;        // Check if the faculty owns the announcement
+<b class="nc">&nbsp;        Faculty faculty = facultyRepository.findByUserNetId(user.getNetId()).orElse(null);</b>
+<b class="nc">&nbsp;        if (faculty == null || announcement.getFaculty().getId() != faculty.getId()) {</b>
+<b class="nc">&nbsp;            sendMessage(session, &quot;You do not have permission to delete this announcement.&quot;);</b>
+&nbsp;            return;
+&nbsp;        }
+&nbsp;
+&nbsp;        // Get the schedule before deletion
+<b class="nc">&nbsp;        Schedule schedule = announcement.getSchedule();</b>
+&nbsp;
+&nbsp;        // Delete the announcement
+<b class="nc">&nbsp;        announcementRepository.delete(announcement);</b>
+&nbsp;
+&nbsp;        // Notify students about the deletion
+<b class="nc">&nbsp;        broadcastAnnouncementDeletion(announcement);</b>
+&nbsp;
+&nbsp;        // Send confirmation to the faculty
+<b class="nc">&nbsp;        sendMessage(session, &quot;Announcement deleted successfully.&quot;);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private void broadcastAnnouncement(Announcement announcement) {
+<b class="nc">&nbsp;        List&lt;Enroll&gt; enrollments = enrollRepository.findBySchedule(announcement.getSchedule());</b>
+&nbsp;
+<b class="nc">&nbsp;        AnnouncementDTO announcementDTO = new AnnouncementDTO();</b>
+<b class="nc">&nbsp;        announcementDTO.setId(announcement.getId());</b>
+<b class="nc">&nbsp;        announcementDTO.setContent(announcement.getContent());</b>
+<b class="nc">&nbsp;        announcementDTO.setTimestamp(announcement.getTimestamp());</b>
+<b class="nc">&nbsp;        announcementDTO.setScheduleId(announcement.getSchedule().getId());</b>
+<b class="nc">&nbsp;        announcementDTO.setFacultyNetId(announcement.getFaculty().getUser().getNetId());</b>
+&nbsp;
+&nbsp;        // Create a parent object with the action
+<b class="nc">&nbsp;        Map&lt;String, Object&gt; newAnnouncementMessage = new HashMap&lt;&gt;();</b>
+<b class="nc">&nbsp;        newAnnouncementMessage.put(&quot;action&quot;, &quot;new&quot;);</b>
+<b class="nc">&nbsp;        newAnnouncementMessage.put(&quot;announcement&quot;, announcementDTO);</b>
+&nbsp;
+&nbsp;        String announcementJson;
+&nbsp;        try {
+<b class="nc">&nbsp;            announcementJson = objectMapper.writeValueAsString(newAnnouncementMessage);</b>
+<b class="nc">&nbsp;        } catch (Exception e) {</b>
+<b class="nc">&nbsp;            logger.error(&quot;Failed to serialize announcement: {}&quot;, e.getMessage());</b>
+&nbsp;            return; // Exit the method if serialization fails
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        for (Enroll enroll : enrollments) {</b>
+<b class="nc">&nbsp;            User student = enroll.getStudent();</b>
+<b class="nc">&nbsp;            Set&lt;WebSocketSession&gt; sessions = studentSessions.get(student.getId());</b>
+<b class="nc">&nbsp;            if (sessions != null) {</b>
+<b class="nc">&nbsp;                for (WebSocketSession studentSession : sessions) {</b>
+<b class="nc">&nbsp;                    if (studentSession.isOpen()) {</b>
+&nbsp;                        try {
+<b class="nc">&nbsp;                            sendMessage(studentSession, announcementJson);</b>
+<b class="nc">&nbsp;                            logger.info(&quot;Announcement sent to student {}.&quot;, student.getNetId());</b>
+<b class="nc">&nbsp;                        } catch (Exception e) {</b>
+<b class="nc">&nbsp;                            logger.error(&quot;Failed to send announcement to student {}: {}&quot;, student.getNetId(), e.getMessage());</b>
+&nbsp;                            // Optionally, handle the failed session (e.g., remove it from the set)
+&nbsp;                        }
+&nbsp;                    }
+&nbsp;                }
+&nbsp;            }
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    private void broadcastAnnouncementDeletion(Announcement announcement) {
+<b class="nc">&nbsp;        List&lt;Enroll&gt; enrollments = enrollRepository.findBySchedule(announcement.getSchedule());</b>
+&nbsp;
+<b class="nc">&nbsp;        for (Enroll enroll : enrollments) {</b>
+<b class="nc">&nbsp;            User student = enroll.getStudent();</b>
+<b class="nc">&nbsp;            Set&lt;WebSocketSession&gt; sessions = studentSessions.get(student.getId());</b>
+<b class="nc">&nbsp;            if (sessions != null) {</b>
+<b class="nc">&nbsp;                for (WebSocketSession studentSession : sessions) {</b>
+<b class="nc">&nbsp;                    if (studentSession.isOpen()) {</b>
+&nbsp;                        try {
+&nbsp;                            // Send updated announcement history to the student
+<b class="nc">&nbsp;                            sendAnnouncementHistoryToStudent(studentSession, student);</b>
+<b class="nc">&nbsp;                            logger.info(&quot;Updated announcement history sent to student {}.&quot;, student.getNetId());</b>
+<b class="nc">&nbsp;                        } catch (Exception e) {</b>
+<b class="nc">&nbsp;                            logger.error(&quot;Failed to send updated history to student {}: {}&quot;, student.getNetId(), e.getMessage());</b>
+&nbsp;                        }
+&nbsp;                    }
+&nbsp;                }
+&nbsp;            }
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    private void sendMessage(WebSocketSession session, String message) throws Exception {
+<b class="nc">&nbsp;        if (session.isOpen()) {</b>
+<b class="nc">&nbsp;            session.sendMessage(new TextMessage(message));</b>
+<b class="nc">&nbsp;            logger.debug(&quot;Message sent to session {}: {}&quot;, session.getId(), message);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
+&nbsp;        // Remove session from tracking maps
+<b class="nc">&nbsp;        URI uri = session.getUri();</b>
+<b class="nc">&nbsp;        if (uri != null) {</b>
+<b class="nc">&nbsp;            String query = uri.getQuery();</b>
+<b class="nc">&nbsp;            if (query != null) {</b>
+<b class="nc">&nbsp;                Map&lt;String, String&gt; params = getQueryParams(query);</b>
+<b class="nc">&nbsp;                String netId = params.get(&quot;netId&quot;);</b>
+<b class="nc">&nbsp;                String userType = params.get(&quot;userType&quot;);</b>
+&nbsp;
+<b class="nc">&nbsp;                if (netId != null &amp;&amp; userType != null) {</b>
+<b class="nc">&nbsp;                    User user = userRepository.findUserByNetId(netId).orElse(null);</b>
+<b class="nc">&nbsp;                    if (user != null) {</b>
+<b class="nc">&nbsp;                        if (&quot;FACULTY&quot;.equalsIgnoreCase(userType)) {</b>
+<b class="nc">&nbsp;                            Set&lt;WebSocketSession&gt; sessions = facultySessions.get(user.getId());</b>
+<b class="nc">&nbsp;                            if (sessions != null) {</b>
+<b class="nc">&nbsp;                                sessions.remove(session);</b>
+<b class="nc">&nbsp;                                if (sessions.isEmpty()) {</b>
+<b class="nc">&nbsp;                                    facultySessions.remove(user.getId());</b>
+&nbsp;                                }
+&nbsp;                            }
+<b class="nc">&nbsp;                            logger.info(&quot;Faculty user disconnected: {}&quot;, user.getNetId());</b>
+<b class="nc">&nbsp;                        } else if (&quot;STUDENT&quot;.equalsIgnoreCase(userType)) {</b>
+<b class="nc">&nbsp;                            Set&lt;WebSocketSession&gt; sessions = studentSessions.get(user.getId());</b>
+<b class="nc">&nbsp;                            if (sessions != null) {</b>
+<b class="nc">&nbsp;                                sessions.remove(session);</b>
+<b class="nc">&nbsp;                                if (sessions.isEmpty()) {</b>
+<b class="nc">&nbsp;                                    studentSessions.remove(user.getId());</b>
+&nbsp;                                }
+&nbsp;                            }
+<b class="nc">&nbsp;                            logger.info(&quot;Student user disconnected: {}&quot;, user.getNetId());</b>
+&nbsp;                        }
+&nbsp;                    }
+&nbsp;                }
+&nbsp;            }
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    // Utility method to parse query parameters
+&nbsp;    private Map&lt;String, String&gt; getQueryParams(String query) {
+<b class="nc">&nbsp;        Map&lt;String, String&gt; params = new HashMap&lt;&gt;();</b>
+<b class="nc">&nbsp;        String[] pairs = query.split(&quot;&amp;&quot;);</b>
+<b class="nc">&nbsp;        for (String pair : pairs) {</b>
+<b class="nc">&nbsp;            int idx = pair.indexOf(&quot;=&quot;);</b>
+<b class="nc">&nbsp;            if (idx &gt; 0 &amp;&amp; pair.length() &gt; idx + 1) {</b>
+<b class="nc">&nbsp;                String key = URLDecoder.decode(pair.substring(0, idx), StandardCharsets.UTF_8);</b>
+<b class="nc">&nbsp;                String value = URLDecoder.decode(pair.substring(idx + 1), StandardCharsets.UTF_8);</b>
+<b class="nc">&nbsp;                params.put(key, value);</b>
+&nbsp;            }
+&nbsp;        }
+<b class="nc">&nbsp;        return params;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private void sendAnnouncementHistoryToStudent(WebSocketSession session, User user) throws Exception {
+&nbsp;        // Retrieve all schedules the student is enrolled in
+<b class="nc">&nbsp;        List&lt;Enroll&gt; enrollments = enrollRepository.findByStudent(user);</b>
+&nbsp;
+<b class="nc">&nbsp;        Set&lt;Long&gt; scheduleIds = new HashSet&lt;&gt;();</b>
+<b class="nc">&nbsp;        for (Enroll enroll : enrollments) {</b>
+<b class="nc">&nbsp;            scheduleIds.add(enroll.getSchedule().getId());</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        if (scheduleIds.isEmpty()) {</b>
+&nbsp;            // No schedules enrolled, no announcements to send
+&nbsp;            return;
+&nbsp;        }
+&nbsp;
+&nbsp;        // Retrieve all announcements for these schedules, sorted by timestamp descending
+<b class="nc">&nbsp;        List&lt;Announcement&gt; announcements = announcementRepository.findByScheduleIdInOrderByTimestampDesc(new ArrayList&lt;&gt;(scheduleIds));</b>
+&nbsp;
+&nbsp;        // Collect all AnnouncementDTOs into a list
+<b class="nc">&nbsp;        List&lt;AnnouncementDTO&gt; announcementDTOList = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;        for (Announcement announcement : announcements) {</b>
+<b class="nc">&nbsp;            AnnouncementDTO announcementDTO = new AnnouncementDTO();</b>
+<b class="nc">&nbsp;            announcementDTO.setId(announcement.getId());</b>
+<b class="nc">&nbsp;            announcementDTO.setContent(announcement.getContent());</b>
+<b class="nc">&nbsp;            announcementDTO.setTimestamp(announcement.getTimestamp());</b>
+<b class="nc">&nbsp;            announcementDTO.setScheduleId(announcement.getSchedule().getId());</b>
+<b class="nc">&nbsp;            announcementDTO.setFacultyNetId(announcement.getFaculty().getUser().getNetId());</b>
+&nbsp;
+<b class="nc">&nbsp;            announcementDTOList.add(announcementDTO);</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        // Create a wrapper object to indicate the type of message
+<b class="nc">&nbsp;        Map&lt;String, Object&gt; historyMessage = new HashMap&lt;&gt;();</b>
+<b class="nc">&nbsp;        historyMessage.put(&quot;action&quot;, &quot;history&quot;);</b>
+<b class="nc">&nbsp;        historyMessage.put(&quot;announcements&quot;, announcementDTOList);</b>
+&nbsp;
+&nbsp;        // Serialize the history message to JSON
+&nbsp;        String historyJson;
+&nbsp;        try {
+<b class="nc">&nbsp;            historyJson = objectMapper.writeValueAsString(historyMessage);</b>
+<b class="nc">&nbsp;        } catch (Exception e) {</b>
+<b class="nc">&nbsp;            logger.error(&quot;Failed to serialize history message: {}&quot;, e.getMessage());</b>
+&nbsp;            return; // Exit the method if serialization fails
+&nbsp;        }
+&nbsp;
+&nbsp;        // Send the single history message to the student
+<b class="nc">&nbsp;        sendMessage(session, historyJson);</b>
+<b class="nc">&nbsp;        logger.info(&quot;Historical announcements sent to student {}.&quot;, user.getNetId());</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-12-04 23:26</div>
+</div>
+</body>
+</html>

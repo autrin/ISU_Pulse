@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CourseDetailFragment.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=0;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">debug</a> &gt; <a href="index.source.html" class="el_package">com.coms309.isu_pulse_frontend.ui.courses</a> &gt; <span class="el_source">CourseDetailFragment.java</span></div><h1>CourseDetailFragment.java</h1><pre class="source lang-java linenums">package com.coms309.isu_pulse_frontend.ui.courses;
+
+import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
+
+import com.coms309.isu_pulse_frontend.R;
+import com.coms309.isu_pulse_frontend.databinding.FragmentCourseDetailBinding;
+import com.coms309.isu_pulse_frontend.loginsignup.UserSession;
+import com.coms309.isu_pulse_frontend.ui.announcements.AnnouncementsFragment;
+import com.coms309.isu_pulse_frontend.ui.announcements.TeacherAnnouncementsFragment;
+
+<span class="nc" id="L22">public class CourseDetailFragment extends Fragment {</span>
+
+    private FragmentCourseDetailBinding binding;
+    private long courseId;
+    private static final String TAG = &quot;CourseDetailFragment&quot;;
+<span class="nc" id="L27">    private long scheduleId = 7L; // hardcoded schedule ID for testing</span>
+
+    public static CourseDetailFragment newInstance(long courseId) {
+<span class="nc" id="L30">        courseId = 2L; // hardcoded course ID for testing</span>
+<span class="nc" id="L31">        CourseDetailFragment fragment = new CourseDetailFragment();</span>
+<span class="nc" id="L32">        Bundle args = new Bundle();</span>
+<span class="nc" id="L33">        args.putLong(&quot;courseId&quot;, courseId);</span>
+<span class="nc" id="L34">        fragment.setArguments(args);</span>
+<span class="nc" id="L35">        return fragment;</span>
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+<span class="nc" id="L41">        binding = FragmentCourseDetailBinding.inflate(inflater, container, false);</span>
+<span class="nc" id="L42">        View root = binding.getRoot();</span>
+
+<span class="nc bnc" id="L44" title="All 2 branches missed.">        if (getArguments() != null) {</span>
+//            courseId = getArguments().getLong(&quot;courseId&quot;, -1);
+//            binding.courseTitle.setText(&quot;Course ID: &quot; + courseId);
+<span class="nc" id="L47">            scheduleId = getArguments().getLong(&quot;scheduleId&quot;, 7L); // hardcoded schedule ID for testing</span>
+<span class="nc" id="L48">            binding.courseTitle.setText(&quot;Schedule ID: &quot; + scheduleId); // Display schedule ID for reference</span>
+            // Load announcements for this schedule
+//            loadAnnouncementsForSchedule(scheduleId);
+        }
+
+<span class="nc bnc" id="L53" title="All 2 branches missed.">        if (scheduleId == -1) {</span>
+<span class="nc" id="L54">            Log.e(TAG, &quot;Invalid scheduleId received&quot;);</span>
+<span class="nc" id="L55">            Toast.makeText(getContext(), &quot;Error: Invalid schedule ID&quot;, Toast.LENGTH_SHORT).show();</span>
+<span class="nc" id="L56">            return root;</span>
+        }
+<span class="nc" id="L58">        binding.courseTitle.setText(&quot;Schedule ID: &quot; + scheduleId); // Display schedule ID for reference</span>
+
+        // Setup Dropdown (Spinner) listener
+<span class="nc" id="L61">        binding.courseDetailDropdown.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {</span>
+            @Override
+            public void onItemSelected(AdapterView&lt;?&gt; parent, View view, int position, long id) {
+<span class="nc bnc" id="L64" title="All 3 branches missed.">                switch (position) {</span>
+                    case 0:
+                        // Show Announcements Fragment
+<span class="nc" id="L67">                        showAnnouncementsFragment();</span>
+<span class="nc" id="L68">                        break;</span>
+                    case 1:
+                        // Placeholder for People Fragment (not implemented yet)
+                        // Uncomment the line below once PeopleFragment is implemented
+                        // showPeopleFragment();
+<span class="nc" id="L73">                        break;</span>
+                    case 2:
+                        // Placeholder for Tasks Fragment (not implemented yet)
+                        // Uncomment the line below once TasksFragment is implemented
+                        // showTasksFragment();
+                        break;
+                }
+<span class="nc" id="L80">            }</span>
+
+            @Override
+            public void onNothingSelected(AdapterView&lt;?&gt; parent) {
+<span class="nc" id="L84">            }</span>
+        });
+
+<span class="nc" id="L87">        return root;</span>
+    }
+
+    @Override
+    public void onDestroyView() {
+<span class="nc" id="L92">        super.onDestroyView();</span>
+<span class="nc" id="L93">        binding = null;</span>
+<span class="nc" id="L94">    }</span>
+
+    private void showAnnouncementsFragment() {
+        Fragment fragment;
+<span class="nc" id="L98">        String userRole = UserSession.getInstance(getContext()).getUserType();</span>
+
+        // Decide which fragment to show based on user type
+<span class="nc bnc" id="L101" title="All 2 branches missed.">        if (&quot;FACULTY&quot;.equals(userRole)) {</span>
+<span class="nc" id="L102">            Toast.makeText(getContext(), &quot;Showing Teacher Announcements Fragment&quot;, Toast.LENGTH_SHORT).show();</span>
+<span class="nc" id="L103">            Log.d(TAG, &quot;Showing Teacher Announcements Fragment. User Role: &quot; + userRole);</span>
+<span class="nc" id="L104">            fragment = TeacherAnnouncementsFragment.newInstance(scheduleId); // Ensure courseId is set correctly</span>
+        } else {
+<span class="nc" id="L106">            fragment = AnnouncementsFragment.newInstance(scheduleId);</span>
+        }
+
+        // Replace the content with the selected fragment
+<span class="nc" id="L110">        getChildFragmentManager().beginTransaction()</span>
+<span class="nc" id="L111">                .replace(R.id.courseDetailContent, fragment)</span>
+<span class="nc" id="L112">                .commit();</span>
+<span class="nc" id="L113">    }</span>
+
+    // Utility method to replace the current fragment in the container
+    private void replaceFragment(Fragment fragment) {
+<span class="nc" id="L117">        FragmentTransaction transaction = getChildFragmentManager().beginTransaction();</span>
+<span class="nc" id="L118">        transaction.replace(binding.courseDetailContent.getId(), fragment);</span>
+<span class="nc" id="L119">        transaction.addToBackStack(null); // Optional: adds the transaction to the back stack</span>
+<span class="nc" id="L120">        transaction.commit();</span>
+<span class="nc" id="L121">    }</span>
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span>Generated by the Android Gradle plugin 8.6.0</div></body></html>

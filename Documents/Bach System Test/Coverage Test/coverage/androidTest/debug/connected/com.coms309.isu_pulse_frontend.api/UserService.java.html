@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UserService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=0;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">debug</a> &gt; <a href="index.source.html" class="el_package">com.coms309.isu_pulse_frontend.api</a> &gt; <span class="el_source">UserService.java</span></div><h1>UserService.java</h1><pre class="source lang-java linenums">package com.coms309.isu_pulse_frontend.api;
+
+import static com.coms309.isu_pulse_frontend.api.Constants.BASE_URL;
+
+import android.content.Context;
+
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.Volley;
+import com.coms309.isu_pulse_frontend.loginsignup.User;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class UserService {
+
+    private final RequestQueue requestQueue;
+
+<span class="nc" id="L26">    public UserService(Context context) {</span>
+<span class="nc" id="L27">        requestQueue = Volley.newRequestQueue(context);</span>
+<span class="nc" id="L28">    }</span>
+
+    public void searchUsers(String name, final UserCallback callback) {
+<span class="nc" id="L31">        String url = BASE_URL + &quot;users/search?name=&quot; + name;</span>
+<span class="nc" id="L32">        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(</span>
+                Request.Method.GET, url, null,
+<span class="nc" id="L34">                new Response.Listener&lt;JSONArray&gt;() {</span>
+                    @Override
+                    public void onResponse(JSONArray response) {
+<span class="nc" id="L37">                        List&lt;User&gt; users = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L38" title="All 2 branches missed.">                        for (int i = 0; i &lt; response.length(); i++) {</span>
+                            try {
+<span class="nc" id="L40">                                JSONObject jsonMessage = response.getJSONObject(i);</span>
+<span class="nc" id="L41">                                User user = new User(</span>
+<span class="nc" id="L42">                                        jsonMessage.getString(&quot;netId&quot;),</span>
+<span class="nc" id="L43">                                        jsonMessage.getString(&quot;firstName&quot;),</span>
+<span class="nc" id="L44">                                        jsonMessage.getString(&quot;lastName&quot;),</span>
+<span class="nc" id="L45">                                        jsonMessage.getString(&quot;email&quot;),</span>
+<span class="nc" id="L46">                                        jsonMessage.getString(&quot;hashedPassword&quot;),</span>
+<span class="nc" id="L47">                                        jsonMessage.getString(&quot;profilePictureUrl&quot;),</span>
+<span class="nc" id="L48">                                        jsonMessage.getString(&quot;userType&quot;)</span>
+                                );
+<span class="nc" id="L50">                                users.add(user);</span>
+<span class="nc" id="L51">                            } catch (JSONException e) {</span>
+<span class="nc" id="L52">                                e.printStackTrace();</span>
+<span class="nc" id="L53">                                callback.onError(&quot;Error parsing chat history.&quot;);</span>
+<span class="nc" id="L54">                                return;</span>
+<span class="nc" id="L55">                            }</span>
+                        }
+<span class="nc" id="L57">                        callback.onSuccess(users);</span>
+<span class="nc" id="L58">                    }</span>
+                },
+<span class="nc" id="L60">                new Response.ErrorListener() {</span>
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+<span class="nc" id="L63">                        callback.onError(&quot;Error fetching chat history: &quot; + error.getMessage());</span>
+<span class="nc" id="L64">                    }</span>
+                }
+        );
+<span class="nc" id="L67">        requestQueue.add(jsonArrayRequest);</span>
+
+<span class="nc" id="L69">    }</span>
+
+    public interface UserCallback {
+        void onSuccess(List&lt;User&gt; users);
+        void onError(String message);
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span>Generated by the Android Gradle plugin 8.6.0</div></body></html>

@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EditTaskDialog.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=0;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">debug</a> &gt; <a href="index.source.html" class="el_package">com.coms309.isu_pulse_frontend.ui.home</a> &gt; <span class="el_source">EditTaskDialog.java</span></div><h1>EditTaskDialog.java</h1><pre class="source lang-java linenums">package com.coms309.isu_pulse_frontend.ui.home;
+
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
+
+import com.coms309.isu_pulse_frontend.R;
+import com.coms309.isu_pulse_frontend.adapters.TaskListAdapter;
+import com.coms309.isu_pulse_frontend.adapters.WeeklyCalendarAdapter;
+import com.coms309.isu_pulse_frontend.api.TaskApiService;
+import com.coms309.isu_pulse_frontend.model.PersonalTask;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
+/**
+ * A dialog fragment that allows users to edit task details such as title, description, and due date.
+ */
+public class EditTaskDialog extends DialogFragment {
+
+    private TaskApiService taskApiService;
+    private Object task;
+    private TaskListAdapter taskListAdapter;
+    private WeeklyCalendarAdapter weekCalendarAdapter;
+
+    /**
+     * Constructs an instance of {@link EditTaskDialog}.
+     *
+     * @param taskApiService      the API service for task-related operations
+     * @param task                the task to be edited (can be of type {@link PersonalTask} or other)
+     * @param taskListAdapter     the adapter for updating the task list view
+     * @param weekCalendarAdapter the adapter for updating the weekly calendar view
+     */
+<span class="nc" id="L43">    public EditTaskDialog(TaskApiService taskApiService, Object task, TaskListAdapter taskListAdapter, WeeklyCalendarAdapter weekCalendarAdapter) {</span>
+<span class="nc" id="L44">        this.taskApiService = taskApiService;</span>
+<span class="nc" id="L45">        this.task = task;</span>
+<span class="nc" id="L46">        this.taskListAdapter = taskListAdapter;</span>
+<span class="nc" id="L47">        this.weekCalendarAdapter = weekCalendarAdapter;</span>
+<span class="nc" id="L48">    }</span>
+
+    /**
+     * Inflates the layout for the dialog and initializes the view components.
+     *
+     * @param inflater  the {@link LayoutInflater} to use for inflating the layout
+     * @param container the parent {@link ViewGroup} into which the fragment's view is to be added
+     * @param savedInstanceState the saved instance state (if any)
+     * @return the root {@link View} of the inflated layout
+     */
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+<span class="nc" id="L61">        View view = inflater.inflate(R.layout.dialog_edit_task, container, false);</span>
+
+        // Initialize UI components
+<span class="nc" id="L64">        EditText editTextTitle = view.findViewById(R.id.editTextTitle);</span>
+<span class="nc" id="L65">        EditText editTextDescription = view.findViewById(R.id.editTextDescription);</span>
+<span class="nc" id="L66">        EditText editTextDueDate = view.findViewById(R.id.editTextDueDate);</span>
+<span class="nc" id="L67">        Button buttonSubmit = view.findViewById(R.id.buttonSubmit);</span>
+
+        // Populate fields if the task is of type PersonalTask
+<span class="nc bnc" id="L70" title="All 2 branches missed.">        if (task instanceof PersonalTask) {</span>
+<span class="nc" id="L71">            PersonalTask personalTask = (PersonalTask) task;</span>
+<span class="nc" id="L72">            editTextTitle.setText(personalTask.getTitle());</span>
+<span class="nc" id="L73">            editTextDescription.setText(personalTask.getDescription());</span>
+<span class="nc" id="L74">            editTextDueDate.setText(new SimpleDateFormat(&quot;yyyy-MM-dd&quot;, Locale.getDefault()).format(new Date(personalTask.getDueDate())));</span>
+        }
+
+        // Set up the submit button's click listener
+<span class="nc" id="L78">        buttonSubmit.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View v) {
+                // Get user input from the fields
+<span class="nc" id="L82">                String title = editTextTitle.getText().toString();</span>
+<span class="nc" id="L83">                String description = editTextDescription.getText().toString();</span>
+<span class="nc" id="L84">                String dueDateString = editTextDueDate.getText().toString();</span>
+<span class="nc" id="L85">                Long dueDateTimestamp = null;</span>
+
+                // Parse the due date input
+                try {
+<span class="nc" id="L89">                    dueDateTimestamp = new SimpleDateFormat(&quot;yyyy-MM-dd&quot;).parse(dueDateString).getTime();</span>
+<span class="nc" id="L90">                } catch (ParseException e) {</span>
+<span class="nc" id="L91">                    e.printStackTrace();</span>
+<span class="nc" id="L92">                }</span>
+
+                // Update the task if it is of type PersonalTask
+<span class="nc bnc" id="L95" title="All 2 branches missed.">                if (task instanceof PersonalTask) {</span>
+<span class="nc" id="L96">                    PersonalTask personalTask = (PersonalTask) task;</span>
+<span class="nc" id="L97">                    personalTask.setTitle(title);</span>
+<span class="nc" id="L98">                    personalTask.setDescription(description);</span>
+<span class="nc" id="L99">                    personalTask.setDueDate(dueDateTimestamp);</span>
+
+                    // Update the task via the API and refresh the adapters
+<span class="nc" id="L102">                    taskApiService.updatePersonalTask(personalTask);</span>
+<span class="nc" id="L103">                    taskListAdapter.notifyDataSetChanged();</span>
+<span class="nc" id="L104">                    weekCalendarAdapter.notifyDataSetChanged();</span>
+                }
+
+                // Dismiss the dialog
+<span class="nc" id="L108">                dismiss();</span>
+<span class="nc" id="L109">            }</span>
+        });
+
+<span class="nc" id="L112">        return view;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span>Generated by the Android Gradle plugin 8.6.0</div></body></html>

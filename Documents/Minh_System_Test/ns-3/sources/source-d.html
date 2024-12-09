@@ -1,0 +1,391 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > UserController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">coms309.backEnd.demo.controller</a>
+</div>
+
+<h1>Coverage Summary for Class: UserController (coms309.backEnd.demo.controller)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">UserController</td>
+<td class="coverageStat">
+  <span class="percent">
+    22.2%
+  </span>
+  <span class="absValue">
+    (2/9)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/16)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    7.6%
+  </span>
+  <span class="absValue">
+    (5/66)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">UserController$$SpringCGLIB$$0</td>
+  </tr>
+  <tr>
+    <td class="name">UserController$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/5)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    18.2%
+  </span>
+  <span class="absValue">
+    (2/11)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/18)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    7%
+  </span>
+  <span class="absValue">
+    (5/71)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package coms309.backEnd.demo.controller;
+&nbsp;
+&nbsp;import coms309.backEnd.demo.DTO.FacultyDTO;
+&nbsp;import coms309.backEnd.demo.entity.*;
+&nbsp;import coms309.backEnd.demo.repository.ChatMessageRepository;
+&nbsp;import coms309.backEnd.demo.repository.DepartmentRepository;
+&nbsp;import coms309.backEnd.demo.repository.FacultyRepository;
+&nbsp;import coms309.backEnd.demo.repository.UserRepository;
+&nbsp;import io.swagger.v3.oas.annotations.Operation;
+&nbsp;import io.swagger.v3.oas.annotations.Parameter;
+&nbsp;import io.swagger.v3.oas.annotations.media.Content;
+&nbsp;import io.swagger.v3.oas.annotations.media.Schema;
+&nbsp;import io.swagger.v3.oas.annotations.responses.ApiResponse;
+&nbsp;import io.swagger.v3.oas.annotations.responses.ApiResponses;
+&nbsp;import jakarta.transaction.Transactional;
+&nbsp;import lombok.extern.slf4j.Slf4j;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.http.HttpStatus;
+&nbsp;import org.springframework.http.ResponseEntity;
+&nbsp;import org.springframework.web.bind.annotation.*;
+&nbsp;
+&nbsp;import java.util.*;
+&nbsp;
+&nbsp;@RestController
+&nbsp;@RequestMapping(&quot;/users&quot;)
+<b class="fc">&nbsp;@Slf4j // Lombok annotation for logging</b>
+&nbsp;public class UserController {
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private final UserRepository userRepository;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private final DepartmentRepository departmentRepository;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private final ChatMessageRepository chatMessageRepository;
+&nbsp;
+<b class="fc">&nbsp;    public UserController(UserRepository userRepository, FacultyRepository facultyRepository, DepartmentRepository departmentRepository, ChatMessageRepository chatMessageRepository) {</b>
+<b class="fc">&nbsp;        this.userRepository = userRepository;</b>
+<b class="fc">&nbsp;        this.departmentRepository = departmentRepository;</b>
+<b class="fc">&nbsp;        this.chatMessageRepository = chatMessageRepository;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Fetches a user by their NetID.
+&nbsp;     *
+&nbsp;     * @param netId The NetID of the user to fetch.
+&nbsp;     * @return The User entity if found, or an error message if not.
+&nbsp;     */
+&nbsp;    @Operation(summary = &quot;Find a user by NetID&quot;, description = &quot;Retrieve user details using their unique NetID.&quot;)
+&nbsp;    @ApiResponses(value = {
+&nbsp;            @ApiResponse(responseCode = &quot;200&quot;, description = &quot;User found successfully&quot;,
+&nbsp;                    content = @Content(mediaType = &quot;application/json&quot;, schema = @Schema(implementation = User.class))),
+&nbsp;            @ApiResponse(responseCode = &quot;404&quot;, description = &quot;User not found&quot;,
+&nbsp;                    content = @Content)
+&nbsp;    })
+&nbsp;
+&nbsp;    @GetMapping(&quot;/{netId}&quot;)
+&nbsp;    public ResponseEntity&lt;User&gt; getUserByNetId(@Parameter(description = &quot;Unique NetID of the user&quot;) @PathVariable String netId) {
+<b class="nc">&nbsp;        Optional&lt;User&gt; userOptional = userRepository.findUserByNetId(netId);</b>
+<b class="nc">&nbsp;        if (!userOptional.isPresent())</b>
+<b class="nc">&nbsp;            return ResponseEntity.status(404).body(null);</b>
+<b class="nc">&nbsp;        User user = userOptional.get();</b>
+<b class="nc">&nbsp;        return ResponseEntity.status(200).body(user);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Registers a new student user.
+&nbsp;     *
+&nbsp;     * @param user The user details to register.
+&nbsp;     * @return Success or error message.
+&nbsp;     */
+&nbsp;    @Operation(summary = &quot;Register a new student&quot;, description = &quot;Registers a new student user in the system.&quot;)
+&nbsp;    @ApiResponses(value = {
+&nbsp;            @ApiResponse(responseCode = &quot;200&quot;, description = &quot;User registered successfully&quot;),
+&nbsp;            @ApiResponse(responseCode = &quot;400&quot;, description = &quot;User already exists&quot;)
+&nbsp;    })
+&nbsp;    @PostMapping
+&nbsp;    public ResponseEntity&lt;String&gt; registerNewStudent(@io.swagger.v3.oas.annotations.parameters.RequestBody(
+&nbsp;            description = &quot;The user object containing details like netId, name, email, and password for registration.&quot;,
+&nbsp;            content = @Content(schema = @Schema(implementation = User.class))
+&nbsp;    ) @RequestBody User user){
+<b class="nc">&nbsp;        Optional&lt;User&gt; userOptional = userRepository.findUserByNetId(user.getNetId());</b>
+<b class="nc">&nbsp;        if (userOptional.isPresent())</b>
+<b class="nc">&nbsp;            return ResponseEntity.status(400).body(&quot;NetID already exists.&quot;);</b>
+<b class="nc">&nbsp;        Faculty faculty = null;</b>
+&nbsp;
+<b class="nc">&nbsp;        Profile profile = new Profile();</b>
+<b class="nc">&nbsp;        user.setProfile(profile);</b>
+<b class="nc">&nbsp;        profile.setUser(user);</b>
+&nbsp;
+&nbsp;        // Save user (will cascade and save profile as well)
+<b class="nc">&nbsp;        userRepository.save(user);</b>
+&nbsp;
+<b class="nc">&nbsp;        return ResponseEntity.status(200).body(&quot;User is successfully registered.&quot;);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Operation(summary = &quot;Register a new faculty&quot;, description = &quot;Registers a new faculty user in the system.&quot;)
+&nbsp;    @ApiResponses(value = {
+&nbsp;            @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Faculty signup successful&quot;),
+&nbsp;            @ApiResponse(responseCode = &quot;400&quot;, description = &quot;User with this NetID already exists&quot;)
+&nbsp;    })
+&nbsp;    @PostMapping(&quot;/faculty&quot;)
+&nbsp;    public ResponseEntity&lt;Map&lt;String, String&gt;&gt; signupFaculty(@io.swagger.v3.oas.annotations.parameters.RequestBody(
+&nbsp;            description = &quot;Faculty details for signup&quot;,
+&nbsp;            required = true,
+&nbsp;            content = @Content(schema = @Schema(implementation = FacultyDTO.class))) @RequestBody FacultyDTO facultyDTO) {
+<b class="nc">&nbsp;        Map&lt;String, String&gt; response = new HashMap&lt;&gt;();</b>
+&nbsp;
+&nbsp;        // Check if user already exists by netId
+<b class="nc">&nbsp;        if (userRepository.existsByNetId(facultyDTO.getNetId())) {</b>
+<b class="nc">&nbsp;            response.put(&quot;message&quot;, &quot;User with this NetId already exists.&quot;);</b>
+<b class="nc">&nbsp;            return ResponseEntity.badRequest().body(response);</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        // Create new User entity
+<b class="nc">&nbsp;        User user = new User(</b>
+<b class="nc">&nbsp;                facultyDTO.getNetId(),</b>
+<b class="nc">&nbsp;                facultyDTO.getFirstName(),</b>
+<b class="nc">&nbsp;                facultyDTO.getLastName(),</b>
+<b class="nc">&nbsp;                facultyDTO.getEmail(),</b>
+<b class="nc">&nbsp;                facultyDTO.getHashedPassword(),  // Assuming password is already hashed</b>
+&nbsp;                UserType.FACULTY
+&nbsp;        );
+&nbsp;
+<b class="nc">&nbsp;        user.setProfilePictureUrl(facultyDTO.getProfilePictureUrl());</b>
+&nbsp;
+<b class="nc">&nbsp;        Profile profile = new Profile();</b>
+<b class="nc">&nbsp;        user.setProfile(profile);</b>
+<b class="nc">&nbsp;        profile.setUser(user);</b>
+&nbsp;
+&nbsp;        // Retrieve the Department by ID and create Faculty entity
+<b class="nc">&nbsp;        Department department = departmentRepository.findByName(facultyDTO.getDepartment())</b>
+<b class="nc">&nbsp;                .orElseThrow(() -&gt; new IllegalStateException(&quot;Department does not exist&quot;));</b>
+&nbsp;
+<b class="nc">&nbsp;        Faculty faculty = new Faculty(facultyDTO.getTitle(), user, department);</b>
+<b class="nc">&nbsp;        user.setFaculty(faculty);  // Set the faculty for bidirectional relationship</b>
+&nbsp;
+&nbsp;        // Save both User and Faculty
+<b class="nc">&nbsp;        userRepository.save(user);  // Cascade will save Faculty</b>
+&nbsp;
+<b class="nc">&nbsp;        response.put(&quot;message&quot;, &quot;Faculty signup successful.&quot;);</b>
+<b class="nc">&nbsp;        return ResponseEntity.ok(response);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    @Operation(summary = &quot;Update user password&quot;, description = &quot;Allows a user to update their password.&quot;)
+&nbsp;    @ApiResponses(value = {
+&nbsp;            @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Password updated successfully&quot;),
+&nbsp;            @ApiResponse(responseCode = &quot;400&quot;, description = &quot;Invalid request or password is unchanged&quot;)
+&nbsp;    })
+&nbsp;    @Transactional
+&nbsp;    @PutMapping(path = &quot;updatepw/{netId}&quot;)
+&nbsp;    public ResponseEntity&lt;String&gt; updateUserPassword(@Parameter(description = &quot;NetID of the user&quot;, required = true) @PathVariable String netId,
+&nbsp;                                                     @RequestParam(required = true) String newPassword) {
+<b class="nc">&nbsp;        Optional&lt;User&gt; userOptional = userRepository.findUserByNetId(netId);</b>
+<b class="nc">&nbsp;        if (!userOptional.isPresent())</b>
+<b class="nc">&nbsp;            return ResponseEntity.status(400).body(&quot;User does not exist.&quot;);</b>
+<b class="nc">&nbsp;        User user = userOptional.get();</b>
+<b class="nc">&nbsp;        if (user.getHashedPassword().equals(newPassword))</b>
+<b class="nc">&nbsp;            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(&quot;New password must be different from the old password.&quot;);</b>
+<b class="nc">&nbsp;        user.setHashedPassword(newPassword);</b>
+<b class="nc">&nbsp;        return ResponseEntity.status(200).body(&quot;User &quot; + user.getNetId() + &quot; has successfully changed password.&quot;);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Operation(summary = &quot;Delete user account&quot;, description = &quot;Deletes a user account from the system.&quot;)
+&nbsp;    @ApiResponses(value = {
+&nbsp;            @ApiResponse(responseCode = &quot;200&quot;, description = &quot;User deleted successfully&quot;),
+&nbsp;            @ApiResponse(responseCode = &quot;404&quot;, description = &quot;User not found&quot;)
+&nbsp;    })
+&nbsp;    @Transactional
+&nbsp;    @DeleteMapping(path = &quot;/{netId}&quot;)
+&nbsp;    public ResponseEntity&lt;String&gt; deleteUserAccount(@Parameter(description = &quot;NetID of the user to delete&quot;, required = true) @PathVariable String netId) {
+<b class="nc">&nbsp;        Optional&lt;User&gt; userOptional = userRepository.findUserByNetId(netId);</b>
+&nbsp;
+<b class="nc">&nbsp;        if (!userOptional.isPresent()) {</b>
+<b class="nc">&nbsp;            return ResponseEntity.status(HttpStatus.NOT_FOUND)</b>
+<b class="nc">&nbsp;                    .body(&quot;User with NetID &quot; + netId + &quot; not found.&quot;);</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        User user = userOptional.get();</b>
+&nbsp;
+&nbsp;        // Delete the user; associated entities will be deleted due to cascade settings
+<b class="nc">&nbsp;        userRepository.delete(user);</b>
+&nbsp;
+<b class="nc">&nbsp;        return ResponseEntity.status(HttpStatus.OK)</b>
+<b class="nc">&nbsp;                .body(&quot;User with NetID &quot; + netId + &quot; has been deleted successfully.&quot;);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Operation(summary = &quot;Retrieve all students&quot;, description = &quot;Fetches a list of all student users.&quot;)
+&nbsp;    @ApiResponses(value = {
+&nbsp;            @ApiResponse(responseCode = &quot;200&quot;, description = &quot;List of all students retrieved&quot;)
+&nbsp;    })
+&nbsp;    @GetMapping(&quot;/allStudents&quot;)
+&nbsp;    public ResponseEntity&lt;List&lt;User&gt;&gt; getAllStudents(){
+<b class="nc">&nbsp;        Optional&lt;List&lt;User&gt;&gt; allStudents = userRepository.findAllUserByUserType(UserType.STUDENT);</b>
+<b class="nc">&nbsp;        if(allStudents.isEmpty()){</b>
+<b class="nc">&nbsp;            return  ResponseEntity.internalServerError().build();</b>
+&nbsp;        }
+<b class="nc">&nbsp;        List&lt;User&gt; listOfAllStudent = allStudents.get();</b>
+<b class="nc">&nbsp;        listOfAllStudent.sort(new Comparator&lt;User&gt;() {</b>
+&nbsp;            @Override
+&nbsp;            public int compare(User user1, User user2) {
+<b class="nc">&nbsp;                int firstNameComparison = user1.getFirstName().compareToIgnoreCase(user2.getFirstName());</b>
+<b class="nc">&nbsp;                if (firstNameComparison != 0) {</b>
+<b class="nc">&nbsp;                    return firstNameComparison;</b>
+&nbsp;                } else{
+<b class="nc">&nbsp;                    return user1.getLastName().compareToIgnoreCase(user2.getLastName());</b>
+&nbsp;                }
+&nbsp;            }
+&nbsp;        });
+<b class="nc">&nbsp;        return ResponseEntity.ok(listOfAllStudent);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Operation(summary = &quot;Search user by name&quot;, description = &quot;Searches for users by their first or last name.&quot;)
+&nbsp;    @ApiResponses(value = {
+&nbsp;            @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Users matching the search criteria found&quot;),
+&nbsp;            @ApiResponse(responseCode = &quot;404&quot;, description = &quot;No users found matching the search criteria&quot;)
+&nbsp;    })
+&nbsp;    @GetMapping(&quot;/search&quot;)
+&nbsp;    public ResponseEntity&lt;List&lt;User&gt;&gt; searchUserByName(@Parameter(description = &quot;Name to search by&quot;, required = true) @RequestParam String name) {
+<b class="nc">&nbsp;        List&lt;User&gt; users = userRepository.findByFirstNameOrLastNameIgnoreCase(name);</b>
+<b class="nc">&nbsp;        if(users.isEmpty()){</b>
+<b class="nc">&nbsp;            return ResponseEntity.notFound().build();</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return ResponseEntity.ok(users);</b>
+&nbsp;    }
+&nbsp;}
+&nbsp;
+&nbsp;
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-12-04 23:26</div>
+</div>
+</body>
+</html>

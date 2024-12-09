@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
     <uses-feature
         android:name="android.hardware.camera"
-        android:required="false" />
+        android:required="true" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
@@ -43,6 +43,15 @@
             android:exported="false" />
         <activity
             android:name=".chat_system.ChatActivity"
+            android:exported="false" />
+        <activity
+            android:name=".chat_system.GroupChatActivity"
+            android:exported="false" />
+        <activity
+            android:name=".chat_system.GroupChatCreating"
+            android:exported="false" />
+        <activity
+            android:name=".chat_system.GroupChatAddingMember"
             android:exported="false" />
         <activity
             android:name=".profile_activity.EditProfileActivity"

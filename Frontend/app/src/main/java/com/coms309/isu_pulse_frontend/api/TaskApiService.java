@@ -12,6 +12,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.coms309.isu_pulse_frontend.loginsignup.UserSession;
 import com.coms309.isu_pulse_frontend.model.CourseTask;
@@ -130,7 +131,7 @@ public class TaskApiService {
     }
 
 //    public void getLastPersonalTask(final TaskResponseListener listener) {
-//        String url = BASE_URL + "/personalTask/getLastPersonalTaskID/" + netId;
+//        String url = BASE_URL + "personalTask/getLastPersonalTaskID/" + netId;
 //        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null,
 //                new Response.Listener<JSONObject>() {
 //                    @Override
@@ -159,30 +160,36 @@ public class TaskApiService {
 //    }
 
     public void createPersonalTask(PersonalTask task) {
+        // Ensure task properties are non-null
+        if (task.getTitle() == null || task.getDescription() == null || task.getDueDate() == null) {
+            Log.e("API Error", "Task properties cannot be null");
+            return;
+        }
         // Construct the URL with netId, title, description, and dueDateTimestamp
-        String url = BASE_URL + "/personalTask/addPersonalTask/" + netId +
+        String url = BASE_URL + "personalTask/addPersonalTask/" + netId +
                 "?title=" + task.getTitle() +
                 "&description=" + task.getDescription() +
                 "&dueDateTimestamp=" + task.getDueDate();
 
         // Create the new task
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, null,
-                new Response.Listener<JSONObject>() {
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
+                new Response.Listener<String>() {
                     @Override
-                    public void onResponse(JSONObject response) {
-                        Log.d("Response: ", response.toString());
+                    public void onResponse(String response) {
+                        Log.d("Response: ", response);
+                        Toast.makeText(context, "Task created successfully", Toast.LENGTH_SHORT).show();
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        String errorMessage = error.getMessage() != null ? error.getMessage() : "Unknown error";
+                        String errorMessage = error.getMessage() != null ? error.getMessage() : "Unknown error in CreatePersonalTask()";
                         Log.e("API Error", errorMessage);
                     }
                 });
 
         // Add the request to the request queue
-        requestQueue.add(jsonObjectRequest);
+        requestQueue.add(stringRequest);
     }
 
     public void updatePersonalTask(PersonalTask task) {
@@ -191,7 +198,7 @@ public class TaskApiService {
             return;
         }
 
-        String url = BASE_URL + "/personalTask/updatePersonalTask/" + netId +
+        String url = BASE_URL + "personalTask/updatePersonalTask/" + netId +
                 "?taskId=" + task.getId() +
                 "&title=" + task.getTitle() +
                 "&description=" + task.getDescription() +
@@ -217,7 +224,7 @@ public class TaskApiService {
 
 
     public void deletePersonalTask(PersonalTask task, final TaskResponseListener listener) {
-        String url = BASE_URL + "/personalTask/deletePersonalTask/" + netId + "?taskId=" + task.getId();
+        String url = BASE_URL + "personalTask/deletePersonalTask/" + netId + "?taskId=" + task.getId();
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.DELETE, url, null,
                 new Response.Listener<JSONObject>() {
@@ -239,7 +246,7 @@ public class TaskApiService {
     }
 
     public void deleteCourseTask(CourseTask task, final TaskResponseListener listener) {
-        String url = BASE_URL + "/deleteCourseTask/" + netId + "/" + task.getId();
+        String url = BASE_URL + "deleteCourseTask/" + netId + "/" + task.getId();
         JSONObject body = new JSONObject();
         try {
             body.put("title", task.getTitle());

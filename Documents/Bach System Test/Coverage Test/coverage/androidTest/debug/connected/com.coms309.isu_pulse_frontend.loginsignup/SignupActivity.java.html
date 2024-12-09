@@ -1,0 +1,332 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SignupActivity.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=0;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">debug</a> &gt; <a href="index.source.html" class="el_package">com.coms309.isu_pulse_frontend.loginsignup</a> &gt; <span class="el_source">SignupActivity.java</span></div><h1>SignupActivity.java</h1><pre class="source lang-java linenums">package com.coms309.isu_pulse_frontend.loginsignup;
+
+import static android.content.ContentValues.TAG;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
+
+import android.content.ContentResolver;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.util.Log;
+import android.webkit.MimeTypeMap;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.coms309.isu_pulse_frontend.R;
+import com.coms309.isu_pulse_frontend.api.AuthenticationService;
+import com.coms309.isu_pulse_frontend.profile_activity.ProfileActivity;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GetTokenResult;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
+<span class="nc" id="L47">public class SignupActivity extends AppCompatActivity {</span>
+    private static EditText netId, firstname, lastname, email, password, retypepassword;
+    private TextView enter, signin;
+    private Spinner usertype;
+    private ImageView profileImage;
+    private Button uploadImageButton;
+    private Uri imageUri;
+    private FirebaseAuth mAuth;
+
+    private StorageReference storageReference;
+
+    private static final int REQUEST_IMAGE_CAPTURE = 1;
+    private static final int REQUEST_IMAGE_PICK = 2;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+<span class="nc" id="L63">        super.onCreate(savedInstanceState);</span>
+<span class="nc" id="L64">        setContentView(R.layout.sign_up);</span>
+
+<span class="nc" id="L66">        FirebaseApp.initializeApp(this);</span>
+<span class="nc" id="L67">        storageReference = FirebaseStorage.getInstance().getReference();</span>
+
+<span class="nc" id="L69">        mAuth = FirebaseAuth.getInstance();</span>
+
+<span class="nc" id="L71">        signInAnonymously();</span>
+
+<span class="nc" id="L73">        firstname = findViewById(R.id.firstname_isu_pulse);</span>
+<span class="nc" id="L74">        lastname = findViewById(R.id.lastname_isu_pulse);</span>
+<span class="nc" id="L75">        email = findViewById(R.id.email_isu_pulse);</span>
+<span class="nc" id="L76">        netId = findViewById(R.id.netid_isu_pulse);</span>
+<span class="nc" id="L77">        password = findViewById(R.id.password_isu_pulse);</span>
+<span class="nc" id="L78">        retypepassword = findViewById(R.id.confirm_password_isu_pulse);</span>
+<span class="nc" id="L79">        enter = findViewById(R.id.enter_isu_pulse);</span>
+<span class="nc" id="L80">        signin = findViewById(R.id.sign_in_isu_pulse);</span>
+<span class="nc" id="L81">        usertype = findViewById(R.id.usertype_isu_pulse);</span>
+<span class="nc" id="L82">        profileImage = findViewById(R.id.profile_image);</span>
+<span class="nc" id="L83">        uploadImageButton = findViewById(R.id.upload_image_button);</span>
+
+<span class="nc" id="L85">        ArrayAdapter&lt;CharSequence&gt; adapter = ArrayAdapter.createFromResource(this, R.array.user_roles, android.R.layout.simple_spinner_item);</span>
+<span class="nc" id="L86">        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);</span>
+<span class="nc" id="L87">        usertype.setAdapter(adapter);</span>
+
+<span class="nc" id="L89">        uploadImageButton.setOnClickListener(v -&gt; showImagePickerOptions());</span>
+
+<span class="nc" id="L91">        enter.setOnClickListener(view -&gt; {</span>
+<span class="nc" id="L92">            AuthenticationService apiService = new AuthenticationService();</span>
+<span class="nc" id="L93">            String firstNameInput = firstname.getText().toString();</span>
+<span class="nc" id="L94">            String lastNameInput = lastname.getText().toString();</span>
+<span class="nc" id="L95">            String emailInput = email.getText().toString();</span>
+<span class="nc" id="L96">            String netIdInput = netId.getText().toString().replaceAll(&quot;[^a-zA-Z0-9]&quot;, &quot;&quot;); // Sanitize netIdInput to remove invalid characters</span>
+<span class="nc" id="L97">            String passwordInput = password.getText().toString();</span>
+<span class="nc" id="L98">            String hashedPassword = PasswordHasher.hashPassword(passwordInput);</span>
+<span class="nc" id="L99">            String retypePasswordInput = retypepassword.getText().toString();</span>
+
+<span class="nc bnc" id="L101" title="All 12 branches missed.">            if (firstNameInput.isEmpty() || lastNameInput.isEmpty() || emailInput.isEmpty() || netIdInput.isEmpty() || passwordInput.isEmpty() || retypePasswordInput.isEmpty()) {</span>
+<span class="nc" id="L102">                Toast.makeText(SignupActivity.this, &quot;Please enter all fields&quot;, Toast.LENGTH_SHORT).show();</span>
+<span class="nc bnc" id="L103" title="All 2 branches missed.">            } else if (passwordInput.length() &lt; 8) {</span>
+<span class="nc" id="L104">                Toast.makeText(SignupActivity.this, &quot;Password must be at least 8 characters&quot;, Toast.LENGTH_SHORT).show();</span>
+<span class="nc bnc" id="L105" title="All 2 branches missed.">            } else if (!passwordInput.equals(retypePasswordInput)) {</span>
+<span class="nc" id="L106">                Toast.makeText(SignupActivity.this, &quot;Passwords do not match&quot;, Toast.LENGTH_SHORT).show();</span>
+<span class="nc bnc" id="L107" title="All 2 branches missed.">            } else if (imageUri == null) {</span>
+                // Pass netIdInput directly to the API and UserSession without additional variables
+<span class="nc" id="L109">                apiService.registerNewUser(</span>
+                        netIdInput,
+                        firstNameInput,
+                        lastNameInput,
+                        emailInput,
+                        hashedPassword,
+                        null,
+<span class="nc" id="L116">                        usertype.getSelectedItem().toString(),</span>
+                        SignupActivity.this,
+<span class="nc" id="L118">                        new AuthenticationService.VolleyCallback() {</span>
+                            @Override
+                            public void onSuccess(JSONObject result) {
+                                // Save netId using UserSession
+<span class="nc" id="L122">                                UserSession.getInstance(SignupActivity.this).setNetId(netIdInput, SignupActivity.this);</span>
+                                // Save user type using UserSession
+<span class="nc" id="L124">                                UserSession.getInstance(SignupActivity.this).setUserType(result.optString(&quot;userType&quot;), SignupActivity.this);</span>
+
+<span class="nc" id="L126">                                Toast.makeText(SignupActivity.this, &quot;Signup successful!&quot;, Toast.LENGTH_SHORT).show();</span>
+<span class="nc" id="L127">                                startActivity(new Intent(SignupActivity.this, ProfileActivity.class));</span>
+<span class="nc" id="L128">                            }</span>
+
+                            @Override
+                            public void onError(String message) {
+<span class="nc" id="L132">                                Toast.makeText(SignupActivity.this, &quot;Signup failed: &quot; + message, Toast.LENGTH_SHORT).show();</span>
+<span class="nc" id="L133">                            }</span>
+                        }
+                );
+            } else {
+                // Use netIdInput directly in uploadImageToFirebase and API calls
+<span class="nc" id="L138">                uploadImageToFirebase(netIdInput, (downloadUrl) -&gt; {</span>
+<span class="nc bnc" id="L139" title="All 2 branches missed.">                    if (downloadUrl != null) {</span>
+                        // Proceed with signup using the download URL
+<span class="nc" id="L141">                        apiService.registerNewUser(</span>
+                                netIdInput,
+                                firstNameInput,
+                                lastNameInput,
+                                emailInput,
+                                hashedPassword,
+                                downloadUrl,
+<span class="nc" id="L148">                                usertype.getSelectedItem().toString(),</span>
+                                SignupActivity.this,
+<span class="nc" id="L150">                                new AuthenticationService.VolleyCallback() {</span>
+                                    @Override
+                                    public void onSuccess(JSONObject result) {
+                                        try {
+                                            // Save netId using UserSession
+<span class="nc" id="L155">                                            UserSession.getInstance(SignupActivity.this).setNetId(netIdInput, SignupActivity.this);</span>
+                                            // Save user type using UserSession
+<span class="nc" id="L157">                                            UserSession.getInstance(SignupActivity.this).setUserType(result.getString(&quot;userType&quot;), SignupActivity.this);</span>
+
+<span class="nc" id="L159">                                            Toast.makeText(SignupActivity.this, &quot;Signup successful!&quot;, Toast.LENGTH_SHORT).show();</span>
+<span class="nc" id="L160">                                            startActivity(new Intent(SignupActivity.this, ProfileActivity.class));</span>
+<span class="nc" id="L161">                                        } catch (JSONException e) {</span>
+<span class="nc" id="L162">                                            e.printStackTrace();</span>
+<span class="nc" id="L163">                                            Toast.makeText(SignupActivity.this, &quot;Error parsing response in onSuccess in SignupActivity&quot;, Toast.LENGTH_SHORT).show();</span>
+<span class="nc" id="L164">                                        }</span>
+<span class="nc" id="L165">                                    }</span>
+
+                                    @Override
+                                    public void onError(String message) {
+<span class="nc" id="L169">                                        Toast.makeText(SignupActivity.this, &quot;Signup failed: &quot; + message, Toast.LENGTH_SHORT).show();</span>
+<span class="nc" id="L170">                                    }</span>
+                                }
+                        );
+                    } else {
+<span class="nc" id="L174">                        Toast.makeText(SignupActivity.this, &quot;Failed to get download URL&quot;, Toast.LENGTH_SHORT).show();</span>
+                    }
+<span class="nc" id="L176">                });</span>
+            }
+<span class="nc" id="L178">        });</span>
+
+<span class="nc" id="L180">        signin.setOnClickListener(view -&gt; {</span>
+<span class="nc" id="L181">            Intent intent = new Intent(SignupActivity.this, LoginActivity.class);</span>
+<span class="nc" id="L182">            startActivity(intent);</span>
+<span class="nc" id="L183">        });</span>
+
+
+<span class="nc" id="L186">    }</span>
+
+    private void signInAnonymously() {
+<span class="nc" id="L189">        mAuth.signInAnonymously()</span>
+<span class="nc" id="L190">                .addOnCompleteListener(this, new OnCompleteListener&lt;AuthResult&gt;() {</span>
+                    @Override
+                    public void onComplete(@NonNull Task&lt;AuthResult&gt; task) {
+<span class="nc bnc" id="L193" title="All 2 branches missed.">                        if (task.isSuccessful()) {</span>
+                            // Sign-in success
+<span class="nc" id="L195">                            Log.d(TAG, &quot;signInAnonymously:success&quot;);</span>
+<span class="nc" id="L196">                            FirebaseUser user = mAuth.getCurrentUser();</span>
+                            // You can now get the token
+<span class="nc" id="L198">                            getToken();</span>
+<span class="nc" id="L199">                        } else {</span>
+                            // If sign-in fails, display a message to the user.
+<span class="nc" id="L201">                            Log.w(TAG, &quot;signInAnonymously:failure&quot;, task.getException());</span>
+<span class="nc" id="L202">                            Toast.makeText(SignupActivity.this, &quot;Authentication failed.&quot;,</span>
+<span class="nc" id="L203">                                    Toast.LENGTH_SHORT).show();</span>
+                        }
+<span class="nc" id="L205">                    }</span>
+                });
+<span class="nc" id="L207">    }</span>
+
+    private void getToken() {
+<span class="nc" id="L210">        FirebaseUser user = mAuth.getCurrentUser();</span>
+<span class="nc bnc" id="L211" title="All 2 branches missed.">        if (user != null) {</span>
+<span class="nc" id="L212">            user.getIdToken(/* forceRefresh */ true)</span>
+<span class="nc" id="L213">                    .addOnCompleteListener(new OnCompleteListener&lt;GetTokenResult&gt;() {</span>
+                        @Override
+                        public void onComplete(@NonNull Task&lt;GetTokenResult&gt; task) {
+<span class="nc bnc" id="L216" title="All 2 branches missed.">                            if (task.isSuccessful()) {</span>
+                                // Get new ID token
+<span class="nc" id="L218">                                String idToken = task.getResult().getToken();</span>
+                                // Send token to your backend via HTTPS
+                                // ...
+<span class="nc" id="L221">                                Log.d(TAG, &quot;Token: &quot; + idToken);</span>
+<span class="nc" id="L222">                            } else {</span>
+                                // Handle error -&gt; task.getException();
+<span class="nc" id="L224">                                Log.w(TAG, &quot;getIdToken failed&quot;, task.getException());</span>
+                            }
+<span class="nc" id="L226">                        }</span>
+                    });
+        } else {
+<span class="nc" id="L229">            Log.w(TAG, &quot;User is not signed in&quot;);</span>
+        }
+<span class="nc" id="L231">    }</span>
+
+
+
+    private void showImagePickerOptions() {
+<span class="nc" id="L236">        String[] options = {&quot;Take Photo&quot;, &quot;Choose from Profile&quot;};</span>
+<span class="nc" id="L237">        androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(this);</span>
+<span class="nc" id="L238">        builder.setTitle(&quot;Choose your profile picture&quot;);</span>
+<span class="nc" id="L239">        builder.setItems(options, (dialog, which) -&gt; {</span>
+<span class="nc bnc" id="L240" title="All 2 branches missed.">            if (which == 0) {</span>
+<span class="nc" id="L241">                dispatchTakePictureIntent();</span>
+<span class="nc bnc" id="L242" title="All 2 branches missed.">            } else if (which == 1) {</span>
+<span class="nc" id="L243">                pickImageFromProfile();</span>
+            }
+<span class="nc" id="L245">        });</span>
+<span class="nc" id="L246">        builder.show();</span>
+<span class="nc" id="L247">    }</span>
+
+    private void dispatchTakePictureIntent() {
+<span class="nc" id="L250">        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);</span>
+<span class="nc bnc" id="L251" title="All 2 branches missed.">        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {</span>
+<span class="nc" id="L252">            File photoFile = null;</span>
+            try {
+<span class="nc" id="L254">                photoFile = createImageFile();</span>
+<span class="nc" id="L255">            } catch (IOException ex) {</span>
+<span class="nc" id="L256">                Toast.makeText(this, &quot;Error occurred while creating the file&quot;, Toast.LENGTH_SHORT).show();</span>
+<span class="nc" id="L257">            }</span>
+<span class="nc bnc" id="L258" title="All 2 branches missed.">            if (photoFile != null) {</span>
+<span class="nc" id="L259">                imageUri = FileProvider.getUriForFile(this, &quot;com.coms309.isu_pulse_frontend.fileprovider&quot;, photoFile);</span>
+<span class="nc" id="L260">                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);</span>
+<span class="nc" id="L261">                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);</span>
+            }
+        }
+<span class="nc" id="L264">    }</span>
+
+    private void pickImageFromProfile() {
+<span class="nc" id="L267">        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);</span>
+<span class="nc" id="L268">        startActivityForResult(intent, REQUEST_IMAGE_PICK);</span>
+<span class="nc" id="L269">    }</span>
+
+    private File createImageFile() throws IOException {
+        // Create an image file name with a timestamp
+<span class="nc" id="L273">        String timeStamp = new SimpleDateFormat(&quot;yyyyMMdd_HHmmss&quot;, Locale.getDefault()).format(new Date());</span>
+<span class="nc" id="L274">        String imageFileName = &quot;JPEG_&quot; + timeStamp + &quot;_&quot;;</span>
+<span class="nc" id="L275">        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);</span>
+<span class="nc" id="L276">        return File.createTempFile(imageFileName, &quot;.jpg&quot;, storageDir);</span>
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+<span class="nc" id="L281">        super.onActivityResult(requestCode, resultCode, data);</span>
+
+<span class="nc bnc" id="L283" title="All 2 branches missed.">        if (resultCode == RESULT_OK) {</span>
+<span class="nc bnc" id="L284" title="All 2 branches missed.">            if (requestCode == REQUEST_IMAGE_CAPTURE) {</span>
+<span class="nc" id="L285">                profileImage.setImageURI(imageUri);</span>
+<span class="nc bnc" id="L286" title="All 4 branches missed.">            } else if (requestCode == REQUEST_IMAGE_PICK &amp;&amp; data != null) {</span>
+<span class="nc" id="L287">                imageUri = data.getData();</span>
+<span class="nc" id="L288">                profileImage.setImageURI(imageUri);</span>
+            }
+        }
+<span class="nc" id="L291">    }</span>
+
+    private void uploadImageToFirebase(String netIdInput, FirebaseUploadCallback callback) {
+<span class="nc bnc" id="L294" title="All 2 branches missed.">        if (imageUri != null) {</span>
+            // Sanitize netIdInput to remove any invalid characters
+<span class="nc" id="L296">            netIdInput = netIdInput.replaceAll(&quot;[^a-zA-Z0-9]&quot;, &quot;&quot;);</span>
+
+<span class="nc" id="L298">            StorageReference ref = storageReference.child(&quot;images/&quot; + netIdInput + &quot;.&quot; + &quot;jpg&quot;);</span>
+
+<span class="nc" id="L300">            ref.putFile(imageUri)</span>
+<span class="nc" id="L301">                    .addOnSuccessListener(taskSnapshot -&gt; {</span>
+                        // Retrieve the download URL directly from the taskSnapshot
+<span class="nc" id="L303">                        taskSnapshot.getStorage().getDownloadUrl()</span>
+<span class="nc" id="L304">                                .addOnSuccessListener(uri -&gt; {</span>
+<span class="nc" id="L305">                                    String downloadUrl = uri.toString();</span>
+<span class="nc" id="L306">                                    callback.onUploadSuccess(downloadUrl);</span>
+<span class="nc" id="L307">                                })</span>
+<span class="nc" id="L308">                                .addOnFailureListener(e -&gt; {</span>
+<span class="nc" id="L309">                                    Toast.makeText(SignupActivity.this, &quot;Failed to get download URL: &quot; + e.getMessage(), Toast.LENGTH_SHORT).show();</span>
+<span class="nc" id="L310">                                });</span>
+<span class="nc" id="L311">                    })</span>
+<span class="nc" id="L312">                    .addOnFailureListener(e -&gt; {</span>
+<span class="nc" id="L313">                        Toast.makeText(SignupActivity.this, &quot;Image upload failed: &quot; + e.getMessage(), Toast.LENGTH_SHORT).show();</span>
+<span class="nc" id="L314">                    });</span>
+        }
+<span class="nc" id="L316">    }</span>
+
+
+    private String getFileExtension(Uri uri) {
+<span class="nc" id="L320">        ContentResolver cR = getContentResolver();</span>
+<span class="nc" id="L321">        MimeTypeMap mime = MimeTypeMap.getSingleton();</span>
+<span class="nc bnc" id="L322" title="All 4 branches missed.">        if (uri != null &amp;&amp; cR != null) {</span>
+<span class="nc" id="L323">            return mime.getExtensionFromMimeType(cR.getType(uri));</span>
+        }
+<span class="nc" id="L325">        return null;</span>
+    }
+
+    interface FirebaseUploadCallback {
+        void onUploadSuccess(String downloadUrl);
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span>Generated by the Android Gradle plugin 8.6.0</div></body></html>

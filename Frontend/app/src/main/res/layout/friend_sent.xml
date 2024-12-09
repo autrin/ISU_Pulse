@@ -19,6 +19,8 @@
             android:id="@+id/friend_avatar"
             android:layout_width="56dp"
             android:layout_height="56dp"
+            android:layout_gravity="center"
+            android:gravity="center"
             android:src="@drawable/isu_logo" />
 
         <LinearLayout
@@ -61,7 +63,9 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:layout_gravity="center"
+            android:gravity="center">
 
             <Button
                 android:id="@+id/unsendbutton"
@@ -69,6 +73,7 @@
                 android:layout_height="36dp"
                 android:text="Unsent"
                 android:textColor="#FFFFFF"
+                android:background="@drawable/rounded_button"
                 android:paddingHorizontal="16dp"
                 android:layout_marginBottom="8dp"
                 android:visibility="visible"/>

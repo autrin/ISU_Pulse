@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AddTaskDialog.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=0;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">debug</a> &gt; <a href="index.source.html" class="el_package">com.coms309.isu_pulse_frontend.ui.home</a> &gt; <span class="el_source">AddTaskDialog.java</span></div><h1>AddTaskDialog.java</h1><pre class="source lang-java linenums">// AddTaskDialog.java
+package com.coms309.isu_pulse_frontend.ui.home;
+
+import android.content.Context;
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
+
+import com.coms309.isu_pulse_frontend.R;
+import com.coms309.isu_pulse_frontend.adapters.TaskListAdapter;
+import com.coms309.isu_pulse_frontend.api.TaskApiService;
+import com.coms309.isu_pulse_frontend.loginsignup.UserSession;
+import com.coms309.isu_pulse_frontend.model.PersonalTask;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+
+public class AddTaskDialog extends DialogFragment {
+
+    private TaskApiService taskApiService;
+    private TaskListAdapter taskListAdapter;
+    private HomeFragment homeFragment;
+    private String netId;
+
+<span class="nc" id="L32">    public AddTaskDialog(TaskApiService taskApiService, TaskListAdapter taskListAdapter, HomeFragment homeFragment) {</span>
+<span class="nc" id="L33">        this.taskApiService = taskApiService;</span>
+<span class="nc" id="L34">        this.taskListAdapter = taskListAdapter;</span>
+<span class="nc" id="L35">        this.homeFragment = homeFragment;</span>
+<span class="nc" id="L36">    }</span>
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+<span class="nc" id="L40">        super.onAttach(context);</span>
+        // Initialize netId after fragment is attached to context
+<span class="nc" id="L42">        netId = UserSession.getInstance(context).getNetId();</span>
+<span class="nc" id="L43">    }</span>
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+<span class="nc" id="L48">        View view = inflater.inflate(R.layout.dialog_add_task, container, false);</span>
+
+<span class="nc" id="L50">        EditText editTextTitle = view.findViewById(R.id.editTextTitle);</span>
+<span class="nc" id="L51">        EditText editTextDescription = view.findViewById(R.id.editTextDescription);</span>
+<span class="nc" id="L52">        EditText editTextDueDate = view.findViewById(R.id.editTextDueDate);</span>
+<span class="nc" id="L53">        Button buttonSubmit = view.findViewById(R.id.buttonSubmit);</span>
+
+<span class="nc" id="L55">        buttonSubmit.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View v) {
+<span class="nc" id="L58">                String title = editTextTitle.getText().toString();</span>
+<span class="nc" id="L59">                String description = editTextDescription.getText().toString();</span>
+<span class="nc" id="L60">                String dueDateString = editTextDueDate.getText().toString();</span>
+<span class="nc" id="L61">                Long dueDateTimestamp = null;</span>
+                try {
+<span class="nc" id="L63">                    dueDateTimestamp = new SimpleDateFormat(&quot;yyyy-MM-dd&quot;).parse(dueDateString).getTime();</span>
+<span class="nc" id="L64">                } catch (ParseException e) {</span>
+<span class="nc" id="L65">                    e.printStackTrace();</span>
+<span class="nc" id="L66">                }</span>
+
+<span class="nc" id="L68">                PersonalTask newTask = new PersonalTask(1, title, description, dueDateTimestamp, netId);</span>
+<span class="nc" id="L69">                taskApiService.createPersonalTask(newTask);</span>
+<span class="nc" id="L70">                homeFragment.addNewTask(newTask);</span>
+<span class="nc" id="L71">                dismiss();</span>
+<span class="nc" id="L72">            }</span>
+        });
+        /** //For later to get the last task id
+         *                 taskApiService.getLastPersonalTask(new TaskApiService.TaskResponseListener() {
+         *                     @Override
+         *                     public void onResponse(String lastTaskId) {
+         *                         String newTaskId = String.valueOf(Integer.parseInt(lastTaskId) + 1);
+         *                         PersonalTask newTask = new PersonalTask(newTaskId, title, description, dueDateTimestamp, netId);
+         *                         taskApiService.createPersonalTask(newTask);
+         *                         homeFragment.addNewTask(newTask);
+         *                         dismiss();
+         *                     }
+         *
+         *                     @Override
+         *                     public void onError(String message) {
+         *                         // Handle error
+         *                     }
+         *                 });
+         */
+
+<span class="nc" id="L92">        return view;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span>Generated by the Android Gradle plugin 8.6.0</div></body></html>

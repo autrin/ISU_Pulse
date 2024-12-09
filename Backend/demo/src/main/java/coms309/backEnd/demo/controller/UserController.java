@@ -54,11 +54,12 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "User not found",
                     content = @Content)
     })
+
     @GetMapping("/{netId}")
     public ResponseEntity<User> getUserByNetId(@Parameter(description = "Unique NetID of the user") @PathVariable String netId) {
         Optional<User> userOptional = userRepository.findUserByNetId(netId);
         if (!userOptional.isPresent())
-            throw new IllegalStateException("User doesn't exist.");
+            return ResponseEntity.status(404).body(null);
         User user = userOptional.get();
         return ResponseEntity.status(200).body(user);
     }
@@ -75,23 +76,26 @@ public class UserController {
             @ApiResponse(responseCode = "400", description = "User already exists")
     })
     @PostMapping
-    public ResponseEntity<String> registerNewStudent(@io.swagger.v3.oas.annotations.parameters.RequestBody(
+    public ResponseEntity<Map<String, String>> registerNewStudent(@io.swagger.v3.oas.annotations.parameters.RequestBody(
             description = "The user object containing details like netId, name, email, and password for registration.",
             content = @Content(schema = @Schema(implementation = User.class))
     ) @RequestBody User user){
         Optional<User> userOptional = userRepository.findUserByNetId(user.getNetId());
-        if (userOptional.isPresent())
-            return ResponseEntity.status(400).body("NetID already exists.");
-        Faculty faculty = null;
+        Map<String, String> response = new HashMap<>();
+
+        if (userOptional.isPresent()) {
+            response.put("message", "NetID already exists.");
+            return ResponseEntity.status(400).body(response);
+        }
 
         Profile profile = new Profile();
         user.setProfile(profile);
         profile.setUser(user);
 
-        // Save user (will cascade and save profile as well)
         userRepository.save(user);
 
-        return ResponseEntity.status(200).body("User is successfully registered.");
+        response.put("message", "User is successfully registered.");
+        return ResponseEntity.status(200).body(response);
     }
 
     @Operation(summary = "Register a new faculty", description = "Registers a new faculty user in the system.")

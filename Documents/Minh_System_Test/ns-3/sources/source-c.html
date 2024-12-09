@@ -1,0 +1,314 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > TaskController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">coms309.backEnd.demo.controller</a>
+</div>
+
+<h1>Coverage Summary for Class: TaskController (coms309.backEnd.demo.controller)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">TaskController</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    20%
+  </span>
+  <span class="absValue">
+    (1/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/28)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    10.9%
+  </span>
+  <span class="absValue">
+    (6/55)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package coms309.backEnd.demo.controller;
+&nbsp;
+&nbsp;import coms309.backEnd.demo.entity.*;
+&nbsp;import coms309.backEnd.demo.repository.*;
+&nbsp;import io.swagger.v3.oas.annotations.Operation;
+&nbsp;import io.swagger.v3.oas.annotations.Parameter;
+&nbsp;import io.swagger.v3.oas.annotations.media.Content;
+&nbsp;import io.swagger.v3.oas.annotations.responses.ApiResponse;
+&nbsp;import io.swagger.v3.oas.annotations.responses.ApiResponses;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.http.HttpStatus;
+&nbsp;import org.springframework.http.ResponseEntity;
+&nbsp;import org.springframework.web.bind.annotation.*;
+&nbsp;
+&nbsp;import java.util.Date;
+&nbsp;import java.util.Calendar;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Optional;
+&nbsp;
+&nbsp;@RestController
+&nbsp;@RequestMapping(&quot;/task&quot;)
+&nbsp;public class TaskController {
+&nbsp;    @Autowired
+&nbsp;    private final UserRepository userRepository;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private final TaskRepository taskRepository;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private final CourseRepository courseRepository;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private final EnrollRepository enrollRepository;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private final ScheduleRepository scheduleRepository;
+&nbsp;
+<b class="fc">&nbsp;    public TaskController(UserRepository userRepository, TaskRepository taskRepository, CourseRepository courseRepository, EnrollRepository enrollRepository, ScheduleRepository scheduleRepository) {</b>
+<b class="fc">&nbsp;        this.userRepository = userRepository;</b>
+<b class="fc">&nbsp;        this.taskRepository = taskRepository;</b>
+<b class="fc">&nbsp;        this.courseRepository = courseRepository;</b>
+<b class="fc">&nbsp;        this.enrollRepository = enrollRepository;</b>
+<b class="fc">&nbsp;        this.scheduleRepository = scheduleRepository;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Get tasks due in the next 2 days for a user.
+&nbsp;     *
+&nbsp;     * @param netId The NetID of the user.
+&nbsp;     * @return A list of tasks due in the next 2 days.
+&nbsp;     */
+&nbsp;    @Operation(summary = &quot;Fetch tasks due in the next 2 days&quot;, description = &quot;Retrieve all tasks due in the next 2 days for the specified user.&quot;)
+&nbsp;    @ApiResponses(value = {
+&nbsp;            @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Tasks retrieved successfully&quot;, content = @Content(mediaType = &quot;application/json&quot;)),
+&nbsp;            @ApiResponse(responseCode = &quot;500&quot;, description = &quot;User not found&quot;)
+&nbsp;    })
+&nbsp;    @GetMapping(&quot;/getTaskByUserIn2days/{netId}&quot;)
+&nbsp;    public ResponseEntity&lt;List&lt;Task&gt;&gt; getTaskByCourse(@Parameter(description = &quot;NetID of the user&quot;, required = true) @PathVariable String netId){
+<b class="nc">&nbsp;        Date currentDate = new Date();</b>
+<b class="nc">&nbsp;        Calendar calendar = Calendar.getInstance();</b>
+<b class="nc">&nbsp;        calendar.setTime(currentDate);</b>
+<b class="nc">&nbsp;        calendar.add(Calendar.DATE, 2);</b>
+<b class="nc">&nbsp;        Date tomorrowDate = calendar.getTime();</b>
+&nbsp;
+<b class="nc">&nbsp;        Optional&lt;User&gt; curUser = userRepository.findUserByNetId(netId);</b>
+<b class="nc">&nbsp;        if(curUser.isEmpty()){</b>
+<b class="nc">&nbsp;            return  ResponseEntity.internalServerError().build();</b>
+&nbsp;        }
+&nbsp;        
+<b class="nc">&nbsp;        User user = curUser.get();</b>
+<b class="nc">&nbsp;        List&lt;Enroll&gt; curEnroll = user.getEnrollList();</b>
+<b class="nc">&nbsp;        List&lt;Task&gt; taskList = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;        for(Enroll enroll : curEnroll){</b>
+<b class="nc">&nbsp;            Schedule schedule = enroll.getSchedule();</b>
+<b class="nc">&nbsp;            List&lt;Task&gt; tasks = taskRepository.findAllBySchedule(schedule);</b>
+<b class="nc">&nbsp;            for(Task task : tasks){</b>
+<b class="nc">&nbsp;                if (task.getDueDate() != null &amp;&amp;</b>
+<b class="nc">&nbsp;                        !task.getDueDate().before(currentDate) &amp;&amp;</b>
+<b class="nc">&nbsp;                        !task.getDueDate().after(tomorrowDate)) {</b>
+<b class="nc">&nbsp;                taskList.add(task);</b>
+&nbsp;                }
+&nbsp;            }
+&nbsp;        }
+<b class="nc">&nbsp;        return ResponseEntity.ok(taskList);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Fetch upcoming tasks for a schedule.
+&nbsp;     *
+&nbsp;     * @param scheduleId The ID of the schedule.
+&nbsp;     * @return A list of upcoming tasks for the schedule.
+&nbsp;     */
+&nbsp;    @Operation(summary = &quot;Fetch upcoming tasks by schedule&quot;, description = &quot;Retrieve all upcoming tasks for a specific schedule.&quot;)
+&nbsp;    @ApiResponses(value = {
+&nbsp;            @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Tasks retrieved successfully&quot;, content = @Content(mediaType = &quot;application/json&quot;))
+&nbsp;    })
+&nbsp;    @GetMapping(&quot;/scheduleTask/{scheduleId}&quot;)
+&nbsp;    public ResponseEntity&lt;List&lt;Task&gt;&gt; fetchUpcomingTasksBySchedule(@Parameter(description = &quot;ID of the schedule&quot;, required = true) @PathVariable long scheduleId) {
+<b class="nc">&nbsp;        List&lt;Task&gt; tasksOfSchedule = taskRepository.findUpcomingTasksByScheduleId(scheduleId);</b>
+<b class="nc">&nbsp;        return ResponseEntity.ok(tasksOfSchedule);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Create a task for a specific schedule.
+&nbsp;     *
+&nbsp;     * @param scheduleId The ID of the schedule.
+&nbsp;     * @param task The task details.
+&nbsp;     * @return The created task.
+&nbsp;     */
+&nbsp;    @Operation(summary = &quot;Create a task for a schedule&quot;, description = &quot;Add a new task to a specific schedule.&quot;)
+&nbsp;    @ApiResponses(value = {
+&nbsp;            @ApiResponse(responseCode = &quot;201&quot;, description = &quot;Task created successfully&quot;, content = @Content(mediaType = &quot;application/json&quot;)),
+&nbsp;            @ApiResponse(responseCode = &quot;404&quot;, description = &quot;Schedule not found&quot;)
+&nbsp;    })
+&nbsp;    @PostMapping(&quot;/scheduleTask/{scheduleId}&quot;)
+&nbsp;    public ResponseEntity&lt;Task&gt; createScheduleTask(@Parameter(description = &quot;ID of the schedule&quot;, required = true) @PathVariable long scheduleId,
+&nbsp;                                                   @Parameter(description = &quot;Details of the task to be created&quot;, required = true) @RequestBody Task task) {
+&nbsp;        // Find the schedule by ID
+<b class="nc">&nbsp;        Optional&lt;Schedule&gt; scheduleOptional = scheduleRepository.findById(scheduleId);</b>
+&nbsp;
+<b class="nc">&nbsp;        if (!scheduleOptional.isPresent()) {</b>
+<b class="nc">&nbsp;            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        // Assign the found schedule to the task and save the task
+<b class="nc">&nbsp;        Schedule schedule = scheduleOptional.get();</b>
+<b class="nc">&nbsp;        task.setSchedule(schedule);</b>
+<b class="nc">&nbsp;        taskRepository.save(task);</b>
+&nbsp;
+<b class="nc">&nbsp;        return ResponseEntity.status(HttpStatus.CREATED).body(task);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Update an existing task for a schedule.
+&nbsp;     *
+&nbsp;     * @param scheduleId The ID of the schedule.
+&nbsp;     * @param taskId The ID of the task to update.
+&nbsp;     * @param updatedTask The updated task details.
+&nbsp;     * @return The updated task.
+&nbsp;     */
+&nbsp;    @Operation(summary = &quot;Update a task for a schedule&quot;, description = &quot;Modify the details of an existing task for a specific schedule.&quot;)
+&nbsp;    @ApiResponses(value = {
+&nbsp;            @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Task updated successfully&quot;, content = @Content(mediaType = &quot;application/json&quot;)),
+&nbsp;            @ApiResponse(responseCode = &quot;404&quot;, description = &quot;Schedule or task not found&quot;),
+&nbsp;            @ApiResponse(responseCode = &quot;400&quot;, description = &quot;Task does not belong to the specified schedule&quot;)
+&nbsp;    })
+&nbsp;    @PutMapping(&quot;/scheduleTask/{scheduleId}/task/{taskId}&quot;)
+&nbsp;    public ResponseEntity&lt;Task&gt; updateTask(
+&nbsp;            @Parameter(description = &quot;ID of the schedule&quot;, required = true)
+&nbsp;            @PathVariable long scheduleId,
+&nbsp;            @Parameter(description = &quot;ID of the task to update&quot;, required = true)
+&nbsp;            @PathVariable long taskId,
+&nbsp;            @Parameter(description = &quot;Updated task details&quot;, required = true)
+&nbsp;            @RequestBody Task updatedTask) {
+&nbsp;
+&nbsp;        // Find the schedule by ID
+<b class="nc">&nbsp;        Optional&lt;Schedule&gt; scheduleOptional = scheduleRepository.findById(scheduleId);</b>
+<b class="nc">&nbsp;        if (!scheduleOptional.isPresent()) {</b>
+<b class="nc">&nbsp;            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        // Find the task by ID and ensure it belongs to the given schedule
+<b class="nc">&nbsp;        Optional&lt;Task&gt; taskOptional = taskRepository.findById(taskId);</b>
+<b class="nc">&nbsp;        if (!taskOptional.isPresent()) {</b>
+<b class="nc">&nbsp;            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        Task existingTask = taskOptional.get();</b>
+&nbsp;
+&nbsp;        // Check if the task&#39;s schedule matches the provided schedule
+<b class="nc">&nbsp;        if (existingTask.getSchedule().getId() != scheduleId) {</b>
+<b class="nc">&nbsp;            return ResponseEntity.status(HttpStatus.BAD_REQUEST)</b>
+<b class="nc">&nbsp;                    .body(null);</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        // Update only the fields that are provided in the request
+<b class="nc">&nbsp;        if (updatedTask.getTitle() != null) {</b>
+<b class="nc">&nbsp;            existingTask.setTitle(updatedTask.getTitle());</b>
+&nbsp;        }
+<b class="nc">&nbsp;        if (updatedTask.getDescription() != null) {</b>
+<b class="nc">&nbsp;            existingTask.setDescription(updatedTask.getDescription());</b>
+&nbsp;        }
+<b class="nc">&nbsp;        if (updatedTask.getDueDate() != null) {</b>
+<b class="nc">&nbsp;            existingTask.setDueDate(updatedTask.getDueDate());</b>
+&nbsp;        }
+<b class="nc">&nbsp;        if (updatedTask.getTaskType() != null) {</b>
+<b class="nc">&nbsp;            existingTask.setTaskType(updatedTask.getTaskType());</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        // Save the updated task
+<b class="nc">&nbsp;        taskRepository.save(existingTask);</b>
+&nbsp;
+<b class="nc">&nbsp;        return ResponseEntity.status(HttpStatus.OK).body(existingTask);</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-12-04 23:26</div>
+</div>
+</body>
+</html>

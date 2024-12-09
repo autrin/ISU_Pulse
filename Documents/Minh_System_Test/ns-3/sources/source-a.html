@@ -1,0 +1,250 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > ProfileController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">coms309.backEnd.demo.controller</a>
+</div>
+
+<h1>Coverage Summary for Class: ProfileController (coms309.backEnd.demo.controller)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ProfileController</td>
+<td class="coverageStat">
+  <span class="percent">
+    50%
+  </span>
+  <span class="absValue">
+    (2/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    10.7%
+  </span>
+  <span class="absValue">
+    (3/28)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">ProfileController$$SpringCGLIB$$0</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    50%
+  </span>
+  <span class="absValue">
+    (2/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    10.7%
+  </span>
+  <span class="absValue">
+    (3/28)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package coms309.backEnd.demo.controller;
+&nbsp;
+&nbsp;
+&nbsp;import coms309.backEnd.demo.entity.Profile;
+&nbsp;import coms309.backEnd.demo.entity.User;
+&nbsp;import coms309.backEnd.demo.repository.ProfileRepository;
+&nbsp;import io.swagger.v3.oas.annotations.Operation;
+&nbsp;import io.swagger.v3.oas.annotations.Parameter;
+&nbsp;import io.swagger.v3.oas.annotations.media.Content;
+&nbsp;import io.swagger.v3.oas.annotations.responses.ApiResponse;
+&nbsp;import io.swagger.v3.oas.annotations.responses.ApiResponses;
+&nbsp;import jakarta.transaction.Transactional;
+&nbsp;import lombok.extern.slf4j.Slf4j;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.http.ResponseEntity;
+&nbsp;import org.springframework.web.bind.annotation.*;
+&nbsp;
+&nbsp;import java.util.HashMap;
+&nbsp;import java.util.Map;
+&nbsp;import java.util.Optional;
+&nbsp;
+<b class="fc">&nbsp;@Slf4j</b>
+&nbsp;@RestController
+&nbsp;@RequestMapping(&quot;/profile&quot;)
+&nbsp;public class ProfileController {
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private final ProfileRepository profileRepository;
+&nbsp;
+<b class="fc">&nbsp;    public ProfileController(ProfileRepository profileRepository) {</b>
+<b class="fc">&nbsp;        this.profileRepository = profileRepository;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Retrieves a user&#39;s profile by their NetID.
+&nbsp;     *
+&nbsp;     * @param netId The NetID of the user.
+&nbsp;     * @return A ResponseEntity containing the profile and user details.
+&nbsp;     */
+&nbsp;    @Operation(summary = &quot;Retrieve profile by NetID&quot;,
+&nbsp;            description = &quot;Fetches the profile details of a user using their NetID.&quot;)
+&nbsp;    @ApiResponses(value = {
+&nbsp;            @ApiResponse(responseCode = &quot;200&quot;,
+&nbsp;                    description = &quot;Profile retrieved successfully&quot;,
+&nbsp;                    content = @Content(mediaType = &quot;application/json&quot;)),
+&nbsp;            @ApiResponse(responseCode = &quot;404&quot;,
+&nbsp;                    description = &quot;Profile not found&quot;)
+&nbsp;    })
+&nbsp;    @GetMapping(&quot;/{netId}&quot;)
+&nbsp;    public ResponseEntity&lt;Map&lt;String, Object&gt;&gt; getProfileByNetId(@Parameter(description = &quot;NetID of the user whose profile is to be retrieved&quot;, required = true) @PathVariable String netId) {
+&nbsp;
+<b class="nc">&nbsp;        Optional&lt;Profile&gt; optionalProfile = profileRepository.findByUserNetId(netId);</b>
+&nbsp;
+<b class="nc">&nbsp;        if (!optionalProfile.isPresent())</b>
+<b class="nc">&nbsp;            throw new IllegalStateException(&quot;Profile doesn&#39;t exist.&quot;);</b>
+&nbsp;
+<b class="nc">&nbsp;        Profile profile = optionalProfile.get();</b>
+<b class="nc">&nbsp;        User user = profile.getUser();</b>
+<b class="nc">&nbsp;        String profilePictureUrl = user.getProfilePictureUrl();</b>
+<b class="nc">&nbsp;        String firstName = user.getFirstName();</b>
+<b class="nc">&nbsp;        String lastName = user.getLastName();</b>
+&nbsp;
+<b class="nc">&nbsp;        Map&lt;String, Object&gt; response = new HashMap&lt;&gt;();</b>
+<b class="nc">&nbsp;        response.put(&quot;profile&quot;, profile);</b>
+<b class="nc">&nbsp;        response.put(&quot;firstName&quot;, firstName);</b>
+<b class="nc">&nbsp;        response.put(&quot;lastName&quot;, lastName);</b>
+<b class="nc">&nbsp;        response.put(&quot;profilePictureUrl&quot;, profilePictureUrl);</b>
+&nbsp;
+<b class="nc">&nbsp;        return ResponseEntity.ok(response);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Updates a user&#39;s profile details.
+&nbsp;     *
+&nbsp;     * @param netId The NetID of the user whose profile is being updated.
+&nbsp;     * @param linkedinUrl The updated LinkedIn URL (optional).
+&nbsp;     * @param externalUrl The updated external URL (optional).
+&nbsp;     * @param description The updated description (optional).
+&nbsp;     * @return A ResponseEntity with a success message.
+&nbsp;     */
+&nbsp;    @Operation(summary = &quot;Update profile&quot;,
+&nbsp;            description = &quot;Updates the profile details of a user such as LinkedIn URL, external URL, or description.&quot;)
+&nbsp;    @ApiResponses(value = {
+&nbsp;            @ApiResponse(responseCode = &quot;200&quot;,
+&nbsp;                    description = &quot;Profile updated successfully&quot;,
+&nbsp;                    content = @Content(mediaType = &quot;application/json&quot;)),
+&nbsp;            @ApiResponse(responseCode = &quot;404&quot;,
+&nbsp;                    description = &quot;Profile not found&quot;)
+&nbsp;    })
+&nbsp;    @Transactional
+&nbsp;    @PutMapping(&quot;/{netId}&quot;)
+&nbsp;    public ResponseEntity&lt;String&gt; updateProfile(@Parameter(description = &quot;NetID of the user whose profile is to be updated&quot;, required = true)
+&nbsp;                                                    @PathVariable String netId,
+&nbsp;                                                @Parameter(description = &quot;Updated LinkedIn URL&quot;, required = false)
+&nbsp;                                                    @RequestParam(required = false) String linkedinUrl,
+&nbsp;                                                @Parameter(description = &quot;Updated external URL&quot;, required = false)
+&nbsp;                                                    @RequestParam(required = false) String externalUrl,
+&nbsp;                                                @Parameter(description = &quot;Updated description&quot;, required = false)
+&nbsp;                                                    @RequestParam(required = false) String description) {
+<b class="nc">&nbsp;        Optional&lt;Profile&gt; optionalProfile = profileRepository.findByUserNetId(netId);</b>
+<b class="nc">&nbsp;        if (!optionalProfile.isPresent())</b>
+<b class="nc">&nbsp;            throw new IllegalStateException(&quot;Profile doesn&#39;t exist.&quot;);</b>
+<b class="nc">&nbsp;        Profile profile = optionalProfile.get();</b>
+&nbsp;
+<b class="nc">&nbsp;        if(description != null)</b>
+<b class="nc">&nbsp;            profile.setDescription(description);</b>
+&nbsp;
+<b class="nc">&nbsp;        if (externalUrl != null)</b>
+<b class="nc">&nbsp;            profile.setExternalUrl(externalUrl);</b>
+&nbsp;
+<b class="nc">&nbsp;        if (linkedinUrl != null)</b>
+<b class="nc">&nbsp;            profile.setLinkedinUrl(linkedinUrl);</b>
+<b class="nc">&nbsp;        return ResponseEntity.ok(&quot;Update profile successfully&quot;);</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-12-04 23:26</div>
+</div>
+</body>
+</html>

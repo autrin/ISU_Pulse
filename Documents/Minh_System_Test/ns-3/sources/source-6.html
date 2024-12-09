@@ -1,0 +1,185 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > FacultyController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">coms309.backEnd.demo.controller</a>
+</div>
+
+<h1>Coverage Summary for Class: FacultyController (coms309.backEnd.demo.controller)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">FacultyController</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    50%
+  </span>
+  <span class="absValue">
+    (1/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    23.1%
+  </span>
+  <span class="absValue">
+    (3/13)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package coms309.backEnd.demo.controller;
+&nbsp;
+&nbsp;import coms309.backEnd.demo.entity.Faculty;
+&nbsp;import coms309.backEnd.demo.entity.Schedule;
+&nbsp;import coms309.backEnd.demo.entity.User;
+&nbsp;import coms309.backEnd.demo.repository.FacultyRepository;
+&nbsp;import coms309.backEnd.demo.repository.TeachRepository;
+&nbsp;import coms309.backEnd.demo.repository.UserRepository;
+&nbsp;import io.swagger.v3.oas.annotations.Operation;
+&nbsp;import io.swagger.v3.oas.annotations.Parameter;
+&nbsp;import io.swagger.v3.oas.annotations.media.Content;
+&nbsp;import io.swagger.v3.oas.annotations.media.Schema;
+&nbsp;import io.swagger.v3.oas.annotations.responses.ApiResponse;
+&nbsp;import io.swagger.v3.oas.annotations.responses.ApiResponses;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.http.ResponseEntity;
+&nbsp;import org.springframework.web.bind.annotation.GetMapping;
+&nbsp;import org.springframework.web.bind.annotation.PathVariable;
+&nbsp;import org.springframework.web.bind.annotation.RequestMapping;
+&nbsp;import org.springframework.web.bind.annotation.RestController;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Optional;
+&nbsp;
+&nbsp;@RestController
+&nbsp;@RequestMapping(&quot;/faculty&quot;)
+&nbsp;public class FacultyController {
+&nbsp;    @Autowired
+&nbsp;    private TeachRepository teachRepository;
+&nbsp;    @Autowired
+&nbsp;    private UserRepository userRepository;
+&nbsp;
+<b class="fc">&nbsp;    public FacultyController(TeachRepository teachRepository, UserRepository userRepository) {</b>
+<b class="fc">&nbsp;        this.teachRepository = teachRepository;</b>
+<b class="fc">&nbsp;        this.userRepository = userRepository;</b>
+&nbsp;    }
+&nbsp;    /**
+&nbsp;     * Retrieves the schedules associated with a faculty member identified by their NetID.
+&nbsp;     *
+&nbsp;     * @param netId The NetID of the faculty member.
+&nbsp;     * @return A list of schedules taught by the faculty member.
+&nbsp;     */
+&nbsp;    @Operation(summary = &quot;Get Faculty Schedules&quot;, description = &quot;Retrieve schedules associated with a faculty member identified by their NetID.&quot;)
+&nbsp;    @ApiResponses(value = {
+&nbsp;            @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Schedules retrieved successfully&quot;,
+&nbsp;                    content = @Content(mediaType = &quot;application/json&quot;, schema = @Schema(implementation = Schedule.class))),
+&nbsp;            @ApiResponse(responseCode = &quot;404&quot;, description = &quot;User not found or not a faculty member&quot;,
+&nbsp;                    content = @Content)
+&nbsp;    })
+&nbsp;    @GetMapping(&quot;/schedules/{netId}&quot;)
+&nbsp;    public ResponseEntity&lt;List&lt;Schedule&gt;&gt; getFacultySchedules(
+&nbsp;            @Parameter(description = &quot;The NetID of the faculty member&quot;, required = true)
+&nbsp;            @PathVariable String netId) {
+<b class="nc">&nbsp;        Optional&lt;User&gt; userOptional = userRepository.findUserByNetId(netId);</b>
+<b class="nc">&nbsp;        if (!userOptional.isPresent())</b>
+<b class="nc">&nbsp;            throw new IllegalStateException(&quot;User does not exist.&quot;);</b>
+&nbsp;
+<b class="nc">&nbsp;        User user = userOptional.get();</b>
+&nbsp;
+<b class="nc">&nbsp;        if (user.getFaculty() == null) {</b>
+<b class="nc">&nbsp;            throw new IllegalStateException(&quot;This user is not a faculty.&quot;);</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        Faculty faculty = user.getFaculty();</b>
+<b class="nc">&nbsp;        long facultyId = faculty.getId();</b>
+<b class="nc">&nbsp;        List&lt;Schedule&gt; schedules = teachRepository.findSchedulesByFacultyId(facultyId);</b>
+<b class="nc">&nbsp;        return ResponseEntity.ok(schedules);</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-12-04 23:26</div>
+</div>
+</body>
+</html>

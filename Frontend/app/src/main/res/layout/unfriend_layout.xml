@@ -19,6 +19,8 @@
             android:id="@+id/friend_avatar"
             android:layout_width="56dp"
             android:layout_height="56dp"
+            android:layout_gravity="center"
+            android:gravity="center"
             android:src="@drawable/isu_logo" />
 
         <LinearLayout
@@ -27,6 +29,7 @@
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
             android:layout_weight="1"
+            android:layout_gravity="center"
             android:orientation="vertical">
 
             <TextView
@@ -61,6 +64,8 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
             android:orientation="vertical">
 
             <Button
@@ -68,6 +73,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="36dp"
                 android:text="View Profile"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:background="@drawable/rounded_button"
                 android:textColor="#FFFFFF"
                 android:paddingHorizontal="16dp"
                 android:layout_marginBottom="8dp"/>
@@ -77,6 +85,9 @@
                 android:id="@+id/unfriendbutton"
                 android:layout_width="wrap_content"
                 android:layout_height="36dp"
+                android:background="@drawable/rounded_button"
+                android:layout_gravity="center"
+                android:gravity="center"
                 android:text="Unfriend"
                 android:textColor="#FFFFFF"
                 android:paddingHorizontal="16dp"

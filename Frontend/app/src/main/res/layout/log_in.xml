@@ -1,73 +1,80 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
-    android:gravity="center"
-    android:orientation="vertical"
-    android:padding="24dp">
+    android:fillViewport="true">
 
-    <TextView
-        android:id="@+id/signin_isu_pulse"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="48dp"
-        android:text="ISU Pulse"
-        android:textColor="@color/design_default_color_primary"
-        android:textSize="36sp"
-        android:textStyle="bold" />
-
-    <EditText
-        android:id="@+id/netid_isu_pulse"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:background="@drawable/edit_text_background"
-        android:hint="NetID"
-        android:padding="16dp"
-        android:textColor="@color/design_default_color_on_secondary"
-        android:textColorHint="@color/design_default_color_on_secondary" />
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="24dp">
 
-    <EditText
-        android:id="@+id/password_isu_pulse"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="24dp"
-        android:background="@drawable/edit_text_background"
-        android:hint="Password"
-        android:inputType="textPassword"
-        android:padding="16dp"
-        android:textColor="@color/design_default_color_on_secondary"
-        android:textColorHint="@color/design_default_color_on_secondary" />
+        <TextView
+            android:id="@+id/signin_isu_pulse"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="48dp"
+            android:text="ISU Pulse"
+            android:textColor="@color/design_default_color_primary"
+            android:textSize="36sp"
+            android:textStyle="bold" />
 
-    <Button
-        android:id="@+id/enter_isu_pulse"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:backgroundTint="@color/design_default_color_primary"
-        android:padding="16dp"
-        android:text="Log In"
-        android:textColor="@color/white"
-        android:textSize="16sp" />
+        <EditText
+            android:id="@+id/netid_isu_pulse"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/edit_text_background"
+            android:hint="NetID"
+            android:padding="16dp"
+            android:textColor="@color/design_default_color_on_secondary"
+            android:textColorHint="@color/design_default_color_on_secondary" />
 
-    <Button
-        android:id="@+id/sign_up_isu_pulse"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="24dp"
-        android:backgroundTint="@color/design_default_color_secondary"
-        android:padding="16dp"
-        android:text="Create New Account"
-        android:textColor="@color/white"
-        android:textSize="16sp" />
+        <EditText
+            android:id="@+id/password_isu_pulse"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            android:background="@drawable/edit_text_background"
+            android:hint="Password"
+            android:inputType="textPassword"
+            android:padding="16dp"
+            android:textColor="@color/design_default_color_on_secondary"
+            android:textColorHint="@color/design_default_color_on_secondary" />
 
-    <TextView
-        android:id="@+id/forgot_password_isu_pulse"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Forgot Password?"
-        android:textColor="@color/design_default_color_primary"
-        android:textSize="16sp" />
+        <Button
+            android:id="@+id/enter_isu_pulse"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:backgroundTint="@color/design_default_color_primary"
+            android:padding="16dp"
+            android:text="Log In"
+            android:textColor="@color/white"
+            android:textSize="16sp" />
 
-</LinearLayout>
+        <Button
+            android:id="@+id/sign_up_isu_pulse"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            android:backgroundTint="@color/design_default_color_secondary"
+            android:padding="16dp"
+            android:text="Create New Account"
+            android:textColor="@color/white"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/forgot_password_isu_pulse"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Forgot Password?"
+            android:clickable="true"
+            android:textColor="@color/design_default_color_primary"
+            android:textSize="16sp" />
+
+    </LinearLayout>
+</ScrollView>

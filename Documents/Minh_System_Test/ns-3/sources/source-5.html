@@ -1,0 +1,283 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > EnrollController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">coms309.backEnd.demo.controller</a>
+</div>
+
+<h1>Coverage Summary for Class: EnrollController (coms309.backEnd.demo.controller)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">EnrollController</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    20%
+  </span>
+  <span class="absValue">
+    (1/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/14)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    10.3%
+  </span>
+  <span class="absValue">
+    (4/39)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package coms309.backEnd.demo.controller;
+&nbsp;
+&nbsp;
+&nbsp;import coms309.backEnd.demo.entity.Course;
+&nbsp;import coms309.backEnd.demo.entity.Enroll;
+&nbsp;import coms309.backEnd.demo.entity.Schedule;
+&nbsp;import coms309.backEnd.demo.entity.User;
+&nbsp;import coms309.backEnd.demo.repository.CourseRepository;
+&nbsp;import coms309.backEnd.demo.repository.EnrollRepository;
+&nbsp;import coms309.backEnd.demo.repository.ScheduleRepository;
+&nbsp;import coms309.backEnd.demo.repository.UserRepository;
+&nbsp;import io.swagger.v3.oas.annotations.Operation;
+&nbsp;import io.swagger.v3.oas.annotations.Parameter;
+&nbsp;import io.swagger.v3.oas.annotations.media.Content;
+&nbsp;import io.swagger.v3.oas.annotations.responses.ApiResponse;
+&nbsp;import io.swagger.v3.oas.annotations.responses.ApiResponses;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.http.HttpStatus;
+&nbsp;import org.springframework.http.ResponseEntity;
+&nbsp;import org.springframework.web.bind.annotation.*;
+&nbsp;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Optional;
+&nbsp;
+&nbsp;/**
+&nbsp; * This controller is for student to get the schedule(course and section) that they currently enroll. They can also enroll to schedule(course and section)
+&nbsp; * or drop schedule(course and section)
+&nbsp; */
+&nbsp;@RestController
+&nbsp;@RequestMapping(&quot;/enroll&quot;)
+&nbsp;public class EnrollController {
+&nbsp;    @Autowired
+&nbsp;    private final EnrollRepository enrollRepository;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private final UserRepository userRepository;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private final ScheduleRepository scheduleRepository;
+&nbsp;
+<b class="fc">&nbsp;    public EnrollController(EnrollRepository enrollRepository, UserRepository userRepository, ScheduleRepository scheduleRepository) {</b>
+<b class="fc">&nbsp;        this.enrollRepository = enrollRepository;</b>
+<b class="fc">&nbsp;        this.userRepository = userRepository;</b>
+<b class="fc">&nbsp;        this.scheduleRepository = scheduleRepository;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Get the schedules a user is currently enrolled in.
+&nbsp;     *
+&nbsp;     * @param netId The NetID of the user.
+&nbsp;     * @return A list of schedules the user is enrolled in.
+&nbsp;     */
+&nbsp;    @Operation(summary = &quot;Fetch enrolled schedules&quot;, description = &quot;Retrieve all schedules (courses and sections) that the specified user is currently enrolled in.&quot;)
+&nbsp;    @ApiResponses(value = {
+&nbsp;            @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Enrolled schedules retrieved successfully&quot;, content = @Content(mediaType = &quot;application/json&quot;)),
+&nbsp;            @ApiResponse(responseCode = &quot;500&quot;, description = &quot;User not found&quot;)
+&nbsp;    })
+&nbsp;    @GetMapping(&quot;/getEnroll/{netId}&quot;)
+&nbsp;    public ResponseEntity&lt;List&lt;Schedule&gt;&gt; getEnroll(@Parameter(description = &quot;NetID of the user&quot;, required = true) @PathVariable String netId){
+<b class="nc">&nbsp;        Optional&lt;User&gt; curUser = userRepository.findUserByNetId(netId);</b>
+&nbsp;        // check if user exists or not
+<b class="nc">&nbsp;        if(curUser.isEmpty()){</b>
+<b class="nc">&nbsp;            return  ResponseEntity.internalServerError().build();</b>
+&nbsp;        }
+<b class="nc">&nbsp;        User user = curUser.get();</b>
+<b class="nc">&nbsp;        List&lt;Enroll&gt; enrollList = user.getEnrollList();</b>
+<b class="nc">&nbsp;        List&lt;Schedule&gt; scheduleList = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;        for(Enroll enroll : enrollList){</b>
+<b class="nc">&nbsp;            Schedule schedule = enroll.getSchedule();</b>
+<b class="nc">&nbsp;            scheduleList.add(schedule);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return ResponseEntity.ok(scheduleList);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Get all users enrolled in a specific schedule.
+&nbsp;     *
+&nbsp;     * @param scheduleId The ID of the schedule.
+&nbsp;     * @return A list of users enrolled in the schedule.
+&nbsp;     */
+&nbsp;    @Operation(summary = &quot;Fetch users in a schedule&quot;, description = &quot;Retrieve all users (students) enrolled in the specified schedule.&quot;)
+&nbsp;    @ApiResponses(value = {
+&nbsp;            @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Users retrieved successfully&quot;, content = @Content(mediaType = &quot;application/json&quot;))
+&nbsp;    })
+&nbsp;    @GetMapping(&quot;/getPeople/{scheduleId}&quot;)
+&nbsp;    public ResponseEntity&lt;List&lt;User&gt;&gt; fetchStudents(@Parameter(description = &quot;ID of the schedule&quot;, required = true) @PathVariable long scheduleId) {
+<b class="nc">&nbsp;        List&lt;User&gt; people = enrollRepository.findStudentsBySchedule(scheduleId);</b>
+<b class="nc">&nbsp;        return ResponseEntity.ok(people);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Enroll a user in a specific schedule.
+&nbsp;     *
+&nbsp;     * @param netId      The NetID of the user.
+&nbsp;     * @param scheduleId The ID of the schedule.
+&nbsp;     * @return A success or error message.
+&nbsp;     */
+&nbsp;    @Operation(summary = &quot;Enroll in a schedule&quot;, description = &quot;Enroll the specified user in the given schedule.&quot;)
+&nbsp;    @ApiResponses(value = {
+&nbsp;            @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Enrollment added successfully&quot;, content = @Content(mediaType = &quot;application/json&quot;)),
+&nbsp;            @ApiResponse(responseCode = &quot;404&quot;, description = &quot;User or schedule not found&quot;)
+&nbsp;    })
+&nbsp;    @PostMapping(&quot;/addEnroll/{netId}&quot;)
+&nbsp;    public ResponseEntity&lt;String&gt; addEnroll(
+&nbsp;            @Parameter(description = &quot;NetID of the user&quot;, required = true)
+&nbsp;            @PathVariable String netId,
+&nbsp;            @Parameter(description = &quot;ID of the schedule to enroll in&quot;, required = true)
+&nbsp;            @RequestParam long scheduleId) {
+&nbsp;        // check if user exists or not
+<b class="nc">&nbsp;        Optional&lt;User&gt; curUser = userRepository.findUserByNetId(netId);</b>
+<b class="nc">&nbsp;        if (curUser.isEmpty()) {</b>
+<b class="nc">&nbsp;            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(&quot;User not found.&quot;);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        User user = curUser.get();</b>
+&nbsp;        // check if the schedule exists or not
+<b class="nc">&nbsp;        Optional&lt;Schedule&gt; curSchedule = scheduleRepository.findById(scheduleId);</b>
+<b class="nc">&nbsp;        if (curSchedule.isEmpty()) {</b>
+<b class="nc">&nbsp;            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(&quot;Schedule not found.&quot;);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        Schedule schedule = curSchedule.get();</b>
+<b class="nc">&nbsp;        Enroll newEnroll = new Enroll(user, schedule);</b>
+<b class="nc">&nbsp;        enrollRepository.save(newEnroll);</b>
+<b class="nc">&nbsp;        return ResponseEntity.ok(&quot;Add enrollment successfully&quot;);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Delete a user&#39;s enrollment from a specific schedule.
+&nbsp;     *
+&nbsp;     * @param netId    The NetID of the user.
+&nbsp;     * @param enrollId The ID of the enrollment to delete.
+&nbsp;     * @return A success or error message.
+&nbsp;     */
+&nbsp;    @Operation(summary = &quot;Delete an enrollment&quot;, description = &quot;Delete the specified enrollment for the given user.&quot;)
+&nbsp;    @ApiResponses(value = {
+&nbsp;            @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Enrollment deleted successfully&quot;, content = @Content(mediaType = &quot;application/json&quot;)),
+&nbsp;            @ApiResponse(responseCode = &quot;404&quot;, description = &quot;User or enrollment not found&quot;),
+&nbsp;            @ApiResponse(responseCode = &quot;403&quot;, description = &quot;User not authorized to delete this enrollment&quot;)
+&nbsp;    })
+&nbsp;    @DeleteMapping(&quot;/deleteEnroll/{netId}&quot;)
+&nbsp;    public ResponseEntity&lt;String&gt; deleteEnroll(
+&nbsp;            @Parameter(description = &quot;NetID of the user&quot;, required = true)
+&nbsp;            @PathVariable String netId,
+&nbsp;            @Parameter(description = &quot;ID of the enrollment to delete&quot;, required = true)
+&nbsp;            @RequestParam long enrollId
+&nbsp;    ){
+&nbsp;        // check if user exists or not
+<b class="nc">&nbsp;        Optional&lt;User&gt; curUser = userRepository.findUserByNetId(netId);</b>
+<b class="nc">&nbsp;        if (curUser.isEmpty()) {</b>
+<b class="nc">&nbsp;            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(&quot;User not found.&quot;);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        User user = curUser.get();</b>
+&nbsp;        // check if the enrollment exists or not
+<b class="nc">&nbsp;        Optional&lt;Enroll&gt; curEnroll = enrollRepository.findById(enrollId);</b>
+<b class="nc">&nbsp;        if(curEnroll.isEmpty()){</b>
+<b class="nc">&nbsp;            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(&quot;Enrollment not found&quot;);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        Enroll enroll = curEnroll.get();</b>
+&nbsp;        // check if the enrollment belongs to the right person
+<b class="nc">&nbsp;        if(!enroll.getStudent().getNetId().trim().equalsIgnoreCase(netId)){</b>
+<b class="nc">&nbsp;            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(&quot;You are not authorized to delete this enrollment&quot;);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        enrollRepository.delete(enroll);</b>
+<b class="nc">&nbsp;        return ResponseEntity.ok(&quot;Delete enrollment successfully&quot;);</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-12-04 23:26</div>
+</div>
+</body>
+</html>
