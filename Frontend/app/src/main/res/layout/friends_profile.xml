@@ -189,7 +189,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:text="Edit Profile"
-            android:visibility="invisible" />
+            android:visibility="gone" />
 
         <Button
             android:id="@+id/pingFriendButton"
