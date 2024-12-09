@@ -2,6 +2,7 @@ package com.coms309.isu_pulse_frontend.loginsignup;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -26,6 +27,7 @@ public class ForgotPassword extends AppCompatActivity {
     private Button backButton;
     private AuthenticationService authenticationService;
     private boolean isverified;
+    private String netId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,25 +46,73 @@ public class ForgotPassword extends AppCompatActivity {
 
 
         verifyOtpButton.setOnClickListener(view -> {
-            String netId = emailOtpInput.getText().toString();
-            authenticationService.checkUserExists(netId, ForgotPassword.this, new AuthenticationService.VolleyCallback() {
-                @Override
-                public void onSuccess(JSONObject result) {
-                    // User exists, now verify the password
-                    if (result != null) {
-                        forgotPasswordDescription.setText("Enter email for sending OTP");
-                        verifyOtpButton.setText("Send OTP");
-                    }
-                }
+            String input = emailOtpInput.getText().toString();
 
-                @Override
-                public void onError(String message) {
-                    // User does not exist or other error
-                    Toast.makeText(ForgotPassword.this, "User does not exist", Toast.LENGTH_SHORT).show();
-                }
-            });
+            if (!isverified) {
+                if (verifyOtpButton.getText().toString().equalsIgnoreCase("Verify NetId")) {
+                    // Step 1: Check if user exists
+                    authenticationService.checkUserExists(input, ForgotPassword.this, new AuthenticationService.VolleyCallback() {
+                        @Override
+                        public void onSuccess(JSONObject result) {
+                            // User exists, proceed to sending OTP
+                            netId = input;
+                            forgotPasswordDescription.setText("Enter your email for OTP.");
+                            emailOtpInput.setHint("Enter email");
+                            verifyOtpButton.setText("Send OTP");
+                        }
 
+                        @Override
+                        public void onError(String message) {
+                            // User does not exist
+                            Toast.makeText(ForgotPassword.this, "User does not exist", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                } else if (verifyOtpButton.getText().toString().equalsIgnoreCase("Send OTP")) {
+                    // Step 2: Send OTP
+                    authenticationService.sendOtp(input, ForgotPassword.this, new AuthenticationService.ForgetPasswordCallback() {
+                        @Override
+                        public void onSuccess(String response) {
+                            // OTP sent successfully
+                            Toast.makeText(ForgotPassword.this, "OTP sent to your email.", Toast.LENGTH_SHORT).show();
+                            forgotPasswordDescription.setText("Enter the OTP you received.");
+                            emailOtpInput.setHint("Enter OTP");
+                            verifyOtpButton.setText("Verify OTP");
+                            emailOtpInput.setTag(input); // Save email for verification
+                        }
+
+                        @Override
+                        public void onError(String message) {
+                            // Failed to send OTP
+                            Toast.makeText(ForgotPassword.this, "Failed to send OTP: " + message, Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                } else if (verifyOtpButton.getText().toString().equalsIgnoreCase("Verify OTP")) {
+                    // Step 3: Verify OTP
+                    String email = emailOtpInput.getTag().toString(); // Retrieve saved email
+                    authenticationService.verifyOtp(email, input, ForgotPassword.this, new AuthenticationService.ForgetPasswordCallback() {
+                        @Override
+                        public void onSuccess(String response) {
+                            // OTP verified successfully
+                            Toast.makeText(ForgotPassword.this, "OTP verified. You can now reset your password.", Toast.LENGTH_SHORT).show();
+                            isverified = true;
+                            forgotPasswordDescription.setText("Enter your new password.");
+                            emailOtpInput.setVisibility(View.GONE);
+                            verifyOtpButton.setVisibility(View.GONE);
+                            passwordInput.setVisibility(View.VISIBLE);
+                            confirmPasswordInput.setVisibility(View.VISIBLE);
+                            updateProfileButton.setVisibility(View.VISIBLE);
+                        }
+
+                        @Override
+                        public void onError(String message) {
+                            // Failed to verify OTP
+                            Toast.makeText(ForgotPassword.this, "Failed to verify OTP: " + message, Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+            }
         });
+
 
 
         backButton.setOnClickListener(view -> {
@@ -71,7 +121,6 @@ public class ForgotPassword extends AppCompatActivity {
         });
 
         updateProfileButton.setOnClickListener(view -> {
-            String netId = emailOtpInput.getText().toString();
             String newHashPassword = PasswordHasher.hashPassword(passwordInput.getText().toString());
             String confirmHashPassword = PasswordHasher.hashPassword(confirmPasswordInput.getText().toString());
             if (!isverified) {

@@ -28,8 +28,51 @@ public class AuthenticationService {
         void onError(String message);
     }
 
+    public void sendOtp(String email, Context context, final ForgetPasswordCallback callback){
+        String url = BASE_URL + "auth/sendOtp?email=" + email;
+        RequestQueue queue = Volley.newRequestQueue(context);
+        StringRequest request = new StringRequest(Request.Method.POST, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        // Success callback
+                        callback.onSuccess(response);
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        // Error callback
+                        callback.onError("Failed to send otp: " + error.getMessage());
+                    }
+                });
+        queue.add(request);
+    }
+
+    public void verifyOtp(String email, String otp, Context context, final ForgetPasswordCallback callback){
+        String url = BASE_URL + "auth/verifyOtp?email=" + email + "&otp=" + otp;
+        RequestQueue queue = Volley.newRequestQueue(context);
+        StringRequest request = new StringRequest(Request.Method.POST, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        // Success callback
+                        callback.onSuccess(response);
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        // Error callback
+                        callback.onError("Failed to verify otp: " + error.getMessage());
+                    }
+                });
+        queue.add(request);
+    }
+
+
     public void forgotPassword(String netId, String newHashPassword, Context context, final ForgetPasswordCallback callback) {
-        String url = BASE_URL + "users/forgetPassword?netId=" + netId + "&newHashPassword=" + newHashPassword;
+        String url = BASE_URL + "users/forgotPassword?netId=" + netId + "&newHashPassword=" + newHashPassword;
         RequestQueue queue = Volley.newRequestQueue(context);
         StringRequest request = new StringRequest(Request.Method.PUT, url,
                 new Response.Listener<String>() {
