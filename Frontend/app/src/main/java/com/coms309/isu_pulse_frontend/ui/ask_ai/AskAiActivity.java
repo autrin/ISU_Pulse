@@ -80,6 +80,12 @@ public class AskAiActivity extends AppCompatActivity {
         Glide.with(this).load(R.drawable.chatgpt_100).into(profileImageView);
         nameTextView.setText("ChatGPT");
 
+        // Handle the Intent and initialize the session
+        String chatId = getIntent().getStringExtra("chatId");
+        if (chatId != null) {
+            Log.d("AskAiActivity", "Chat session started for chatId: " + chatId);
+        }
+
         // Handle back button navigation
         backButton.setOnClickListener(v -> {
             finish(); // Simply finish the activity to return to the previous screen
