@@ -7,18 +7,14 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.coms309.isu_pulse_frontend.R;
-import com.coms309.isu_pulse_frontend.api.ChatApiService;
+import com.coms309.isu_pulse_frontend.adapters.AskAiAdapter;
 import com.coms309.isu_pulse_frontend.chat_system.ChatMessage;
-import com.coms309.isu_pulse_frontend.chat_system.ChatViewAdapter;
-import com.coms309.isu_pulse_frontend.chat_system.GroupChatCreating;
-import com.coms309.isu_pulse_frontend.loginsignup.UserSession;
 import com.coms309.isu_pulse_frontend.ui.home.HomeActivity;
 
 import java.util.ArrayList;
@@ -31,7 +27,7 @@ public class AskAiAllHistoryActivity extends AppCompatActivity {
     private EditText searchBar;
     private ImageButton createButton;
     private RecyclerView chatsRecyclerView;
-    private ChatViewAdapter chatViewAdapter;
+    private AskAiAdapter askAiAdapter;
     private List<ChatMessage> chatList;
     private List<ChatMessage> allChats; // To store the complete list of chats
 
@@ -63,8 +59,8 @@ public class AskAiAllHistoryActivity extends AppCompatActivity {
 
         chatList = new ArrayList<>();
         allChats = new ArrayList<>();
-        chatViewAdapter = new ChatViewAdapter(chatList);
-        chatsRecyclerView.setAdapter(chatViewAdapter);
+        askAiAdapter = new AskAiAdapter(chatList);
+        chatsRecyclerView.setAdapter(askAiAdapter);
 
         fetchChats();
 
@@ -106,7 +102,7 @@ public class AskAiAllHistoryActivity extends AppCompatActivity {
         allChats.clear();
         allChats.addAll(mockChats);
 
-        chatViewAdapter.notifyDataSetChanged();
+        askAiAdapter.notifyDataSetChanged();
     }
 
     private void searchChats(String query) {
@@ -126,7 +122,7 @@ public class AskAiAllHistoryActivity extends AppCompatActivity {
             chatList.clear();
             chatList.addAll(filteredList);
         }
-        chatViewAdapter.notifyDataSetChanged();
+        askAiAdapter.notifyDataSetChanged();
     }
 }
 
