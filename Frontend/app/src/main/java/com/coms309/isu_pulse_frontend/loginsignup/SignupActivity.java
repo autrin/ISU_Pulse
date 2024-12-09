@@ -122,7 +122,7 @@ public class SignupActivity extends AppCompatActivity {
                                 // Save netId using UserSession
                                 UserSession.getInstance(SignupActivity.this).setNetId(netIdInput, SignupActivity.this);
                                 // Save user type using UserSession
-                                UserSession.getInstance(SignupActivity.this).setUserType(result.optString("userType"), SignupActivity.this);
+                                UserSession.getInstance(SignupActivity.this).setUserType(usertype.getSelectedItem().toString(), SignupActivity.this);
 
                                 Toast.makeText(SignupActivity.this, "Signup successful!", Toast.LENGTH_SHORT).show();
                                 startActivity(new Intent(SignupActivity.this, MainActivity.class));
@@ -155,11 +155,11 @@ public class SignupActivity extends AppCompatActivity {
                                             // Save netId using UserSession
                                             UserSession.getInstance(SignupActivity.this).setNetId(netIdInput, SignupActivity.this);
                                             // Save user type using UserSession
-                                            UserSession.getInstance(SignupActivity.this).setUserType(result.getString("userType"), SignupActivity.this);
+                                            UserSession.getInstance(SignupActivity.this).setUserType(usertype.getSelectedItem().toString(), SignupActivity.this);
 
                                             Toast.makeText(SignupActivity.this, "Signup successful!", Toast.LENGTH_SHORT).show();
                                             startActivity(new Intent(SignupActivity.this, MainActivity.class));
-                                        } catch (JSONException e) {
+                                        } catch (Exception e) {
                                             e.printStackTrace();
                                             Toast.makeText(SignupActivity.this, "Error parsing response in onSuccess in SignupActivity", Toast.LENGTH_SHORT).show();
                                         }
