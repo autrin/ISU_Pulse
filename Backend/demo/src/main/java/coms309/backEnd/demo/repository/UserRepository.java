@@ -23,4 +23,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
   @Query("SELECT u FROM User u WHERE LOWER(u.firstName) = LOWER(:name) OR LOWER(u.lastName) = LOWER(:name)")
   public List<User> findByFirstNameOrLastNameIgnoreCase(@Param("name") String name);
 
+    Optional<User> findByEmail(String email);
+
 }
