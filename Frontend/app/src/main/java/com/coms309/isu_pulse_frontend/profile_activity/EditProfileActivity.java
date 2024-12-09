@@ -144,6 +144,7 @@ public class EditProfileActivity extends AppCompatActivity {
 
     private void updateProfile() {
         UpdateAccount apiService = new UpdateAccount();
+
         String newPasswordinput = newPassword.getText().toString().trim();
         String confirmNewPasswordinput = confirmNewPassword.getText().toString().trim();
         String hashPassword = PasswordHasher.hashPassword(newPasswordinput);
@@ -151,58 +152,70 @@ public class EditProfileActivity extends AppCompatActivity {
         String linkedinUrlInput = linkedinUrl.getText().toString().trim();
         String externalUrlInput = externalUrl.getText().toString().trim();
 
+        // Ensure credentials have been verified
         if (!checkcredential) {
-            Toast.makeText(EditProfileActivity.this, "Please check credentials", Toast.LENGTH_SHORT).show();
+            Toast.makeText(EditProfileActivity.this, "Please check credentials first", Toast.LENGTH_SHORT).show();
             Log.e("CredentialCheck", "Credentials were not verified.");
             return;
         }
 
-        if (newPasswordinput.isEmpty() || confirmNewPasswordinput.isEmpty()) {
-            Toast.makeText(EditProfileActivity.this, "Please enter all fields", Toast.LENGTH_SHORT).show();
-            return;
+        // Check if the user is attempting to change the password
+        boolean isChangingPassword = !newPasswordinput.isEmpty() || !confirmNewPasswordinput.isEmpty();
+
+        if (isChangingPassword) {
+            // Validate password fields
+            if (newPasswordinput.isEmpty() || confirmNewPasswordinput.isEmpty()) {
+                Toast.makeText(EditProfileActivity.this, "Please enter both new password and confirmation", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if (newPasswordinput.length() < 8) {
+                Toast.makeText(EditProfileActivity.this, "Password must be at least 8 characters", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if (!newPasswordinput.equals(confirmNewPasswordinput)) {
+                Toast.makeText(EditProfileActivity.this, "Passwords do not match", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // Update password if validation passes
+            apiService.updateUserPassword(hashPassword, EditProfileActivity.this, new UpdateAccount.VolleyCallback() {
+                @Override
+                public void onSuccess(String result) {
+                    Toast.makeText(EditProfileActivity.this, "Password updated successfully", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(EditProfileActivity.this, ProfileActivity.class);
+                    startActivity(intent);
+
+                }
+
+                @Override
+                public void onError(String message) {
+                    Toast.makeText(EditProfileActivity.this, "Password update failed", Toast.LENGTH_SHORT).show();
+                }
+            });
         }
 
-        if (newPasswordinput.length() < 8) {
-            Toast.makeText(EditProfileActivity.this, "Password must be at least 8 characters", Toast.LENGTH_SHORT).show();
-            return;
+        boolean isChangingProfile = !descriptionInput.isEmpty() || !linkedinUrlInput.isEmpty() || !externalUrlInput.isEmpty();
+        if (isChangingProfile) {
+            if (descriptionInput.isEmpty() || linkedinUrlInput.isEmpty() || externalUrlInput.isEmpty()) {
+                Toast.makeText(EditProfileActivity.this, "Please enter at least one field to update", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            apiService.updateProfile(descriptionInput, externalUrlInput, linkedinUrlInput, EditProfileActivity.this, new UpdateAccount.VolleyCallback() {
+                @Override
+                public void onSuccess(String result) {
+                    Toast.makeText(EditProfileActivity.this, "Profile updated successfully", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(EditProfileActivity.this, ProfileActivity.class);
+                    startActivity(intent);
+                }
+
+                @Override
+                public void onError(String message) {
+                    Toast.makeText(EditProfileActivity.this, "Profile update failed", Toast.LENGTH_SHORT).show();
+                }
+            });
         }
-
-        if (!newPasswordinput.equals(confirmNewPasswordinput)) {
-            Toast.makeText(EditProfileActivity.this, "Passwords do not match", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        String netIdValue = netid.getText().toString();
-        if (!netIdValue.equals(userNetId))
-            Toast.makeText(EditProfileActivity.this, "Net ID is wrong", Toast.LENGTH_SHORT).show();
-
-        // Update password
-        apiService.updateUserPassword(hashPassword, EditProfileActivity.this, new UpdateAccount.VolleyCallback() {  // Deleted netIdValue
-            @Override
-            public void onSuccess(String result) {
-                Toast.makeText(EditProfileActivity.this, "Password updated successfully", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onError(String message) {
-                Toast.makeText(EditProfileActivity.this, "Password update failed", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        // Update profile with description, LinkedIn, and external URL
-        apiService.updateProfile(descriptionInput, externalUrlInput, linkedinUrlInput, EditProfileActivity.this, new UpdateAccount.VolleyCallback() { // Deleted userNetId
-            @Override
-            public void onSuccess(String result) {
-                Toast.makeText(EditProfileActivity.this, "Profile updated successfully", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(EditProfileActivity.this, ProfileActivity.class);
-                startActivity(intent);
-            }
-
-            @Override
-            public void onError(String message) {
-                Toast.makeText(EditProfileActivity.this, "Profile update failed", Toast.LENGTH_SHORT).show();
-            }
-        });
     }
 
 }

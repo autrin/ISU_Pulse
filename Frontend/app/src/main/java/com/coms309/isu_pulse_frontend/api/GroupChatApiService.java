@@ -10,6 +10,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.coms309.isu_pulse_frontend.loginsignup.UserSession;
 
 public class GroupChatApiService {
     private RequestQueue requestQueue;
@@ -65,7 +66,7 @@ public class GroupChatApiService {
     }
 
     public void modifyGroupChat(Long groupId, String groupName, GroupChatCallback callback) {
-        String url = BASE_URL + "groups/modifyGroupName?groupId=" + groupId + "&groupName=" + groupName;
+        String url = BASE_URL + "groups/modifyGroupName?netId=" + UserSession.getInstance().getNetId() + "&groupId=" + groupId + "&groupName=" + groupName;
 
         StringRequest request = new StringRequest(Request.Method.PUT, url,
                 new Response.Listener<String>() {
