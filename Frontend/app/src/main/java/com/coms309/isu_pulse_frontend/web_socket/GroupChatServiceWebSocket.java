@@ -61,6 +61,7 @@ public class GroupChatServiceWebSocket {
 
         // Construct the WebSocket URL
         String wsUrl = String.format("ws://10.0.2.2:8080/ws/group-chat?netId=%s&groupId=%s", netId, groupId);
+//        String wsUrl = String.format("ws://coms-3090-042.class.las.iastate.edu/ws/group-chat?netId=%s&groupId=%s", netId, groupId);
         Log.d(TAG, "Connecting to WebSocket URL: " + wsUrl);
 
         Request request = new Request.Builder().url(wsUrl).build();

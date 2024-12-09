@@ -3,6 +3,7 @@ package com.coms309.isu_pulse_frontend.api;
 import static com.coms309.isu_pulse_frontend.api.Constants.BASE_URL;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -20,6 +21,11 @@ public class AuthenticationService {
     // Define a callback interface to handle the asynchronous response
     public interface VolleyCallback {
         void onSuccess(JSONObject result);
+        void onError(String message);
+    }
+
+    public interface LoginCallback {
+        void onSuccess(String result);
         void onError(String message);
     }
 
@@ -92,6 +98,7 @@ public class AuthenticationService {
         queue.add(request);
     }
 
+
     public void registerNewUser(
             String netId,
             String firstName,
@@ -101,7 +108,7 @@ public class AuthenticationService {
             String imageUrl,
             String userType,
             Context context,
-            final VolleyCallback callback
+            final LoginCallback callback
     ) {
         String url = BASE_URL + "users";
 
@@ -117,22 +124,39 @@ public class AuthenticationService {
             userJson.put("userType", userType);
         } catch (JSONException e) {
             e.printStackTrace();
+            callback.onError("Failed to create JSON body: " + e.getMessage());
             return;
         }
+        Log.d("RegisterNewUser", "URL: " + url);
+        Log.d("RegisterNewUser", "Payload: " + userJson.toString());
 
         RequestQueue queue = Volley.newRequestQueue(context);
 
-        JsonObjectRequest postRequest = new JsonObjectRequest(
-                Request.Method.POST, url, userJson,
-                callback::onSuccess,
+        StringRequest stringRequest = new StringRequest(
+                Request.Method.POST, url,
+                response -> {
+                    // Handle plain string response
+                    callback.onSuccess(response);
+                },
                 error -> {
-                    callback.onError(error.toString());
-                    error.printStackTrace();
+                    // Handle error response
+                    callback.onError("Failed to register user: " + error.getMessage());
                 }
-        );
+        ) {
+            @Override
+            public byte[] getBody() {
+                return userJson.toString().getBytes();
+            }
 
-        queue.add(postRequest);
+            @Override
+            public String getBodyContentType() {
+                return "application/json";
+            }
+        };
+
+        queue.add(stringRequest);
     }
+
 
     public void checkUserExists(String netId, Context context, final VolleyCallback callback) {
         String url = BASE_URL + "users/" + netId;
