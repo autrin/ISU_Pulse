@@ -24,7 +24,7 @@ import com.coms309.isu_pulse_frontend.R;
 import com.coms309.isu_pulse_frontend.api.ChatApiService;
 import com.coms309.isu_pulse_frontend.api.UpdateAccount;
 import com.coms309.isu_pulse_frontend.chat_system.ChatActivity;
-import com.coms309.isu_pulse_frontend.chat_system.ChatAdapter;
+import com.coms309.isu_pulse_frontend.adapters.AskAiAdapter;
 import com.coms309.isu_pulse_frontend.chat_system.ChatList;
 import com.coms309.isu_pulse_frontend.chat_system.ChatMessage;
 import com.coms309.isu_pulse_frontend.chat_system.ChatMessageDTO;
@@ -53,8 +53,8 @@ public class AskAiActivity extends AppCompatActivity {
     private RecyclerView recyclerViewMessages;
     private TextView nameTextView;
     private TextView typingIndicatorTextView;
-    private ChatAdapter chatAdapter;
-    private ChatAdapter chatAdapterfetchHistory;
+    private AskAiAdapter askAiAdapter;
+    private AskAiAdapter chatAdapterfetchHistory;
 //    private ChatServiceWebSocket chatServiceWebSocket;
     private String netId1;
     private String netId2;
@@ -73,8 +73,8 @@ public class AskAiActivity extends AppCompatActivity {
         sendButton = findViewById(R.id.buttonSend);
         recyclerViewMessages = findViewById(R.id.recyclerAskAiViewMessages);
         recyclerViewMessages.setLayoutManager(new LinearLayoutManager(this));
-        chatAdapter = new ChatAdapter(new ArrayList<>());
-        recyclerViewMessages.setAdapter(chatAdapter);
+        askAiAdapter = new AskAiAdapter(new ArrayList<>());
+        recyclerViewMessages.setAdapter(askAiAdapter);
 
         // Set ChatGPT-specific UI
         Glide.with(this).load(R.drawable.chatgpt_100).into(profileImageView);
@@ -120,8 +120,8 @@ public class AskAiActivity extends AppCompatActivity {
 
     // Displays a message in the chat
     private void displayMessage(String message, boolean isSent, String timestamp) {
-        chatAdapter.addMessage(new ChatMessage(message, isSent, timestamp));
-        recyclerViewMessages.smoothScrollToPosition(chatAdapter.getItemCount() - 1);
+        askAiAdapter.addMessage(new ChatMessage(message, isSent, timestamp));
+        recyclerViewMessages.smoothScrollToPosition(askAiAdapter.getItemCount() - 1);
     }
 
     // Mock AI response generator (to be replaced by API call)
