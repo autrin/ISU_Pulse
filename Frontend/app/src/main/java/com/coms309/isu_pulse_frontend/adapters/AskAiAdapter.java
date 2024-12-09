@@ -26,7 +26,6 @@ import java.util.List;
 
 public class AskAiAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int VIEW_TYPE_ONE_ON_ONE = 1;
-    private static final int VIEW_TYPE_GROUP = 2;
 
     private List<ChatMessage> chatMessages;
 
@@ -34,10 +33,14 @@ public class AskAiAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         this.chatMessages = chatMessages;
     }
 
+    public void addMessage(ChatMessage message) {
+        chatMessages.add(message);
+        notifyItemInserted(chatMessages.size() - 1);
+    }
+
     @Override
     public int getItemViewType(int position) {
-        ChatMessage chatMessage = chatMessages.get(position);
-        return chatMessage.getGroupId() != null ? VIEW_TYPE_GROUP : VIEW_TYPE_ONE_ON_ONE;
+        return VIEW_TYPE_ONE_ON_ONE; // Always one-on-one for AI chat
     }
 
     @NonNull
@@ -52,18 +55,13 @@ public class AskAiAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         ChatMessage chatMessage = chatMessages.get(position);
         if (holder instanceof AskAiViewHolder) {
             AskAiViewHolder viewHolder = (AskAiViewHolder) holder;
-            viewHolder.textViewName.setText("ChatGPT"); // Static for AI chats
+            viewHolder.textViewName.setText("ChatGPT");
             viewHolder.textViewMessage.setText(chatMessage.getMessage());
             viewHolder.textViewTimestamp.setText(chatMessage.getTimestamp());
             Glide.with(holder.itemView.getContext())
                     .load(R.drawable.chatgpt_100)
                     .into(viewHolder.imageViewProfile);
         }
-    }
-
-    public void addMessage(ChatMessage message) {
-        chatMessages.add(message);
-        notifyItemInserted(chatMessages.size() - 1); // Notify RecyclerView of the new item
     }
 
     @Override
@@ -76,7 +74,6 @@ public class AskAiAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         TextView textViewMessage;
         ImageView imageViewProfile;
         TextView textViewTimestamp;
-        Button buttonMessage;
 
         public AskAiViewHolder(View itemView) {
             super(itemView);
@@ -84,7 +81,6 @@ public class AskAiAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             textViewMessage = itemView.findViewById(R.id.last_message);
             imageViewProfile = itemView.findViewById(R.id.profile_image);
             textViewTimestamp = itemView.findViewById(R.id.timestamp);
-            buttonMessage = itemView.findViewById(R.id.message_button);
         }
     }
 }
