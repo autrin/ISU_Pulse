@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -14,10 +15,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.bumptech.glide.Glide;
 import com.coms309.isu_pulse_frontend.R;
 import com.coms309.isu_pulse_frontend.api.CourseService;
 import com.coms309.isu_pulse_frontend.api.FriendService;
+import com.coms309.isu_pulse_frontend.api.UpdateAccount;
 import com.coms309.isu_pulse_frontend.loginsignup.UserSession;
+import com.coms309.isu_pulse_frontend.model.Profile;
 import com.coms309.isu_pulse_frontend.ui.home.Course;
 
 import java.util.List;
@@ -49,6 +53,23 @@ public class FriendSuggestionAdapter extends RecyclerView.Adapter<FriendSuggesti
         String receiverNetId = student.getNetId();
 
         CourseService courseService = new CourseService(context);
+
+        FriendSuggestionViewHolder friendSuggestionViewHolder = (FriendSuggestionViewHolder) holder;
+
+        UpdateAccount.fetchProfileData(student.getNetId(), holder.itemView.getContext(), new UpdateAccount.ProfileCallback() {
+            @Override
+            public void onSuccess(Profile profile) {
+                String imageUrl = profile.getProfilePictureUrl();
+                Glide.with(holder.itemView.getContext())
+                        .load(imageUrl)
+                        .into(friendSuggestionViewHolder.profileImageView);
+            }
+
+            @Override
+            public void onError(VolleyError error) {
+                friendSuggestionViewHolder.profileImageView.setImageResource(R.drawable.isu_logo);
+            }
+        });
 
         // Fetch mutual courses
         courseService.getMutualCourses(senderNetId, receiverNetId,
@@ -155,10 +176,12 @@ public class FriendSuggestionAdapter extends RecyclerView.Adapter<FriendSuggesti
         Button addFriendButton;
         TextView mutualFriendsTextView;
         TextView mutualCoursesTextView;
+        ImageView profileImageView;
 
         FriendSuggestionViewHolder(@NonNull View itemView) {
             super(itemView);
             nameTextView = itemView.findViewById(R.id.friend_name);
+            profileImageView = itemView.findViewById(R.id.friend_avatar);
             addFriendButton = itemView.findViewById(R.id.addfriendbutton);
             mutualFriendsTextView = itemView.findViewById(R.id.mutual_friends);
             mutualCoursesTextView = itemView.findViewById(R.id.mutual_courses);

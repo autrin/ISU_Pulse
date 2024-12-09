@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -14,10 +15,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.bumptech.glide.Glide;
 import com.coms309.isu_pulse_frontend.R;
 import com.coms309.isu_pulse_frontend.api.CourseService;
 import com.coms309.isu_pulse_frontend.api.FriendService;
+import com.coms309.isu_pulse_frontend.api.UpdateAccount;
 import com.coms309.isu_pulse_frontend.loginsignup.UserSession;
+import com.coms309.isu_pulse_frontend.model.Profile;
 import com.coms309.isu_pulse_frontend.ui.home.Course;
 
 import java.util.List;
@@ -46,10 +50,26 @@ public class FriendRequestAdapter extends RecyclerView.Adapter<FriendRequestAdap
         Friend friend = friendRequestList.get(position);
         String receiverNetId = UserSession.getInstance().getNetId();
         String senderNetId = friend.getNetId();
+        FriendRequestViewHolder friendRequestViewHolder = (FriendRequestViewHolder) holder;
 
         holder.friendName.setText(friend.getFirstName() + " " + friend.getLastName());
 
         CourseService courseService = new CourseService(context);
+
+        UpdateAccount.fetchProfileData(friend.getNetId(), holder.itemView.getContext(), new UpdateAccount.ProfileCallback() {
+            @Override
+            public void onSuccess(Profile profile) {
+                String imageUrl = profile.getProfilePictureUrl();
+                Glide.with(holder.itemView.getContext())
+                        .load(imageUrl)
+                        .into(friendRequestViewHolder.profileImage);
+            }
+
+            @Override
+            public void onError(VolleyError error) {
+                friendRequestViewHolder.profileImage.setImageResource(R.drawable.isu_logo);
+            }
+        });
 
         // Fetch and display mutual courses
         courseService.getMutualCourses(receiverNetId, senderNetId,
@@ -176,10 +196,12 @@ public class FriendRequestAdapter extends RecyclerView.Adapter<FriendRequestAdap
         Button declineButton;
         TextView mutualFriendsTextView;
         TextView mutualCoursesTextView;
+        ImageView profileImage;
 
         public FriendRequestViewHolder(@NonNull View itemView) {
             super(itemView);
             friendName = itemView.findViewById(R.id.friend_name);
+            profileImage = itemView.findViewById(R.id.friend_avatar);
             acceptButton = itemView.findViewById(R.id.addfriendbutton);
             declineButton = itemView.findViewById(R.id.declinebutton);
             mutualFriendsTextView = itemView.findViewById(R.id.mutual_friends);
