@@ -41,6 +41,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import android.os.Handler;
+import android.window.OnBackInvokedDispatcher;
 
 public class AskAiActivity extends AppCompatActivity {
 
@@ -64,7 +65,15 @@ public class AskAiActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.ask_ai);
-
+//        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+//            getOnBackInvokedDispatcher().registerOnBackInvokedCallback(
+//                    OnBackInvokedDispatcher.PRIORITY_DEFAULT,
+//                    () -> {
+//                        // Handle the back action explicitly
+//                        navigateToHistory();
+//                    }
+//            );
+//        }
         // Initialize UI components
         backButton = findViewById(R.id.buttonBack);
         profileImageView = findViewById(R.id.imageViewLogo);
@@ -88,8 +97,12 @@ public class AskAiActivity extends AppCompatActivity {
 
         // Handle back button navigation
         backButton.setOnClickListener(v -> {
-            finish(); // Simply finish the activity to return to the previous screen
+            Intent intent = new Intent(AskAiActivity.this, AskAiAllHistoryActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); // Avoid multiple instances
+            startActivity(intent);
+            finish(); // Finish current activity
         });
+
 
         // Handle send button
         sendButton.setOnClickListener(v -> {
@@ -141,5 +154,11 @@ public class AskAiActivity extends AppCompatActivity {
     private String getCurrentTimestamp() {
         return new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
     }
-
+    // Helper method to navigate back to history
+//    private void navigateToHistory() {
+//        Intent intent = new Intent(AskAiActivity.this, AskAiAllHistoryActivity.class);
+//        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+//        startActivity(intent);
+//        finish();
+//    }
 }
