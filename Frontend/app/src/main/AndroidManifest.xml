@@ -90,6 +90,9 @@
             android:name=".course_functional.AddCourse"
             android:exported="false" />
         <activity
+            android:name=".ui.ask_ai.AskAiActivity"
+            android:exported="false" />
+        <activity
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/app_name"
