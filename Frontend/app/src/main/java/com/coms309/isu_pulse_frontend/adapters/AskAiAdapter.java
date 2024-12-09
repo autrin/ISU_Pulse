@@ -50,13 +50,17 @@ public class AskAiAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         ChatMessage chatMessage = chatMessages.get(position);
-
-        holder.itemView.setOnClickListener(v -> {
-            Intent intent = new Intent(v.getContext(), AskAiActivity.class);
-            intent.putExtra("chatId", chatMessage.getGroupId()); // Pass unique AI session ID
-            v.getContext().startActivity(intent);
-        });
+        if (holder instanceof AskAiViewHolder) {
+            AskAiViewHolder viewHolder = (AskAiViewHolder) holder;
+            viewHolder.textViewName.setText("ChatGPT"); // Static for AI chats
+            viewHolder.textViewMessage.setText(chatMessage.getMessage());
+            viewHolder.textViewTimestamp.setText(chatMessage.getTimestamp());
+            Glide.with(holder.itemView.getContext())
+                    .load(R.drawable.chatgpt_100)
+                    .into(viewHolder.imageViewProfile);
+        }
     }
+
     public void addMessage(ChatMessage message) {
         chatMessages.add(message);
         notifyItemInserted(chatMessages.size() - 1); // Notify RecyclerView of the new item
