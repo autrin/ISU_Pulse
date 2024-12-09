@@ -33,7 +33,6 @@ import com.coms309.isu_pulse_frontend.chat_system.ChatMessageDTO;
 import com.coms309.isu_pulse_frontend.loginsignup.UserSession;
 import com.coms309.isu_pulse_frontend.model.Profile;
 import com.coms309.isu_pulse_frontend.ui.home.HomeActivity;
-import com.coms309.isu_pulse_frontend.web_socket.ChatServiceWebSocket;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -58,25 +57,14 @@ public class AskAiActivity extends AppCompatActivity {
     private TextView nameTextView;
     private TextView typingIndicatorTextView;
     private ChatAdapter askAiAdapter;
-//    private AskAiAdapter chatAdapterfetchHistory;
-//    private ChatServiceWebSocket chatServiceWebSocket;
-    private String netId1;
-    private String netId2;
+
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.ask_ai);
-//        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
-//            getOnBackInvokedDispatcher().registerOnBackInvokedCallback(
-//                    OnBackInvokedDispatcher.PRIORITY_DEFAULT,
-//                    () -> {
-//                        // Handle the back action explicitly
-//                        navigateToHistory();
-//                    }
-//            );
-//        }
+
         // Initialize UI components
         backButton = findViewById(R.id.buttonBack);
         profileImageView = findViewById(R.id.imageViewLogo);
