@@ -72,25 +72,38 @@ public class AskAiAllHistoryActivity extends AppCompatActivity {
         });
     }
 
+//    private void fetchChats() {
+//        String netId = UserSession.getInstance().getNetId();
+//        ChatApiService chatApiService = new ChatApiService(this);
+//
+//        chatApiService.getLatestMessage(netId, new ChatApiService.ChatLatestCallback() {
+//            @Override
+//            public void onSuccess(List<ChatMessage> aiChatList) {
+//                chatList.clear();
+//                chatList.addAll(aiChatList); // Show only AI-related chats
+//                allChats.clear();
+//                allChats.addAll(aiChatList);
+//                chatViewAdapter.notifyDataSetChanged();
+//            }
+//
+//            @Override
+//            public void onError(String error) {
+//                Toast.makeText(AskAiAllHistoryActivity.this, "Failed to fetch AI chats", Toast.LENGTH_SHORT).show();
+//            }
+//        });
+//    }
     private void fetchChats() {
-        String netId = UserSession.getInstance().getNetId();
-        ChatApiService chatApiService = new ChatApiService(this);
+        // Mock some chat messages for testing
+        List<ChatMessage> mockChats = new ArrayList<>();
+        mockChats.add(new ChatMessage("Hello, this is ChatGPT!", false, "12:00 PM"));
+        mockChats.add(new ChatMessage("How can I help you?", false, "12:01 PM"));
 
-        chatApiService.getLatestMessage(netId, new ChatApiService.ChatLatestCallback() {
-            @Override
-            public void onSuccess(List<ChatMessage> aiChatList) {
-                chatList.clear();
-                chatList.addAll(aiChatList); // Show only AI-related chats
-                allChats.clear();
-                allChats.addAll(aiChatList);
-                chatViewAdapter.notifyDataSetChanged();
-            }
+        chatList.clear();
+        chatList.addAll(mockChats);
+        allChats.clear();
+        allChats.addAll(mockChats);
 
-            @Override
-            public void onError(String error) {
-                Toast.makeText(AskAiAllHistoryActivity.this, "Failed to fetch AI chats", Toast.LENGTH_SHORT).show();
-            }
-        });
+        chatViewAdapter.notifyDataSetChanged();
     }
 
     private void searchChats(String query) {
