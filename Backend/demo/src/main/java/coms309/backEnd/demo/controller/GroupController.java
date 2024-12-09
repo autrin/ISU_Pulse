@@ -135,9 +135,16 @@ public class GroupController {
 
     @PutMapping("/modifyGroupName")
     public ResponseEntity<String> modifyGroupName(
+            @RequestParam String netId,
             @RequestParam long groupId,
             @RequestParam String groupName
     ){
+        // Check if user exists
+        Optional<User> curUser = userRepository.findUserByNetId(netId);
+        if (curUser.isEmpty()) {
+            return ResponseEntity.internalServerError().build();
+        }
+        User user = curUser.get();
         // Check the group exists
         Optional<Group> curGroup = groupRepository.findById(groupId);
         if(curGroup.isEmpty()){
@@ -150,6 +157,21 @@ public class GroupController {
             group.setName(groupName);
             groupRepository.save(group);
         }
+
+        //Check if user is in the group or not
+        if(!checkIfUserInTheGroup(group,user)){
+            return ResponseEntity.internalServerError().build();
+        }
+
+
+        // Sending the message to the group chat to specify who changed the name of the group
+        GroupMessages message = new GroupMessages();
+        message.setGroup(group);
+        message.setSender(null);
+        message.setContent(netId + " changed the group name into " + groupName);
+        groupMessagesRepository.save(message);
+
+
         return ResponseEntity.ok("Update the name of the group successfully");
     }
     // this is the API using the list<Group> in User Entity to find the latest group of a given user created
