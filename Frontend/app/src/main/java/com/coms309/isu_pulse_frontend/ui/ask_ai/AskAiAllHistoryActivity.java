@@ -50,7 +50,8 @@ public class AskAiAllHistoryActivity extends AppCompatActivity {
         });
 
         createButton.setOnClickListener(v -> {
-            Intent intent = new Intent(AskAiAllHistoryActivity.this, GroupChatCreating.class);
+            Intent intent = new Intent(AskAiAllHistoryActivity.this, AskAiActivity.class);
+            intent.putExtra("isNewChat", true); // Indicate a new session
             startActivity(intent);
         });
 
