@@ -11,13 +11,16 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.volley.VolleyError;
+import com.bumptech.glide.Glide;
 import com.coms309.isu_pulse_frontend.R;
+import com.coms309.isu_pulse_frontend.api.UpdateAccount;
 import com.coms309.isu_pulse_frontend.friend_functional.Friend;
+import com.coms309.isu_pulse_frontend.model.Profile;
 
 import java.util.List;
 
 public class GroupAddFriendAdapter extends RecyclerView.Adapter<GroupAddFriendAdapter.GroupAddFriendViewHolder> {
-
     private List<Friend> friendList;
     private Context context;
     private OnSelectionChangeListener onSelectionChangeListener;
@@ -50,6 +53,22 @@ public class GroupAddFriendAdapter extends RecyclerView.Adapter<GroupAddFriendAd
             int selectedCount = (int) friendList.stream().filter(Friend::isSelected).count();
             if (onSelectionChangeListener != null) {
                 onSelectionChangeListener.onSelectionChanged(selectedCount);
+            }
+        });
+
+        GroupAddFriendViewHolder groupAddFriendViewHolder = (GroupAddFriendViewHolder) holder;
+        UpdateAccount.fetchProfileData(friend.getNetId(), holder.itemView.getContext(), new UpdateAccount.ProfileCallback() {
+            @Override
+            public void onSuccess(Profile profile) {
+                String imageUrl = profile.getProfilePictureUrl();
+                Glide.with(holder.itemView.getContext())
+                        .load(imageUrl)
+                        .into(groupAddFriendViewHolder.profileImage);
+            }
+
+            @Override
+            public void onError(VolleyError error) {
+                groupAddFriendViewHolder.profileImage.setImageResource(R.drawable.isu_logo);
             }
         });
     }
