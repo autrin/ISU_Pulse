@@ -74,6 +74,7 @@ public class AskAiAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         TextView textViewMessage;
         ImageView imageViewProfile;
         TextView textViewTimestamp;
+        Button buttonMessage;
 
         public AskAiViewHolder(View itemView) {
             super(itemView);
@@ -81,6 +82,7 @@ public class AskAiAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             textViewMessage = itemView.findViewById(R.id.last_message);
             imageViewProfile = itemView.findViewById(R.id.profile_image);
             textViewTimestamp = itemView.findViewById(R.id.timestamp);
+            buttonMessage = itemView.findViewById(R.id.message_button);
         }
     }
 }
