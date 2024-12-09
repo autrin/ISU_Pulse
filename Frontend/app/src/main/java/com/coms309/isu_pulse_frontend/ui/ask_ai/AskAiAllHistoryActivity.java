@@ -78,17 +78,17 @@ public class AskAiAllHistoryActivity extends AppCompatActivity {
 
         chatApiService.getLatestMessage(netId, new ChatApiService.ChatLatestCallback() {
             @Override
-            public void onSuccess(List<ChatMessage> chatHistory) {
+            public void onSuccess(List<ChatMessage> aiChatList) {
                 chatList.clear();
-                chatList.addAll(chatHistory);
+                chatList.addAll(aiChatList); // Show only AI-related chats
                 allChats.clear();
-                allChats.addAll(chatHistory); // Store full list for search
+                allChats.addAll(aiChatList);
                 chatViewAdapter.notifyDataSetChanged();
             }
 
             @Override
             public void onError(String error) {
-                Toast.makeText(AskAiAllHistoryActivity.this, "Failed to fetch chats", Toast.LENGTH_SHORT).show();
+                Toast.makeText(AskAiAllHistoryActivity.this, "Failed to fetch AI chats", Toast.LENGTH_SHORT).show();
             }
         });
     }
