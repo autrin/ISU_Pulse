@@ -13,7 +13,7 @@ import com.coms309.isu_pulse_frontend.loginsignup.SignupActivity;
 import com.coms309.isu_pulse_frontend.loginsignup.UserSession;
 import com.coms309.isu_pulse_frontend.profile_activity.ProfileActivity;
 import com.coms309.isu_pulse_frontend.student_display.DisplayStudent;
-import com.coms309.isu_pulse_frontend.ui.ask_ai.AskAiActivity;
+import com.coms309.isu_pulse_frontend.ui.ask_ai.AskAiAllHistoryActivity;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -94,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
                     drawer.closeDrawers();
                     return true;
                 } else if (id == R.id.nav_ask_ai) {
-                    startActivity(new Intent(MainActivity.this, AskAiActivity.class));
+                    startActivity(new Intent(MainActivity.this, AskAiAllHistoryActivity.class));
                     drawer.closeDrawers();
                     return true;
                 } else {
