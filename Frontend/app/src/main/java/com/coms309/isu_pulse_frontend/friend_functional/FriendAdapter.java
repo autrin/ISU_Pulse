@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -15,10 +16,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.bumptech.glide.Glide;
 import com.coms309.isu_pulse_frontend.R;
 import com.coms309.isu_pulse_frontend.api.CourseService;
 import com.coms309.isu_pulse_frontend.api.FriendService;
+import com.coms309.isu_pulse_frontend.api.UpdateAccount;
 import com.coms309.isu_pulse_frontend.loginsignup.UserSession;
+import com.coms309.isu_pulse_frontend.model.Profile;
 import com.coms309.isu_pulse_frontend.ui.home.Course;
 
 import java.util.List;
@@ -48,6 +52,22 @@ public class FriendAdapter extends RecyclerView.Adapter<FriendAdapter.FriendView
         String student2NetId = friend.getNetId();
         FriendService friendService = new FriendService(context);
         CourseService courseService = new CourseService(context);
+        FriendViewHolder friendViewHolder = (FriendViewHolder) holder;
+
+        UpdateAccount.fetchProfileData(friend.getNetId(), holder.itemView.getContext(), new UpdateAccount.ProfileCallback() {
+            @Override
+            public void onSuccess(Profile profile) {
+                String imageUrl = profile.getProfilePictureUrl();
+                Glide.with(holder.itemView.getContext())
+                        .load(imageUrl)
+                        .into(friendViewHolder.profileImage);
+            }
+
+            @Override
+            public void onError(VolleyError error) {
+                friendViewHolder.profileImage.setImageResource(R.drawable.isu_logo);
+            }
+        });
 
         // Fetch mutual courses
         courseService.getMutualCourses(student1NetId, student2NetId,
@@ -158,6 +178,7 @@ public class FriendAdapter extends RecyclerView.Adapter<FriendAdapter.FriendView
     }
 
     public static class FriendViewHolder extends RecyclerView.ViewHolder {
+        ImageView profileImage;
         TextView friendName;
         TextView mutualFriendsTextView;
         TextView mutualCoursesTextView;
@@ -166,6 +187,7 @@ public class FriendAdapter extends RecyclerView.Adapter<FriendAdapter.FriendView
 
         public FriendViewHolder(@NonNull View itemView) {
             super(itemView);
+            profileImage = itemView.findViewById(R.id.friend_avatar);
             friendName = itemView.findViewById(R.id.friend_name);
             mutualFriendsTextView = itemView.findViewById(R.id.mutual_friends);
             mutualCoursesTextView = itemView.findViewById(R.id.mutual_courses);
