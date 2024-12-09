@@ -1,6 +1,7 @@
 package com.coms309.isu_pulse_frontend.adapters;
 
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -71,10 +72,12 @@ public class AskAiAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
         // Set OnClickListener for the "MESSAGE" button
         viewHolder.buttonMessage.setOnClickListener(v -> {
+            Log.d("AskAiAdapter", "Message button clicked for chatId: " + chatMessage.getGroupId());
             Intent intent = new Intent(v.getContext(), AskAiActivity.class);
-            intent.putExtra("chatId", chatMessage.getGroupId()); // Pass chatId or other data if needed
+            intent.putExtra("chatId", chatMessage.getGroupId());
             v.getContext().startActivity(intent);
         });
+
     }
 
 
