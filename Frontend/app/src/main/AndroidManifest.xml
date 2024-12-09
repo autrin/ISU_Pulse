@@ -90,9 +90,6 @@
             android:name=".course_functional.AddCourse"
             android:exported="false" />
         <activity
-            android:name=".ui.ask_ai.AskAiAllHistoryActivity"
-            android:exported="false" />
-        <activity
             android:name=".ui.ask_ai.AskAiActivity"
             android:exported="false" />
         <activity
