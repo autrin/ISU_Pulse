@@ -116,9 +116,9 @@ public class SignupActivity extends AppCompatActivity {
                         "https://firebasestorage.googleapis.com/v0/b/coms-309-image-storage.appspot.com/o/images%2Fisu_logo.png?alt=media&token=8077829e-0e06-45c8-8be8-7b74a15a25c8",
                         usertype.getSelectedItem().toString(),
                         SignupActivity.this,
-                        new AuthenticationService.VolleyCallback() {
+                        new AuthenticationService.LoginCallback() {
                             @Override
-                            public void onSuccess(JSONObject result) {
+                            public void onSuccess(String result) {
                                 // Save netId using UserSession
                                 UserSession.getInstance(SignupActivity.this).setNetId(netIdInput, SignupActivity.this);
                                 // Save user type using UserSession
@@ -148,9 +148,9 @@ public class SignupActivity extends AppCompatActivity {
                                 downloadUrl,
                                 usertype.getSelectedItem().toString(),
                                 SignupActivity.this,
-                                new AuthenticationService.VolleyCallback() {
+                                new AuthenticationService.LoginCallback() {
                                     @Override
-                                    public void onSuccess(JSONObject result) {
+                                    public void onSuccess(String result) {
                                         try {
                                             // Save netId using UserSession
                                             UserSession.getInstance(SignupActivity.this).setNetId(netIdInput, SignupActivity.this);
