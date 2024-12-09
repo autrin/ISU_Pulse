@@ -40,6 +40,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import android.os.Handler;
 
 public class AskAiActivity extends AppCompatActivity {
 
@@ -62,139 +63,77 @@ public class AskAiActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_chat);
-        netId1 = getIntent().getStringExtra("netId");
-        netId2 = UserSession.getInstance().getNetId();
+        setContentView(R.layout.ask_ai);
+
+        // Initialize UI components
         backButton = findViewById(R.id.buttonBack);
         profileImageView = findViewById(R.id.imageViewLogo);
         nameTextView = findViewById(R.id.textViewUsername);
         messageEditText = findViewById(R.id.editTextMessage);
         sendButton = findViewById(R.id.buttonSend);
-        recyclerViewMessages = findViewById(R.id.recyclerViewMessages);
+        recyclerViewMessages = findViewById(R.id.recyclerAskAiViewMessages);
         recyclerViewMessages.setLayoutManager(new LinearLayoutManager(this));
         chatAdapter = new ChatAdapter(new ArrayList<>());
-        chatAdapterfetchHistory = new ChatAdapter(new ArrayList<>());
         recyclerViewMessages.setAdapter(chatAdapter);
-//        chatServiceWebSocket = ChatServiceWebSocket.getInstance(this, netId2, netId1, this);
-//        chatServiceWebSocket.setWebSocketListener(this);
-        chatApiService = new ChatApiService(this);
 
+        // Set ChatGPT-specific UI
+        Glide.with(this).load(R.drawable.chatgpt_100).into(profileImageView);
+        nameTextView.setText("ChatGPT");
 
-
+        // Handle back button navigation
         backButton.setOnClickListener(v -> {
-            Intent intent = new Intent(AskAiActivity.this, ChatList.class);
-            startActivity(intent);
+            finish(); // Simply finish the activity to return to the previous screen
         });
 
-        sendButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String message = messageEditText.getText().toString();
-                if (!message.isEmpty()) {
-                    sendMessage(message);
-//                    chatAdapter.addMessage(new ChatMessage(message, true, LocalDateTime.now().toString()));
-//                    displayMessage(message, true, new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date()));
-                    messageEditText.setText("");
-                }
+        // Handle send button
+        sendButton.setOnClickListener(v -> {
+            String message = messageEditText.getText().toString();
+            if (!message.isEmpty()) {
+                sendMessage(message);
+                messageEditText.setText(""); // Clear the input field
             }
         });
 
-        fetchProfileData();
-        fetchChatHistory();
+        // Display a welcome message from ChatGPT
+        displayMessage("Hi! I'm ChatGPT. How can I assist you today?", false, getCurrentTimestamp());
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        fetchProfileData();
-//        fetchChatHistory();
-    }
-
-
-    private void fetchChatHistory() {
-        chatApiService.getChatHistory(netId1, netId2, new ChatApiService.ChatHistoryCallback() {
-            @Override
-            public void onSuccess(List<ChatMessageDTO> chatHistory) {
-//                chatAdapter.clearMessages();
-                for (ChatMessageDTO message : chatHistory) {
-                    displayMessage(message.getContent(), message.getSenderNetId().equals(netId2), message.getTimestamp());
-                }
-            }
-
-            @Override
-            public void onError(String error) {
-                Toast.makeText(AskAiActivity.this, "Error fetching chat history: " + error, Toast.LENGTH_LONG).show();
-            }
-        });
-    }
-
-    public void updateUI(Profile profile) {
-        if (profile != null) {
-            String imageUrl = profile.getProfilePictureUrl();
-            Glide.with(this)
-                    .load(imageUrl)
-                    .into(profileImageView);
-            nameTextView.setText(profile.getFirstName() + " " + profile.getLastName());
-        }
-        else {
-            Log.e("FriendProfile", "Profile data is null");
-        }
-    }
-
-
-    public void fetchProfileData() {
-        UpdateAccount.fetchProfileData(netId1, this, new UpdateAccount.ProfileCallback() {
-            @Override
-            public void onSuccess(Profile profile) {
-                updateUI(profile);
-            }
-
-            @Override
-            public void onError(VolleyError error) {
-                // Handle error
-                error.printStackTrace();
-            }
-        });
-    }
-
+    // Method to handle sending a message
     private void sendMessage(String messageContent) {
-        // Display the message locally
-        displayMessage(messageContent, true, LocalDateTime.now().toString());
+        // Display the user's message
+        displayMessage(messageContent, true, getCurrentTimestamp());
 
-        // Send message via WebSocket
-//        chatServiceWebSocket.sendMessage(netId2, netId1, messageContent);
+        // Simulate ChatGPT's response
+        simulateAITyping();
+        new Handler().postDelayed(() -> {
+            String aiResponse = generateAIResponse(messageContent); // Replace with actual API call later
+            displayMessage(aiResponse, false, getCurrentTimestamp());
+        }, 2000); // Simulate a 2-second response delay
     }
 
-//    @Override
-//    public void onMessageReceived(String senderNetId, String recipientNetId, String message, String timestamp) {
-////        Log.d(TAG, "Message received in ChatActivity: " + message);
-////        displayMessage(message, false, timestamp);
-////        boolean isSent = senderNetId.equals(netId2);
-////        ChatMessage chatMessage = new ChatMessage(message, isSent, timestamp);
-////        chatAdapter.addMessage(chatMessage);
-//        runOnUiThread(() -> {
-//            // Avoid adding the message twice by checking if it's from the current user
-//            if (!senderNetId.equals(UserSession.getInstance().getNetId())) {
-//                displayMessage(message, false, timestamp);
-//            }
-//        });
-//    }
+    // Simulates ChatGPT's typing indicator
+    private void simulateAITyping() {
+        TextView typingIndicator = findViewById(R.id.textViewTypingIndicator);
+        typingIndicator.setVisibility(View.VISIBLE);
+        new Handler().postDelayed(() -> typingIndicator.setVisibility(View.GONE), 2000);
+    }
 
-
-
+    // Displays a message in the chat
     private void displayMessage(String message, boolean isSent, String timestamp) {
         chatAdapter.addMessage(new ChatMessage(message, isSent, timestamp));
         recyclerViewMessages.smoothScrollToPosition(chatAdapter.getItemCount() - 1);
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        // Close WebSocket connection if needed
-//        if (chatServiceWebSocket != null) {
-//            chatServiceWebSocket.close();
-//            chatServiceWebSocket = null;
-//        }
-
+    // Mock AI response generator (to be replaced by API call)
+    private String generateAIResponse(String userMessage) {
+        //TODO
+        // Example static response for testing
+        return "You asked: \"" + userMessage + "\". Here's what I think...";
     }
+
+    // Utility method to get the current timestamp
+    private String getCurrentTimestamp() {
+        return new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
+    }
+
 }
