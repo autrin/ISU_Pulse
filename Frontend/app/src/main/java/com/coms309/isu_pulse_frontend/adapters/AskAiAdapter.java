@@ -57,7 +57,10 @@ public class AskAiAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             v.getContext().startActivity(intent);
         });
     }
-
+    public void addMessage(ChatMessage message) {
+        chatMessages.add(message);
+        notifyItemInserted(chatMessages.size() - 1); // Notify RecyclerView of the new item
+    }
 
     @Override
     public int getItemCount() {
