@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.android.volley.Response;
@@ -17,6 +18,7 @@ import com.android.volley.VolleyError;
 import com.bumptech.glide.Glide;
 import com.coms309.isu_pulse_frontend.MainActivity;
 import com.coms309.isu_pulse_frontend.R;
+import com.coms309.isu_pulse_frontend.api.AuthenticationService;
 import com.coms309.isu_pulse_frontend.api.FriendService;
 import com.coms309.isu_pulse_frontend.chat_system.ChatList;
 import com.coms309.isu_pulse_frontend.course_functional.CourseView;
@@ -25,6 +27,7 @@ import com.coms309.isu_pulse_frontend.friend_functional.FriendList;
 import com.coms309.isu_pulse_frontend.friend_functional.FriendRequest;
 import com.coms309.isu_pulse_frontend.friend_functional.FriendSentRequest;
 import com.coms309.isu_pulse_frontend.friend_functional.FriendSuggestion;
+import com.coms309.isu_pulse_frontend.loginsignup.LoginActivity;
 import com.coms309.isu_pulse_frontend.model.Profile;
 import com.coms309.isu_pulse_frontend.api.UpdateAccount;
 import com.coms309.isu_pulse_frontend.api.CourseService;
@@ -62,8 +65,10 @@ public class ProfileActivity extends AppCompatActivity {
     private TextView linkedinUrlTextView;
     private TextView externalUrlTextView;
     private TextView descriptionTextView;
+    private Button deleteAccountButton;
     public List<Friend> friendRequestList;
     public List<Friend> friendSuggestionList;
+    private AuthenticationService authenticationService;
 
     private CourseService courseService;
     private FriendService friendService;
@@ -84,6 +89,46 @@ public class ProfileActivity extends AppCompatActivity {
         numrequestsTextView = findViewById(R.id.friendsRequestNumber);
         numsentrequestsTextView = findViewById(R.id.sentRequestsCountTextView);
         numsuggestionsTextView = findViewById(R.id.friendSuggestionsCountTextView);
+        deleteAccountButton = findViewById(R.id.deleteAccountButton);
+
+        Button deleteAccountButton = findViewById(R.id.deleteAccountButton);
+        authenticationService = new AuthenticationService();
+
+        deleteAccountButton.setOnClickListener(v -> {
+            // Create an AlertDialog builder
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Delete Account");
+            builder.setMessage("Are you sure you want to delete your account? This action cannot be undone.");
+
+            // Add "Yes" button
+            builder.setPositiveButton("Yes", (dialog, which) -> {
+                authenticationService.deleteAccount(UserSession.getInstance().getNetId(), ProfileActivity.this, new AuthenticationService.LoginCallback(){
+                    @Override
+                    public void onSuccess(String result) {
+                        Toast.makeText(ProfileActivity.this, "Account deleted successfully", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(ProfileActivity.this, LoginActivity.class);
+                        startActivity(intent);
+                    }
+
+                    @Override
+                    public void onError(String message) {
+                        Toast.makeText(ProfileActivity.this, "Delete account failed", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            });
+
+            // Add "No" button
+            builder.setNegativeButton("No", (dialog, which) -> {
+                // Dismiss the dialog
+                dialog.dismiss();
+            });
+
+            // Create and show the AlertDialog
+            AlertDialog dialog = builder.create();
+            dialog.show();
+        });
+
+
 
         friendRequestList = new ArrayList<>();
         friendSuggestionList = new ArrayList<>();
