@@ -57,9 +57,11 @@ public class AskAiAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         AskAiViewHolder viewHolder = (AskAiViewHolder) holder;
 
         // Set text and other details in the ViewHolder
-        viewHolder.textViewName.setText(chatMessage.getSenderFullName() != null
-                ? chatMessage.getSenderFullName()
-                : "ChatGPT");
+        viewHolder.textViewName.setText(
+//                chatMessage.getSenderFullName() != null
+//                ? chatMessage.getSenderFullName()
+//                :
+                        "ChatGPT");
         viewHolder.textViewMessage.setText(chatMessage.getMessage());
         viewHolder.textViewTimestamp.setText(chatMessage.getTimestamp());
 
