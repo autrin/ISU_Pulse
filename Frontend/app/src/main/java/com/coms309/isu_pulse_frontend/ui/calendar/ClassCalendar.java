@@ -21,6 +21,7 @@ public class ClassCalendar extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.calendar);
+        calendarGrid = findViewById(R.id.calendar_grid);
         for (int hour = 8; hour <= 19; hour++) {                 // 8 AM to 6 PM
             hourLabel = new TextView(this);
             hourLabel.setText(hour + " AM");
