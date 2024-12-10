@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
                 setupTeacherMenu();
             } else {
                 mAppBarConfiguration = new AppBarConfiguration.Builder(
-                        R.id.nav_home, R.id.nav_students, R.id.nav_chatting, R.id.nav_announcements, R.id.nav_profile, R.id.nav_ask_ai, R.id.nav_logout)
+                        R.id.nav_home, R.id.nav_students, R.id.nav_chatting, R.id.nav_announcements, R.id.nav_profile, R.id.nav_ask_ai, R.id.nav_calendar , R.id.nav_logout)
                         .setOpenableLayout(drawer)
                         .build();
                 setupStudentMenu();
