@@ -14,6 +14,7 @@ import com.coms309.isu_pulse_frontend.loginsignup.UserSession;
 import com.coms309.isu_pulse_frontend.profile_activity.ProfileActivity;
 import com.coms309.isu_pulse_frontend.student_display.DisplayStudent;
 import com.coms309.isu_pulse_frontend.ui.ask_ai.AskAiActivity;
+import com.coms309.isu_pulse_frontend.ui.calendar.ClassCalendar;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -64,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
                 setupTeacherMenu();
             } else {
                 mAppBarConfiguration = new AppBarConfiguration.Builder(
-                        R.id.nav_home, R.id.nav_students, R.id.nav_chatting, R.id.nav_announcements, R.id.nav_profile, R.id.nav_ask_ai, R.id.nav_calendar , R.id.nav_logout)
+                        R.id.nav_home, R.id.nav_students, R.id.nav_chatting, R.id.nav_announcements, R.id.nav_profile, R.id.nav_ask_ai, R.id.nav_calendar, R.id.nav_logout)
                         .setOpenableLayout(drawer)
                         .build();
                 setupStudentMenu();
@@ -95,6 +96,10 @@ public class MainActivity extends AppCompatActivity {
                     return true;
                 } else if (id == R.id.nav_ask_ai) {
                     startActivity(new Intent(MainActivity.this, AskAiActivity.class));
+                    drawer.closeDrawers();
+                    return true;
+                } else if (id == R.id.nav_calendar) {
+                    startActivity(new Intent(MainActivity.this, ClassCalendar.class));
                     drawer.closeDrawers();
                     return true;
                 } else {
