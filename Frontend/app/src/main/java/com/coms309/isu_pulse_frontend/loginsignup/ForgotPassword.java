@@ -75,7 +75,7 @@ public class ForgotPassword extends AppCompatActivity {
                             // OTP sent successfully
                             Toast.makeText(ForgotPassword.this, "OTP sent to your email.", Toast.LENGTH_SHORT).show();
                             forgotPasswordDescription.setText("Enter the OTP you received.");
-                            emailOtpInput.setHint("Enter OTP");
+                            emailOtpInput.setHint("Enter OTP in 6-digit number");
                             verifyOtpButton.setText("Verify OTP");
                             emailOtpInput.setTag(input); // Save email for verification
                         }
