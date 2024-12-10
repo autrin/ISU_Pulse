@@ -26,7 +26,6 @@ public class ClassCalendar extends AppCompatActivity {
             hourLabel = new TextView(this);
             if (hour >= 12) hourLabel.setText(hour + " PM");
             else hourLabel.setText(hour + " AM");
-
             hourLabel.setGravity(Gravity.CENTER);
             GridLayout.LayoutParams params = new GridLayout.LayoutParams();
             params.rowSpec = GridLayout.spec(hour - 8 + 1); // Row for this hour
