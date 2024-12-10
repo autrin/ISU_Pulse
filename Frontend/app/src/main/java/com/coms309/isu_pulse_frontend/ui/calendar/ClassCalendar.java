@@ -24,12 +24,15 @@ public class ClassCalendar extends AppCompatActivity {
         calendarGrid = findViewById(R.id.calendar_grid);
         for (int hour = 8; hour <= 19; hour++) {                 // 8 AM to 6 PM
             hourLabel = new TextView(this);
-            hourLabel.setText(hour + " AM");
+            if (hour >= 12) hourLabel.setText(hour + " PM");
+            else hourLabel.setText(hour + " AM");
+
             hourLabel.setGravity(Gravity.CENTER);
             GridLayout.LayoutParams params = new GridLayout.LayoutParams();
             params.rowSpec = GridLayout.spec(hour - 8 + 1); // Row for this hour
             params.columnSpec = GridLayout.spec(0);         // Column for hours
             hourLabel.setLayoutParams(params);
+            hourLabel.setPadding(10, 10, 10, 50);
             calendarGrid.addView(hourLabel);
         }
 
