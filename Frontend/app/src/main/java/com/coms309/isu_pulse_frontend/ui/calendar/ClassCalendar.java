@@ -32,7 +32,7 @@ public class ClassCalendar extends AppCompatActivity {
             params.rowSpec = GridLayout.spec(hour - 8 + 1); // Row for this hour
             params.columnSpec = GridLayout.spec(0);         // Column for hours
             hourLabel.setLayoutParams(params);
-            hourLabel.setPadding(10, 10, 10, 50);
+            hourLabel.setPadding(10, 10, 10, 70);
             calendarGrid.addView(hourLabel);
         }
 
