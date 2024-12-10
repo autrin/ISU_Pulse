@@ -93,6 +93,9 @@
             android:name=".ui.ask_ai.AskAiActivity"
             android:exported="false" />
         <activity
+            android:name=".ui.calendar.ClassCalendar"
+            android:exported="false" />
+        <activity
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/app_name"
