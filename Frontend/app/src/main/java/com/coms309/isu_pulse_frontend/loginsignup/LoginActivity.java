@@ -43,6 +43,8 @@ public class LoginActivity extends AppCompatActivity {
      */
     private TextView signup;
 
+    private TextView forgotPassword;
+
     /**
      * Initializes the activity, sets up UI components, and handles user login.
      * @param savedInstanceState If the activity is being re-initialized after
@@ -60,6 +62,14 @@ public class LoginActivity extends AppCompatActivity {
         passWord = findViewById(R.id.password_isu_pulse);
         enter = findViewById(R.id.enter_isu_pulse);
         signup = findViewById(R.id.sign_up_isu_pulse);
+        forgotPassword = findViewById(R.id.forgot_password_isu_pulse);
+
+
+        forgotPassword.setOnClickListener(view -> {
+            Intent intent = new Intent(LoginActivity.this, ForgotPassword.class);
+            startActivity(intent);
+        });
+
 
 
         // Set onClickListener for the "Enter" button

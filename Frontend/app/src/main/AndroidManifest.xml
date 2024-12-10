@@ -75,6 +75,9 @@
             android:name=".loginsignup.LoginActivity"
             android:exported="false" />
         <activity
+            android:name=".loginsignup.ForgotPassword"
+            android:exported="false" />
+        <activity
             android:name=".course_functional.CourseView"
             android:exported="false" />
         <activity
@@ -85,6 +88,9 @@
             android:exported="false" />
         <activity
             android:name=".course_functional.AddCourse"
+            android:exported="false" />
+        <activity
+            android:name=".ui.ask_ai.AskAiActivity"
             android:exported="false" />
         <activity
             android:name=".MainActivity"

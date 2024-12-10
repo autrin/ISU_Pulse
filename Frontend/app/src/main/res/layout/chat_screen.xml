@@ -17,6 +17,7 @@
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:background="@color/white"
+            android:clickable="true"
             android:padding="8dp">
 
             <!-- Back Button -->
