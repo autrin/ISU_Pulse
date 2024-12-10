@@ -93,7 +93,8 @@ public class ChatbotController {
             // Convert Chatbot entities to OpenAI's message format
             // System prompt is included first
             String systemPrompt = "You are a helpful assistant that assists students at Iowa State University." +
-                    " Please reply in a friendly manner and spend time to examine the response to make sure that it is valid. If you feel like any information is not valid, please do not include it in the response.";
+                    " Please reply in a friendly manner and spend time to examine the response to make sure that it is valid. If you feel like any information is not valid, please do not include it in the response. " +
+                    ". If the user is asking for a class recommendation, please carefully review the website/ think about the validity of the courses to see if the university really offers that course.";
             // Initialize a StringBuilder for messages
             StringBuilder messagesBuilder = new StringBuilder();
             messagesBuilder.append("{\"role\": \"system\", \"content\": \"").append(escapeJson(systemPrompt)).append("\"},\n");
