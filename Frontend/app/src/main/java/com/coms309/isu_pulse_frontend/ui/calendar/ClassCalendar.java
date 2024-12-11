@@ -47,7 +47,7 @@ public class ClassCalendar extends AppCompatActivity {
             GridLayout.LayoutParams params = new GridLayout.LayoutParams();
             params.rowSpec = GridLayout.spec((hour - 8) * 2 + 1); // Map to rows
             params.columnSpec = GridLayout.spec(0); // First column for hours
-            params.height = 130; // Adjust row height (100 pixels or dp)
+            params.height = 130;
             hourLabel.setLayoutParams(params);
 
             calendarGrid.addView(hourLabel);
@@ -116,6 +116,7 @@ public class ClassCalendar extends AppCompatActivity {
                 params.rowSpec = GridLayout.spec(rowStart, rowSpan); // Start row and span
                 params.columnSpec = GridLayout.spec(dayColumn); // Column for the specific day
                 params.setMargins(8, 8, 8, 8); // Optional spacing for better aesthetics
+                params.height = 130; // Adjust row height (100 pixels or dp)
                 classBlock.setLayoutParams(params);
 
                 calendarGrid.addView(classBlock); // Add to the grid
