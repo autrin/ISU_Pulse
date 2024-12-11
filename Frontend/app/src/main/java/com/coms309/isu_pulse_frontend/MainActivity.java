@@ -4,13 +4,21 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
 
+import com.android.volley.VolleyError;
+import com.bumptech.glide.Glide;
+import com.coms309.isu_pulse_frontend.api.UpdateAccount;
+import com.coms309.isu_pulse_frontend.api.WeatherApiService;
 import com.coms309.isu_pulse_frontend.chat_system.ChatList;
 import com.coms309.isu_pulse_frontend.databinding.ActivityMainBinding;
 import com.coms309.isu_pulse_frontend.loginsignup.LoginActivity;
 import com.coms309.isu_pulse_frontend.loginsignup.SignupActivity;
 import com.coms309.isu_pulse_frontend.loginsignup.UserSession;
+import com.coms309.isu_pulse_frontend.model.Profile;
 import com.coms309.isu_pulse_frontend.profile_activity.ProfileActivity;
 import com.coms309.isu_pulse_frontend.student_display.DisplayStudent;
 import com.coms309.isu_pulse_frontend.ui.ask_ai.AskAiActivity;
@@ -32,6 +40,8 @@ public class MainActivity extends AppCompatActivity {
     private Button signInButton;
     private Button signUpButton;
     private NavigationView navigationView;
+    private TextView tempTextView;
+    private WeatherApiService weatherApiService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
                 setupTeacherMenu();
             } else {
                 mAppBarConfiguration = new AppBarConfiguration.Builder(
-                        R.id.nav_home, R.id.nav_students, R.id.nav_chatting, R.id.nav_announcements, R.id.nav_profile, R.id.nav_ask_ai, R.id.nav_calendar, R.id.nav_logout)
+                        R.id.nav_home, R.id.nav_students, R.id.nav_chatting, R.id.nav_profile, R.id.nav_ask_ai, R.id.nav_calendar, R.id.nav_logout)
                         .setOpenableLayout(drawer)
                         .build();
                 setupStudentMenu();
@@ -110,6 +120,53 @@ public class MainActivity extends AppCompatActivity {
             if (getIntent().getBooleanExtra("navigateToHome", false)) {
                 navController.navigate(R.id.nav_home);
             }
+
+            View headerView = navigationView.getHeaderView(0);
+            tempTextView = headerView.findViewById(R.id.temperature);
+            // Fetch weather data
+            weatherApiService = new WeatherApiService(this);
+            weatherApiService.fetchTemperature(new WeatherApiService.GetWeatherCallback() {
+                @Override
+                public void onSuccess(String temperature) {
+                    // Update UI on main thread
+                    runOnUiThread(() -> tempTextView.setText(temperature));
+                }
+
+                @Override
+                public void onError(String error) {
+                    runOnUiThread(() -> tempTextView.setText("N/A"));
+                }
+            });
+
+            TextView firstNameHeader = headerView.findViewById(R.id.firstNameTextViewHeader);
+            TextView lastNameHeader = headerView.findViewById(R.id.lastNameTextViewHeader);
+            ImageView profileImageHeader = headerView.findViewById(R.id.imageView);
+
+            UpdateAccount.fetchProfileData(netId, this, new UpdateAccount.ProfileCallback() {
+                @Override
+                public void onSuccess(Profile profile) {
+                    // Update UI on main thread
+                    runOnUiThread(() -> {
+                        firstNameHeader.setText(profile.getFirstName());
+                        lastNameHeader.setText(profile.getLastName());
+
+                        // Load profile image using Glide
+                        Glide.with(MainActivity.this)
+                                .load(profile.getProfilePictureUrl())
+                                .placeholder(R.mipmap.ic_launcher_round)
+                                .into(profileImageHeader);
+                    });
+                }
+
+                @Override
+                public void onError(VolleyError error) {
+                    // Handle error, maybe set defaults
+                    runOnUiThread(() -> {
+                        firstNameHeader.setText("");
+                        lastNameHeader.setText("");
+                    });
+                }
+            });
 
         } else {
             // No saved session; show login/sign-up screen
