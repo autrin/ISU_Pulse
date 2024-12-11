@@ -1,17 +1,22 @@
 package com.coms309.isu_pulse_frontend.ui.calendar;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
 import android.widget.GridLayout;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.coms309.isu_pulse_frontend.MainActivity;
 import com.coms309.isu_pulse_frontend.R;
 import com.coms309.isu_pulse_frontend.api.CourseService;
+import com.coms309.isu_pulse_frontend.chat_system.ChatActivity;
+import com.coms309.isu_pulse_frontend.chat_system.ChatList;
 import com.coms309.isu_pulse_frontend.loginsignup.UserSession;
 import com.coms309.isu_pulse_frontend.schedule.Schedule;
 
@@ -20,12 +25,13 @@ import java.util.List;
 public class ClassCalendar extends AppCompatActivity {
     private GridLayout calendarGrid;
     private CourseService courseService;
-
+    private ImageButton backButton;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.calendar);
         calendarGrid = findViewById(R.id.calendar_grid);
+        backButton = findViewById(R.id.backButton);
 
         // Initialize hour labels (same as before)
         for (int hour = 8; hour <= 19; hour++) {
@@ -46,6 +52,10 @@ public class ClassCalendar extends AppCompatActivity {
 
             calendarGrid.addView(hourLabel);
         }
+        backButton.setOnClickListener(v -> {
+            Intent intent = new Intent(ClassCalendar.this, MainActivity.class);
+            startActivity(intent);
+        });
 
         // Fetch enrolled courses and display them
         String netId = UserSession.getInstance().getNetId();

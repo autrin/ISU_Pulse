@@ -39,6 +39,11 @@ public class AskAiAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         notifyItemInserted(chatMessages.size() - 1);
     }
 
+    public void setMessages(List<ChatMessage> messages) {
+        chatMessages = messages;
+        notifyDataSetChanged();
+    }
+
     @Override
     public int getItemViewType(int position) {
         return VIEW_TYPE_ONE_ON_ONE; // Always one-on-one for AI chat
@@ -61,7 +66,7 @@ public class AskAiAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 //                chatMessage.getSenderFullName() != null
 //                ? chatMessage.getSenderFullName()
 //                :
-                        "ChatGPT");
+                "ChatGPT");
         viewHolder.textViewMessage.setText(chatMessage.getMessage());
         viewHolder.textViewTimestamp.setText(chatMessage.getTimestamp());
 
