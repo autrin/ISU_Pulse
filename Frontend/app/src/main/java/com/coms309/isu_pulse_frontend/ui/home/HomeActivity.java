@@ -132,8 +132,20 @@ public class HomeActivity extends androidx.appcompat.app.AppCompatActivity {
                 @Override
                 public void onSuccess(Profile profile) {
                     runOnUiThread(() -> {
-                        firstNameHeader.setText(profile.getFirstName());
-                        lastNameHeader.setText(profile.getLastName());
+                        String firstName = profile.getFirstName();
+                        String lastName = profile.getLastName();
+
+                        if (firstName != null && !firstName.isEmpty()) {
+                            firstName = firstName.substring(0, 1).toUpperCase() + firstName.substring(1).toLowerCase();
+                        }
+
+                        if (lastName != null && !lastName.isEmpty()) {
+                            lastName = lastName.substring(0, 1).toUpperCase() + lastName.substring(1).toLowerCase();
+                        }
+
+                        firstNameHeader.setText(firstName);
+                        lastNameHeader.setText(lastName);
+
 
                         Glide.with(HomeActivity.this)
                                 .load(profile.getProfilePictureUrl())
