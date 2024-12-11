@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.coms309.isu_pulse_frontend.api.WeatherApiService;
 import com.coms309.isu_pulse_frontend.chat_system.ChatList;
 import com.coms309.isu_pulse_frontend.databinding.ActivityMainBinding;
 import com.coms309.isu_pulse_frontend.loginsignup.LoginActivity;
@@ -35,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
     private Button signUpButton;
     private NavigationView navigationView;
     private TextView tempTextView;
+    private WeatherApiService weatherApiService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,6 +118,20 @@ public class MainActivity extends AppCompatActivity {
 
             View headerView = navigationView.getHeaderView(0);
             tempTextView = headerView.findViewById(R.id.temperature);
+            // Fetch weather data
+            weatherApiService = new WeatherApiService(this);
+            weatherApiService.fetchTemperature(new WeatherApiService.GetWeatherCallback() {
+                @Override
+                public void onSuccess(String temperature) {
+                    // Update UI on main thread
+                    runOnUiThread(() -> tempTextView.setText(temperature));
+                }
+
+                @Override
+                public void onError(String error) {
+                    runOnUiThread(() -> tempTextView.setText("N/A"));
+                }
+            });
 
         } else {
             // No saved session; show login/sign-up screen
