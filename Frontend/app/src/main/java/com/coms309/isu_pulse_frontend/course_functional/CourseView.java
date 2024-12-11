@@ -119,7 +119,7 @@ public class CourseView extends AppCompatActivity  {
 
         // Fallback to SharedPreferences if UserSession doesn't provide the ID.
         SharedPreferences prefs = getSharedPreferences("user_prefs", MODE_PRIVATE);
-        return prefs.getString("studentId", "ntbach"); // Default to "ntbach" if not found.
+        return prefs.getString("studentId", "ntbach"); // Default to "ntbach" if not found. // TODO: return error if not found
     }
 
     /**
