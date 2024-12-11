@@ -173,7 +173,7 @@ public class HomeFragment extends Fragment implements AnnouncementWebSocketClien
             // Optionally, fetch initial announcements if needed
         } else {
             Log.e(TAG, "WebSocket client is not initialized");
-            Toast.makeText(getContext(), "WebSocket client is not initialized", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(getContext(), "WebSocket client is not initialized", Toast.LENGTH_SHORT).show();
         }
     }
 
