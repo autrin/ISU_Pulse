@@ -88,6 +88,7 @@ public class WeatherController {
             weatherDetails.put("sunset", sunset);
             weatherDetails.put("timestamp", timestamp);
 
+            // Return the hashmap as a json string with key - value pairs
             return ResponseEntity.ok(weatherDetails);
 
         } catch (Exception e) {
@@ -96,3 +97,5 @@ public class WeatherController {
         }
     }
 }
+
+
