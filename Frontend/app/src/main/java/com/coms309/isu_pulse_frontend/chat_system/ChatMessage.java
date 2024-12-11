@@ -16,6 +16,8 @@ public class ChatMessage {
     private String recipientNetId;
     private Long groupId;
     private String groupName;
+    private String toBotSender;
+    private int id;
 
     public ChatMessage(String message, boolean isSent, String timestamp) {
         this.message = message;
@@ -25,6 +27,14 @@ public class ChatMessage {
 
     public ChatMessage(User sender, User recipient, String message, String timestamp) {
         this.sender = sender;
+        this.recipient = recipient;
+        this.message = message;
+        this.timestamp = timestamp;
+    }
+
+    public ChatMessage(int id, String sender, String message, String timestamp) {
+        this.id = id;
+        toBotSender = sender;
         this.recipient = recipient;
         this.message = message;
         this.timestamp = timestamp;
@@ -83,9 +93,13 @@ public class ChatMessage {
         return recipientlastName;
     }
 
-    public Long getGroupId() {return groupId;}
+    public Long getGroupId() {
+        return groupId;
+    }
 
-    public String getGroupName() {return groupName;}
+    public String getGroupName() {
+        return groupName;
+    }
 
     public String getSenderFullName() {
         return senderfirstName + " " + senderlastName;
@@ -103,18 +117,26 @@ public class ChatMessage {
         return isSent;
     }
 
+    public void setSent(boolean sent) {
+        this.isSent = sent;
+    }
+
     public String getTimestamp() {
         return timestamp;
     }
+
     public String getSenderNetId() {
         return senderNetId;
     }
+
     public String getRecipientNetId() {
         return recipientNetId;
     }
+
     public User getSender() {
         return sender;
     }
+
     public User getRecipient() {
         return recipient;
     }

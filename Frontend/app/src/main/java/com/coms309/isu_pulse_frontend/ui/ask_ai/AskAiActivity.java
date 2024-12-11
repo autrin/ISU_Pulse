@@ -75,48 +75,73 @@ public class AskAiActivity extends AppCompatActivity {
         // Load chat history
         loadChatHistory();
     }
-
-
     private void loadChatHistory() {
         askAiApiService.fetchChatHistory(new AskAiApiService.MessageHistoryCallback() {
             @Override
             public void onSuccess(List<ChatMessage> chatHistory) {
                 runOnUiThread(() -> {
+                    // Clear adapter to avoid duplicates
+                    chatAdapter.setMessages(new ArrayList<>());
+
                     if (chatHistory.isEmpty()) {
                         displayMessage("Hi! I'm ChatGPT. How can I assist you today?", false, getCurrentTimestamp());
                     } else {
-                        // Set the messages directly to the adapter
-                        chatAdapter.setMessages(chatHistory);
-                        recyclerViewMessages.smoothScrollToPosition(chatAdapter.getItemCount() - 1);
+                        for (ChatMessage msg : chatHistory) {
+                            displayMessage(msg.getMessage(), msg.isSent(), msg.getTimestamp());
+                        }
                     }
                 });
             }
 
             @Override
             public void onError(String error) {
-                runOnUiThread(() -> Toast.makeText(AskAiActivity.this, "Failed to load chat history: " + error, Toast.LENGTH_SHORT).show());
+                runOnUiThread(() ->
+                        Toast.makeText(AskAiActivity.this, "Failed to load chat history: " + error, Toast.LENGTH_SHORT).show()
+                );
             }
         });
     }
-
     private void sendMessage(String messageContent) {
-        // Show user's message
+        // Show user's message immediately
         displayMessage(messageContent, true, getCurrentTimestamp());
 
         // Send to AI
         askAiApiService.sendMessageToAi(messageContent, new AskAiApiService.SendMessageCallback() {
             @Override
             public void onSuccess(String response) {
-                // The response is a plain string now, display it as received
+                // Show AI's response as a received message
                 runOnUiThread(() -> displayMessage(response, false, getCurrentTimestamp()));
             }
 
             @Override
             public void onError(String error) {
-                runOnUiThread(() -> Toast.makeText(AskAiActivity.this, "Error: " + error, Toast.LENGTH_SHORT).show());
+                runOnUiThread(() ->
+                        Toast.makeText(AskAiActivity.this, "Error: " + error, Toast.LENGTH_SHORT).show()
+                );
             }
         });
     }
+
+//    private void sendMessage(String messageContent) {
+//        // Show user's message
+//        displayMessage(messageContent, true, getCurrentTimestamp());
+//
+//        // Send to AI
+//        askAiApiService.sendMessageToAi(messageContent, new AskAiApiService.SendMessageCallback() {
+//            @Override
+//            public void onSuccess(String response) {
+//                // The response is a plain string now, display it as received
+//                runOnUiThread(() -> displayMessage(response, false, getCurrentTimestamp()));
+//            }
+//
+//            @Override
+//            public void onError(String error) {
+//                runOnUiThread(() -> Toast.makeText(AskAiActivity.this, "Error: " + error, Toast.LENGTH_SHORT).show());
+//            }
+//        });
+//    }
+
+
 
     public void displayMessage(String message, boolean isSent, String timestamp) {
         ChatMessage chatMessage = new ChatMessage(message, isSent, timestamp);
