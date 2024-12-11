@@ -73,30 +73,31 @@ public class AskAiActivity extends AppCompatActivity {
         });
 
         // Load chat history
-//        loadChatHistory();
+        loadChatHistory();
     }
 
-//    private void loadChatHistory() {
-//        String netId = UserSession.getInstance().getNetId();
-//        askAiApiService.fetchChatHistory(netId, new AskAiApiService.ChatHistoryCallback() {
-//            @Override
-//            public void onSuccess(List<ChatMessage> chatHistory) {
-//                runOnUiThread(() -> {
-//                    if (chatHistory.isEmpty()) {
-//                        displayMessage("Hi! I'm ChatGPT. How can I assist you today?", false, getCurrentTimestamp());
-//                    } else {
-//                        chatAdapter.setMessages(chatHistory);
-//                        recyclerViewMessages.smoothScrollToPosition(chatAdapter.getItemCount() - 1);
-//                    }
-//                });
-//            }
-//
-//            @Override
-//            public void onError(String error) {
-//                runOnUiThread(() -> Toast.makeText(AskAiActivity.this, "Failed to load chat history: " + error, Toast.LENGTH_SHORT).show());
-//            }
-//        });
-//    }
+
+    private void loadChatHistory() {
+        askAiApiService.fetchChatHistory(new AskAiApiService.MessageHistoryCallback() {
+            @Override
+            public void onSuccess(List<ChatMessage> chatHistory) {
+                runOnUiThread(() -> {
+                    if (chatHistory.isEmpty()) {
+                        displayMessage("Hi! I'm ChatGPT. How can I assist you today?", false, getCurrentTimestamp());
+                    } else {
+                        // Set the messages directly to the adapter
+                        chatAdapter.setMessages(chatHistory);
+                        recyclerViewMessages.smoothScrollToPosition(chatAdapter.getItemCount() - 1);
+                    }
+                });
+            }
+
+            @Override
+            public void onError(String error) {
+                runOnUiThread(() -> Toast.makeText(AskAiActivity.this, "Failed to load chat history: " + error, Toast.LENGTH_SHORT).show());
+            }
+        });
+    }
 
     private void sendMessage(String messageContent) {
         // Show user's message
