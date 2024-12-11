@@ -22,6 +22,7 @@ import com.android.volley.VolleyError;
 import com.bumptech.glide.Glide;
 import com.coms309.isu_pulse_frontend.MainActivity;
 import com.coms309.isu_pulse_frontend.R;
+import com.coms309.isu_pulse_frontend.api.AskAiApiService;
 import com.coms309.isu_pulse_frontend.api.ChatApiService;
 import com.coms309.isu_pulse_frontend.api.UpdateAccount;
 import com.coms309.isu_pulse_frontend.chat_system.ChatActivity;
@@ -57,8 +58,7 @@ public class AskAiActivity extends AppCompatActivity {
     private TextView nameTextView;
     private TextView typingIndicatorTextView;
     private ChatAdapter askAiAdapter;
-
-
+    private AskAiApiService askAiApiService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,7 +75,7 @@ public class AskAiActivity extends AppCompatActivity {
         recyclerViewMessages.setLayoutManager(new LinearLayoutManager(this));
         askAiAdapter = new ChatAdapter(new ArrayList<>());
         recyclerViewMessages.setAdapter(askAiAdapter);
-        // TODO API service
+        askAiApiService = new AskAiApiService(this);
         // Set ChatGPT-specific UI
 //        Glide.with(this).load(R.drawable.chatgpt_100).into(profileImageView);
         nameTextView.setText("ChatGPT");
