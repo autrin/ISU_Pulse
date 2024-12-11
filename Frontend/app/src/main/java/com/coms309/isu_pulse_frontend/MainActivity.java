@@ -4,7 +4,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.coms309.isu_pulse_frontend.chat_system.ChatList;
 import com.coms309.isu_pulse_frontend.databinding.ActivityMainBinding;
@@ -32,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
     private Button signInButton;
     private Button signUpButton;
     private NavigationView navigationView;
+    private TextView tempTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,6 +113,9 @@ public class MainActivity extends AppCompatActivity {
             if (getIntent().getBooleanExtra("navigateToHome", false)) {
                 navController.navigate(R.id.nav_home);
             }
+
+            View headerView = navigationView.getHeaderView(0);
+            tempTextView = headerView.findViewById(R.id.temperature);
 
         } else {
             // No saved session; show login/sign-up screen
