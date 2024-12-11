@@ -4,27 +4,39 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
-import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 
+import com.android.volley.VolleyError;
+import com.bumptech.glide.Glide;
+import com.coms309.isu_pulse_frontend.chat_system.ChatList;
 import com.coms309.isu_pulse_frontend.MainActivity;
 import com.coms309.isu_pulse_frontend.R;
-import com.coms309.isu_pulse_frontend.chat_system.ChatList;
+import com.coms309.isu_pulse_frontend.api.UpdateAccount;
+import com.coms309.isu_pulse_frontend.api.WeatherApiService;
+import com.coms309.isu_pulse_frontend.loginsignup.UserSession;
+import com.coms309.isu_pulse_frontend.model.Profile;
 import com.coms309.isu_pulse_frontend.profile_activity.ProfileActivity;
 import com.coms309.isu_pulse_frontend.student_display.DisplayStudent;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
-public class HomeActivity extends AppCompatActivity {
+public class HomeActivity extends androidx.appcompat.app.AppCompatActivity {
 
     private AppBarConfiguration mAppBarConfiguration;
+    private NavigationView navigationView;
+    private TextView tempTextView;
+    private WeatherApiService weatherApiService;
+    private TextView firstNameHeader;
+    private TextView lastNameHeader;
+    private ImageView profileImageHeader;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +50,7 @@ public class HomeActivity extends AppCompatActivity {
             return;
         }
 
-        // Set up main layout for logged-in users
+        // Set the layout which contains the Drawer and NavigationView
         setContentView(R.layout.activity_main);
 
         setSupportActionBar(findViewById(R.id.toolbar));
@@ -48,7 +60,7 @@ public class HomeActivity extends AppCompatActivity {
         );
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView = findViewById(R.id.nav_view);
 
         mAppBarConfiguration = new AppBarConfiguration.Builder(
                 R.id.nav_home, R.id.nav_students, R.id.nav_chatting, R.id.nav_profile, R.id.nav_logout)
@@ -80,6 +92,65 @@ public class HomeActivity extends AppCompatActivity {
             }
             return false;
         });
+
+        // Initialize header views and fetch data
+        setupNavHeader();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // When returning to HomeActivity, update the nav header again
+        setupNavHeader();
+    }
+
+    private void setupNavHeader() {
+        View headerView = navigationView.getHeaderView(0);
+        tempTextView = headerView.findViewById(R.id.temperature);
+        firstNameHeader = headerView.findViewById(R.id.firstNameTextViewHeader);
+        lastNameHeader = headerView.findViewById(R.id.lastNameTextViewHeader);
+        profileImageHeader = headerView.findViewById(R.id.imageView);
+
+        // Fetch and display weather
+        weatherApiService = new WeatherApiService(this);
+        weatherApiService.fetchTemperature(new WeatherApiService.GetWeatherCallback() {
+            @Override
+            public void onSuccess(String temperature) {
+                runOnUiThread(() -> tempTextView.setText(temperature));
+            }
+
+            @Override
+            public void onError(String error) {
+                runOnUiThread(() -> tempTextView.setText("N/A"));
+            }
+        });
+
+        // Fetch and display profile data
+        String netId = UserSession.getInstance(this).getNetId();
+        if (netId != null) {
+            UpdateAccount.fetchProfileData(netId, this, new UpdateAccount.ProfileCallback() {
+                @Override
+                public void onSuccess(Profile profile) {
+                    runOnUiThread(() -> {
+                        firstNameHeader.setText(profile.getFirstName());
+                        lastNameHeader.setText(profile.getLastName());
+
+                        Glide.with(HomeActivity.this)
+                                .load(profile.getProfilePictureUrl())
+                                .placeholder(R.mipmap.ic_launcher_round)
+                                .into(profileImageHeader);
+                    });
+                }
+
+                @Override
+                public void onError(VolleyError error) {
+                    runOnUiThread(() -> {
+                        firstNameHeader.setText("");
+                        lastNameHeader.setText("");
+                    });
+                }
+            });
+        }
     }
 
     @Override
