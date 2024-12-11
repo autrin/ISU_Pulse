@@ -12,10 +12,16 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.coms309.isu_pulse_frontend.R;
+import com.coms309.isu_pulse_frontend.api.CourseService;
+import com.coms309.isu_pulse_frontend.loginsignup.UserSession;
+import com.coms309.isu_pulse_frontend.schedule.Schedule;
+
+import java.util.List;
 
 public class ClassCalendar extends AppCompatActivity {
     private GridLayout calendarGrid;
     private TextView hourLabel;
+    private CourseService courseService;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -34,6 +40,17 @@ public class ClassCalendar extends AppCompatActivity {
             hourLabel.setPadding(10, 10, 10, 70);
             calendarGrid.addView(hourLabel);
         }
+
+        // Mark the time blocks based on teh classes the student is taking
+        String netId = UserSession.getInstance().getNetId();
+        courseService.getEnrolledCoursesById(netId, new CourseService.GetEnrolledCoursesCallback() {
+            @Override
+            public void onSuccess(List<Schedule> courses) {
+            }
+            @Override
+            public void onError(String error) {
+            }
+        });
 
     }
 
