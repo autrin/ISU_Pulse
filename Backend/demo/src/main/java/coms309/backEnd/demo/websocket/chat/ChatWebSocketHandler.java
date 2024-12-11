@@ -60,14 +60,12 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
         ChatMessageDTO chatMessageDTO;
 
         try {
-            // Deserialize the incoming message payload
             chatMessageDTO = objectMapper.readValue(payload, ChatMessageDTO.class);
         } catch (JsonProcessingException e) {
             sendMessage(session, "Invalid message format.");
             return;
         }
 
-        // Find sender and recipient in the database
         User sender = userRepository.findUserByNetId(chatMessageDTO.getSenderNetId()).orElse(null);
         User recipient = userRepository.findUserByNetId(chatMessageDTO.getRecipientNetId()).orElse(null);
 
