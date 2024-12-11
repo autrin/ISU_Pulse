@@ -64,8 +64,9 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:columnCount="6"
-        android:padding="8dp"
-        android:rowCount="25">
+        android:rowCount="25"
+        android:rowHeight="170dp"
+        android:padding="8dp">
 
         <!-- Hour Labels (Left Column) -->
         <!-- Add rows dynamically in code, this example shows a few -->
