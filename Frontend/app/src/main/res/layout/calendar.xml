@@ -1,4 +1,5 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -19,11 +20,11 @@
             android:src="@android:drawable/ic_media_previous" />
 
         <!-- Empty space for the corner (top-left) -->
-        <TextView
-            android:layout_width="50dp"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="" />
+<!--        <TextView-->
+<!--            android:layout_width="50dp"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:gravity="center"-->
+<!--            android:text="" />-->
 
         <!-- Weekdays -->
         <TextView
@@ -31,6 +32,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
+            android:layout_gravity="center"
             android:text="Mon"
             android:textStyle="bold" />
 
@@ -39,6 +41,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
+            android:layout_gravity="center"
             android:text="Tue"
             android:textStyle="bold" />
 
@@ -47,6 +50,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
+            android:layout_gravity="center"
             android:text="Wed"
             android:textStyle="bold" />
 
@@ -55,6 +59,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
+            android:layout_gravity="center"
             android:text="Thu"
             android:textStyle="bold" />
 
@@ -63,6 +68,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
+            android:layout_gravity="center"
             android:text="Fri"
             android:textStyle="bold" />
     </LinearLayout>

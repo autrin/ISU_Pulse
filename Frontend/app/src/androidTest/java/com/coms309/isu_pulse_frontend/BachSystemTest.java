@@ -119,7 +119,7 @@ public class BachSystemTest {
     public void testSearchFriend() {
         String netIdInput = "ntbachh";
         String passwordInput = "bachdbrr1234567890@";
-        String searchQuery = "Alice";
+        String searchQuery = "Hung";
 
         // Type in NetID and Password
         onView(withId(R.id.netid_isu_pulse)).perform(typeText(netIdInput), closeSoftKeyboard());
@@ -148,7 +148,7 @@ public class BachSystemTest {
                 .perform(actionOnItemAtPosition(0, click()));
 
         // Verify that the friend with the name "John" is displayed
-        onView(allOf(withId(R.id.friend_name), withText(Matchers.containsString("Alice"))))
+        onView(allOf(withId(R.id.friend_name), withText(Matchers.containsString("Hung"))))
                 .check(matches(withEffectiveVisibility(Visibility.VISIBLE)));
     }
 }
