@@ -21,6 +21,9 @@
         <item
             android:id="@+id/nav_ask_ai"
             android:title="Ask AI" />
+        <item
+            android:id="@+id/nav_logout"
+            android:title="Logout" />
 
     </group>
 </menu>
