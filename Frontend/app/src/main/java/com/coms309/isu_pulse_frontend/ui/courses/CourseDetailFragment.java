@@ -99,7 +99,7 @@ public class CourseDetailFragment extends Fragment {
 
         // Decide which fragment to show based on user type
         if ("FACULTY".equals(userRole)) {
-            Toast.makeText(getContext(), "Showing Teacher Announcements Fragment", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(getContext(), "Showing Teacher Announcements Fragment", Toast.LENGTH_SHORT).show();
             Log.d(TAG, "Showing Teacher Announcements Fragment. User Role: " + userRole);
             fragment = TeacherAnnouncementsFragment.newInstance(scheduleId); // Ensure courseId is set correctly
         } else {
