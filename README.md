@@ -1,6 +1,6 @@
 1. Project Overview
 
-The ISU Pulse application aims to provide Iowa State University (ISU) students, teachers with a comprehensive platform to manage schedules, and facilitate communication. The app integrates various functionalities such as daily tasks, class schedules, course lists, announcements, calendars, common classes that students are taking, friend suggestions, real-time chat, profile view, AI chat (chat gpt), and weather temperature to enhance the campus experience for all teachers and students.
+The ISU Pulse application aims to provide Iowa State University (ISU) students, teachers with a comprehensive platform to manage schedules, and facilitate communication. The app integrates various functionalities such as daily tasks, class schedules, course lists, announcements, calendars, common classes that students are taking, friend suggestions, real-time chat, profile view, AI chat (GPT-4o), and weather temperature to enhance the campus experience for all teachers and students.
 
 2. Team Members and Roles
 
