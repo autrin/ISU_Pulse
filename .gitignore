@@ -100,3 +100,4 @@ buildNumber.properties
 .vs
 
 **/application.properties
+Backend/demo/src/main/resources/application.properties
