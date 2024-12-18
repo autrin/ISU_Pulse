@@ -15,9 +15,10 @@ The ISU Pulse application aims to provide Iowa State University (ISU) students, 
 4. Different Categories of Users
 
     Teachers
+   
     Students/Users
 
-5. License
+6. License
 Shield: [![CC BY-NC-SA 4.0][cc-by-nc-sa-shield]][cc-by-nc-sa]
 
 This work is licensed under a
