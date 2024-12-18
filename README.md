@@ -4,17 +4,20 @@ The ISU Pulse application aims to provide Iowa State University (ISU) students, 
 
 2. Team Members and Roles
 
-    Autrin (Frontend Developer)
-    Bach (Frontend Developer)
-    Minh (Backend Developer)
-    Chris (Backend Developer)
+    Autrin Hakimi (Frontend Developer)
 
-3. Different Categories of Users
+    Tat Bach Nguyen (Frontend Developer)
+
+    Tam (Minh) Nguyen (Backend Developer)
+
+    Nhat (Chris) Le (Backend Developer)
+
+4. Different Categories of Users
 
     Teachers
     Students/Users
 
-4. License
+5. License
 Shield: [![CC BY-NC-SA 4.0][cc-by-nc-sa-shield]][cc-by-nc-sa]
 
 This work is licensed under a
